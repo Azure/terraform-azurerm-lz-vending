@@ -1,4 +1,4 @@
-module subscriptionAliasTest
+module alzLandingZoneTfModuleTest
 
 go 1.18
 
