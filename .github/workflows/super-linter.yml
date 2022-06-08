@@ -43,4 +43,4 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.46.2
-          working-directory: ${{ github.workspace }}
+          working-directory: ${{ github.workspace }}/tests
