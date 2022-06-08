@@ -26,7 +26,7 @@ variable "subscription_alias_name" {
   DESCRIPTION
   validation {
     condition     = can(regex("^$|^[a-zA-Z0-9-_]{1,63}$", var.subscription_alias_name))
-    error_message = "valid characters are a-z, A-Z, 0-9, -, _"
+    error_message = "Valid characters are a-z, A-Z, 0-9, -, _."
   }
 }
 
