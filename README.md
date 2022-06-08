@@ -1,14 +1,19 @@
-# Project
+# ALZ landing zone Module
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+## Overview
 
-As the maintainer of this project, please make a few updates:
+The landing zone Terraform module is designed to accelerate deployment of the individual landing zones into the ALZ conceptual architecture.
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+The module is designed to be instantiated many times, once for each desired landing zone.
+
+This is currently split logically into the following capabilities:
+
+- Subscription creation and management group placement
+- Hub & spoke networking
+- Virtual WAN networking
+
+These resources are all created using the [AzAPI](https://github.com/Azure/terraform-provider-azapi) Terraform provider.
+This was selected due to its ability to deploy resources into many subscriptions in a single apply.
 
 ## Contributing
 
@@ -26,8 +31,8 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
