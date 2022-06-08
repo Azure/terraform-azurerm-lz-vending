@@ -30,8 +30,17 @@ jobs:
           VALIDATE_TERRAFORM_TERRASCAN: true
           VALIDATE_TERRAFORM_TFLINT: true
           VALIDATE_YAML: true
-          VALIDATE_GO: true
+          # VALIDATE_GO: true # Disabled because it down not work :(
           # Additional settings:
           # If a shell script is not executable, the bash-exec
           # linter will report an error when set to true
           ERROR_ON_MISSING_EXEC_BIT: true
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.x'
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          golangci-lint-version: v1.46.2
+          working-directory: ${{ github.workspace }}
