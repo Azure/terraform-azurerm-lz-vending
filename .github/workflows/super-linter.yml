@@ -42,5 +42,5 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          golangci-lint-version: v1.46.2
+          version: v1.46.2
           working-directory: ${{ github.workspace }}
