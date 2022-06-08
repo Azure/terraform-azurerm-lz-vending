@@ -3,7 +3,7 @@ name: Test
 
 on:
   pull_request_target:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
