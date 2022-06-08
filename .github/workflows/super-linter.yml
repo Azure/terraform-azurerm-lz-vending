@@ -14,6 +14,7 @@ jobs:
         env:
           # Lint all code
           VALIDATE_ALL_CODEBASE: true
+          FILTER_REGEX_EXCLUDE: '.tests/vendor/.*'
           # Need to define main branch as default
           # is set to master in super-linter
           DEFAULT_BRANCH: main
