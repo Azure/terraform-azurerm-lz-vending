@@ -15,9 +15,19 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
+        terraform_version: ['~1.0.0', '~1.1.0', '~1.2.0']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ matrix.terraform_version }}
+          terraform_wrapper: false
 
       - name: Setup go
         uses: actions/setup-go@v3
