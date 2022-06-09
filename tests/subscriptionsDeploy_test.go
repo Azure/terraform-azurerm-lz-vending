@@ -35,7 +35,13 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 		PlanFilePath: "../tfplan",
 	}
 
-	_, err = terraform.InitAndApplyAndIdempotentE(t, terraformOptions)
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
+	assert.NoError(t, err)
+	if err != nil {
+		t.FailNow()
+	}
+
+	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 	assert.NoError(t, err)
 	if err != nil {
