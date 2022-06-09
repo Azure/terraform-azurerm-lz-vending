@@ -1,4 +1,4 @@
-# ALZ landing zone Module
+# ALZ landing zone Terraform module
 
 ## Overview
 

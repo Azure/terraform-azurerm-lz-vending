@@ -8,14 +8,18 @@
 # Log files
 *.log
 
+# VS Code settings file
+.vscode/settings.json
+
 # Provider locak file
 .terraform.lock.hcl
 
-# Ignore any .tfvars files that are generated automatically for each Terraform run. Most
-# .tfvars files are managed as part of configuration and so should be included in
-# version control.
+# Ignore any .tfvars files that are generated automatically for each Terraform run.
+# As this is a module, .tfvars files are only used for testing and should not be
+# committed to version control.
 #
-# example.tfvars
+*.tfvars
+*.tfvars.json
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in
@@ -30,3 +34,4 @@ override.tf.json
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
+*tfplan*

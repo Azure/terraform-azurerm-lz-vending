@@ -1,6 +1,8 @@
 package alzLandingZoneTfModuleTest
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -10,7 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestCreateNewAliasValid tests the validation functions with valid data.
+// TestCreateNewAliasValid tests the validation functions with valid data,
+// then creates a plan and compares the input variables to the planned values.
 func TestCreateNewAliasValid(t *testing.T) {
 	v := getMockInputVariables()
 	terraformOptions := &terraform.Options{
@@ -18,9 +21,27 @@ func TestCreateNewAliasValid(t *testing.T) {
 		NoColor:      true,
 		Vars:         v,
 		Logger:       getLogger(),
+		PlanFilePath: "../tfplan",
 	}
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+
+	// Create plan and ensure only a single resource is created.
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
+	assert.Equal(t, 1, len(plan.ResourcePlannedValuesMap))
+
+	// Extract values from the plan and compare to the input variables.
+	name := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["name"]
+	bodyText := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["body"]
+	body := make(map[string]interface{})
+	err = json.Unmarshal([]byte(bodyText.(string)), &body)
+	if err != nil {
+		t.Errorf("Could not unmarshal subscription alias resource body, %s", err)
+	}
+	bodyProperties := body["properties"].(map[string]interface{})
+	assert.Equal(t, v["subscription_alias_billing_scope"], bodyProperties["billingScope"])
+	assert.Equal(t, v["subscription_alias_display_name"], bodyProperties["displayName"])
+	assert.Equal(t, v["subscription_alias_workload"], bodyProperties["workload"])
+	assert.Equal(t, v["subscription_alias_name"], name)
 }
 
 // TestCreateNewAliasExistingSubscriptionId tests the validation functions with valid data for supplying an existing subscription id.
@@ -84,6 +105,21 @@ func getMockInputVariables() map[string]interface{} {
 		"subscription_alias_billing_scope": "/providers/Microsoft.Billing/billingAccounts/test-billing-account",
 		"subscription_alias_workload":      "Production",
 	}
+}
+
+// getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.
+func getValidInputVariables(billingScope string) (map[string]interface{}, error) {
+	n, err := randomHex(4)
+	if err != nil {
+		return nil, err
+	}
+	name := fmt.Sprintf("testdeploy-%s", n)
+	return map[string]interface{}{
+		"subscription_alias_name":          name,
+		"subscription_alias_display_name":  name,
+		"subscription_alias_billing_scope": billingScope,
+		"subscription_alias_workload":      "Production",
+	}, nil
 }
 
 // getLogger returns a logger that can be used for testing.
