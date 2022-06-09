@@ -61,7 +61,7 @@ func preCheckDeployTests(t *testing.T) {
 	variables := []string{
 		"TERRATEST_DEPLOY",
 		"AZURE_BILLING_SCOPE",
-		// "AZURE_TENANT_ID",
+		"AZURE_TENANT_ID",
 	}
 
 	for _, variable := range variables {
@@ -85,7 +85,7 @@ func cancelSubscription(id string) error {
 		ClientOptions: azcore.ClientOptions{
 			Cloud: cloud.AzurePublic,
 		},
-		// TenantID: os.Getenv("AZURE_TENANT_ID"),
+		TenantID: os.Getenv("AZURE_TENANT_ID"),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create Azure credential: %v", err)
