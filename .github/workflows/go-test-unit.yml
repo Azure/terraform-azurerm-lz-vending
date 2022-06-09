@@ -1,5 +1,5 @@
 ---
-name: Test
+name: Unit test
 
 on:
   pull_request:
@@ -7,9 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    environment: CSUTF
-    name: Test
+  unittest:
+    name: Unit test
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -19,9 +18,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
