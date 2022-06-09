@@ -1,0 +1,74 @@
+---
+name: Deployment test
+
+on:
+  pull_request_target:
+    types: ['opened', 'synchronize']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  id-token: write
+  actions: read
+  checks: read
+  deployments: read
+  statuses: none
+  repository-projects: none
+  pages: none
+  discussions: none
+  packages: none
+  issues: none
+  security-events: none
+
+jobs:
+  deploytest:
+    name: Deployment test
+    environment: CSUTF
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        terraform_version: ['~1.0.0', '~1.1.0', '~1.2.0']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ matrix.terraform_version }}
+          terraform_wrapper: false
+
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.x'
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Go test
+        run: go test
+        working-directory: ${{ github.workspace }}/tests
+        env:
+          AZURE_BILLING_SCOPE: ${{ secrets.AZURE_BILLING_SCOPE }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          TERRATEST_DEPLOY: 1
+
+      - name: Azure logout
+        uses: azure/CLI@v1
+        if: always()
+        with:
+          inlineScript: |
+            az logout
+            az cache purge
+            az account clear
