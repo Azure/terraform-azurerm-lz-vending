@@ -112,7 +112,7 @@ func cancelSubscription(id string) error {
 func getValidInputVariables(billingScope string) (map[string]interface{}, error) {
 	r, err := randomHex(4)
 	if err != nil {
-		fmt.Errorf("Cannot generate random hex, %s", err)
+		return nil, fmt.Errorf("Cannot generate random hex, %s", err)
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
 	return map[string]interface{}{
