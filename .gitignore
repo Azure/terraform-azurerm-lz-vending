@@ -8,8 +8,8 @@
 # Log files
 *.log
 
-# VS Code settings file
-.vscode/settings.json
+# VS Code directory
+.vscode/**
 
 # Provider locak file
 .terraform.lock.hcl
