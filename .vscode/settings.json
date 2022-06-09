@@ -1,8 +1,0 @@
-{
-  "go.testEnvVars": {
-    "TERRATEST_LOGGER": "1",
-    "TERRATEST_DEPLOY": "1",
-    "AZURE_BILLING_SCOPE": "/providers/Microsoft.Billing/billingAccounts/6078687/enrollmentAccounts/316569",
-    "AZURE_TENANT_ID": "dac8feee-8768-4fbd-9cf9-9d96d4718018"
-  }
-}
