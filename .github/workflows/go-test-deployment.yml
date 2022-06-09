@@ -32,6 +32,10 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         terraform_version: ['~1.0.0', '~1.1.0', '~1.2.0']
     steps:
+      - name: Show env
+        run: env | sort
+        if: ${{ matrix.os }} == 'ubuntu-latest'
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -57,7 +61,7 @@ jobs:
           allow-no-subscriptions: true
 
       - name: Go test
-        run: go test
+        run: go test -v -run ^TestDeploy
         working-directory: ${{ github.workspace }}/tests
         env:
           AZURE_BILLING_SCOPE: ${{ secrets.AZURE_BILLING_SCOPE }}
