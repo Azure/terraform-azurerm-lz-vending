@@ -2,9 +2,9 @@ package alzLandingZoneTfModuleTest
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"math/rand"
 	"os"
 	"testing"
 
@@ -34,12 +34,8 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 		Logger:       getLogger(),
 		PlanFilePath: "../tfplan",
 	}
-	_, err = terraform.InitAndPlanE(t, terraformOptions)
-	assert.NoError(t, err)
-	if err != nil {
-		t.FailNow()
-	}
-	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+
+	_, err = terraform.InitAndApplyAndIdempotentE(t, terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 	assert.NoError(t, err)
 	if err != nil {
@@ -104,4 +100,19 @@ func cancelSubscription(id string) error {
 	}
 
 	return nil
+}
+
+// getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.
+func getValidInputVariables(billingScope string) (map[string]interface{}, error) {
+	r, err := randomHex(4)
+	if err != nil {
+		fmt.Errorf("Cannot generate random hex, %s", err)
+	}
+	name := fmt.Sprintf("testdeploy-%s", r)
+	return map[string]interface{}{
+		"subscription_alias_name":          name,
+		"subscription_alias_display_name":  name,
+		"subscription_alias_billing_scope": billingScope,
+		"subscription_alias_workload":      "DevTest",
+	}, nil
 }

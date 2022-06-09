@@ -2,7 +2,6 @@ package alzLandingZoneTfModuleTest
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -105,21 +104,6 @@ func getMockInputVariables() map[string]interface{} {
 		"subscription_alias_billing_scope": "/providers/Microsoft.Billing/billingAccounts/test-billing-account",
 		"subscription_alias_workload":      "Production",
 	}
-}
-
-// getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.
-func getValidInputVariables(billingScope string) (map[string]interface{}, error) {
-	n, err := randomHex(4)
-	if err != nil {
-		return nil, err
-	}
-	name := fmt.Sprintf("testdeploy-%s", n)
-	return map[string]interface{}{
-		"subscription_alias_name":          name,
-		"subscription_alias_display_name":  name,
-		"subscription_alias_billing_scope": billingScope,
-		"subscription_alias_workload":      "Production",
-	}, nil
 }
 
 // getLogger returns a logger that can be used for testing.
