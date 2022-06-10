@@ -15,10 +15,12 @@ resource "azapi_resource" "subscription_alias" {
       displayName  = var.subscription_alias_display_name
       billingScope = var.subscription_alias_billing_scope
       workload     = var.subscription_alias_workload
+      additionalProperties = {
+        managementGroupId = var.subscription_alias_management_group_id == "" ? null : var.subscription_alias_management_group_id
+      }
     }
   })
 }
-
 
 # Creating an alias for an existing subscription is not currently supported.
 # Need use case data to justify the effort in testing support.
