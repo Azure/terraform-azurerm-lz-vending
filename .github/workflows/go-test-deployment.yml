@@ -71,6 +71,7 @@ jobs:
         working-directory: ${{ github.workspace }}/tests
         env:
           AZURE_BILLING_SCOPE: ${{ secrets.AZURE_BILLING_SCOPE }}
+          AZURE_EXISTING_SUBSCRIPTION_ID: ${{ secrets.AZURE_EXISTING_SUBSCRIPTION_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           TERRATEST_DEPLOY: 1
 
