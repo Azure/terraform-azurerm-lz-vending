@@ -8,16 +8,22 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/logger"
+	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-// sanitiseErrorMessage replaces the newline characters in an error.Error() output with a single space to allow us to check for the entire error message.
+const (
+	planFilePath = "../tfplan"
+	terraformDir = "../"
+)
+
+// SanitiseErrorMessage replaces the newline characters in an error.Error() output with a single space to allow us to check for the entire error message.
 // We need to do this because Terraform adds newline characters depending on the width of the console window.
 // TODO: Test on Windows if we get \r\n instead of just \n.
 func SanitiseErrorMessage(err error) string {
 	return strings.Replace(err.Error(), "\n", " ", -1)
 }
 
-// getLogger returns a logger that can be used for testing.
+// GetLogger returns a logger that can be used for testing.
 // The default logger will discard the Terraform output.
 // Set TERRATEST_LOGGER to a non empty value to enable verbose logging.
 func GetLogger() *logger.Logger {
@@ -53,4 +59,15 @@ func RandomHex(n int) (string, error) {
 		return "", err
 	}
 	return hex.EncodeToString(bytes), nil
+}
+
+// GetDefaultTerraformOptions returns a TerraformOptions struct with the correct values
+func GetDefaultTerraformOptions(vars map[string]interface{}) *terraform.Options {
+	return &terraform.Options{
+		TerraformDir: terraformDir,
+		NoColor:      true,
+		Logger:       GetLogger(),
+		PlanFilePath: planFilePath,
+		Vars:         vars,
+	}
 }

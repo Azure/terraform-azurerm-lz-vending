@@ -29,13 +29,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 		t.Fatalf("Cannot generate valid input variables, %s", err)
 	}
 
-	terraformOptions := &terraform.Options{
-		TerraformDir: "../",
-		NoColor:      true,
-		Vars:         v,
-		Logger:       utils.GetLogger(),
-		PlanFilePath: "../tfplan",
-	}
+	terraformOptions := utils.GetDefaultTerraformOptions(v)
 
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	require.NoError(t, err)
@@ -48,12 +42,15 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	u, err := uuid.Parse(sid)
 	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
 
+	// cancel the newly created sub
 	if err := cancelSubscription(u); err != nil {
 		t.Logf("could not cancel subscription: %v", err)
 	}
 	t.Logf("subscription %s cancelled", sid)
 }
 
+// TestDeploySubscriptionAliasExistingSubscription tests the creation
+// of a subscription alias for an existing subscription
 func TestDeploySubscriptionAliasExistingSubscription(t *testing.T) {
 	utils.PreCheckDeployTests(t)
 
@@ -69,13 +66,7 @@ func TestDeploySubscriptionAliasExistingSubscription(t *testing.T) {
 	}
 	v["subscription_id"] = existingSub.String()
 
-	terraformOptions := &terraform.Options{
-		TerraformDir: "../",
-		NoColor:      true,
-		Vars:         v,
-		Logger:       utils.GetLogger(),
-		PlanFilePath: "../tfplan",
-	}
+	terraformOptions := utils.GetDefaultTerraformOptions(v)
 
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	require.NoError(t, err)
@@ -85,18 +76,13 @@ func TestDeploySubscriptionAliasExistingSubscription(t *testing.T) {
 	require.NoError(t, err)
 
 	sid := terraform.Output(t, terraformOptions, "subscription_id")
-	u, err := uuid.Parse(sid)
+	_, err = uuid.Parse(sid)
 	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
-
-	if err := cancelSubscription(u); err != nil {
-		t.Logf("could not cancel subscription: %v", err)
-	}
-	t.Logf("subscription %s cancelled", sid)
+	// DO NOT CANCEL THIS SUBSCRIPTION
 }
 
 // cancelSubscription cancels the supplied Azure subscription.
 func cancelSubscription(id uuid.UUID) error {
-
 	// Select the Azure cloud from the AZURE_ENVIRONMENT env var
 	var cloudConfig cloud.Configuration
 	env := os.Getenv("AZURE_ENVIRONMENT")
