@@ -25,6 +25,8 @@ jobs:
   deploytest:
     name: Deployment test
     environment: CSUTF
+    if: |
+      contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:')
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
