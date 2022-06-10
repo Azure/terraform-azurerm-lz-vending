@@ -45,41 +45,45 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	// cancel the newly created sub
 	if err := cancelSubscription(u); err != nil {
 		t.Logf("could not cancel subscription: %v", err)
+	} else {
+		t.Logf("subscription %s cancelled", sid)
 	}
-	t.Logf("subscription %s cancelled", sid)
 }
 
-// TestDeploySubscriptionAliasExistingSubscription tests the creation
-// of a subscription alias for an existing subscription
-func TestDeploySubscriptionAliasExistingSubscription(t *testing.T) {
-	utils.PreCheckDeployTests(t)
+// Creating an alias for an existing subscription is not currently supported.
+// Need use case data to justify the effort in testing support.
+//
+// // TestDeploySubscriptionAliasExistingSubscription tests the creation
+// // of a subscription alias for an existing subscription
+// func TestDeploySubscriptionAliasExistingSubscription(t *testing.T) {
+// 	utils.PreCheckDeployTests(t)
 
-	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
-	v, err := getValidInputVariables(billingScope)
-	if err != nil {
-		t.Fatalf("Cannot generate valid input variables, %s", err)
-	}
+// 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
+// 	v, err := getValidInputVariables(billingScope)
+// 	if err != nil {
+// 		t.Fatalf("Cannot generate valid input variables, %s", err)
+// 	}
 
-	existingSub, err := uuid.Parse(os.Getenv("AZURE_EXISTING_SUBSCRIPTION_ID"))
-	if err != nil {
-		t.Fatalf("Cannot parse AZURE_EXISTING_SUBSCRIPTION_ID as uuid, %s", err)
-	}
-	v["subscription_id"] = existingSub.String()
+// 	existingSub, err := uuid.Parse(os.Getenv("AZURE_EXISTING_SUBSCRIPTION_ID"))
+// 	if err != nil {
+// 		t.Fatalf("Cannot parse AZURE_EXISTING_SUBSCRIPTION_ID as uuid, %s", err)
+// 	}
+// 	v["subscription_id"] = existingSub.String()
 
-	terraformOptions := utils.GetDefaultTerraformOptions(v)
+// 	terraformOptions := utils.GetDefaultTerraformOptions(v)
 
-	_, err = terraform.InitAndPlanE(t, terraformOptions)
-	require.NoError(t, err)
+// 	_, err = terraform.InitAndPlanE(t, terraformOptions)
+// 	require.NoError(t, err)
 
-	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
-	defer terraform.Destroy(t, terraformOptions)
-	require.NoError(t, err)
+// 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+// 	defer terraform.Destroy(t, terraformOptions)
+// 	require.NoError(t, err)
 
-	sid := terraform.Output(t, terraformOptions, "subscription_id")
-	_, err = uuid.Parse(sid)
-	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
-	// DO NOT CANCEL THIS SUBSCRIPTION
-}
+// 	sid := terraform.Output(t, terraformOptions, "subscription_id")
+// 	_, err = uuid.Parse(sid)
+// 	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
+// 	// DO NOT CANCEL THIS SUBSCRIPTION
+// }
 
 // cancelSubscription cancels the supplied Azure subscription.
 func cancelSubscription(id uuid.UUID) error {
