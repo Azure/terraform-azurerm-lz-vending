@@ -10,9 +10,9 @@ resource "azapi_resource" "subscription_alias" {
   ]
   body = jsonencode({
     properties = {
-      displayName    = var.subscription_id == "" ? null : var.subscription_alias_display_name
-      billingScope   = var.subscription_id == "" ? null : var.subscription_alias_billing_scope
-      workload       = var.subscription_id == "" ? null : var.subscription_alias_workload
+      displayName    = var.subscription_id == "" ? var.subscription_alias_display_name : null
+      billingScope   = var.subscription_id == "" ? var.subscription_alias_billing_scope : null
+      workload       = var.subscription_id == "" ? var.subscription_alias_workload : null
       subscriptionId = var.subscription_id == "" ? null : var.subscription_id
     }
   })
