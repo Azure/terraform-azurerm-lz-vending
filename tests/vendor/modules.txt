@@ -91,7 +91,7 @@ github.com/golang/snappy
 # github.com/googleapis/gax-go/v2 v2.0.5
 ## explicit
 github.com/googleapis/gax-go/v2
-# github.com/gruntwork-io/terratest v0.40.15
+# github.com/gruntwork-io/terratest v0.40.16
 ## explicit; go 1.17
 github.com/gruntwork-io/terratest/modules/collections
 github.com/gruntwork-io/terratest/modules/files
