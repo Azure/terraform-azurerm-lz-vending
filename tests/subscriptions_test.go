@@ -52,21 +52,21 @@ func TestSubscriptionCreateNewAliasExistingSubscriptionId(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 1, len(plan.ResourcePlannedValuesMap))
 
-	name := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["name"]
-	bodyText := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["body"]
+	name := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias_existing[0]"].AttributeValues["name"]
+	bodyText := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias_existing[0]"].AttributeValues["body"]
 
 	var body models.SubscriptionAliasBody
 	err = json.Unmarshal([]byte(bodyText.(string)), &body)
 	require.NoErrorf(t, err, "Failed to unmarshal body JSON: %s", bodyText)
 
 	assert.Equal(t, v["subscription_alias_name"], name)
-	assert.Equal(t, v["subscription_alias_display_name"], *body.Properties.DisplayName)
+	assert.Nil(t, body.Properties.DisplayName)
 	assert.Equal(t, v["subscription_id"], *body.Properties.SubscriptionId)
 	assert.Nil(t, body.Properties.BillingScope)
 	assert.Nil(t, body.Properties.Workload)
 }
 
-// TestSubscriptionCreateDisabledAlias tests the validation function with subsciption_alias_enabled
+// TestSubscriptionCreateDisabledAlias tests the validation function with subscription_alias_enabled
 // set to false.
 // This should result in no resources being deployed
 func TestSubscriptionCreateDisabledAlias(t *testing.T) {
