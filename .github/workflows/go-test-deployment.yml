@@ -13,13 +13,6 @@ permissions:
   actions: read
   checks: read
   deployments: read
-  statuses: none
-  repository-projects: none
-  pages: none
-  discussions: none
-  packages: none
-  issues: none
-  security-events: none
 
 jobs:
   deploytest:
