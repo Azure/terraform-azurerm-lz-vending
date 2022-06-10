@@ -1,11 +1,10 @@
-package alzLandingZoneTfModuleTest
+package tests
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
@@ -13,13 +12,16 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription"
+	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
+// TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
+// with valid input variables.
 func TestDeploySubscriptionAliasValid(t *testing.T) {
-	preCheckDeployTests(t)
+	utils.PreCheckDeployTests(t)
 
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)
@@ -31,61 +33,89 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 		TerraformDir: "../",
 		NoColor:      true,
 		Vars:         v,
-		Logger:       getLogger(),
+		Logger:       utils.GetLogger(),
 		PlanFilePath: "../tfplan",
 	}
 
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
-	assert.NoError(t, err)
-	if err != nil {
-		t.FailNow()
-	}
+	require.NoError(t, err)
 
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
-	assert.NoError(t, err)
-	if err != nil {
-		t.FailNow()
-	}
+	require.NoError(t, err)
 
 	sid := terraform.Output(t, terraformOptions, "subscription_id")
-	if _, err := uuid.Parse(sid); err != nil {
-		t.Errorf("subscription id output is not valid uuid: %s", sid)
-		t.FailNow()
-	}
-	if err := cancelSubscription(sid); err != nil {
+	u, err := uuid.Parse(sid)
+	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
+
+	if err := cancelSubscription(u); err != nil {
 		t.Logf("could not cancel subscription: %v", err)
 	}
 	t.Logf("subscription %s cancelled", sid)
 }
 
-func preCheckDeployTests(t *testing.T) {
-	variables := []string{
-		"TERRATEST_DEPLOY",
-		"AZURE_BILLING_SCOPE",
-		"AZURE_TENANT_ID",
+func TestDeploySubscriptionAliasExistingSubscription(t *testing.T) {
+	utils.PreCheckDeployTests(t)
+
+	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
+	v, err := getValidInputVariables(billingScope)
+	if err != nil {
+		t.Fatalf("Cannot generate valid input variables, %s", err)
 	}
 
-	for _, variable := range variables {
-		value := os.Getenv(variable)
-		if value == "" {
-			t.Skipf("`%s` must be set for deployment tests!", variable)
-		}
+	existingSub, err := uuid.Parse(os.Getenv("AZURE_EXISTING_SUBSCRIPTION_ID"))
+	if err != nil {
+		t.Fatalf("Cannot parse AZURE_EXISTING_SUBSCRIPTION_ID as uuid, %s", err)
 	}
+	v["subscription_id"] = existingSub.String()
+
+	terraformOptions := &terraform.Options{
+		TerraformDir: "../",
+		NoColor:      true,
+		Vars:         v,
+		Logger:       utils.GetLogger(),
+		PlanFilePath: "../tfplan",
+	}
+
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
+	require.NoError(t, err)
+
+	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
+	require.NoError(t, err)
+
+	sid := terraform.Output(t, terraformOptions, "subscription_id")
+	u, err := uuid.Parse(sid)
+	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
+
+	if err := cancelSubscription(u); err != nil {
+		t.Logf("could not cancel subscription: %v", err)
+	}
+	t.Logf("subscription %s cancelled", sid)
 }
 
-func randomHex(n int) (string, error) {
-	bytes := make([]byte, n)
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(bytes), nil
-}
+// cancelSubscription cancels the supplied Azure subscription.
+func cancelSubscription(id uuid.UUID) error {
 
-func cancelSubscription(id string) error {
+	// Select the Azure cloud from the AZURE_ENVIRONMENT env var
+	var cloudConfig cloud.Configuration
+	env := os.Getenv("AZURE_ENVIRONMENT")
+	switch strings.ToLower(env) {
+	case "public":
+		cloudConfig = cloud.AzurePublic
+	case "usgovernment":
+		cloudConfig = cloud.AzureGovernment
+	case "china":
+		cloudConfig = cloud.AzureChina
+	default:
+		cloudConfig = cloud.AzurePublic
+	}
+
+	// Get default credentials, this will look for the well-known environment variables,
+	// managed identity credentials, and az cli credentials
 	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
 		ClientOptions: azcore.ClientOptions{
-			Cloud: cloud.AzurePublic,
+			Cloud: cloudConfig,
 		},
 		TenantID: os.Getenv("AZURE_TENANT_ID"),
 	})
@@ -96,12 +126,13 @@ func cancelSubscription(id string) error {
 		DisableRPRegistration: true,
 	}
 
+	// Create the subscriptions API client and cancel the subscription
 	client, err := armsubscription.NewClient(cred, clientOpts)
 	if err != nil {
 		return fmt.Errorf("failed to create subscription client: %v", err)
 	}
 	ctx := context.Background()
-	if _, err = client.Cancel(ctx, id, nil); err != nil {
+	if _, err = client.Cancel(ctx, id.String(), nil); err != nil {
 		return fmt.Errorf("failed to cancel subscription: %v", err)
 	}
 
@@ -110,7 +141,7 @@ func cancelSubscription(id string) error {
 
 // getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.
 func getValidInputVariables(billingScope string) (map[string]interface{}, error) {
-	r, err := randomHex(4)
+	r, err := utils.RandomHex(4)
 	if err != nil {
 		return nil, fmt.Errorf("Cannot generate random hex, %s", err)
 	}
