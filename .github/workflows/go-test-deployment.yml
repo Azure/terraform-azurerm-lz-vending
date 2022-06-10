@@ -67,13 +67,11 @@ jobs:
         run: sudo iptables -I OUTPUT --destination 169.254.169.254 -j REJECT
 
       - name: Go test
-        run: go test -v -run ^TestDeploy
-        working-directory: ${{ github.workspace }}/tests
+        run: make testdeploy
         env:
           AZURE_BILLING_SCOPE: ${{ secrets.AZURE_BILLING_SCOPE }}
           AZURE_EXISTING_SUBSCRIPTION_ID: ${{ secrets.AZURE_EXISTING_SUBSCRIPTION_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          TERRATEST_DEPLOY: 1
 
       # This only works on Linux based runners
       - name: Azure logout
