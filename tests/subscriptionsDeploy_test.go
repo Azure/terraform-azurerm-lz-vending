@@ -37,12 +37,14 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	assert.NoError(t, err)
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
+	// due to eventual consistency of the subscription aliases API
+	try.MaxRetries = 30
 	defer try.Do(func(attempt int) (bool, error) {
 		_, err := terraform.DestroyE(t, terraformOptions)
 		if err != nil {
-			time.Sleep(20 * time.Second) // wait 20 secs
+			time.Sleep(30 * time.Second)
 		}
-		return attempt < 5, err
+		return attempt < 30, err
 	})
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
@@ -80,12 +82,14 @@ func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
 	assert.NoError(t, err)
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
+	// due to eventual consistency of the subscription aliases API
+	try.MaxRetries = 30
 	defer try.Do(func(attempt int) (bool, error) {
 		_, err := terraform.DestroyE(t, terraformOptions)
 		if err != nil {
-			time.Sleep(20 * time.Second) // wait 20 secs
+			time.Sleep(30 * time.Second)
 		}
-		return attempt < 5, err
+		return attempt < 30, err
 	})
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
@@ -144,7 +148,7 @@ func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
 // it retries a few times as the subscription api is eventually consistent.
 func cancelSubscription(t *testing.T, id uuid.UUID) error {
 	const (
-		max      = 5
+		max      = 10
 		delaysec = 20
 	)
 
@@ -171,7 +175,7 @@ func cancelSubscription(t *testing.T, id uuid.UUID) error {
 // isSubscriptionInManagementGroup returns true if the subscription is a management group.
 func isSubscriptionInManagementGroup(t *testing.T, id uuid.UUID, mg string) error {
 	const (
-		max      = 5
+		max      = 10
 		delaysec = 20
 	)
 

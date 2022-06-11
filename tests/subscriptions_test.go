@@ -62,7 +62,8 @@ func TestSubscriptionCreateNewAliasValidWithManagementGroup(t *testing.T) {
 	assert.Equal(t, v["subscription_alias_billing_scope"], *body.Properties.BillingScope)
 	assert.Equal(t, v["subscription_alias_display_name"], *body.Properties.DisplayName)
 	assert.Equal(t, v["subscription_alias_workload"], *body.Properties.Workload)
-	assert.Equal(t, v["subscription_alias_management_group_id"], *body.Properties.AdditionalProperties.ManagementGroupId)
+	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_alias_management_group_id"].(string)
+	assert.Equal(t, mgResId, *body.Properties.AdditionalProperties.ManagementGroupId)
 	assert.Nil(t, body.Properties.SubscriptionId)
 }
 
