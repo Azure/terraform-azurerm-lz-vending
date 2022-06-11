@@ -33,7 +33,7 @@ jobs:
             az config set extension.use_dynamic_install=yes_without_prompt
             az account subscription list \
               | jq -r '.[] | select(.state == "Enabled") | select(.displayName | test("^testdeploy.*")) | .subscriptionId' \
-              | xargs -L1 az account subscription cancel --yes --id
+              | xargs -n1 az account subscription cancel --yes --id
 
       - name: Azure logout
         uses: azure/CLI@v1

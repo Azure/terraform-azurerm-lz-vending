@@ -33,7 +33,7 @@ jobs:
             az config set extension.use_dynamic_install=yes_without_prompt
             az rest --method GET --uri '/providers/Microsoft.Subscription/aliases/?api-version=2021-10-01' \
               | jq -r '.value[] | select(.name | test("^testdeploy")) | .name' \
-              | xargs -L1 -I% az rest --method DELETE --uri '/providers/Microsoft.Subscription/aliases/%?api-version=2021-10-01'
+              | xargs -n1 -I% az rest --method DELETE --uri '/providers/Microsoft.Subscription/aliases/%?api-version=2021-10-01'
 
       - name: Azure logout
         uses: azure/CLI@v1
