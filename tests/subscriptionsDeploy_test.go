@@ -39,6 +39,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
 	try.MaxRetries = 30
+	//nolint errcheck // Used in defer so we can't check the error
 	defer try.Do(func(attempt int) (bool, error) {
 		_, err := terraform.DestroyE(t, terraformOptions)
 		if err != nil {
@@ -84,6 +85,7 @@ func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
 	try.MaxRetries = 30
+	//nolint errcheck // Used in defer so we can't check the error
 	defer try.Do(func(attempt int) (bool, error) {
 		_, err := terraform.DestroyE(t, terraformOptions)
 		if err != nil {
