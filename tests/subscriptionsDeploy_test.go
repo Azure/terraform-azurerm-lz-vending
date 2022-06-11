@@ -38,15 +38,8 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
-	try.MaxRetries = 30
-	//nolint errcheck // Used in defer so we can't check the error
-	defer try.Do(func(attempt int) (bool, error) {
-		_, err := terraform.DestroyE(t, terraformOptions)
-		if err != nil {
-			time.Sleep(1 * time.Minute)
-		}
-		return attempt < 30, err
-	})
+	// try.MaxRetries = 30
+	defer deferTerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 12)
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
 	assert.NoError(t, err)
@@ -84,15 +77,7 @@ func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
-	try.MaxRetries = 30
-	//nolint errcheck // Used in defer so we can't check the error
-	defer try.Do(func(attempt int) (bool, error) {
-		_, err := terraform.DestroyE(t, terraformOptions)
-		if err != nil {
-			time.Sleep(30 * time.Minute)
-		}
-		return attempt < 30, err
-	})
+	defer deferTerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 12)
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
 	assert.NoError(t, err)
@@ -146,11 +131,27 @@ func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
 // 	// DO NOT CANCEL THIS SUBSCRIPTION
 // }
 
+func deferTerraformDestroyWithRetry(t *testing.T, to *terraform.Options, dur time.Duration, max int) {
+	if try.MaxRetries < max {
+		try.MaxRetries = max
+	}
+	err := try.Do(func(attempt int) (bool, error) {
+		_, err := terraform.DestroyE(t, to)
+		if err != nil {
+			time.Sleep(20 * time.Second)
+		}
+		return attempt < max, err
+	})
+	if err != nil {
+		t.Logf("terraform destroy error: %v", err)
+	}
+}
+
 // cancelSubscription cancels the supplied Azure subscription.
 // it retries a few times as the subscription api is eventually consistent.
 func cancelSubscription(t *testing.T, id uuid.UUID) error {
 	const (
-		max      = 10
+		max      = 12
 		delaysec = 20
 	)
 
@@ -177,7 +178,7 @@ func cancelSubscription(t *testing.T, id uuid.UUID) error {
 // isSubscriptionInManagementGroup returns true if the subscription is a management group.
 func isSubscriptionInManagementGroup(t *testing.T, id uuid.UUID, mg string) error {
 	const (
-		max      = 10
+		max      = 12
 		delaysec = 20
 	)
 

@@ -2,10 +2,11 @@
 name: Housekeeping - Cancel subscriptions
 on:
   schedule:
-    - cron: "21 3 * * *" # daily at 3:21
+    - cron: "11 3 * * *" # daily at 3:11
   workflow_dispatch:
 
 permissions:
+  contents: read
   id-token: write
 
 jobs:
@@ -20,15 +21,15 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      - name: Azure cancel subscriptions
+      - name: Azure delete subscription aliases
         uses: azure/CLI@v1
         if: always()
         continue-on-error: true
         with:
           inlineScript: |
-            az account subscription list \
-              | jq -r '.[] | select(.state == "Enabled") | select(.displayName | test("^testdeploy.*")) | .subscriptionId' \
-              | xargs -L1 az account subscription cancel --yes --id
+            az rest --method GET --uri '/providers/Microsoft.Subscription/aliases/?api-version=2021-10-01' \
+              | jq -r '.value[] | select(.name | test("^testdeploy")) | .name' \
+              | xargs -L1 -I% az rest --method DELETE --uri '/providers/Microsoft.Subscription/aliases/%?api-version=2021-10-01'
 
       - name: Azure logout
         uses: azure/CLI@v1
