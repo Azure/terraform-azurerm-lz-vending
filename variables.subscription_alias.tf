@@ -88,6 +88,24 @@ variable "subscription_alias_workload" {
   }
 }
 
+variable "subscription_alias_management_group_id" {
+  type    = string
+  default = ""
+  description = <<DESCRIPTION
+  (Optional) The destination management group ID for the new subscription.
+
+  **Note:** Do not supply the display name.
+  The management group ID forms part of the Azure resource ID. E.g.,
+  `/providers/Microsoft.Management/managementGroups/{managementGroupId}`.
+
+  Default: ""
+  DESCRIPTION
+  validation {
+    condition = can(regex("^$|^[().a-zA-Z0-9_-]{1,90}$", var.subscription_alias_management_group_id))
+    error_message = "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.)."
+  }
+}
+
 variable "subscription_id" {
   type        = string
   default     = ""

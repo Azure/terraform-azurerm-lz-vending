@@ -1,15 +1,15 @@
 ---
-name: Housekeeping - Cancel subscriptions
+name: Housekeeping - Delete subscription aliases
 on:
   schedule:
-    - cron: "21 3 * * *" # daily at 3:21
+    - cron: "11 3 * * *" # daily at 3:11
   workflow_dispatch:
 
 permissions:
   id-token: write
 
 jobs:
-  cancelsubscriptions:
+  deletealiases:
     name: Housekeeping - Cancel subscriptions
     runs-on: ubuntu-latest
     steps:
@@ -20,15 +20,15 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      - name: Azure cancel subscriptions
+      - name: Azure delete subscription aliases
         uses: azure/CLI@v1
         continue-on-error: true
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
-            az account subscription list \
-              | jq -r '.[] | select(.state == "Enabled") | select(.displayName | test("^testdeploy.*")) | .subscriptionId' \
-              | xargs -n1 az account subscription cancel --yes --id
+            az rest --method GET --uri '/providers/Microsoft.Subscription/aliases/?api-version=2021-10-01' \
+              | jq -r '.value[] | select(.name | test("^testdeploy")) | .name' \
+              | xargs -n1 -I% az rest --method DELETE --uri '/providers/Microsoft.Subscription/aliases/%?api-version=2021-10-01'
 
       - name: Azure logout
         uses: azure/CLI@v1

@@ -10,12 +10,13 @@ If you're on Windows you'll also need:
 * [Git Bash for Windows](https://git-scm.com/download/win)
 * [Make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm)
 
-For *GNU32 Make*, make sure its bin path is added to PATH environment variable.*
+For *GNU32 Make*, make sure its bin path is added to PATH environment variable.
 
-For *Git Bash for Windows*, at the step of "Adjusting your PATH environment", please choose "Use Git and optional Unix tools from Windows Command Prompt".*
+For *Git Bash for Windows*, at the step of "Adjusting your PATH environment", please choose "Use Git and optional Unix tools from Windows Command Prompt".
 
 Or, use [Windows Subsystem for Linux](https://docs.microsoft.com/windows/wsl/install)
-le
+
+## Terratest
 
 We use [Terratest](https://terratest.gruntwork.io/) to run the unit and deployment testing for the module. Therefore, if you wish to work on the module, you'll first need [Go](http://www.golang.org) installed on your machine.
 You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
