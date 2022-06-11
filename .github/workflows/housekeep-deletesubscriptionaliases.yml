@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
   id-token: write
 
 jobs:
@@ -14,11 +13,6 @@ jobs:
     name: Housekeeping - Cancel subscriptions
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main
-        uses: actions/checkout@v3
-        with:
-          ref: main
-
       - name: Azure login
         uses: azure/login@v1
         with:
