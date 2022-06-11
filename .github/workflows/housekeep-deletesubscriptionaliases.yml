@@ -1,5 +1,5 @@
 ---
-name: Housekeeping - Cancel subscriptions
+name: Housekeeping - Delete subscription aliases
 on:
   schedule:
     - cron: "11 3 * * *" # daily at 3:11
@@ -10,7 +10,7 @@ permissions:
   id-token: write
 
 jobs:
-  cancelsubscriptions:
+  deletealiases:
     name: Housekeeping - Cancel subscriptions
     runs-on: ubuntu-latest
     steps:
