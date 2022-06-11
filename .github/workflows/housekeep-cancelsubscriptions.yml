@@ -7,12 +7,18 @@ on:
 
 permissions:
   id-token: write
+  contents: read
 
 jobs:
   cancelsubscriptions:
     name: Housekeeping - Cancel subscriptions
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
       - name: Azure login
         uses: azure/login@v1
         with:
