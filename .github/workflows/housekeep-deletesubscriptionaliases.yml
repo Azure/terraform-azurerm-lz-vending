@@ -28,7 +28,6 @@ jobs:
 
       - name: Azure delete subscription aliases
         uses: azure/CLI@v1
-        if: always()
         continue-on-error: true
         with:
           inlineScript: |
