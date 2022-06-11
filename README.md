@@ -8,9 +8,10 @@ The module is designed to be instantiated many times, once for each desired land
 
 This is currently split logically into the following capabilities:
 
-- (partially implemented) Subscription creation and management group placement
+- Subscription creation and management group placement
 - (backlogged) Hub & spoke networking
 - (backlogged) Virtual WAN networking
+- More to come!
 
 These resources are all created using the [AzAPI](https://github.com/Azure/terraform-provider-azapi) Terraform provider.
 This was selected due to its ability to deploy resources into many subscriptions in a single apply.
