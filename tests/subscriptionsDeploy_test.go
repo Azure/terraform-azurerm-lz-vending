@@ -4,18 +4,17 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"testing"
+	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
-	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
-	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/managementgroups/armmanagementgroups"
+	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/azureutils"
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/matryer/try.v1"
 )
 
 // TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
@@ -35,15 +34,71 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
-	defer terraform.Destroy(t, terraformOptions)
-	require.NoError(t, err)
+	assert.NoError(t, err)
 
-	sid := terraform.Output(t, terraformOptions, "subscription_id")
+	// defer terraform destroy, but wrap in a try.Do to retry a few times
+	defer try.Do(func(attempt int) (bool, error) {
+		_, err := terraform.DestroyE(t, terraformOptions)
+		if err != nil {
+			time.Sleep(20 * time.Second) // wait 20 secs
+		}
+		return attempt < 5, err
+	})
+
+	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
+	assert.NoError(t, err)
 	u, err := uuid.Parse(sid)
 	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
 
 	// cancel the newly created sub
-	if err := cancelSubscription(u); err != nil {
+	if err := cancelSubscription(t, u); err != nil {
+		t.Logf("could not cancel subscription: %v", err)
+	} else {
+		t.Logf("subscription %s cancelled", sid)
+	}
+}
+
+// TestDeploySubscriptionAliasValidWithManagementGroup tests the deployment of a subscription alias
+// with valid input variables.
+func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
+	utils.PreCheckDeployTests(t)
+
+	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
+	v, err := getValidInputVariables(billingScope)
+	v["subscription_alias_management_group_id"] = "testdeploy"
+
+	if err != nil {
+		t.Fatalf("Cannot generate valid input variables, %s", err)
+	}
+
+	terraformOptions := utils.GetDefaultTerraformOptions(v)
+
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
+	require.NoError(t, err)
+
+	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+	assert.NoError(t, err)
+
+	// defer terraform destroy, but wrap in a try.Do to retry a few times
+	defer try.Do(func(attempt int) (bool, error) {
+		_, err := terraform.DestroyE(t, terraformOptions)
+		if err != nil {
+			time.Sleep(20 * time.Second) // wait 20 secs
+		}
+		return attempt < 5, err
+	})
+
+	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
+	assert.NoError(t, err)
+
+	u, err := uuid.Parse(sid)
+	assert.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
+
+	err = isSubscriptionInManagementGroup(t, u, v["subscription_alias_management_group_id"].(string))
+	assert.NoError(t, err)
+
+	// cancel the newly created sub
+	if err := cancelSubscription(t, u); err != nil {
 		t.Logf("could not cancel subscription: %v", err)
 	} else {
 		t.Logf("subscription %s cancelled", sid)
@@ -86,46 +141,60 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 // }
 
 // cancelSubscription cancels the supplied Azure subscription.
-func cancelSubscription(id uuid.UUID) error {
-	// Select the Azure cloud from the AZURE_ENVIRONMENT env var
-	var cloudConfig cloud.Configuration
-	env := os.Getenv("AZURE_ENVIRONMENT")
-	switch strings.ToLower(env) {
-	case "public":
-		cloudConfig = cloud.AzurePublic
-	case "usgovernment":
-		cloudConfig = cloud.AzureGovernment
-	case "china":
-		cloudConfig = cloud.AzureChina
-	default:
-		cloudConfig = cloud.AzurePublic
+// it retries a few times as the subscription api is eventually consistent.
+func cancelSubscription(t *testing.T, id uuid.UUID) error {
+	const (
+		max      = 5
+		delaysec = 20
+	)
+
+	client, err := azureutils.NewSubscriptionClient()
+	if err != nil {
+		return fmt.Errorf("cannot create subscription client, %s", err)
 	}
 
-	// Get default credentials, this will look for the well-known environment variables,
-	// managed identity credentials, and az cli credentials
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: cloudConfig,
-		},
-		TenantID: os.Getenv("AZURE_TENANT_ID"),
+	ctx := context.Background()
+	err = try.Do(func(attempt int) (bool, error) {
+		_, err := client.Cancel(ctx, id.String(), nil)
+		if err != nil {
+			t.Logf("subscription id %s cancel failed, attempt %d/%d: %v", id, attempt, max, err)
+			time.Sleep(delaysec * time.Second)
+		}
+		return attempt < max, err
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create Azure credential: %v", err)
+		return fmt.Errorf("cannot cancel subscription %s, %v", id, err)
 	}
-	clientOpts := &arm.ClientOptions{
-		DisableRPRegistration: true,
-	}
+	return nil
+}
 
-	// Create the subscriptions API client and cancel the subscription
-	client, err := armsubscription.NewClient(cred, clientOpts)
+// isSubscriptionInManagementGroup returns true if the subscription is a management group.
+func isSubscriptionInManagementGroup(t *testing.T, id uuid.UUID, mg string) error {
+	const (
+		max      = 5
+		delaysec = 20
+	)
+
+	client, err := azureutils.NewManagementGroupSubscriptionsClient()
 	if err != nil {
-		return fmt.Errorf("failed to create subscription client: %v", err)
-	}
-	ctx := context.Background()
-	if _, err = client.Cancel(ctx, id.String(), nil); err != nil {
-		return fmt.Errorf("failed to cancel subscription: %v", err)
+		return fmt.Errorf("cannot create mg subscriptions client, %s", err)
 	}
 
+	var mgopts armmanagementgroups.ManagementGroupSubscriptionsClientGetSubscriptionOptions
+	cc := "no-cache"
+	mgopts.CacheControl = &cc
+
+	err = try.Do(func(attempt int) (bool, error) {
+		_, err := client.GetSubscription(context.Background(), mg, id.String(), &mgopts)
+		if err != nil {
+			t.Logf("failed to get subscription %s in management group %s, attempt %d/%d: %v", id.String(), mg, attempt, max, err)
+			time.Sleep(delaysec * time.Second)
+		}
+		return attempt < max, err
+	})
+	if err != nil {
+		return fmt.Errorf("failed determine if subscription %s in management group %s: %v", id.String(), mg, err)
+	}
 	return nil
 }
 

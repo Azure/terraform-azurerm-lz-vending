@@ -6,4 +6,7 @@ locals {
   # We pick the created sub id first, if it exists, otherwise we pick the subscription_id variable.
   # If this is blank then something has gone wrong.
   subscription_id = can(coalesce(local.subscription_id_alias, var.subscription_id)) ? coalesce(local.subscription_id_alias, var.subscription_id) : ""
+
+  # management_group_resource_id_prefix is the prefix of the management group resource id.
+  subscription_alias_management_group_resource_id = "/providers/Microsoft.Management/managementGroups/${var.subscription_alias_management_group_id}"
 }

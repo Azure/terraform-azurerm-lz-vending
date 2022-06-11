@@ -2,7 +2,7 @@
 # This is used when subscription_id is not supplied, therefore we are
 # creating a new subscription.
 resource "azapi_resource" "subscription_alias" {
-  count                   = var.subscription_alias_enabled && var.subscription_id  == "" ? 1 : 0
+  count                   = var.subscription_alias_enabled && var.subscription_id == "" ? 1 : 0
   type                    = "Microsoft.Subscription/aliases@2021-10-01"
   parent_id               = "/"
   name                    = var.subscription_alias_name
@@ -16,7 +16,7 @@ resource "azapi_resource" "subscription_alias" {
       billingScope = var.subscription_alias_billing_scope
       workload     = var.subscription_alias_workload
       additionalProperties = {
-        managementGroupId = var.subscription_alias_management_group_id == "" ? null : var.subscription_alias_management_group_id
+        managementGroupId = var.subscription_alias_management_group_id == "" ? null : local.subscription_alias_management_group_resource_id
       }
     }
   })
