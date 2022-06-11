@@ -131,6 +131,8 @@ func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
 // 	// DO NOT CANCEL THIS SUBSCRIPTION
 // }
 
+// deferTerraformDestroyWithRetry is a helper function that wraps a terraform destroy in a try.Do
+// designed to be used as a defer function.
 func deferTerraformDestroyWithRetry(t *testing.T, to *terraform.Options, dur time.Duration, max int) {
 	if try.MaxRetries < max {
 		try.MaxRetries = max
