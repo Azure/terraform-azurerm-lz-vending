@@ -1,0 +1,4 @@
+# Require admin approval for the following files:
+.github/CODEOWNERS @Azure/alz-terraform-landing-zone-module-admins
+.github/fabricbot.json @Azure/alz-terraform-landing-zone-module-admins
+.github/workflows/*.yml @Azure/alz-terraform-landing-zone-module-admins
