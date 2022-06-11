@@ -43,7 +43,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	defer try.Do(func(attempt int) (bool, error) {
 		_, err := terraform.DestroyE(t, terraformOptions)
 		if err != nil {
-			time.Sleep(30 * time.Second)
+			time.Sleep(1 * time.Minute)
 		}
 		return attempt < 30, err
 	})
@@ -89,7 +89,7 @@ func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
 	defer try.Do(func(attempt int) (bool, error) {
 		_, err := terraform.DestroyE(t, terraformOptions)
 		if err != nil {
-			time.Sleep(30 * time.Second)
+			time.Sleep(30 * time.Minute)
 		}
 		return attempt < 30, err
 	})
