@@ -8,7 +8,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/managementgroups/armmanagementgroups v1.0.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.0.0
 	github.com/google/uuid v1.3.0
-	github.com/gruntwork-io/terratest v0.40.16
+	github.com/gruntwork-io/terratest v0.40.17
 	github.com/stretchr/testify v1.7.2
 	gopkg.in/matryer/try.v1 v1.0.0-20150601225556-312d2599e12e
 )
