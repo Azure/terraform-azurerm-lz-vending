@@ -4,6 +4,10 @@ name: Deployment test
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, labeled]
+    paths:
+      - '**.go'
+      - '**.tf'
+      - '**.tfvars'
   workflow_dispatch:
 
 permissions:
