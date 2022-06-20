@@ -24,7 +24,7 @@ None.
 module "alz_landing_zone" {
   # Terraform Cloud/Enterprise use
   source  = "Azure/alz-landing-zone/azurerm"
-  version = "~>0.0.1"       # required to use iterator, additional_tags, add_random & rnd_length
+  version = "~>0.0.1"
   # TBC
 }
 ```

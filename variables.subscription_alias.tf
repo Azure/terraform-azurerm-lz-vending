@@ -67,7 +67,7 @@ variable "subscription_alias_workload" {
   description = <<DESCRIPTION
   The billing scope for the new subscription alias.
 
-  The workload type can be either Production or DevTest and is case sensitive.
+  The workload type can be either `Production` or `DevTest` and is case sensitive.
 
   You may also supply an empty string if you do not want to create a new subscription alias.
   In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied.

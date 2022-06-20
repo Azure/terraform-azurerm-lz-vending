@@ -39,7 +39,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
 	// try.MaxRetries = 30
-	defer deferTerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 12)
+	defer terraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 12)
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
 	assert.NoError(t, err)
@@ -77,7 +77,7 @@ func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
-	defer deferTerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 12)
+	defer terraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 12)
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
 	assert.NoError(t, err)
@@ -131,9 +131,9 @@ func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
 // 	// DO NOT CANCEL THIS SUBSCRIPTION
 // }
 
-// deferTerraformDestroyWithRetry is a helper function that wraps a terraform destroy in a try.Do
+// terraformDestroyWithRetry is a helper function that wraps a terraform destroy in a try.Do
 // designed to be used as a defer function.
-func deferTerraformDestroyWithRetry(t *testing.T, to *terraform.Options, dur time.Duration, max int) {
+func terraformDestroyWithRetry(t *testing.T, to *terraform.Options, dur time.Duration, max int) {
 	if try.MaxRetries < max {
 		try.MaxRetries = max
 	}
