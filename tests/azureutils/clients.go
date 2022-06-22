@@ -72,7 +72,6 @@ func newDefaultAzureCredential() (*azidentity.DefaultAzureCredential, error) {
 		ClientOptions: azcore.ClientOptions{
 			Cloud: cloudConfig,
 		},
-		TenantID: os.Getenv("AZURE_TENANT_ID"),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Azure credential: %v", err)

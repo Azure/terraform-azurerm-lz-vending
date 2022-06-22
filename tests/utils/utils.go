@@ -4,11 +4,15 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"gopkg.in/matryer/try.v1"
 )
 
 const (
@@ -39,7 +43,6 @@ func PreCheckDeployTests(t *testing.T) {
 	variables := []string{
 		"TERRATEST_DEPLOY",
 		"AZURE_BILLING_SCOPE",
-		"AZURE_TENANT_ID",
 	}
 
 	for _, variable := range variables {
@@ -61,13 +64,45 @@ func RandomHex(n int) (string, error) {
 	return hex.EncodeToString(bytes), nil
 }
 
-// GetDefaultTerraformOptions returns a TerraformOptions struct with the correct values
-func GetDefaultTerraformOptions(vars map[string]interface{}) *terraform.Options {
+// GetDefaultTerraformOptions returns the default Terraform options for the
+// given directory.
+func GetDefaultTerraformOptions(t *testing.T, dir string) *terraform.Options {
+	if dir == "" {
+		dir = "./"
+	}
+	if !strings.HasSuffix(dir, "/") {
+		dir += "/"
+	}
+	pf := dir + "tfplan"
 	return &terraform.Options{
-		TerraformDir: terraformDir,
-		NoColor:      true,
 		Logger:       GetLogger(),
-		PlanFilePath: planFilePath,
-		Vars:         vars,
+		NoColor:      true,
+		PlanFilePath: pf,
+		TerraformDir: dir,
+		Vars:         make(map[string]interface{}),
+	}
+}
+
+// GetTestDir returns the directory of the test file.
+func GetTestDir(t *testing.T) string {
+	_, filename, _, _ := runtime.Caller(1)
+	return filepath.Dir(filename)
+}
+
+// terraformDestroyWithRetry is a helper function that wraps a terraform destroy in a try.Do
+// designed to be used as a defer function.
+func TerraformDestroyWithRetry(t *testing.T, to *terraform.Options, dur time.Duration, max int) {
+	if try.MaxRetries < max {
+		try.MaxRetries = max
+	}
+	err := try.Do(func(attempt int) (bool, error) {
+		_, err := terraform.DestroyE(t, to)
+		if err != nil {
+			time.Sleep(dur)
+		}
+		return attempt < max, err
+	})
+	if err != nil {
+		t.Logf("terraform destroy error: %v", err)
 	}
 }
