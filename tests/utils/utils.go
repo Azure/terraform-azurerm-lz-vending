@@ -15,11 +15,6 @@ import (
 	"gopkg.in/matryer/try.v1"
 )
 
-const (
-	planFilePath = "../tfplan"
-	terraformDir = "../"
-)
-
 // SanitiseErrorMessage replaces the newline characters in an error.Error() output with a single space to allow us to check for the entire error message.
 // We need to do this because Terraform adds newline characters depending on the width of the console window.
 // TODO: Test on Windows if we get \r\n instead of just \n.
@@ -89,7 +84,7 @@ func GetTestDir(t *testing.T) string {
 	return filepath.Dir(filename)
 }
 
-// terraformDestroyWithRetry is a helper function that wraps a terraform destroy in a try.Do
+// TerraformDestroyWithRetry is a helper function that wraps a terraform destroy in a try.Do
 // designed to be used as a defer function.
 func TerraformDestroyWithRetry(t *testing.T, to *terraform.Options, dur time.Duration, max int) {
 	if try.MaxRetries < max {
