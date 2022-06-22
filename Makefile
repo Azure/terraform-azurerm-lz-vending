@@ -21,7 +21,7 @@ lint:
 	cd tests && golangci-lint run
 
 test: fmtcheck
-	cd tests &&  go test $(TEST) $(TESTARGS) -timeout=$(TESTTIMEOUT) -run ^$(TESTPREFIX)
+	cd tests &&  go test $(TEST) $(TESTARGS) -timeout=$(TESTTIMEOUT) -run ^$(TESTFILTER)
 
 testdeploy: fmtcheck
 	cd tests &&	TERRATEST_DEPLOY=1 go test -v -run ^TestDeploy$(TESTFILTER) -timeout $(TESTTIMEOUT)
