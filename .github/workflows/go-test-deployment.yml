@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        terraform_version: ['~1.0.0', '~1.1.0', '~1.2.0']
+        terraform_version: ['~1.0.0', '~1.2.0']
     steps:
       - name: Show env
         run: env | sort
@@ -66,7 +66,6 @@ jobs:
         env:
           AZURE_BILLING_SCOPE: ${{ secrets.AZURE_BILLING_SCOPE }}
           AZURE_EXISTING_SUBSCRIPTION_ID: ${{ secrets.AZURE_EXISTING_SUBSCRIPTION_ID }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       # This only works on Linux based runners
       - name: Azure logout
