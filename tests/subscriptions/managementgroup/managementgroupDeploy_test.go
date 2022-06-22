@@ -20,7 +20,7 @@ import (
 
 // TestDeploySubscriptionAliasValidWithManagementGroup tests the deployment of a subscription alias
 // with valid input variables.
-func TestDeploySubscriptionAliasValidWithManagementGroup(t *testing.T) {
+func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	utils.PreCheckDeployTests(t)
 
 	dir := utils.GetTestDir(t)
