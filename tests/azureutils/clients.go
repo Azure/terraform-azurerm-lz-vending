@@ -13,6 +13,22 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription"
 )
 
+func NewSubscriptionsClient() (*armsubscription.SubscriptionsClient, error) {
+	cred, err := newDefaultAzureCredential()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Azure credential: %v", err)
+	}
+	clientOpts := &arm.ClientOptions{
+		DisableRPRegistration: true,
+	}
+
+	client, err := armsubscription.NewSubscriptionsClient(cred, clientOpts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create subscriptions client: %v", err)
+	}
+	return client, nil
+}
+
 // NewSubscriptionClient creates a new subscription client using
 // azidentity.NewDefaultAzureCredential.
 func NewSubscriptionClient() (*armsubscription.Client, error) {

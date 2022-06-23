@@ -24,7 +24,7 @@ test: fmtcheck
 	cd tests &&  go test $(TEST) $(TESTARGS) -timeout=$(TESTTIMEOUT) -run ^$(TESTFILTER)
 
 testdeploy: fmtcheck
-	cd tests &&	TERRATEST_DEPLOY=1 go test -v -run ^TestDeploy$(TESTFILTER) -timeout $(TESTTIMEOUT)
+	cd tests &&	TERRATEST_DEPLOY=1 go test $(TEST) $(TESTARGS) -run ^TestDeploy$(TESTFILTER) -timeout $(TESTTIMEOUT)
 
 # Makefile targets are files, but we aren't using it like this,
 # so have to declare PHONY targets

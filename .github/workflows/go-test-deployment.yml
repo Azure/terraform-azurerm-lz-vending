@@ -55,8 +55,8 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      # This is a terrible hack but there is no way in the go sdk's azidentity package to prevent
-      # MSI from being tried. As GitHub actions runners are clearly in Azure, this fails.
+      # This is a terrible hack but this is due to the fact that AZURE_TENANT_ID is required.
+      # It allows MSI to be tried. As GitHub actions runners are in Azure, this fails.
       # This only works on Linux based runners
       - name: iptables block MSI endpoint
         run: sudo iptables -I OUTPUT --destination 169.254.169.254 -j REJECT
@@ -66,6 +66,7 @@ jobs:
         env:
           AZURE_BILLING_SCOPE: ${{ secrets.AZURE_BILLING_SCOPE }}
           AZURE_EXISTING_SUBSCRIPTION_ID: ${{ secrets.AZURE_EXISTING_SUBSCRIPTION_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       # This only works on Linux based runners
       - name: Azure logout

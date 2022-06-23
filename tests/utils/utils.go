@@ -27,7 +27,7 @@ func SanitiseErrorMessage(err error) string {
 // Set TERRATEST_LOGGER to a non empty value to enable verbose logging.
 func GetLogger() *logger.Logger {
 	if os.Getenv("TERRATEST_LOG") != "" {
-		return logger.Terratest
+		return logger.Default
 	}
 	return logger.Discard
 }
@@ -38,6 +38,7 @@ func PreCheckDeployTests(t *testing.T) {
 	variables := []string{
 		"TERRATEST_DEPLOY",
 		"AZURE_BILLING_SCOPE",
+		"AZURE_TENANT_ID",
 	}
 
 	for _, variable := range variables {

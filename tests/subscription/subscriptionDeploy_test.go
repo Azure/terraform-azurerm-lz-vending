@@ -1,4 +1,4 @@
-package subscriptions
+package subscription
 
 import (
 	"os"
@@ -18,7 +18,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	utils.PreCheckDeployTests(t)
 
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
-	v, err := GetValidInputVariables(billingScope)
+	v, err := getValidInputVariables(billingScope)
 	if err != nil {
 		t.Fatalf("Cannot generate valid input variables, %s", err)
 	}
@@ -43,10 +43,54 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
 
 	// cancel the newly created sub
-	if err := CancelSubscription(t, u); err != nil {
+	if err := cancelSubscription(t, u); err != nil {
 		t.Logf("could not cancel subscription: %v", err)
 	} else {
 		t.Logf("subscription %s cancelled", sid)
+	}
+}
+
+// TestDeploySubscriptionAliasManagementGroupValid tests the deployment of a subscription alias
+// with valid input variables.
+func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
+	utils.PreCheckDeployTests(t)
+
+	dir := utils.GetTestDir(t)
+	dir += "/testdata/" + t.Name()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, dir)
+	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
+	v, err := getValidInputVariables(billingScope)
+	require.NoError(t, err)
+	v["subscription_alias_billing_scope"] = billingScope
+	v["subscription_alias_management_group_id"] = v["subscription_alias_name"]
+	terraformOptions.Vars = v
+
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
+	require.NoError(t, err)
+
+	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+	assert.NoError(t, err)
+
+	// defer terraform destroy, but wrap in a try.Do to retry a few times
+	// due to eventual consistency of the subscription aliases API
+	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
+
+	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
+	assert.NoError(t, err)
+
+	u, err := uuid.Parse(sid)
+	assert.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
+
+	// cancel the newly created sub
+	defer cancelSubscription(t, u)
+
+	err = isSubscriptionInManagementGroup(t, u, v["subscription_alias_management_group_id"].(string))
+	assert.NoError(t, err)
+
+	tid := os.Getenv("AZURE_TENANT_ID")
+
+	if err := setSubscriptionManagementGroup(u, tid); err != nil {
+		t.Logf("could not move subscription to management group %s: %s", tid, err)
 	}
 }
 
