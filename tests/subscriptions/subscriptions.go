@@ -62,6 +62,5 @@ func getMockInputVariables() map[string]interface{} {
 		"subscription_alias_display_name":  "test-subscription-alias",
 		"subscription_alias_billing_scope": "/providers/Microsoft.Billing/billingAccounts/test-billing-account",
 		"subscription_alias_workload":      "Production",
-		"location":                         "westus",
 	}
 }

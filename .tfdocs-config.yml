@@ -2,7 +2,7 @@
 ### Execute this command in the Terraform module's code folder:
 # terraform-docs -c .tfdocs-config.yml .
 
-formatter: "markdown" # this is required
+formatter: "markdown table" # this is required
 
 version: "0.16.0"
 
@@ -10,7 +10,7 @@ header-from: "header.md"
 footer-from: "footer.md"
 
 recursive:
-  enabled: false
+  enabled: true
   path: modules
 
 sections:

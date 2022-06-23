@@ -2,7 +2,6 @@
 # This is used when subscription_id is not supplied, therefore we are
 # creating a new subscription.
 resource "azapi_resource" "subscription_alias" {
-  count                   = var.subscription_alias_enabled && var.subscription_id == "" ? 1 : 0
   type                    = "Microsoft.Subscription/aliases@2021-10-01"
   parent_id               = "/"
   name                    = var.subscription_alias_name
