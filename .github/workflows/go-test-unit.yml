@@ -3,7 +3,7 @@ name: Unit test
 
 on:
   pull_request:
-    types: ['opened', 'synchronize']
+    types: ['opened', 'reopened', 'synchronize']
   workflow_dispatch:
 
 jobs:
