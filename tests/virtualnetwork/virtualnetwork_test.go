@@ -3,7 +3,6 @@ package virtualnetwork
 import (
 	"encoding/json"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/models"
@@ -36,6 +35,7 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	assert.Equal(t, v["virtual_network_resource_group_name"].(string), rg.AttributeValues["name"])
 	assert.Equal(t, v["virtual_network_name"].(string), vnet.AttributeValues["name"])
 	var vnb models.VirtualNetworkBody
+	require.Contains(t, vnet.AttributeValues, "body")
 	err = json.Unmarshal([]byte(vnet.AttributeValues["body"].(string)), &vnb)
 	require.NoErrorf(t, err, "Could not unmarshal virtual network body")
 	assert.Equal(t, v["virtual_network_address_space"], vnb.Properties.AddressSpace.AddressPrefixes)
@@ -46,7 +46,7 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
 	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
-	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
 	// Create plan and ensure only two resources are created.
@@ -54,24 +54,25 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
-	peerings := []string{
-		"azapi_resource.peering[\"inbound\"]",
-		"azapi_resource.peering[\"outbound\"]",
-	}
-	for _, p := range peerings {
-		require.Contains(t, plan.ResourcePlannedValuesMap, p)
-		var body models.VirtualNetworkPeeringBody
-		err = json.Unmarshal([]byte(plan.ResourcePlannedValuesMap[p].AttributeValues["body"].(string)), &body)
-		require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
-		assert.True(t, *body.Properties.AllowForwardedTraffic)
-		assert.True(t, *body.Properties.AllowVirtualNetworkAccess)
-		if strings.Contains(p, "inbound") {
-			assert.False(t, *body.Properties.AllowGatewayTransit)
-		}
-		if strings.Contains(p, "outbound") {
-			assert.True(t, *body.Properties.AllowGatewayTransit)
-		}
-	}
+
+	// We can only check the body of the outbound peering as the inbound values
+	// not known until apply
+	res := "azapi_resource.peering[\"outbound\"]"
+	require.Contains(t, plan.ResourcePlannedValuesMap, res)
+	vnp := plan.ResourcePlannedValuesMap[res]
+	require.Contains(t, vnp.AttributeValues, "body")
+	var body models.VirtualNetworkPeeringBody
+	err = json.Unmarshal([]byte(vnp.AttributeValues["body"].(string)), &body)
+	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
+	assert.True(t, *body.Properties.AllowForwardedTraffic)
+	assert.True(t, *body.Properties.AllowVirtualNetworkAccess)
+	assert.True(t, *body.Properties.AllowGatewayTransit)
+
+	res = "azapi_resource.peering[\"inbound\"]"
+	require.Contains(t, plan.ResourcePlannedValuesMap, res)
+	vnp = plan.ResourcePlannedValuesMap[res]
+	require.Contains(t, vnp.AttributeValues, "parent_id")
+	assert.Equal(t, v["hub_network_resource_id"], vnp.AttributeValues["parent_id"])
 }
 
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.

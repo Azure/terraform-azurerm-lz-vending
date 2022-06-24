@@ -13,6 +13,13 @@ fumpt:
 fmtcheck:
 	@sh "$(CURDIR)/scripts/gofmtcheck.sh"
 
+tfclean:
+	@echo "==> Cleaning terraform files..."
+	find ./ -type d -name '.terraform' | xargs rm -vrf
+	find ./ -type f -name 'tfplan' | xargs rm -vf
+	find ./ -type f -name 'terraform.tfstate*' | xargs rm -vf
+
+
 tools:
 	go install mvdan.cc/gofumpt@latest
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH || $$GOPATH)/bin v1.46.2
@@ -28,4 +35,4 @@ testdeploy: fmtcheck
 
 # Makefile targets are files, but we aren't using it like this,
 # so have to declare PHONY targets
-.PHONY: test testdeploy lint tools fmt fumpt fmtcheck
+.PHONY: test testdeploy lint tools fmt fumpt fmtcheck tfclean
