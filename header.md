@@ -9,8 +9,8 @@ The module is designed to be instantiated many times, once for each desired land
 This is currently split logically into the following capabilities:
 
 - Subscription creation and management group placement
-- (backlogged) Hub & spoke networking
-- (backlogged) Virtual WAN networking
+- Hub & spoke networking
+- Virtual WAN networking
 - More to come!
 
 ## Notes

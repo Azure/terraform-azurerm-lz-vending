@@ -39,7 +39,6 @@ No modules.
 | <a name="input_subscription_alias_management_group_id"></a> [subscription\_alias\_management\_group\_id](#input\_subscription\_alias\_management\_group\_id) | The destination management group ID for the new subscription.<br><br>  **Note:** Do not supply the display name.<br>  The management group ID forms part of the Azure resource ID. E.g.,<br>  `/providers/Microsoft.Management/managementGroups/{managementGroupId}`. | `string` | `""` | no |
 | <a name="input_subscription_alias_name"></a> [subscription\_alias\_name](#input\_subscription\_alias\_name) | The name of the subscription alias.<br><br>  The string must be comprised of a-z, A-Z, 0-9, - and \_.<br>  The maximum length is 63 characters.<br><br>  You may also supply an empty string if you do not want to create a new subscription alias.<br>  In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied. | `string` | `""` | no |
 | <a name="input_subscription_alias_workload"></a> [subscription\_alias\_workload](#input\_subscription\_alias\_workload) | The billing scope for the new subscription alias.<br><br>  The workload type can be either `Production` or `DevTest` and is case sensitive.<br><br>  You may also supply an empty string if you do not want to create a new subscription alias.<br>  In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied. | `string` | `""` | no |
-| <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id) | An existing subscription id.<br><br>  Use this when you do not want the nmodule to create a new subscription.<br><br>  A GUID should be supplied in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.<br>  All letters must be lowercase.<br><br>  You may also supply an empty string if you want to create a new subscription alias.<br>  In this scenario, `subscription_alias_enabled` should be set to `true` and the following other variables must be supplied:<br><br>  - `subscription_alias_name`<br>  - `subscription_alias_display_name`<br>  - `subscription_alias_billing_scope`<br>  - `subscription_alias_workload` | `string` | `""` | no |
 
 ## Resources
 
@@ -54,6 +53,6 @@ No modules.
 | <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id) | The subscription\_id is the id of the newly created subscription. |
 | <a name="output_subscription_resource_id"></a> [subscription\_resource\_id](#output\_subscription\_resource\_id) | The subscription\_resource\_id output is the Azure resource id for the newly created subscription. |
 
-
+<!-- markdownlint-enable -->
 
 <!-- END_TF_DOCS -->
