@@ -1318,17 +1318,41 @@
     },
     {
       "taskType": "trigger",
-      "capabilityId": "PrAutoLabel",
-      "subCapability": "Regex",
+      "capabilityId": "IssueResponder",
+      "subCapability": "PullRequestResponder",
       "version": "1.0",
       "config": {
-        "taskName": "Label PRs that modify GitHub workflows",
-        "configs": [
+        "conditions": {
+          "operator": "and",
+          "operands": [
+            {
+              "name": "isOpen",
+              "parameters": {}
+            },
+            {
+              "name": "prIncludesModifiedFile",
+              "parameters": {
+                "pathFilter": ".github/workflows/"
+              }
+            }
+          ]
+        },
+        "eventType": "pull_request",
+        "eventNames": [
+          "pull_request",
+          "issues",
+          "project_card"
+        ],
+        "actions": [
           {
-            "matchRegex": "^.github\\/workflows\\/.*",
-            "labelReplacement": "PR: Modified Workflows :warning:"
+            "name": "addReply",
+            "parameters": {
+              "label": "PR: Modified Workflows :warning:",
+              "comment": "# 🚨\n\n## This PR contains modified GitHub workflows"
+            }
           }
-        ]
+        ],
+        "taskName": "Label PRs that modify GitHub workflows"
       }
     }
   ],
