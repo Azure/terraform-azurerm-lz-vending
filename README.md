@@ -43,6 +43,7 @@ module "alz_landing_zone" {
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_subscription"></a> [subscription](#module\_subscription) | ./modules/subscription | n/a |
 | <a name="module_virtual_network"></a> [virtual\_network](#module\_virtual\_network) | ./modules/virtual_network | n/a |
 
 <!-- markdownlint-disable MD013 -->
@@ -54,11 +55,11 @@ module "alz_landing_zone" {
 | <a name="input_location"></a> [location](#input\_location) | The location of resources deployed by this module. | `string` | `""` | no |
 | <a name="input_subscription_alias_billing_scope"></a> [subscription\_alias\_billing\_scope](#input\_subscription\_alias\_billing\_scope) | The billing scope for the new subscription alias.<br><br>  A valid billing scope starts with `/providers/Microsoft.Billing/billingAccounts/` and is case sensitive.<br><br>  You may also supply an empty string if you do not want to create a new subscription alias.<br>  In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied. | `string` | `""` | no |
 | <a name="input_subscription_alias_display_name"></a> [subscription\_alias\_display\_name](#input\_subscription\_alias\_display\_name) | The display name of the subscription alias.<br><br>  The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.<br>  The maximum length is 63 characters.<br><br>  You may also supply an empty string if you do not want to create a new subscription alias.<br>  In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied. | `string` | `""` | no |
-| <a name="input_subscription_alias_enabled"></a> [subscription\_alias\_enabled](#input\_subscription\_alias\_enabled) | Whether the creation of a new subscripion alias is enabled or not.<br><br>  If it is disabled, the `subscription_id` variable must be supplied instead. | `bool` | `true` | no |
+| <a name="input_subscription_alias_enabled"></a> [subscription\_alias\_enabled](#input\_subscription\_alias\_enabled) | Whether the creation of a new subscripion alias is enabled or not.<br><br>  If it is disabled, the `subscription_id` variable must be supplied instead. | `bool` | `false` | no |
 | <a name="input_subscription_alias_management_group_id"></a> [subscription\_alias\_management\_group\_id](#input\_subscription\_alias\_management\_group\_id) | The destination management group ID for the new subscription.<br><br>  **Note:** Do not supply the display name.<br>  The management group ID forms part of the Azure resource ID. E.g.,<br>  `/providers/Microsoft.Management/managementGroups/{managementGroupId}`. | `string` | `""` | no |
 | <a name="input_subscription_alias_name"></a> [subscription\_alias\_name](#input\_subscription\_alias\_name) | The name of the subscription alias.<br><br>  The string must be comprised of a-z, A-Z, 0-9, - and \_.<br>  The maximum length is 63 characters.<br><br>  You may also supply an empty string if you do not want to create a new subscription alias.<br>  In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied. | `string` | `""` | no |
 | <a name="input_subscription_alias_workload"></a> [subscription\_alias\_workload](#input\_subscription\_alias\_workload) | The billing scope for the new subscription alias.<br><br>  The workload type can be either `Production` or `DevTest` and is case sensitive.<br><br>  You may also supply an empty string if you do not want to create a new subscription alias.<br>  In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied. | `string` | `""` | no |
-| <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id) | An existing subscription id.<br><br>  Use this when you do not want the nmodule to create a new subscription.<br><br>  A GUID should be supplied in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.<br>  All letters must be lowercase.<br><br>  You may also supply an empty string if you want to create a new subscription alias.<br>  In this scenario, `subscription_alias_enabled` should be set to `true` and the following other variables must be supplied:<br><br>  - `subscription_alias_name`<br>  - `subscription_alias_display_name`<br>  - `subscription_alias_billing_scope`<br>  - `subscription_alias_workload` | `string` | `""` | no |
+| <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id) | An existing subscription id.<br><br>  Use this when you do not want the module to create a new subscription.<br><br>  A GUID should be supplied in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.<br>  All letters must be lowercase.<br><br>  You may also supply an empty string if you want to create a new subscription alias.<br>  In this scenario, `subscription_alias_enabled` should be set to `true` and the following other variables must be supplied:<br><br>  - `subscription_alias_name`<br>  - `subscription_alias_display_name`<br>  - `subscription_alias_billing_scope`<br>  - `subscription_alias_workload` | `string` | `""` | no |
 | <a name="input_virtual_network_address_space"></a> [virtual\_network\_address\_space](#input\_virtual\_network\_address\_space) | The address space of the virtual network, supplied as multiple CIDR blocks, e.g. `["10.0.0.0/16","172.16.0.0/12"]`. | `list(string)` | `[]` | no |
 | <a name="input_virtual_network_enabled"></a> [virtual\_network\_enabled](#input\_virtual\_network\_enabled) | Enables and disables the virtual network submodule. | `bool` | `false` | no |
 | <a name="input_virtual_network_location"></a> [virtual\_network\_location](#input\_virtual\_network\_location) | The location of the virtual network.<br><br>    Use this to override the default location defined by `var.location`.<br>    Leave blank to use the default location. | `string` | `""` | no |
@@ -72,15 +73,14 @@ module "alz_landing_zone" {
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [azapi_resource.subscription_alias](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) | resource |
+No resources.
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id) | The subscription\_id output allows other modules to use the generated or supplied subscription id. |
+| <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id) | The subscription\_id is the Azure subscription id that resources have been deployed into. |
+| <a name="output_subscription_resource_id"></a> [subscription\_resource\_id](#output\_subscription\_resource\_id) | The subscription\_resource\_id is the Azure subscription resource id that resources have been deployed into |
 
 <!-- markdownlint-disable MD041 -->
 ## Contributing
