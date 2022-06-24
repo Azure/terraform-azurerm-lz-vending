@@ -34,8 +34,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
-	// try.MaxRetries = 30
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 12)
+	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
 	assert.NoError(t, err)
@@ -82,7 +81,10 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	assert.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
 
 	// cancel the newly created sub
-	defer cancelSubscription(t, u)
+	defer func() {
+		err := cancelSubscription(t, u)
+		terraformOptions.Logger.Logf(t, "cannot cancel subscription: %v", err)
+	}()
 
 	err = isSubscriptionInManagementGroup(t, u, v["subscription_alias_management_group_id"].(string))
 	assert.NoError(t, err)
