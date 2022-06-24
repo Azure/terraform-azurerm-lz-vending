@@ -4,9 +4,11 @@
 module "subscription" {
   source                                 = "./modules/subscription"
   count                                  = var.subscription_alias_enabled ? 1 : 0
+
+  # Required variables
   subscription_alias_billing_scope       = var.subscription_alias_billing_scope
+  subscription_alias_workload            = var.subscription_alias_workload
+
   subscription_alias_display_name        = var.subscription_alias_display_name
   subscription_alias_management_group_id = var.subscription_alias_management_group_id
-  subscription_alias_workload            = var.subscription_alias_workload
-  subscription_id                        = var.subscription_alias_name
 }
