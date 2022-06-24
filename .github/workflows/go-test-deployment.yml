@@ -19,7 +19,7 @@ jobs:
     name: Deployment test
     environment: CSUTF
     if: |
-      contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:') || github.ref == 'refs/heads/master'
+      contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:') || github.ref == 'refs/heads/main'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
