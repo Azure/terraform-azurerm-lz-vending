@@ -1325,7 +1325,7 @@
         "taskName": "Label PRs that modify GitHub workflows",
         "configs": [
           {
-            "matchRegex": "^.github\\/workflows\\/.*\\.yml",
+            "matchRegex": "^.github\\/workflows\\/.*",
             "labelReplacement": "PR: Modified Workflows :warning:"
           }
         ]
