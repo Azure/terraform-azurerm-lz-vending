@@ -27,7 +27,7 @@ variable "hub_network_resource_id" {
   DESCRIPTION
   default     = ""
   validation {
-    condition     = can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", var.hub_network_resource_id))
+    condition     = can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", var.hub_network_resource_id))
     error_message = "Value must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
   }
 }
@@ -43,7 +43,7 @@ variable "vwan_hub_resource_id" {
   DESCRIPTION
   default     = ""
   validation {
-    condition     = can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}$", var.vwan_hub_resource_id))
+    condition     = can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}$", var.vwan_hub_resource_id))
     error_message = "Value must be an Azure vwan hub resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-hub."
   }
 }
@@ -65,7 +65,7 @@ variable "virtual_network_resource_group_name" {
     The name of the resource group to create the virtual network in.
   DESCRIPTION
   validation {
-    condition     = can(regex("^[\\w]{1,89}[^\\s.]$", var.virtual_network_resource_group_name))
+    condition     = can(regex("^[\\w-_.]{1,89}[^\\s.]$", var.virtual_network_resource_group_name))
     error_message = "Value must be between 1 and 90 characters in length and start with a letter or number, and end with a letter or number."
   }
 }
