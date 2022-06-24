@@ -2,7 +2,6 @@
 name: "Feature request \U0001F680"
 about: Suggest an idea for this project
 title: 'Feature Request'
-labels: 'Needs: Triage :mag:'
 assignees: ''
 ---
 <!--- Please keep this note for the community --->

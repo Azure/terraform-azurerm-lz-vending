@@ -2,7 +2,6 @@
 name: "Bug report \U0001F41B"
 about: Report errors or unexpected behaviour
 title: 'Bug Report'
-labels: ['Needs: Triage :mag:']
 assignees: ''
 ---
 

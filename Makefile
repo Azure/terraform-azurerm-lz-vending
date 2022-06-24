@@ -1,5 +1,6 @@
-TESTTIMEOUT=180m
+TESTTIMEOUT=30m
 TESTFILTER=
+TEST?=$$(go list ./... |grep -v 'vendor'|grep -v 'utils')
 
 fmt:
 	@echo "==> Fixing source code with gofmt..."
@@ -20,10 +21,10 @@ lint:
 	cd tests && golangci-lint run
 
 test: fmtcheck
-	cd tests && go test -v -run ^Test$(TESTFILTER) -timeout=$(TESTTIMEOUT)
+	cd tests &&  go test $(TEST) $(TESTARGS) -timeout=$(TESTTIMEOUT) -run ^$(TESTFILTER)
 
 testdeploy: fmtcheck
-	cd tests &&	TERRATEST_DEPLOY=1 go test -v -run ^TestDeploy$(TESTFILTER) -timeout $(TESTTIMEOUT)
+	cd tests &&	TERRATEST_DEPLOY=1 go test $(TEST) $(TESTARGS) -run ^TestDeploy$(TESTFILTER) -timeout $(TESTTIMEOUT)
 
 # Makefile targets are files, but we aren't using it like this,
 # so have to declare PHONY targets

@@ -28,7 +28,7 @@ func New(pattern string) (*zenv, error) {
 	globmask := ""
 	root := ""
 	for n, i := range strings.Split(filepath.ToSlash(pattern), "/") {
-		if root == "" && strings.Index(i, "*") != -1 {
+		if root == "" && (strings.Index(i, "*") != -1 || strings.Index(i, "{") != -1) {
 			if globmask == "" {
 				root = "."
 			} else {
@@ -83,6 +83,28 @@ func New(pattern string) (*zenv, error) {
 				filemask += "[^/]*"
 			}
 		} else {
+			if cc[i] == '{' {
+				pattern := ""
+				for j := i + 1; j < len(cc); j++ {
+					if cc[j] == ',' {
+						pattern += "|"
+					} else if cc[j] == '}' {
+						i = j
+						break
+					} else {
+						c := cc[j]
+						if c == '/' || ('0' <= c && c <= '9') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || 255 < c {
+							pattern += string(c)
+						} else {
+							pattern += fmt.Sprintf("[\\x%02X]", c)
+						}
+					}
+				}
+				if pattern != "" {
+					filemask += "(" + pattern + ")"
+					continue
+				}
+			}
 			c := cc[i]
 			if c == '/' || ('0' <= c && c <= '9') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || 255 < c {
 				filemask += string(c)
