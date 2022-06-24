@@ -23,11 +23,11 @@ resource "azapi_resource" "vnet" {
 
 # azapi_resource.peerings creates two-way peering from the spoke to the supplied hub virtual network.
 # They are not created if the hub virtual network is an empty string.
-resource "azapi_resource" "peerings" {
+resource "azapi_resource" "peering" {
   for_each  = local.virtual_network_peering_map
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
   parent_id = each.value.this_resource_id
-  name      = each.key
+  name      = each.value.name
   body = jsonencode({
     properties = {
       remoteVirtualNetwork = {

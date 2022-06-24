@@ -12,12 +12,14 @@ locals {
   # resulting on no resources being created.
   virtual_network_peering_map = var.hub_network_resource_id != "" ? {
     # Peering this network to the remote network
-    "peer-${local.hub_network_uuidv5}" = {
+    "outbound" = {
+      name               = "peer-${local.hub_network_uuidv5}"
       this_resource_id   = azapi_resource.vnet.id
       remote_resource_id = var.hub_network_resource_id
     },
     # Peering the remote network to this network
-    "peer-${local.this_network_uuidv5}" = {
+    "inbound" = {
+      name               = "peer-${local.this_network_uuidv5}"
       this_resource_id   = var.hub_network_resource_id
       remote_resource_id = azapi_resource.vnet.id
     }
@@ -34,7 +36,7 @@ locals {
   # if not specified by the input variable, it will be the default routetable for the vwan hub.
   vwan_propagated_routetables_resource_ids = length(var.virtual_network_vwan_propagated_routetables_resource_ids) > 0 ? [
     for i in var.virtual_network_vwan_propagated_routetables_resource_ids : { id = i }
-  ] : [
+    ] : [
     { id = "${var.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable" }
   ]
 

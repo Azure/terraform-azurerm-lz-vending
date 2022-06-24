@@ -15,9 +15,9 @@ const (
 	moduleDir = "../../modules/subscription"
 )
 
-// TestCreateNewAliasValid tests the validation functions with valid data,
+// TestSubscriptionAliasCreateValid tests the validation functions with valid data,
 // then creates a plan and compares the input variables to the planned values.
-func TestSubscriptionCreateNewAliasValid(t *testing.T) {
+func TestSubscriptionAliasCreateValid(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
@@ -42,10 +42,10 @@ func TestSubscriptionCreateNewAliasValid(t *testing.T) {
 	assert.Nil(t, body.Properties.SubscriptionId)
 }
 
-// TestSubscriptionCreateNewAliasValidWithManagementGroup tests the
+// TestSubscriptionAliasCreateValidWithManagementGroup tests the
 // validation functions with valid data, including a destination management group,
 // then creates a plan and compares the input variables to the planned values.
-func TestSubscriptionCreateNewAliasValidWithManagementGroup(t *testing.T) {
+func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
@@ -73,8 +73,8 @@ func TestSubscriptionCreateNewAliasValidWithManagementGroup(t *testing.T) {
 	assert.Nil(t, body.Properties.SubscriptionId)
 }
 
-// TestCreateNewAliasInvalidBillingScope tests the validation function of the subscription_alias_billing_scope variable.
-func TestSubscriptionCreateNewAliasInvalidBillingScope(t *testing.T) {
+// TestSubscriptionAliasCreateInvalidBillingScope tests the validation function of the subscription_alias_billing_scope variable.
+func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	v["subscription_alias_billing_scope"] = "/PRoviders/Microsoft.Billing/billingAccounts/test-billing-account"
@@ -84,8 +84,8 @@ func TestSubscriptionCreateNewAliasInvalidBillingScope(t *testing.T) {
 	assert.Contains(t, errMessage, "A valid billing scope starts with /providers/Microsoft.Billing/billingAccounts/ and is case sensitive.")
 }
 
-// TestCreateNewAliasInvalidWorkload tests the validation function of the subscription_alias_workload variable.
-func TestSubscriptionCreateNewAliasInvalidWorkload(t *testing.T) {
+// TestSubscriptionAliasCreateInvalidWorkload tests the validation function of the subscription_alias_workload variable.
+func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	v["subscription_alias_workload"] = "PRoduction"
@@ -95,9 +95,9 @@ func TestSubscriptionCreateNewAliasInvalidWorkload(t *testing.T) {
 	assert.Contains(t, errMessage, "The workload type can be either Production or DevTest and is case sensitive.")
 }
 
-// TestCreateNewAliasInvalidManagementGroupIdInvalidChars tests the validation function of the
+// TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars tests the validation function of the
 // subscription_alias_management_group_id variable.
-func TestCreateNewAliasInvalidManagementGroupIdInvalidChars(t *testing.T) {
+func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	v["subscription_alias_management_group_id"] = "invalid/chars"
@@ -107,9 +107,9 @@ func TestCreateNewAliasInvalidManagementGroupIdInvalidChars(t *testing.T) {
 	assert.Contains(t, errMessage, "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
 }
 
-// TestCreateNewAliasInvalidManagementGroupIdLength tests the validation function of the
+// TestSubscriptionAliasCreateInvalidManagementGroupIdLength tests the validation function of the
 // subscription_alias_management_group_id variable.
-func TestCreateNewAliasInvalidManagementGroupIdLength(t *testing.T) {
+func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	v["subscription_alias_management_group_id"] = "tooooooooooooooooooooooooooloooooooooooooooooooooonnnnnnnnnnnnnnnnnnngggggggggggggggggggggg"
@@ -117,4 +117,14 @@ func TestCreateNewAliasInvalidManagementGroupIdLength(t *testing.T) {
 	_, err := terraform.InitAndPlanE(t, terraformOptions)
 	errMessage := utils.SanitiseErrorMessage(err)
 	assert.Contains(t, errMessage, "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
+}
+
+// getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.
+func getMockInputVariables() map[string]interface{} {
+	return map[string]interface{}{
+		"subscription_alias_name":          "test-subscription-alias",
+		"subscription_alias_display_name":  "test-subscription-alias",
+		"subscription_alias_billing_scope": "/providers/Microsoft.Billing/billingAccounts/test-billing-account",
+		"subscription_alias_workload":      "Production",
+	}
 }
