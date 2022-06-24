@@ -13,6 +13,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription"
 )
 
+// NewSubscriptionsClient creates a new subscriptions client using
+// azidentity.NewDefaultAzureCredential.
 func NewSubscriptionsClient() (*armsubscription.SubscriptionsClient, error) {
 	cred, err := newDefaultAzureCredential()
 	if err != nil {
