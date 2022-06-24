@@ -35,7 +35,7 @@ resource "azapi_resource" "peering" {
       }
       allowVirtualNetworkAccess = true
       allowForwardedTraffic     = true
-      allowGatewayTransit       = each.key == "inbound" ? false : true
+      allowGatewayTransit       = each.key == "inbound" ? true : false
       useRemoteGateways         = each.key == "outbound" && var.virtual_network_use_remote_gateways ? true : false
     }
   })

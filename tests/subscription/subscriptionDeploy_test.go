@@ -33,7 +33,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 		t.Fatalf("Cannot generate valid input variables, %s", err)
 	}
 
-	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	terraformOptions.Vars = v
 
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
@@ -105,6 +105,20 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	if err := setSubscriptionManagementGroup(u, tid); err != nil {
 		t.Logf("could not move subscription to management group %s: %s", tid, err)
 	}
+}
+
+// Example Test to make a temp copy of the Terraform files
+func TestTest(t *testing.T) {
+	utils.PreCheckDeployTests(t)
+
+	root := "../../modules/virtualnetwork"
+	testroot := "testdata/" + t.Name()
+	tmp := test_structure.CopyTerraformFolderToTemp(t, root, testroot)
+	dir := tmp
+	for i := 0; i < 3; i++ {
+		dir = filepath.Dir(dir)
+	}
+	defer utils.RemoveTestDir(t, dir)
 }
 
 // Creating an alias for an existing subscription is not currently supported.

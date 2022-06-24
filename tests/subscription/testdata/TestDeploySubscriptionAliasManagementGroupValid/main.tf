@@ -7,10 +7,6 @@ terraform {
   }
 }
 
-provider "azurerm" {
-  features {}
-}
-
 variable "subscription_alias_billing_scope" {
   type = string
 }
@@ -37,7 +33,7 @@ resource "azapi_resource" "mg" {
   name      = var.subscription_alias_management_group_id
 }
 
-module "lz_test" {
+module "subscription_test" {
   source                                 = "../../../../modules/subscription"
   subscription_alias_name                = var.subscription_alias_name
   subscription_alias_display_name        = var.subscription_alias_display_name

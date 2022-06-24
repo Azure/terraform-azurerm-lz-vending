@@ -16,6 +16,17 @@ variable "virtual_network_address_space" {
   DESCRIPTION
 }
 
+variable "virtual_network_enable_peering" {
+  type       = bool
+  description = <<DESCRIPTION
+    Whether to enable peering with the supplied hub virtual network.
+    Enables a hub & spoke networking topology.
+
+    If enabled the `hub_network_resource_id` must also be suppled.
+  DESCRIPTION
+  default = false
+}
+
 variable "hub_network_resource_id" {
   type        = string
   description = <<DESCRIPTION
@@ -30,6 +41,17 @@ variable "hub_network_resource_id" {
     condition     = can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", var.hub_network_resource_id))
     error_message = "Value must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
   }
+}
+
+variable "virtual_network_enable_vwan_connection" {
+  type       = bool
+  description = <<DESCRIPTION
+    Whether to enable connection with supplied vwan hub.
+    Enables a vwan networking topology.
+
+    If enabled the `vwan_hub_resource_id` must also be suppled.
+  DESCRIPTION
+  default = false
 }
 
 variable "vwan_hub_resource_id" {

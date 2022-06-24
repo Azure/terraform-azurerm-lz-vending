@@ -39,6 +39,7 @@ func PreCheckDeployTests(t *testing.T) {
 		"TERRATEST_DEPLOY",
 		"AZURE_BILLING_SCOPE",
 		"AZURE_TENANT_ID",
+		"AZURE_EXISTING_SUBSCRIPTION_ID",
 	}
 
 	for _, variable := range variables {
