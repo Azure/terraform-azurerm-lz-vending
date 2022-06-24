@@ -47,7 +47,7 @@ func File(file *hcl.File, options Options) ([]byte, error) {
 	return jsonBytes, nil
 }
 
-type jsonObj map[string]interface{}
+type jsonObj = map[string]interface{}
 
 type converter struct {
 	bytes   []byte
@@ -145,7 +145,13 @@ func (c *converter) convertBlock(block *hclsyntax.Block, out jsonObj) error {
 	// For consistency, always wrap the value in a collection.
 	// When multiple values are at the same key
 	if current, exists := out[key]; exists {
-		out[key] = append(current.([]interface{}), value)
+		switch currentTyped := current.(type) {
+		case []interface{}:
+			currentTyped = append(currentTyped, value)
+			out[key] = currentTyped
+		default:
+			return fmt.Errorf("invalid HCL detected for %q block, cannot have blocks with and without labels", key)
+		}
 	} else {
 		out[key] = []interface{}{value}
 	}
@@ -236,6 +242,11 @@ func (c *converter) convertTemplate(t *hclsyntax.TemplateExpr) (string, error) {
 func (c *converter) convertStringPart(expr hclsyntax.Expression) (string, error) {
 	switch v := expr.(type) {
 	case *hclsyntax.LiteralValueExpr:
+		// If the key is a bare "null", then we end up with null here,
+		// in this case we should just return the string "null"
+		if v.Val.IsNull() {
+			return "null", nil
+		}
 		s, err := ctyconvert.Convert(v.Val, cty.String)
 		if err != nil {
 			return "", err

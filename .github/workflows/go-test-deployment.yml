@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        terraform_version: ['~1.0.0', '~1.1.0', '~1.2.0']
+        terraform_version: ['~1.0.0', '~1.2.0']
     steps:
       - name: Show env
         run: env | sort
@@ -55,8 +55,8 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      # This is a terrible hack but there is no way in the go sdk's azidentity package to prevent
-      # MSI from being tried. As GitHub actions runners are clearly in Azure, this fails.
+      # This is a terrible hack but this is due to the fact that AZURE_TENANT_ID is required.
+      # It allows MSI to be tried. As GitHub actions runners are in Azure, this fails.
       # This only works on Linux based runners
       - name: iptables block MSI endpoint
         run: sudo iptables -I OUTPUT --destination 169.254.169.254 -j REJECT
