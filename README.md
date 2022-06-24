@@ -44,7 +44,7 @@ module "alz_landing_zone" {
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_subscription"></a> [subscription](#module\_subscription) | ./modules/subscription | n/a |
-| <a name="module_virtual_network"></a> [virtual\_network](#module\_virtual\_network) | ./modules/virtual_network | n/a |
+| <a name="module_virtual_network"></a> [virtual\_network](#module\_virtual\_network) | ./modules/virtualnetwork | n/a |
 
 <!-- markdownlint-disable MD013 -->
 ## Inputs
