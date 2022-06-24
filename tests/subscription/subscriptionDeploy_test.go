@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/matryer/try.v1"
@@ -21,6 +23,9 @@ import (
 // with valid input variables.
 func TestDeploySubscriptionAliasValid(t *testing.T) {
 	utils.PreCheckDeployTests(t)
+
+	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
+	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
 
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)
@@ -61,6 +66,7 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 
 	dir := utils.GetTestDir(t)
 	dir += "/testdata/" + t.Name()
+
 	terraformOptions := utils.GetDefaultTerraformOptions(t, dir)
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)

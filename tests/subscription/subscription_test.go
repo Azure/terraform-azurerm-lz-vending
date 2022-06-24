@@ -2,11 +2,13 @@ package subscription
 
 import (
 	"encoding/json"
+	"path/filepath"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/models"
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,6 +20,8 @@ const (
 // TestSubscriptionAliasCreateValid tests the validation functions with valid data,
 // then creates a plan and compares the input variables to the planned values.
 func TestSubscriptionAliasCreateValid(t *testing.T) {
+	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
+	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
@@ -46,6 +50,8 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 // validation functions with valid data, including a destination management group,
 // then creates a plan and compares the input variables to the planned values.
 func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
+	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
+	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
@@ -75,6 +81,8 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 
 // TestSubscriptionAliasCreateInvalidBillingScope tests the validation function of the subscription_alias_billing_scope variable.
 func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
+	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
+	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	v["subscription_alias_billing_scope"] = "/PRoviders/Microsoft.Billing/billingAccounts/test-billing-account"
@@ -86,6 +94,8 @@ func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
 
 // TestSubscriptionAliasCreateInvalidWorkload tests the validation function of the subscription_alias_workload variable.
 func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
+	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
+	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	v["subscription_alias_workload"] = "PRoduction"
@@ -98,6 +108,8 @@ func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
 // TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars tests the validation function of the
 // subscription_alias_management_group_id variable.
 func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.T) {
+	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
+	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	v["subscription_alias_management_group_id"] = "invalid/chars"
@@ -110,6 +122,8 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.
 // TestSubscriptionAliasCreateInvalidManagementGroupIdLength tests the validation function of the
 // subscription_alias_management_group_id variable.
 func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
+	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
+	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
 	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
 	v := getMockInputVariables()
 	v["subscription_alias_management_group_id"] = "tooooooooooooooooooooooooooloooooooooooooooooooooonnnnnnnnnnnnnnnnnnngggggggggggggggggggggg"

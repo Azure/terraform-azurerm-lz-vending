@@ -102,3 +102,11 @@ func TerraformDestroyWithRetry(t *testing.T, to *terraform.Options, dur time.Dur
 		t.Logf("terraform destroy error: %v", err)
 	}
 }
+
+// RemoveTestDir removes the supplied test directory
+func RemoveTestDir(t *testing.T, dir string) {
+	err := os.RemoveAll(dir)
+	if err != nil {
+		t.Logf("Error removing test directory %s: %v", dir, err)
+	}
+}

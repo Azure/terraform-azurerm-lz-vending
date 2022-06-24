@@ -2,11 +2,14 @@ package virtualnetwork
 
 import (
 	"encoding/json"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/models"
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +21,9 @@ const (
 // TestVirtualNetworkCreateValid tests the creation of a plan that
 // creates a virtual network in the specified resource group.
 func TestVirtualNetworkCreateValid(t *testing.T) {
-	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
+	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
+	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
 	// Create plan and ensure only two resources are created.
@@ -34,6 +39,39 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	err = json.Unmarshal([]byte(vnet.AttributeValues["body"].(string)), &vnb)
 	require.NoErrorf(t, err, "Could not unmarshal virtual network body")
 	assert.Equal(t, v["virtual_network_address_space"], vnb.Properties.AddressSpace.AddressPrefixes)
+}
+
+// TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
+// creates a virtual network in the specified resource group.
+func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
+	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
+	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
+	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
+	v := getMockInputVariables()
+	terraformOptions.Vars = v
+	// Create plan and ensure only two resources are created.
+	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoError(t, err)
+	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
+	peerings := []string{
+		"azapi_resource.peering[\"inbound\"]",
+		"azapi_resource.peering[\"outbound\"]",
+	}
+	for _, p := range peerings {
+		require.Contains(t, plan.ResourcePlannedValuesMap, p)
+		var body models.VirtualNetworkPeeringBody
+		err = json.Unmarshal([]byte(plan.ResourcePlannedValuesMap[p].AttributeValues["body"].(string)), &body)
+		require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
+		assert.True(t, *body.Properties.AllowForwardedTraffic)
+		assert.True(t, *body.Properties.AllowVirtualNetworkAccess)
+		if strings.Contains(p, "inbound") {
+			assert.False(t, *body.Properties.AllowGatewayTransit)
+		}
+		if strings.Contains(p, "outbound") {
+			assert.True(t, *body.Properties.AllowGatewayTransit)
+		}
+	}
 }
 
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.
