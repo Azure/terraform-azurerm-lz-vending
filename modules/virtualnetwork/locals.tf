@@ -25,6 +25,11 @@ locals {
     }
   } : {}
 
+  # virtual_network_resource_id is the Azure resource id of the virtual network.
+  # Although we could use the azapi_resource.vnet.id, this is not known until after the resource is created.
+  # Therefore we construct this using the input vars to improve known attributes in unit testing.
+  virtual_network_resource_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.virtual_network_resource_group_name}/providers/Microsoft.Network/virtualNetworks/${var.virtual_network_name}"
+
   # vhub_connection_map is the data required to create the virtual wan hub connection.
   # If the supplied vwan hub is an empty string, the set will be empty,
   # resulting on no resource being created.

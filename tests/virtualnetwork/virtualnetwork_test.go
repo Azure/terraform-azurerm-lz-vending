@@ -74,11 +74,11 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	assert.True(t, *body.Properties.AllowVirtualNetworkAccess)
 	assert.False(t, *body.Properties.AllowGatewayTransit)
 	assert.True(t, *body.Properties.UseRemoteGateways)
-	assert.Equal(t, body.Properties.RemoteVirtualNetwork.Id, v["hub_network_resource_id"])
+	assert.Equal(t, body.Properties.RemoteVirtualNetwork.ID, v["hub_network_resource_id"])
 
 	// More limited checks on the inbound peering
 	res = "azapi_resource.peering[\"inbound\"]"
-	require.Contains(t, plan.ResourcePlannedValuesMap, res)
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, res)
 	vnp = plan.ResourcePlannedValuesMap[res]
 	require.Contains(t, vnp.AttributeValues, "parent_id")
 	assert.Equal(t, v["hub_network_resource_id"], vnp.AttributeValues["parent_id"])
@@ -105,7 +105,7 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 	// We can only check the body of the outbound peering as the inbound values
 	// not known until apply
 	res := "azapi_resource.peering[\"outbound\"]"
-	require.Contains(t, plan.ResourcePlannedValuesMap, res)
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, res)
 	vnp := plan.ResourcePlannedValuesMap[res]
 	require.Contains(t, vnp.AttributeValues, "body")
 	var body models.VirtualNetworkPeeringBody
@@ -130,12 +130,66 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	require.Equal(t, 3, len(plan.ResourcePlannedValuesMap))
 	vhcname := "vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5"
 	vhcres := fmt.Sprintf("azapi_resource.vhubconnection[\"%s\"]", vhcname)
-	require.Contains(t, plan.ResourcePlannedValuesMap, vhcres)
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
 	vhc := plan.ResourcePlannedValuesMap[vhcres]
 	require.Contains(t, vhc.AttributeValues, "name")
 	assert.Equal(t, vhcname, vhc.AttributeValues["name"])
 	require.Contains(t, vhc.AttributeValues, "parent_id")
 	assert.Equal(t, v["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"])
+
+	require.Contains(t, vhc.AttributeValues, "body")
+	var body models.HubVirtualNetworkConnectionBody
+	err = json.Unmarshal([]byte(vhc.AttributeValues["body"].(string)), &body)
+	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
+	drt := v["vwan_hub_resource_id"].(string) + "/hubRouteTables/defaultRouteTable"
+	assert.Equal(t, drt, body.Properties.RoutingConfiguration.AssociatedRouteTable.ID)
+	assert.EqualValues(t, []string{"default"}, body.Properties.RoutingConfiguration.PropagatedRouteTables.Labels)
+	assert.Len(t, body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs, 1)
+	for _, rt := range body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs {
+		assert.Contains(t, drt, rt.ID)
+	}
+}
+
+// TestVirtualNetworkCreateValidWithVhubCustomRouting tests the creation of a plan that
+// creates a virtual network with a vhub connection with custom routing.
+func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	v := getMockInputVariables()
+	v["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
+	v["virtual_network_vwan_connection_enabled"] = true
+	v["virtual_network_vwan_propagated_routetables_labels"] = []string{"testlabel", "testlabel2"}
+	v["virtual_network_vwan_propagated_routetables_resource_ids"] = []string{
+		v["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable",
+		v["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable2",
+	}
+	v["virtual_network_vwan_routetable_resource_id"] = v["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable3"
+	terraformOptions.Vars = v
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoError(t, err)
+	require.Equal(t, 3, len(plan.ResourcePlannedValuesMap))
+
+	vhcname := "vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5"
+	vhcres := fmt.Sprintf("azapi_resource.vhubconnection[\"%s\"]", vhcname)
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
+	vhc := plan.ResourcePlannedValuesMap[vhcres]
+	require.Contains(t, vhc.AttributeValues, "name")
+	assert.Equal(t, vhcname, vhc.AttributeValues["name"])
+	require.Contains(t, vhc.AttributeValues, "parent_id")
+	assert.Equal(t, v["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"])
+
+	require.Contains(t, vhc.AttributeValues, "body")
+	var body models.HubVirtualNetworkConnectionBody
+	err = json.Unmarshal([]byte(vhc.AttributeValues["body"].(string)), &body)
+	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
+	assert.Equal(t, v["virtual_network_vwan_routetable_resource_id"], body.Properties.RoutingConfiguration.AssociatedRouteTable.ID)
+	assert.EqualValues(t, v["virtual_network_vwan_propagated_routetables_labels"], body.Properties.RoutingConfiguration.PropagatedRouteTables.Labels)
+	assert.Len(t, body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs, 2)
+	for _, rt := range body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs {
+		assert.Contains(t, v["virtual_network_vwan_propagated_routetables_resource_ids"], rt.ID)
+	}
 }
 
 // TestVirtualNetworkCreateInvalidHubNetResId tests the regex of the

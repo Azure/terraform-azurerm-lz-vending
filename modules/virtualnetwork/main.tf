@@ -50,7 +50,7 @@ resource "azapi_resource" "vhubconnection" {
   body = jsonencode({
     properties = {
       remoteVirtualNetwork = {
-        id = azapi_resource.vnet.id
+        id = local.virtual_network_resource_id
       }
       routingConfiguration = {
         associatedRouteTable = {
