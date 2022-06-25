@@ -10,8 +10,8 @@ The module is designed to be instantiated many times, once for each desired land
 This is currently split logically into the following capabilities:
 
 - Subscription creation and management group placement
-- (backlogged) Hub & spoke networking
-- (backlogged) Virtual WAN networking
+- Hub & spoke networking
+- Virtual WAN networking
 - More to come!
 
 ## Notes
@@ -44,7 +44,7 @@ module "alz_landing_zone" {
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_subscription"></a> [subscription](#module\_subscription) | ./modules/subscription | n/a |
-| <a name="module_virtual_network"></a> [virtual\_network](#module\_virtual\_network) | ./modules/virtual_network | n/a |
+| <a name="module_virtualnetwork"></a> [virtualnetwork](#module\_virtualnetwork) | ./modules/virtualnetwork | n/a |
 
 <!-- markdownlint-disable MD013 -->
 ## Inputs
@@ -82,17 +82,20 @@ No resources.
 | <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id) | The subscription\_id is the Azure subscription id that resources have been deployed into. |
 | <a name="output_subscription_resource_id"></a> [subscription\_resource\_id](#output\_subscription\_resource\_id) | The subscription\_resource\_id is the Azure subscription resource id that resources have been deployed into |
 
+<!-- markdownlint-enable -->
 <!-- markdownlint-disable MD041 -->
 ## Contributing
-<!-- markdownline-enable -->
+<!-- markdownlint-enable -->
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit [https://cla.opensource.microsoft.com](https://cla.opensource.microsoft.com).
+This project welcomes contributions and suggestions.
+Most contributions require you to agree to a Contributor License Agreement (CLA)
+declaring that you have the right to, and actually do, grant us the rights to use your contribution.
+For details, visit [https://cla.opensource.microsoft.com](https://cla.opensource.microsoft.com).
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+a CLA and decorate the PR appropriately (e.g., status check, comment).
+Simply follow the instructions provided by the bot.
+You will only need to do this once across all repos using our CLA.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
@@ -104,10 +107,9 @@ See [DEVELOPER.md](DEVELOPER.md).
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
-trademarks or logos is subject to and must follow
+This project may contain trademarks or logos for projects, products, or services.
+Authorized use of Microsoft trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
-
 <!-- END_TF_DOCS -->

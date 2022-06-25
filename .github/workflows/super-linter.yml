@@ -44,3 +44,4 @@ jobs:
         with:
           version: v1.46.2
           working-directory: ${{ github.workspace }}/tests
+          args: --timeout 6m

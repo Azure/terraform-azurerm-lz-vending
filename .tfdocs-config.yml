@@ -37,6 +37,7 @@ content: |-
 
   {{ .Outputs }}
 
+  <!-- markdownlint-enable -->
   {{ .Footer }}
 
 output:
@@ -45,9 +46,7 @@ output:
   template: |-
     <!-- BEGIN_TF_DOCS -->
     {{ .Content }}
-
     <!-- END_TF_DOCS -->
-
 output-values:
   enabled: false
   from: ""
