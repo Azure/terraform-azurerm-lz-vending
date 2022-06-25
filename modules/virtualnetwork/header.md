@@ -11,5 +11,14 @@ See [README.md](../../README.md) in the parent module for more information.
 ## Example
 
 ```terraform
-# TBC
+module "virtualnetwork" {
+  source = "Azure/alz-landing-zone/azurerm/modules/virtualnetwork"
+  version = "~> 0.1.0"
+
+  subscription_id                     = "00000000-0000-0000-0000-000000000000"
+  virtual_network_name                = "my-virtual-network"
+  virtual_network_resource_group_name = "my-network-rg"
+  virtual_network_address_space       = ["192.168.1.0/24"]
+  virtual_network_location            = "eastus"
+}
 ```

@@ -16,16 +16,31 @@ This is currently split logically into the following capabilities:
 
 ## Notes
 
-None.
+TBC.
 
 ## Example
 
 ```terraform
 module "alz_landing_zone" {
-  # Terraform Cloud/Enterprise use
   source  = "Azure/alz-landing-zone/azurerm"
-  version = "~>0.0.1"
-  # TBC
+  version = "~>0.1.0"
+
+  # subscription variables
+  subscription_alias_enabled       = true
+  subscription_alias_billing_scope = "/providers/Microsoft.Billing/billingAccounts/1234567/enrollmentAccounts/123456"
+  subscription_alias_display_name  = "my-subscription-display-name"
+  subscription_alias_name          = "my-subscription-alias"
+  subscription_alias_workload      = "Production"
+
+  # virtual network variables
+  virtual_network_enabled             = true
+  virtual_network_address_space       = ["192.168.1.0/24]
+  virtual_network_location            = "eastus"
+  virtual_network_resource_group_name = "my-network-rg"
+
+  # virtual network peering
+  virtual_network_peering_enabled = true
+  hub_network_resource_id         = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network"
 }
 ```
 
@@ -64,8 +79,10 @@ module "alz_landing_zone" {
 | <a name="input_virtual_network_enabled"></a> [virtual\_network\_enabled](#input\_virtual\_network\_enabled) | Enables and disables the virtual network submodule. | `bool` | `false` | no |
 | <a name="input_virtual_network_location"></a> [virtual\_network\_location](#input\_virtual\_network\_location) | The location of the virtual network.<br><br>    Use this to override the default location defined by `var.location`.<br>    Leave blank to use the default location. | `string` | `""` | no |
 | <a name="input_virtual_network_name"></a> [virtual\_network\_name](#input\_virtual\_network\_name) | The name of the virtual network. | `string` | `""` | no |
+| <a name="input_virtual_network_peering_enabled"></a> [virtual\_network\_peering\_enabled](#input\_virtual\_network\_peering\_enabled) | Whether to enable peering with the supplied hub virtual network.<br>    Enables a hub & spoke networking topology.<br><br>    If enabled the `hub_network_resource_id` must also be suppled. | `bool` | `false` | no |
 | <a name="input_virtual_network_resource_group_name"></a> [virtual\_network\_resource\_group\_name](#input\_virtual\_network\_resource\_group\_name) | The name of the resource group to create the virtual network in. | `string` | `""` | no |
 | <a name="input_virtual_network_use_remote_gateways"></a> [virtual\_network\_use\_remote\_gateways](#input\_virtual\_network\_use\_remote\_gateways) | Enables the use of remote gateways for the virtual network.<br><br>    Applies to both hub and spoke (vnet peerings) as well as virtual WAN connections. | `bool` | `true` | no |
+| <a name="input_virtual_network_vwan_connection_enabled"></a> [virtual\_network\_vwan\_connection\_enabled](#input\_virtual\_network\_vwan\_connection\_enabled) | Whether to enable connection with supplied vwan hub.<br>    Enables a vwan networking topology.<br><br>    If enabled the `vwan_hub_resource_id` must also be suppled. | `bool` | `false` | no |
 | <a name="input_virtual_network_vwan_propagated_routetables_labels"></a> [virtual\_network\_vwan\_propagated\_routetables\_labels](#input\_virtual\_network\_vwan\_propagated\_routetables\_labels) | The list of virtual WAN labels to advertise the routes to.<br><br>    Leave blank to use the `default` label. | `list(string)` | `[]` | no |
 | <a name="input_virtual_network_vwan_propagated_routetables_resource_ids"></a> [virtual\_network\_vwan\_propagated\_routetables\_resource\_ids](#input\_virtual\_network\_vwan\_propagated\_routetables\_resource\_ids) | The list of route table resource ids to advertise routes to.<br><br>    Leave blank to use the `defaultRouteTable.<br>` | `list(string)` | `[]` | no |
 | <a name="input_virtual_network_vwan_routetable_resource_id"></a> [virtual\_network\_vwan\_routetable\_resource\_id](#input\_virtual\_network\_vwan\_routetable\_resource\_id) | The resource ID of the virtual network route table to use for the virtual network.<br><br>    Leave blank to use the `defaultRouteTable`.<br><br>    E.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable | `string` | `""` | no |
