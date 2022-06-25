@@ -27,7 +27,7 @@ variable "virtual_network_address_space" {
   type = list(string)
 }
 
-variable "virtual_network_enable_vwan_connection" {
+variable "virtual_network_vwan_connection_enabled" {
   type = bool
 }
 
@@ -47,16 +47,15 @@ resource "azapi_resource" "vwan" {
     properties = {
       type                       = "Standard"
       allowBranchToBranchTraffic = true
-      allowVnetToVnetTraffic     = true
       disableVpnEncryption       = false
     }
   })
 }
 
 resource "azapi_resource" "vhub" {
-  type     = "Microsoft.Network/virtualHubs@2021-08-01"
-  name     = "${var.virtual_network_name}-vhub"
-  location = var.virtual_network_location
+  type      = "Microsoft.Network/virtualHubs@2021-08-01"
+  name      = "${var.virtual_network_name}-vhub"
+  location  = var.virtual_network_location
   parent_id = azapi_resource.rg.id
   body = jsonencode({
     properties = {
@@ -70,12 +69,12 @@ resource "azapi_resource" "vhub" {
 }
 
 module "virtualnetwork_test" {
-  source                                 = "../../"
-  subscription_id                        = var.subscription_id
-  virtual_network_address_space          = var.virtual_network_address_space
-  virtual_network_location               = var.virtual_network_location
-  virtual_network_resource_group_name    = var.virtual_network_resource_group_name
-  virtual_network_name                   = var.virtual_network_name
-  virtual_network_enable_vwan_connection = var.virtual_network_enable_vwan_connection
-  vwan_hub_resource_id                   = azapi_resource.vhub.id
+  source                                  = "../../"
+  subscription_id                         = var.subscription_id
+  virtual_network_address_space           = var.virtual_network_address_space
+  virtual_network_location                = var.virtual_network_location
+  virtual_network_resource_group_name     = var.virtual_network_resource_group_name
+  virtual_network_name                    = var.virtual_network_name
+  virtual_network_vwan_connection_enabled = var.virtual_network_vwan_connection_enabled
+  vwan_hub_resource_id                    = azapi_resource.vhub.id
 }

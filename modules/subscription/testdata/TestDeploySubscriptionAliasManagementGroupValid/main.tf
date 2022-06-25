@@ -43,5 +43,5 @@ module "subscription_test" {
 }
 
 output "subscription_id" {
-  value = module.lz_test.subscription_id
+  value = module.subscription_test.subscription_id
 }

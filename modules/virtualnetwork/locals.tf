@@ -10,7 +10,7 @@ locals {
   # virtual_network_peering_map is the data required to create the two vnet peerings.
   # If the supplied hub virtual network is an empty string, the map will be empty,
   # resulting on no resources being created.
-  virtual_network_peering_map = var.virtual_network_enable_peering ? {
+  virtual_network_peering_map = var.virtual_network_peering_enabled ? {
     # Peering this network to the remote network
     "outbound" = {
       name               = "peer-${local.hub_network_uuidv5}"
@@ -28,7 +28,7 @@ locals {
   # vhub_connection_map is the data required to create the virtual wan hub connection.
   # If the supplied vwan hub is an empty string, the set will be empty,
   # resulting on no resource being created.
-  vhub_connection_set = var.virtual_network_enable_vwan_connection ? toset([
+  vhub_connection_set = var.virtual_network_vwan_connection_enabled ? toset([
     "vhubcon-${local.hub_network_uuidv5}"
   ]) : toset([])
 

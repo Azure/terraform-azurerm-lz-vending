@@ -48,7 +48,7 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
-	v["virtual_network_enable_peering"] = true
+	v["virtual_network_peering_enabled"] = true
 	v["virtual_network_use_remote_gateways"] = false
 	terraformOptions.Vars = v
 
@@ -75,7 +75,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
-	v["virtual_network_enable_vwan_connection"] = true
+	v["virtual_network_vwan_connection_enabled"] = true
 	terraformOptions.Vars = v
 
 	_, err = terraform.InitAndPlanE(t, terraformOptions)

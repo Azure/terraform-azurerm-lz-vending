@@ -97,6 +97,7 @@ func TerraformDestroyWithRetry(t *testing.T, to *terraform.Options, dur time.Dur
 	err := try.Do(func(attempt int) (bool, error) {
 		_, err := terraform.DestroyE(t, to)
 		if err != nil {
+			t.Logf("terraform destroy failed, attempt %d/%d", attempt, max)
 			time.Sleep(dur)
 		}
 		return attempt < max, err

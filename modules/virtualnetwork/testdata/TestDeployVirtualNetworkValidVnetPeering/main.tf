@@ -7,8 +7,6 @@ terraform {
   }
 }
 
-
-
 variable "subscription_id" {
   type = string
 }
@@ -33,7 +31,7 @@ variable "virtual_network_use_remote_gateways" {
   type = bool
 }
 
-variable "virtual_network_enable_peering" {
+variable "virtual_network_peering_enabled" {
   type = bool
 }
 
@@ -132,7 +130,7 @@ module "virtualnetwork_test" {
   virtual_network_location            = var.virtual_network_location
   virtual_network_resource_group_name = var.virtual_network_resource_group_name
   virtual_network_name                = var.virtual_network_name
-  virtual_network_enable_peering      = true
+  virtual_network_peering_enabled     = var.virtual_network_peering_enabled
   hub_network_resource_id             = azapi_resource.hub.id
   virtual_network_use_remote_gateways = var.virtual_network_use_remote_gateways
 }

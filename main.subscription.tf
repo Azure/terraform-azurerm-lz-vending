@@ -7,6 +7,7 @@ module "subscription" {
 
   # Required variables
   subscription_alias_billing_scope       = var.subscription_alias_billing_scope
+  subscription_alias_name                = var.subscription_alias_name
   subscription_alias_workload            = var.subscription_alias_workload
 
   subscription_alias_display_name        = var.subscription_alias_display_name

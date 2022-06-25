@@ -16,7 +16,7 @@ variable "virtual_network_address_space" {
   DESCRIPTION
 }
 
-variable "virtual_network_enable_peering" {
+variable "virtual_network_peering_enabled" {
   type       = bool
   description = <<DESCRIPTION
     Whether to enable peering with the supplied hub virtual network.
@@ -43,7 +43,7 @@ variable "hub_network_resource_id" {
   }
 }
 
-variable "virtual_network_enable_vwan_connection" {
+variable "virtual_network_vwan_connection_enabled" {
   type       = bool
   description = <<DESCRIPTION
     Whether to enable connection with supplied vwan hub.

@@ -26,6 +26,17 @@ variable "virtual_network_address_space" {
   default     = []
 }
 
+variable "virtual_network_peering_enabled" {
+  type       = bool
+  description = <<DESCRIPTION
+    Whether to enable peering with the supplied hub virtual network.
+    Enables a hub & spoke networking topology.
+
+    If enabled the `hub_network_resource_id` must also be suppled.
+  DESCRIPTION
+  default = false
+}
+
 variable "hub_network_resource_id" {
   type        = string
   description = <<DESCRIPTION
@@ -36,6 +47,17 @@ variable "hub_network_resource_id" {
     Leave blank to create the virtual network without peering.
   DESCRIPTION
   default     = ""
+}
+
+variable "virtual_network_vwan_connection_enabled" {
+  type       = bool
+  description = <<DESCRIPTION
+    Whether to enable connection with supplied vwan hub.
+    Enables a vwan networking topology.
+
+    If enabled the `vwan_hub_resource_id` must also be suppled.
+  DESCRIPTION
+  default = false
 }
 
 variable "vwan_hub_resource_id" {

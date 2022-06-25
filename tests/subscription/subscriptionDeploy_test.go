@@ -67,8 +67,8 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
-
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)
 	require.NoError(t, err)
@@ -84,7 +84,7 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
+	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 30*time.Second, 10)
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
 	assert.NoError(t, err)

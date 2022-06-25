@@ -53,7 +53,7 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	defer cleanup()
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
-	v["virtual_network_enable_peering"] = true
+	v["virtual_network_peering_enabled"] = true
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
 	terraformOptions.Vars = v
 	// Create plan and ensure only two resources are created.
@@ -94,7 +94,7 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/tes.-tvnet2"
-	v["virtual_network_enable_peering"] = true
+	v["virtual_network_peering_enabled"] = true
 	v["virtual_network_use_remote_gateways"] = false
 	terraformOptions.Vars = v
 	// Create plan and ensure only two resources are created.
@@ -123,7 +123,7 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
-	v["virtual_network_enable_vwan_connection"] = true
+	v["virtual_network_vwan_connection_enabled"] = true
 	terraformOptions.Vars = v
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
