@@ -114,7 +114,7 @@ func removeTestDir(t *testing.T, dir string) {
 	}
 }
 
-// CopyTerraformFolderToTemp sets up a temporary copy of the supplied module folder
+// CopyTerraformFolderToTempAndCleanUp sets up a temporary copy of the supplied module folder
 // It will return the temporary directory path and a function that can be used to clean up the temporary directory
 //
 // The testdir input is the relative path to the test directory, it can be blank if testing the module directly with variables
