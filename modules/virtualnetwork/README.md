@@ -140,8 +140,7 @@ Default: `[]`
 
 Description: The list of route table resource ids to advertise routes to.
 
-Leave blank to use the `defaultRouteTable.
-`
+Leave blank to use the `defaultRouteTable`.
 
 Type: `list(string)`
 
