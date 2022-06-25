@@ -1,7 +1,7 @@
 variable "virtual_network_name" {
   type        = string
   description = <<DESCRIPTION
-    The name of the virtual network.
+The name of the virtual network.
   DESCRIPTION
   validation {
     condition     = can(regex("^[\\w-_.]{2,64}$", var.virtual_network_name))
@@ -12,17 +12,17 @@ variable "virtual_network_name" {
 variable "virtual_network_address_space" {
   type        = list(string)
   description = <<DESCRIPTION
-    The address space of the virtual network, supplied as multiple CIDR blocks, e.g. `["10.0.0.0/16","172.16.0.0/12"]`.
+The address space of the virtual network, supplied as multiple CIDR blocks, e.g. `["10.0.0.0/16","172.16.0.0/12"]`.
   DESCRIPTION
 }
 
 variable "virtual_network_peering_enabled" {
   type       = bool
   description = <<DESCRIPTION
-    Whether to enable peering with the supplied hub virtual network.
-    Enables a hub & spoke networking topology.
+Whether to enable peering with the supplied hub virtual network.
+Enables a hub & spoke networking topology.
 
-    If enabled the `hub_network_resource_id` must also be suppled.
+If enabled the `hub_network_resource_id` must also be suppled.
   DESCRIPTION
   default = false
 }
@@ -30,11 +30,11 @@ variable "virtual_network_peering_enabled" {
 variable "hub_network_resource_id" {
   type        = string
   description = <<DESCRIPTION
-    The resource ID of the virtual network in the hub to which the created virtual network will be peered.
+The resource ID of the virtual network in the hub to which the created virtual network will be peered.
 
-    E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet`
+E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet`
 
-    Leave blank to create the virtual network without peering.
+Leave blank to create the virtual network without peering.
   DESCRIPTION
   default     = ""
   validation {
@@ -46,10 +46,10 @@ variable "hub_network_resource_id" {
 variable "virtual_network_vwan_connection_enabled" {
   type       = bool
   description = <<DESCRIPTION
-    Whether to enable connection with supplied vwan hub.
-    Enables a vwan networking topology.
+Whether to enable connection with supplied vwan hub.
+Enables a vwan networking topology.
 
-    If enabled the `vwan_hub_resource_id` must also be suppled.
+If enabled the `vwan_hub_resource_id` must also be suppled.
   DESCRIPTION
   default = false
 }
@@ -57,11 +57,11 @@ variable "virtual_network_vwan_connection_enabled" {
 variable "vwan_hub_resource_id" {
   type        = string
   description = <<DESCRIPTION
-    The resource ID of the vwan hub to which the virtual network will be connected.
+The resource ID of the vwan hub to which the virtual network will be connected.
 
-    E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-hub`
+E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-hub`
 
-    Leave blank to create a virtual network without a vwan hub connection.
+Leave blank to create a virtual network without a vwan hub connection.
   DESCRIPTION
   default     = ""
   validation {
@@ -73,7 +73,7 @@ variable "vwan_hub_resource_id" {
 variable "subscription_id" {
   type        = string
   description = <<DESCRIPTION
-    The subscription ID of the subscription to create the virtual network in.
+The subscription ID of the subscription to create the virtual network in.
   DESCRIPTION
   validation {
     condition     = can(regex("^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_id))
@@ -84,7 +84,7 @@ variable "subscription_id" {
 variable "virtual_network_resource_group_name" {
   type        = string
   description = <<DESCRIPTION
-    The name of the resource group to create the virtual network in.
+The name of the resource group to create the virtual network in.
   DESCRIPTION
   validation {
     condition     = can(regex("^[\\w-_.]{1,89}[^\\s.]$", var.virtual_network_resource_group_name))
@@ -95,16 +95,16 @@ variable "virtual_network_resource_group_name" {
 variable "virtual_network_location" {
   type        = string
   description = <<DESCRIPTION
-    The location of the virtual network.
+The location of the virtual network.
   DESCRIPTION
 }
 
 variable "virtual_network_use_remote_gateways" {
   type        = bool
   description = <<DESCRIPTION
-    Enables the use of remote gateways for the virtual network.
+Enables the use of remote gateways for the virtual network.
 
-    Applies to both hub and spoke (vnet peerings) as well as virtual WAN connections.
+Applies to hub and spoke (vnet peerings).
   DESCRIPTION
   default     = true
 }
@@ -112,11 +112,11 @@ variable "virtual_network_use_remote_gateways" {
 variable "virtual_network_vwan_routetable_resource_id" {
   type = string
   description = <<DESCRIPTION
-    The resource ID of the virtual network route table to use for the virtual network.
+The resource ID of the virtual network route table to use for the virtual network.
 
-    Leave blank to use the `defaultRouteTable`.
+Leave blank to use the `defaultRouteTable`.
 
-    E.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable
+E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable`
   DESCRIPTION
   default = ""
   validation {
