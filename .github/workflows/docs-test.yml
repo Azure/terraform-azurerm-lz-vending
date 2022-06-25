@@ -28,7 +28,7 @@ jobs:
           make docs
           echo "==> Testing for changes to .md files"
           CHANGES=$(git status -suno)
-          if [ $CHANGES ]; then
+          if [ "$CHANGES" ]; then
             echo "Documentation is not up to date or formatted correctly."
             echo "Run 'make docs' locally and commit the changes to fix."
             exit 1
