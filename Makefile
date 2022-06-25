@@ -8,7 +8,7 @@ fmt:
 
 fumpt:
 	@echo "==> Fixing source code with Gofumpt..."
-	find . -name '*.go' | grep -v vendor | xargs gofumpt -w
+	find ./tests -name '*.go' | grep -v vendor | xargs gofumpt -w
 
 fmtcheck:
 	@sh "$(CURDIR)/scripts/gofmtcheck.sh"
