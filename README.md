@@ -16,7 +16,8 @@ This is currently split logically into the following capabilities:
 
 ## Notes
 
-TBC.
+Please see the content in the wiki for more detailed information.
+[https://github.com/Azure/terraform-azurerm-alz-landing-zone/wiki](https://github.com/Azure/terraform-azurerm-alz-landing-zone/wiki)
 
 ## Example
 
@@ -34,7 +35,7 @@ module "alz_landing_zone" {
 
   # virtual network variables
   virtual_network_enabled             = true
-  virtual_network_address_space       = ["192.168.1.0/24]
+  virtual_network_address_space       = ["192.168.1.0/24"]
   virtual_network_location            = "eastus"
   virtual_network_resource_group_name = "my-network-rg"
 
