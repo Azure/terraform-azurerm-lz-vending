@@ -36,6 +36,8 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 3)
 }
 
+// TestDeployVirtualNetworkValidVnetPeering tests the deployment of a virtual network
+// with bidirectional peering to a hub virtual network.
 func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
@@ -59,6 +61,34 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency issues
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 3)
+}
+
+// TestDeployVirtualNetworkValidVhubConnection tests the deployment of a virtual network
+// with a virtual WAN connection.
+func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
+	utils.PreCheckDeployTests(t)
+	testDir := "testdata/" + t.Name()
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
+
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	v, err := getValidInputVariables()
+	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
+	v["virtual_network_enable_vwan_connection"] = true
+	terraformOptions.Vars = v
+
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
+	require.NoError(t, err)
+
+	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+	assert.NoError(t, err)
+
+	// defer terraform destroy, but wrap in a try.Do to retry a few times
+	// due to eventual consistency issues
+	// Vhubs cannot be destroyed whinst the routing service is still provisioning
+	// hence extended delay
+	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 1*time.Minute, 20)
 }
 
 func getValidInputVariables() (map[string]interface{}, error) {

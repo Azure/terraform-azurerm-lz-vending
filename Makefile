@@ -1,4 +1,4 @@
-TESTTIMEOUT=30m
+TESTTIMEOUT=60m
 TESTFILTER=
 TEST?=$$(go list ./... |grep -v 'vendor'|grep -v 'utils')
 
