@@ -34,7 +34,7 @@ resource "azapi_resource" "mg" {
 }
 
 module "subscription_test" {
-  source                                 = "../../../../modules/subscription"
+  source                                 = "../../"
   subscription_alias_name                = var.subscription_alias_name
   subscription_alias_display_name        = var.subscription_alias_display_name
   subscription_alias_workload            = "DevTest"

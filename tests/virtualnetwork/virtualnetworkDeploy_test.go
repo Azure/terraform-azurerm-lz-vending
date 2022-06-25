@@ -3,13 +3,11 @@ package virtualnetwork
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,14 +16,13 @@ import (
 // with valid input variables.
 func TestDeployVirtualNetworkValid(t *testing.T) {
 	utils.PreCheckDeployTests(t)
-
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
-
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	terraformOptions.Vars = v
 
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
@@ -41,12 +38,16 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 
 func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	utils.PreCheckDeployTests(t)
+	testDir := "testdata/" + t.Name()
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
 
-	dir := utils.GetTestDir(t)
-	dir += "/testdata/" + t.Name()
-	terraformOptions := utils.GetDefaultTerraformOptions(t, dir)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
+	v["virtual_network_enable_peering"] = true
+	v["virtual_network_use_remote_gateways"] = false
 	terraformOptions.Vars = v
 
 	_, err = terraform.InitAndPlanE(t, terraformOptions)

@@ -29,6 +29,14 @@ variable "virtual_network_address_space" {
   type = list(string)
 }
 
+variable "virtual_network_use_remote_gateways" {
+  type = bool
+}
+
+variable "virtual_network_enable_peering" {
+  type = bool
+}
+
 resource "azapi_resource" "rg" {
   type      = "Microsoft.Resources/resourceGroups@2021-04-01"
   parent_id = "/subscriptions/${var.subscription_id}"
@@ -118,7 +126,7 @@ resource "azapi_resource" "hub" {
 # }
 
 module "virtualnetwork_test" {
-  source                              = "../../../../modules/virtualnetwork"
+  source                              = "../../"
   subscription_id                     = var.subscription_id
   virtual_network_address_space       = var.virtual_network_address_space
   virtual_network_location            = var.virtual_network_location
@@ -126,5 +134,5 @@ module "virtualnetwork_test" {
   virtual_network_name                = var.virtual_network_name
   virtual_network_enable_peering      = true
   hub_network_resource_id             = azapi_resource.hub.id
-  virtual_network_use_remote_gateways = false
+  virtual_network_use_remote_gateways = var.virtual_network_use_remote_gateways
 }

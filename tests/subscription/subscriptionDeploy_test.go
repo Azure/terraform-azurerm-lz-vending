@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/matryer/try.v1"
@@ -24,8 +22,9 @@ import (
 func TestDeploySubscriptionAliasValid(t *testing.T) {
 	utils.PreCheckDeployTests(t)
 
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
 
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)
@@ -64,10 +63,12 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	utils.PreCheckDeployTests(t)
 
-	dir := utils.GetTestDir(t)
-	dir += "/testdata/" + t.Name()
+	testDir := "testdata/" + t.Name()
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
 
-	terraformOptions := utils.GetDefaultTerraformOptions(t, dir)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)
 	require.NoError(t, err)
@@ -105,20 +106,6 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	if err := setSubscriptionManagementGroup(u, tid); err != nil {
 		t.Logf("could not move subscription to management group %s: %s", tid, err)
 	}
-}
-
-// Example Test to make a temp copy of the Terraform files
-func TestTest(t *testing.T) {
-	utils.PreCheckDeployTests(t)
-
-	root := "../../modules/virtualnetwork"
-	testroot := "testdata/" + t.Name()
-	tmp := test_structure.CopyTerraformFolderToTemp(t, root, testroot)
-	dir := tmp
-	for i := 0; i < 3; i++ {
-		dir = filepath.Dir(dir)
-	}
-	defer utils.RemoveTestDir(t, dir)
 }
 
 // Creating an alias for an existing subscription is not currently supported.

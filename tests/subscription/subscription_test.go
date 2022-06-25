@@ -2,13 +2,11 @@ package subscription
 
 import (
 	"encoding/json"
-	"path/filepath"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/models"
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -20,9 +18,10 @@ const (
 // TestSubscriptionAliasCreateValid tests the validation functions with valid data,
 // then creates a plan and compares the input variables to the planned values.
 func TestSubscriptionAliasCreateValid(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
-	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
 
@@ -50,9 +49,10 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 // validation functions with valid data, including a destination management group,
 // then creates a plan and compares the input variables to the planned values.
 func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
-	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
 	v["subscription_alias_management_group_id"] = "testdeploy"
@@ -81,26 +81,28 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 
 // TestSubscriptionAliasCreateInvalidBillingScope tests the validation function of the subscription_alias_billing_scope variable.
 func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
-	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_alias_billing_scope"] = "/PRoviders/Microsoft.Billing/billingAccounts/test-billing-account"
 	terraformOptions.Vars = v
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	errMessage := utils.SanitiseErrorMessage(err)
 	assert.Contains(t, errMessage, "A valid billing scope starts with /providers/Microsoft.Billing/billingAccounts/ and is case sensitive.")
 }
 
 // TestSubscriptionAliasCreateInvalidWorkload tests the validation function of the subscription_alias_workload variable.
 func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
-	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_alias_workload"] = "PRoduction"
 	terraformOptions.Vars = v
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	errMessage := utils.SanitiseErrorMessage(err)
 	assert.Contains(t, errMessage, "The workload type can be either Production or DevTest and is case sensitive.")
 }
@@ -108,13 +110,14 @@ func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
 // TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars tests the validation function of the
 // subscription_alias_management_group_id variable.
 func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
-	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_alias_management_group_id"] = "invalid/chars"
 	terraformOptions.Vars = v
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	errMessage := utils.SanitiseErrorMessage(err)
 	assert.Contains(t, errMessage, "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
 }
@@ -122,13 +125,14 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.
 // TestSubscriptionAliasCreateInvalidManagementGroupIdLength tests the validation function of the
 // subscription_alias_management_group_id variable.
 func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
-	terraformOptions := utils.GetDefaultTerraformOptions(t, moduleDir)
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_alias_management_group_id"] = "tooooooooooooooooooooooooooloooooooooooooooooooooonnnnnnnnnnnnnnnnnnngggggggggggggggggggggg"
 	terraformOptions.Vars = v
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	errMessage := utils.SanitiseErrorMessage(err)
 	assert.Contains(t, errMessage, "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
 }

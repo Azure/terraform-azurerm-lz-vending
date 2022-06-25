@@ -3,13 +3,11 @@ package virtualnetwork
 import (
 	"encoding/json"
 	"fmt"
-	"path/filepath"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/models"
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -21,8 +19,9 @@ const (
 // TestVirtualNetworkCreateValid tests the creation of a plan that
 // creates a virtual network in the specified resource group.
 func TestVirtualNetworkCreateValid(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
@@ -49,8 +48,9 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 // TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
 // creates a virtual network with bidirectional peering.
 func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
@@ -87,8 +87,9 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 // tests the creation of a plan that configured the outbound peering
 // with useRemoteGateways disabled.
 func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/tes.-tvnet2"
@@ -114,8 +115,8 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 // TestVirtualNetworkCreateValidWithVhub tests the creation of a plan that
 // creates a virtual network with a vhub connection.
 func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
@@ -136,26 +137,26 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 // TestVirtualNetworkCreateInvalidHubNetResId tests the regex of the
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroup/testrg/providers/Microsoft.Network/virtualNetworks/tes.-tvnet2"
 	terraformOptions.Vars = v
-	_, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	_, err = terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.ErrorContains(t, err, "Value must be an Azure virtual network resource id")
 }
 
 // TestVirtualNetworkCreateInvalidHubNetResId tests the regex of the
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
-	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, "")
-	defer utils.RemoveTestDir(t, filepath.Dir(tmp))
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["vwan_hub_resource_id"] = "/subscription/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
 	terraformOptions.Vars = v
-	_, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	_, err = terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.ErrorContains(t, err, "Value must be an Azure vwan hub resource id")
 }
 
