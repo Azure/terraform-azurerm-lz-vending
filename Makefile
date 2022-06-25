@@ -1,4 +1,4 @@
-TESTTIMEOUT=30m
+TESTTIMEOUT=60m
 TESTFILTER=
 TEST?=$$(go list ./... |grep -v 'vendor'|grep -v 'utils')
 
@@ -8,10 +8,18 @@ fmt:
 
 fumpt:
 	@echo "==> Fixing source code with Gofumpt..."
-	find . -name '*.go' | grep -v vendor | xargs gofumpt -w
+	find ./tests -name '*.go' | grep -v vendor | xargs gofumpt -w
 
 fmtcheck:
 	@sh "$(CURDIR)/scripts/gofmtcheck.sh"
+
+tfclean:
+	@echo "==> Cleaning terraform files..."
+	find ./ -type d -name '.terraform' | xargs rm -vrf
+	find ./ -type f -name 'tfplan' | xargs rm -vf
+	find ./ -type f -name 'terraform.tfstate*' | xargs rm -vf
+	find ./ -type f -name '.terraform.lock.hcl' | xargs rm -vf
+
 
 tools:
 	go install mvdan.cc/gofumpt@latest
@@ -28,4 +36,4 @@ testdeploy: fmtcheck
 
 # Makefile targets are files, but we aren't using it like this,
 # so have to declare PHONY targets
-.PHONY: test testdeploy lint tools fmt fumpt fmtcheck
+.PHONY: test testdeploy lint tools fmt fumpt fmtcheck tfclean

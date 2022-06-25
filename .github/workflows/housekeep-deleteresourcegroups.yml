@@ -1,0 +1,39 @@
+---
+name: Housekeeping - Cancel subscriptions
+on:
+  schedule:
+    - cron: "21 3 * * *" # daily at 3:21
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+
+jobs:
+  deleteresourcegroups:
+    name: Housekeeping - Delete resource groups
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Azure delete resourcegroups
+        uses: azure/CLI@v1
+        continue-on-error: true
+        with:
+          inlineScript: |
+            az group list \
+              | jq -r '.[] | select(.name|test("testdeploy*")) | .name' \
+              | xargs -n1 -I% az group delete --yes --name %
+
+      - name: Azure logout
+        uses: azure/CLI@v1
+        if: always()
+        with:
+          inlineScript: |
+            az logout
+            az cache purge
+            az account clear

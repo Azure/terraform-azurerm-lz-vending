@@ -11,7 +11,7 @@ resource "azapi_resource" "subscription_alias" {
   ]
   body = jsonencode({
     properties = {
-      displayName  = var.subscription_alias_display_name
+      displayName  = coalesce(var.subscription_alias_display_name, var.subscription_alias_name)
       billingScope = var.subscription_alias_billing_scope
       workload     = var.subscription_alias_workload
       additionalProperties = {
