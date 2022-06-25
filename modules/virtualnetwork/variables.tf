@@ -128,9 +128,9 @@ E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/p
 variable "virtual_network_vwan_propagated_routetables_resource_ids" {
   type = list(string)
   description = <<DESCRIPTION
-    The list of route table resource ids to advertise routes to.
+The list of route table resource ids to advertise routes to.
 
-    Leave blank to use the `defaultRouteTable.
+Leave blank to use the `defaultRouteTable.
   DESCRIPTION
   default = []
 }
@@ -138,9 +138,9 @@ variable "virtual_network_vwan_propagated_routetables_resource_ids" {
 variable "virtual_network_vwan_propagated_routetables_labels" {
   type = list(string)
   description = <<DESCRIPTION
-    The list of virtual WAN labels to advertise the routes to.
+The list of virtual WAN labels to advertise the routes to.
 
-    Leave blank to use the `default` label.
+Leave blank to use the `default` label.
   DESCRIPTION
   default = []
 }
@@ -150,18 +150,18 @@ variable "virtual_network_vwan_propagated_routetables_labels" {
 #     address_prefix = string
 #     }))
 #   description = <<DESCRIPTION
-#     The subnets of the virtual network, supplied as multiple objects.
+#The subnets of the virtual network, supplied as multiple objects.
 
-#     e.g.
+#e.g.
 
-#     ```terraform
-#     virtual_network_subnets = {
-#       subnet0 = {
-#         address_prefix = "10.0.0.0/24"
-#       },
-#       subnet1 = {
-#         address_prefix = "10.0.1.0/24"
-#     } }
-#     ```
+#```terraform
+#virtual_network_subnets = {
+#subnet0 = {
+#  address_prefix = "10.0.0.0/24"
+# },
+# subnet1 = {
+#   address_prefix = "10.0.1.0/24"
+# } }
+# ```
 #   DESCRIPTION
 # }
