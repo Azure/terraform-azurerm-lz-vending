@@ -1,5 +1,5 @@
 ---
-name: Housekeeping - Cancel subscriptions
+name: Housekeeping - Delete resource groups
 on:
   schedule:
     - cron: "21 3 * * *" # daily at 3:21
