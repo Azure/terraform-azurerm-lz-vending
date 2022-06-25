@@ -130,7 +130,7 @@ variable "virtual_network_vwan_propagated_routetables_resource_ids" {
   description = <<DESCRIPTION
 The list of route table resource ids to advertise routes to.
 
-Leave blank to use the `defaultRouteTable.
+Leave blank to use the `defaultRouteTable`.
   DESCRIPTION
   default = []
 }

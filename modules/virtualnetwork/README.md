@@ -128,9 +128,9 @@ Default: `false`
 
 ### <a name="input_virtual_network_vwan_propagated_routetables_labels"></a> [virtual\_network\_vwan\_propagated\_routetables\_labels](#input\_virtual\_network\_vwan\_propagated\_routetables\_labels)
 
-Description:     The list of virtual WAN labels to advertise the routes to.
+Description: The list of virtual WAN labels to advertise the routes to.
 
-    Leave blank to use the `default` label.
+Leave blank to use the `default` label.
 
 Type: `list(string)`
 
@@ -138,9 +138,9 @@ Default: `[]`
 
 ### <a name="input_virtual_network_vwan_propagated_routetables_resource_ids"></a> [virtual\_network\_vwan\_propagated\_routetables\_resource\_ids](#input\_virtual\_network\_vwan\_propagated\_routetables\_resource\_ids)
 
-Description:     The list of route table resource ids to advertise routes to.
+Description: The list of route table resource ids to advertise routes to.
 
-    Leave blank to use the `defaultRouteTable.
+Leave blank to use the `defaultRouteTable.
 `
 
 Type: `list(string)`
