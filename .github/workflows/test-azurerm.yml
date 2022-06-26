@@ -15,6 +15,7 @@ jobs:
     name: Test auth
     runs-on: ubuntu-latest
     environment: CSUTF-RO
+    if: github.event.pull_request.head.repo.full_name == 'Azure/terraform-azurerm-alz-landing-zone'
     steps:
       - name: env
         run: env | sort
