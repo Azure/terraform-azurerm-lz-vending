@@ -14,11 +14,20 @@ resource "azapi_resource" "subscription_alias" {
       displayName  = coalesce(var.subscription_alias_display_name, var.subscription_alias_name)
       billingScope = var.subscription_alias_billing_scope
       workload     = var.subscription_alias_workload
-      additionalProperties = {
-        managementGroupId = var.subscription_alias_management_group_id == "" ? null : local.subscription_alias_management_group_resource_id
-      }
+      # Disabled for now as we try to use the azurerm provider to do this instead
+      # additionalProperties = {
+      #   managementGroupId = var.subscription_alias_management_group_id == "" ? null : local.subscription_alias_management_group_resource_id
+      # }
     }
   })
+}
+
+# This resource ensures that we can manage the management group for the subscription
+# throughout its lifecycle.
+resource "azurerm_management_group_subscription_association" "this" {
+  count               = var.subscription_alias_management_group_association_enabled ? 1 : 0
+  management_group_id = var.subscription_alias_management_group_id
+  subscription_id     = local.subscription_id_alias
 }
 
 # Creating an alias for an existing subscription is not currently supported.

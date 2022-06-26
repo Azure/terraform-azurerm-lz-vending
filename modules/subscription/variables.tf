@@ -83,3 +83,13 @@ The management group ID forms part of the Azure resource ID. E.g.,
     error_message = "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.)."
   }
 }
+
+variable "subscription_alias_management_group_association_enabled" {
+  type = bool
+  default = false
+  description = <<DESCRIPTION
+Whether to create the `azurerm_management_group_association` resource.
+
+If enabled, the `subscription_alias_management_group_id` must also be supplied.
+  DESCRIPTION
+}
