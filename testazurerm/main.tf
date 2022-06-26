@@ -9,6 +9,6 @@ resource "azurerm_public_ip" "ip" {
   name                         = "deploytest-6754asd3-pip"
   location                     = "westeurope"
   resource_group_name          = azapi_resource.rg.name
-  public_ip_address_allocation = "Static"
+  allocallocation_method       = "Static"
   sku                          = "Standard"
 }

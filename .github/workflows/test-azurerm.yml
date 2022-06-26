@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: CSUTF-RO
     steps:
+      - name: env
+        run: env | sort
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -35,8 +38,16 @@ jobs:
         run: |
           terraform init
         working-directory: ${{ github.workspace }}/testazurerm
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
 
       - name: Terraform plan
         run: |
           terraform plan
         working-directory: ${{ github.workspace }}/testazurerm
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
