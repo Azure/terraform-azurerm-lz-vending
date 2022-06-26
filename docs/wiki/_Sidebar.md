@@ -2,4 +2,5 @@
 ## ALZ landing zone Terraform module
 <!-- markdownlint-restore -->
 
-[Home](Home.md)
+- [Home](Home)
+- [Examples](Examples)
