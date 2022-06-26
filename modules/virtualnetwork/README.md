@@ -40,6 +40,8 @@ No modules.
 | <a name="input_virtual_network_name"></a> [virtual\_network\_name](#input\_virtual\_network\_name) | The name of the virtual network. | `string` | n/a | yes |
 | <a name="input_virtual_network_resource_group_name"></a> [virtual\_network\_resource\_group\_name](#input\_virtual\_network\_resource\_group\_name) | The name of the resource group to create the virtual network in. | `string` | n/a | yes |
 | <a name="input_hub_network_resource_id"></a> [hub\_network\_resource\_id](#input\_hub\_network\_resource\_id) | The resource ID of the virtual network in the hub to which the created virtual network will be peered.<br><br>    E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet`<br><br>    Leave blank to create the virtual network without peering. | `string` | `""` | no |
+| <a name="input_virtual_network_enable_peering"></a> [virtual\_network\_enable\_peering](#input\_virtual\_network\_enable\_peering) | Whether to enable peering with the supplied hub virtual network.<br>    Enables a hub & spoke networking topology.<br><br>    If enabled the `hub_network_resource_id` must also be suppled. | `bool` | `false` | no |
+| <a name="input_virtual_network_enable_vwan_connection"></a> [virtual\_network\_enable\_vwan\_connection](#input\_virtual\_network\_enable\_vwan\_connection) | Whether to enable connection with supplied vwan hub.<br>    Enables a vwan networking topology.<br><br>    If enabled the `vwan_hub_resource_id` must also be suppled. | `bool` | `false` | no |
 | <a name="input_virtual_network_use_remote_gateways"></a> [virtual\_network\_use\_remote\_gateways](#input\_virtual\_network\_use\_remote\_gateways) | Enables the use of remote gateways for the virtual network.<br><br>    Applies to both hub and spoke (vnet peerings) as well as virtual WAN connections. | `bool` | `true` | no |
 | <a name="input_virtual_network_vwan_propagated_routetables_labels"></a> [virtual\_network\_vwan\_propagated\_routetables\_labels](#input\_virtual\_network\_vwan\_propagated\_routetables\_labels) | The list of virtual WAN labels to advertise the routes to.<br><br>    Leave blank to use the `default` label. | `list(string)` | `[]` | no |
 | <a name="input_virtual_network_vwan_propagated_routetables_resource_ids"></a> [virtual\_network\_vwan\_propagated\_routetables\_resource\_ids](#input\_virtual\_network\_vwan\_propagated\_routetables\_resource\_ids) | The list of route table resource ids to advertise routes to.<br><br>    Leave blank to use the `defaultRouteTable.<br>` | `list(string)` | `[]` | no |
@@ -50,7 +52,7 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [azapi_resource.peerings](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) | resource |
+| [azapi_resource.peering](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) | resource |
 | [azapi_resource.rg](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) | resource |
 | [azapi_resource.vhubconnection](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) | resource |
 | [azapi_resource.vnet](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) | resource |
