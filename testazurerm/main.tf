@@ -6,9 +6,9 @@ resource "azapi_resource" "rg" {
 }
 
 resource "azurerm_public_ip" "ip" {
-  name                         = "deploytest-6754asd3-pip"
-  location                     = "westeurope"
-  resource_group_name          = azapi_resource.rg.name
-  allocallocation_method       = "Static"
-  sku                          = "Standard"
+  name                = "deploytest-6754asd3-pip"
+  location            = "westeurope"
+  resource_group_name = azapi_resource.rg.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
