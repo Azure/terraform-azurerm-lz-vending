@@ -29,10 +29,11 @@ type HubVirtualNetworkConnectionBodyPropertiesRoutingConfigurationAssociatedRout
 
 // HubVirtualNetworkConnectionBodyPropertiesRoutingConfigurationPropagatedRouteTables represents the routing propagation configuration of a hub virtual network connection.
 type HubVirtualNetworkConnectionBodyPropertiesRoutingConfigurationPropagatedRouteTables struct {
-	IDs    []HubVirtualNetworkConnectionBodyPropertiesRoutingConfigurationPropagatedRouteTablesIDs `json:"ids,omitempty"`
-	Labels []string                                                                                `json:"labels,omitempty"`
+	IDs    []HubVirtualNetworkConnectionBodyPropertiesRoutingConfigurationPropagatedRouteTablesID `json:"ids,omitempty"`
+	Labels []string                                                                               `json:"labels,omitempty"`
 }
 
-type HubVirtualNetworkConnectionBodyPropertiesRoutingConfigurationPropagatedRouteTablesIDs struct {
+// HubVirtualNetworkConnectionBodyPropertiesRoutingConfigurationPropagatedRouteTablesID represents a resource ID for a hub route table.
+type HubVirtualNetworkConnectionBodyPropertiesRoutingConfigurationPropagatedRouteTablesID struct {
 	ID string `json:"id,omitempty"`
 }
