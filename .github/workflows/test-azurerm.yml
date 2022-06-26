@@ -1,0 +1,35 @@
+---
+name: Test azurerm auth
+
+on:
+  pull_request:
+    types: ['opened', 'reopened', 'synchronize']
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  testauth:
+    name: Test auth
+    runs-on: ubuntu-latest
+    environment: CSUTF-RO
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: '~1.2.0'
+
+      - name: Terraform init
+        run: |
+          terraform init
+        working-directory: ${ github.workspace}/testazurerm
+
+      - name: Terraform plan
+        run: |
+          terraform plan
+        working-directory: ${ github.workspace}/testazurerm
