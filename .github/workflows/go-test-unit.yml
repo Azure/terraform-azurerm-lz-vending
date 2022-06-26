@@ -2,14 +2,33 @@
 name: Unit test
 
 on:
-  pull_request:
+  pull_request_target:
     types: ['opened', 'reopened', 'synchronize']
   workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  id-token: write
+  actions: read
+  checks: read
+  deployments: read
 
 jobs:
   unittest:
     name: Unit test
     runs-on: ${{ matrix.os }}
+    environment: CSUTF-RO
+    if: |
+      (
+        github.event.pull_request.head.repo.full_name == 'Azure/terraform-azurerm-alz-landing-zone'
+      )
+      ||
+      (
+        github.event.pull_request.head.repo.full_name != 'Azure/terraform-azurerm-alz-landing-zone'
+        &&
+        contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:')
+      )
     strategy:
       fail-fast: false
       matrix:
@@ -18,6 +37,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -32,3 +54,8 @@ jobs:
 
       - name: Go test
         run: make test
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
