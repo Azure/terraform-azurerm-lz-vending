@@ -101,54 +101,27 @@ Type: `string`
 
 Default: `""`
 
-### <a name="input_subscription_alias_billing_scope"></a> [subscription\_alias\_billing\_scope](#input\_subscription\_alias\_billing\_scope)
-
-Description: The billing scope for the new subscription alias.
-
-A valid billing scope starts with `/providers/Microsoft.Billing/billingAccounts/` and is case sensitive.
-
-You may also supply an empty string if you do not want to create a new subscription alias.  
-In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied.
-
-Type: `string`
-
-Default: `""`
-
-### <a name="input_subscription_alias_display_name"></a> [subscription\_alias\_display\_name](#input\_subscription\_alias\_display\_name)
-
-Description: The display name of the subscription alias.
-
-The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.  
-The maximum length is 63 characters.
-
-You may also supply an empty string if you do not want to create a new subscription alias.  
-In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied.
-
-Type: `string`
-
-Default: `""`
-
 ### <a name="input_subscription_alias_enabled"></a> [subscription\_alias\_enabled](#input\_subscription\_alias\_enabled)
 
-Description: Whether the creation of a new subscripion alias is enabled or not.
+Description: Whether to create a new subscription using the subscription alias resource.
 
-If it is disabled, the `subscription_id` variable must be supplied instead.
+If enabled, the following must also be supplied:
+
+- `subscription_alias_name`
+- `subscription_display_name`
+- `subscription_billing_scope`
+- `subscription_workload`
+
+Optionally, supply the following to enable the placement of the subscription into a management group:
+
+- `subscription_management_group_id`
+- `subscription_management_group_association_enabled`
+
+If disabled, supply the `subscription_id` variable instead.
 
 Type: `bool`
 
 Default: `false`
-
-### <a name="input_subscription_alias_management_group_id"></a> [subscription\_alias\_management\_group\_id](#input\_subscription\_alias\_management\_group\_id)
-
-Description:   The destination management group ID for the new subscription.
-
-**Note:** Do not supply the display name.  
-The management group ID forms part of the Azure resource ID. E.g.,
-`/providers/Microsoft.Management/managementGroups/{managementGroupId}`.
-
-Type: `string`
-
-Default: `""`
 
 ### <a name="input_subscription_alias_name"></a> [subscription\_alias\_name](#input\_subscription\_alias\_name)
 
@@ -158,20 +131,34 @@ The string must be comprised of a-z, A-Z, 0-9, - and \_.
 The maximum length is 63 characters.
 
 You may also supply an empty string if you do not want to create a new subscription alias.  
-In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied.
+In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
 
 Default: `""`
 
-### <a name="input_subscription_alias_workload"></a> [subscription\_alias\_workload](#input\_subscription\_alias\_workload)
+### <a name="input_subscription_billing_scope"></a> [subscription\_billing\_scope](#input\_subscription\_billing\_scope)
 
 Description: The billing scope for the new subscription alias.
 
-The workload type can be either `Production` or `DevTest` and is case sensitive.
+A valid billing scope starts with `/providers/Microsoft.Billing/billingAccounts/` and is case sensitive.
 
 You may also supply an empty string if you do not want to create a new subscription alias.  
-In this scenario, `subscription_alias_enabled` should be set to `false` and `subscription_id` must be supplied.
+In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
+
+Type: `string`
+
+Default: `""`
+
+### <a name="input_subscription_display_name"></a> [subscription\_display\_name](#input\_subscription\_display\_name)
+
+Description: The display name of the subscription alias.
+
+The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.  
+The maximum length is 63 characters.
+
+You may also supply an empty string if you do not want to create a new subscription alias.  
+In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
 
@@ -193,6 +180,41 @@ In this scenario, `subscription_alias_enabled` should be set to `true` and the f
 - `subscription_alias_display_name`
 - `subscription_alias_billing_scope`
 - `subscription_alias_workload`
+
+Type: `string`
+
+Default: `""`
+
+### <a name="input_subscription_management_group_association_enabled"></a> [subscription\_management\_group\_association\_enabled](#input\_subscription\_management\_group\_association\_enabled)
+
+Description: Whether to create the `azurerm_management_group_association` resource.
+
+If enabled, the `subscription_management_group_id` must also be supplied.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_subscription_management_group_id"></a> [subscription\_management\_group\_id](#input\_subscription\_management\_group\_id)
+
+Description:   The destination management group ID for the new subscription.
+
+**Note:** Do not supply the display name.  
+The management group ID forms part of the Azure resource ID. E.g.,
+`/providers/Microsoft.Management/managementGroups/{managementGroupId}`.
+
+Type: `string`
+
+Default: `""`
+
+### <a name="input_subscription_workload"></a> [subscription\_workload](#input\_subscription\_workload)
+
+Description: The billing scope for the new subscription alias.
+
+The workload type can be either `Production` or `DevTest` and is case sensitive.
+
+You may also supply an empty string if you do not want to create a new subscription alias.  
+In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
 
