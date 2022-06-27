@@ -2,7 +2,7 @@ variable "location" {
   type = string
   description = <<DESCRIPTION
 The location of resources deployed by this module.
-  DESCRIPTION
+DESCRIPTION
   default = ""
 }
 
@@ -24,7 +24,7 @@ In this scenario, `subscription_alias_enabled` should be set to `true` and the f
 - `subscription_alias_display_name`
 - `subscription_alias_billing_scope`
 - `subscription_alias_workload`
-  DESCRIPTION
+DESCRIPTION
   validation {
     condition     = can(regex("^$|^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_id))
     error_message = "Must be empty, or a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."

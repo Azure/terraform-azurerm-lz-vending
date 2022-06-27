@@ -72,8 +72,8 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)
 	require.NoError(t, err)
-	v["subscription_alias_billing_scope"] = billingScope
-	v["subscription_alias_management_group_id"] = v["subscription_alias_name"]
+	v["subscription_billing_scope"] = billingScope
+	v["subscription_management_group_id"] = v["subscription_alias_name"]
 	terraformOptions.Vars = v
 
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
@@ -98,7 +98,7 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 		terraformOptions.Logger.Logf(t, "cannot cancel subscription: %v", err)
 	}()
 
-	err = isSubscriptionInManagementGroup(t, u, v["subscription_alias_management_group_id"].(string))
+	err = isSubscriptionInManagementGroup(t, u, v["subscription_management_group_id"].(string))
 	assert.NoError(t, err)
 
 	tid := os.Getenv("AZURE_TENANT_ID")
@@ -245,9 +245,9 @@ func getValidInputVariables(billingScope string) (map[string]interface{}, error)
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
 	return map[string]interface{}{
-		"subscription_alias_name":          name,
-		"subscription_alias_display_name":  name,
-		"subscription_alias_billing_scope": billingScope,
-		"subscription_alias_workload":      "DevTest",
+		"subscription_alias_name":    name,
+		"subscription_display_name":  name,
+		"subscription_billing_scope": billingScope,
+		"subscription_workload":      "DevTest",
 	}, nil
 }
