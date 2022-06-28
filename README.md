@@ -168,10 +168,14 @@ Default: `""`
 
 Description: An existing subscription id.
 
-Use this when you do not want the module to create a new subscription.
+Use this when you do not want the module to create a new subscription.  
+But do want to manage the management group membership.
 
 A GUID should be supplied in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.  
 All letters must be lowercase.
+
+When using this, `subscription_management_group_association_enabled` should be enabled,  
+and `subscription_management_group_id` should be supplied.
 
 You may also supply an empty string if you want to create a new subscription alias.  
 In this scenario, `subscription_alias_enabled` should be set to `true` and the following other variables must be supplied:

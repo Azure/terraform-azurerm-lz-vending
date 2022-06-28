@@ -27,14 +27,14 @@ DESCRIPTION
 }
 
 variable "virtual_network_peering_enabled" {
-  type       = bool
+  type        = bool
   description = <<DESCRIPTION
 Whether to enable peering with the supplied hub virtual network.
 Enables a hub & spoke networking topology.
 
 If enabled the `hub_network_resource_id` must also be suppled.
 DESCRIPTION
-  default = false
+  default     = false
 }
 
 variable "hub_network_resource_id" {
@@ -50,14 +50,14 @@ DESCRIPTION
 }
 
 variable "virtual_network_vwan_connection_enabled" {
-  type       = bool
+  type        = bool
   description = <<DESCRIPTION
 Whether to enable connection with supplied vwan hub.
 Enables a vwan networking topology.
 
 If enabled the `vwan_hub_resource_id` must also be supplied.
 DESCRIPTION
-  default = false
+  default     = false
 }
 
 variable "vwan_hub_resource_id" {

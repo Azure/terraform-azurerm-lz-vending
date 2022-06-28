@@ -17,14 +17,14 @@ DESCRIPTION
 }
 
 variable "virtual_network_peering_enabled" {
-  type       = bool
+  type        = bool
   description = <<DESCRIPTION
 Whether to enable peering with the supplied hub virtual network.
 Enables a hub & spoke networking topology.
 
 If enabled the `hub_network_resource_id` must also be suppled.
 DESCRIPTION
-  default = false
+  default     = false
 }
 
 variable "hub_network_resource_id" {
@@ -44,14 +44,14 @@ DESCRIPTION
 }
 
 variable "virtual_network_vwan_connection_enabled" {
-  type       = bool
+  type        = bool
   description = <<DESCRIPTION
 Whether to enable connection with supplied vwan hub.
 Enables a vwan networking topology.
 
 If enabled the `vwan_hub_resource_id` must also be suppled.
 DESCRIPTION
-  default = false
+  default     = false
 }
 
 variable "vwan_hub_resource_id" {
@@ -110,7 +110,7 @@ DESCRIPTION
 }
 
 variable "virtual_network_vwan_routetable_resource_id" {
-  type = string
+  type        = string
   description = <<DESCRIPTION
 The resource ID of the virtual network route table to use for the virtual network.
 
@@ -118,7 +118,7 @@ Leave blank to use the `defaultRouteTable`.
 
 E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable`
 DESCRIPTION
-  default = ""
+  default     = ""
   validation {
     condition     = can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", var.virtual_network_vwan_routetable_resource_id))
     error_message = "Value must be an Azure vwan hub resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
@@ -126,23 +126,23 @@ DESCRIPTION
 }
 
 variable "virtual_network_vwan_propagated_routetables_resource_ids" {
-  type = list(string)
+  type        = list(string)
   description = <<DESCRIPTION
 The list of route table resource ids to advertise routes to.
 
 Leave blank to use the `defaultRouteTable`.
 DESCRIPTION
-  default = []
+  default     = []
 }
 
 variable "virtual_network_vwan_propagated_routetables_labels" {
-  type = list(string)
+  type        = list(string)
   description = <<DESCRIPTION
 The list of virtual WAN labels to advertise the routes to.
 
 Leave blank to use the `default` label.
 DESCRIPTION
-  default = []
+  default     = []
 }
 
 # variable "virtual_network_subnets" {

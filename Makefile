@@ -5,14 +5,19 @@ TEST?=$$(go list ./... |grep -v 'vendor'|grep -v 'utils')
 docs:
 	@echo "==> Updating documentation"
 	terraform-docs -c .tfdocs-config.yml .
-	find . | egrep ".md" | sort | while read f; do terrafmt fmt $f; done
+	find . | egrep ".md" | sort | while read f; do terraform fmt $f; done
 
 fmt:
 	@echo "==> Fixing source code with gofmt..."
 	find ./tests -name '*.go' | grep -v vendor | xargs gofmt -s -w
+	@echo "==> Fixing Terraform code with terraform fmt..."
+	terraform fmt -recursive
 
 fmtcheck:
+  @echo "==> Checking source code with gofmt..."
 	@sh "$(CURDIR)/scripts/gofmtcheck.sh"
+	@echo "==> Checking source code with terraform fmt..."
+	terraform fmt -check -recursive
 
 fumpt:
 	@echo "==> Fixing source code with Gofumpt..."

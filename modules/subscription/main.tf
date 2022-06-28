@@ -28,7 +28,7 @@ resource "azapi_resource" "subscription_alias" {
 resource "azurerm_management_group_subscription_association" "this" {
   count               = var.subscription_management_group_association_enabled ? 1 : 0
   management_group_id = local.subscription_alias_management_group_resource_id
-  subscription_id     = local.subscription_id_alias
+  subscription_id     = "/subscriptions/${local.subscription_id}"
 }
 
 # Creating an alias for an existing subscription is not currently supported.

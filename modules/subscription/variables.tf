@@ -1,5 +1,5 @@
 variable "subscription_alias_enabled" {
-  type = bool
+  type        = bool
   description = <<DESCRIPTION
 Whether to create a new subscription using the subscription alias resource.
 
@@ -90,8 +90,8 @@ DESCRIPTION
 }
 
 variable "subscription_management_group_id" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = <<DESCRIPTION
 The destination management group ID for the new subscription.
 
@@ -100,17 +100,28 @@ The management group ID forms part of the Azure resource ID. E.g.,
 `/providers/Microsoft.Management/managementGroups/{managementGroupId}`.
 DESCRIPTION
   validation {
-    condition = can(regex("^$|^[().a-zA-Z0-9_-]{1,90}$", var.subscription_management_group_id))
+    condition     = can(regex("^$|^[().a-zA-Z0-9_-]{1,90}$", var.subscription_management_group_id))
     error_message = "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.)."
   }
 }
 
 variable "subscription_management_group_association_enabled" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = <<DESCRIPTION
 Whether to create the `azurerm_management_group_association` resource.
 
 If enabled, the `subscription_management_group_id` must also be supplied.
 DESCRIPTION
+}
+
+variable "subscription_id" {
+  type        = string
+  description = <<DESCRIPTION
+DESCRIPTION
+  default     = ""
+  validation {
+    condition     = can(regex("^$|^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_id))
+    error_message = "Must be empty, or a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
+  }
 }

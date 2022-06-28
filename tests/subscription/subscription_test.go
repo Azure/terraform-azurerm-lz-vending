@@ -26,18 +26,24 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 	terraformOptions.Vars = v
 
 	// Create plan and ensure only a single resource is created.
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	require.Equal(t, 1, len(plan.ResourcePlannedValuesMap))
 
 	// Extract values from the plan and compare to the input variables.
-	name := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias"].AttributeValues["name"]
-	bodyText := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias"].AttributeValues["body"]
+	require.Contains(t, plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues, "body")
+	require.Contains(t, plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues, "name")
+	name := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["name"]
+	bodyText := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["body"]
 
 	var body models.SubscriptionAliasBody
 	err = json.Unmarshal([]byte(bodyText.(string)), &body)
 	require.NoErrorf(t, err, "Failed to unmarshal body JSON: %s", bodyText)
 
+	require.NotNilf(t, body.Properties.BillingScope, "BillingScope is nil")
+	require.NotNilf(t, body.Properties.DisplayName, "DisplayName is nil")
+	require.NotNilf(t, body.Properties.Workload, "Workload is nil")
 	assert.Equal(t, v["subscription_alias_name"], name)
 	assert.Equal(t, v["subscription_billing_scope"], *body.Properties.BillingScope)
 	assert.Equal(t, v["subscription_display_name"], *body.Properties.DisplayName)
@@ -59,14 +65,16 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 	terraformOptions.Vars = v
 
 	// Create plan and ensure only a two resources are created.
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	require.Equal(t, 2, len(plan.ResourcePlannedValuesMap))
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, "azapi_resource.subscription_alias[0]")
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, "azurerm_management_group_subscription_association.this[0]")
 
 	// Extract values from the plan and compare to the input variables.
 	require.Contains(t, plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues, "body")
-	require.Contains()
+	require.Contains(t, plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues, "name")
 	name := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["name"]
 	bodyText := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["body"]
 
@@ -75,12 +83,45 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 	require.NoErrorf(t, err, "Failed to unmarshal body JSON: %s", bodyText)
 
 	assert.Equal(t, v["subscription_alias_name"], name)
+	require.NotNilf(t, body.Properties.BillingScope, "BillingScope is nil")
+	require.NotNilf(t, body.Properties.DisplayName, "DisplayName is nil")
+	require.NotNilf(t, body.Properties.Workload, "Workload is nil")
 	assert.Equal(t, v["subscription_billing_scope"], *body.Properties.BillingScope)
 	assert.Equal(t, v["subscription_display_name"], *body.Properties.DisplayName)
 	assert.Equal(t, v["subscription_workload"], *body.Properties.Workload)
+
 	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
-	assert.Equal(t, mgResId, *body.Properties.AdditionalProperties.ManagementGroupId)
-	assert.Nil(t, body.Properties.SubscriptionId)
+	mg := plan.ResourcePlannedValuesMap["azurerm_management_group_subscription_association.this[0]"]
+	require.Contains(t, mg.AttributeValues, "management_group_id")
+	assert.Equal(t, mgResId, mg.AttributeValues["management_group_id"])
+}
+
+// TestSubscriptionExistingWithManagementGroup tests the
+// validation functions with an existing subscription id, including a destination management group,
+// then creates a plan and compares the input variables to the planned values.
+func TestSubscriptionExistingWithManagementGroup(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	v := getMockInputVariables()
+	v["subscription_management_group_id"] = "testdeploy"
+	v["subscription_management_group_association_enabled"] = true
+	v["subscription_alias_enabled"] = false
+	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
+	terraformOptions.Vars = v
+
+	// Create plan and ensure only a two resources are created.
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoError(t, err)
+	require.Equal(t, 1, len(plan.ResourcePlannedValuesMap))
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, "azurerm_management_group_subscription_association.this[0]")
+
+	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
+	mg := plan.ResourcePlannedValuesMap["azurerm_management_group_subscription_association.this[0]"]
+	require.Contains(t, mg.AttributeValues, "management_group_id")
+	assert.Equal(t, mgResId, mg.AttributeValues["management_group_id"])
 }
 
 // TestSubscriptionAliasCreateInvalidBillingScope tests the validation function of the subscription_billing_scope variable.
@@ -92,6 +133,7 @@ func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
 	v := getMockInputVariables()
 	v["subscription_billing_scope"] = "/PRoviders/Microsoft.Billing/billingAccounts/test-billing-account"
 	terraformOptions.Vars = v
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	errMessage := utils.SanitiseErrorMessage(err)
 	assert.Contains(t, errMessage, "A valid billing scope starts with /providers/Microsoft.Billing/billingAccounts/ and is case sensitive.")
@@ -106,6 +148,7 @@ func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
 	v := getMockInputVariables()
 	v["subscription_workload"] = "PRoduction"
 	terraformOptions.Vars = v
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	errMessage := utils.SanitiseErrorMessage(err)
 	assert.Contains(t, errMessage, "The workload type can be either Production or DevTest and is case sensitive.")
@@ -121,6 +164,7 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.
 	v := getMockInputVariables()
 	v["subscription_management_group_id"] = "invalid/chars"
 	terraformOptions.Vars = v
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	errMessage := utils.SanitiseErrorMessage(err)
 	assert.Contains(t, errMessage, "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
@@ -136,6 +180,7 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
 	v := getMockInputVariables()
 	v["subscription_management_group_id"] = "tooooooooooooooooooooooooooloooooooooooooooooooooonnnnnnnnnnnnnnnnnnngggggggggggggggggggggg"
 	terraformOptions.Vars = v
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	errMessage := utils.SanitiseErrorMessage(err)
 	assert.Contains(t, errMessage, "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")

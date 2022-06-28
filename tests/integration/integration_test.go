@@ -31,11 +31,12 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	terraformOptions.Vars = v
 
 	// Create plan and ensure only a single resource is created.
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, 5, "expected 5 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
 	resources := []string{
-		"module.subscription[0].azapi_resource.subscription_alias",
+		"module.subscription[0].azapi_resource.subscription_alias[0]",
 		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
 		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
 		"module.virtualnetwork[0].azapi_resource.rg",
@@ -61,11 +62,12 @@ func TestIntegrationVwan(t *testing.T) {
 	terraformOptions.Vars = v
 
 	// Create plan and ensure only a single resource is created.
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, 4, "expected 4 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
 	resources := []string{
-		"module.subscription[0].azapi_resource.subscription_alias",
+		"module.subscription[0].azapi_resource.subscription_alias[0]",
 		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5\"]",
 		"module.virtualnetwork[0].azapi_resource.rg",
 		"module.virtualnetwork[0].azapi_resource.vnet",
@@ -84,12 +86,14 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
+	v["subscription_alias_enabled"] = false
 	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
 	v["virtual_network_enabled"] = true
 	v["virtual_network_peering_enabled"] = true
 	terraformOptions.Vars = v
 
 	// Create plan and ensure only a single resource is created.
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, 4, "expected 4 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
@@ -107,10 +111,10 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 func getMockInputVariables() map[string]interface{} {
 	return map[string]interface{}{
 		// subscription variables
-		"subscription_alias_billing_scope": "/providers/Microsoft.Billing/billingAccounts/test-billing-account",
-		"subscription_alias_display_name":  "test-subscription-alias",
-		"subscription_alias_name":          "test-subscription-alias",
-		"subscription_alias_workload":      "Production",
+		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/test-billing-account",
+		"subscription_display_name":  "test-subscription-alias",
+		"subscription_alias_name":    "test-subscription-alias",
+		"subscription_workload":      "Production",
 
 		// virtualnetwork variables
 		"virtual_network_address_space":       []string{"10.1.0.0/24", "172.16.1.0/24"},

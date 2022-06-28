@@ -3,7 +3,7 @@
 # to be able to deploy resources to an existing subscription.
 module "subscription" {
   source = "./modules/subscription"
-  count  = var.subscription_alias_enabled || var.subscription_alias_management_group_association_enabled ? 1 : 0
+  count  = var.subscription_alias_enabled || var.subscription_management_group_association_enabled ? 1 : 0
 
   subscription_alias_enabled                        = var.subscription_alias_enabled
   subscription_alias_name                           = var.subscription_alias_name
