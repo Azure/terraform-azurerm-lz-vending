@@ -27,6 +27,14 @@ variable "subscription_alias_workload" {
   type = string
 }
 
+variable "subscription_management_group_association_enabled" {
+  type = bool
+}
+
+variable "subscription_alias_enabled" {
+  type = bool
+}
+
 resource "azapi_resource" "mg" {
   type      = "Microsoft.Management/managementGroups@2021-04-01"
   parent_id = "/"
@@ -34,12 +42,14 @@ resource "azapi_resource" "mg" {
 }
 
 module "subscription_test" {
-  source                                 = "../../"
-  subscription_alias_name                = var.subscription_alias_name
-  subscription_alias_display_name        = var.subscription_alias_display_name
-  subscription_alias_workload            = "DevTest"
-  subscription_alias_management_group_id = azapi_resource.mg.name
-  subscription_alias_billing_scope       = var.subscription_alias_billing_scope
+  source                                            = "../../"
+  subscription_alias_name                           = var.subscription_alias_name
+  subscription_alias_display_name                   = var.subscription_alias_display_name
+  subscription_alias_workload                       = var.subscription_alias_workload
+  subscription_alias_management_group_id            = azapi_resource.mg.name
+  subscription_alias_billing_scope                  = var.subscription_alias_billing_scope
+  subscription_management_group_association_enabled = var.subscription_management_group_association_enabled
+  subscription_alias_enabled                        = var.subscription_alias_enabled
 }
 
 output "subscription_id" {

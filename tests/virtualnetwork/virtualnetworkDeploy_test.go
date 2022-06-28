@@ -98,7 +98,7 @@ func getValidInputVariables() (map[string]interface{}, error) {
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
 	return map[string]interface{}{
-		"subscription_id":                     os.Getenv("AZURE_EXISTING_SUBSCRIPTION_ID"),
+		"subscription_id":                     os.Getenv("AZURE_SUBSCRIPTION_ID"),
 		"virtual_network_address_space":       []string{"10.1.0.0/24", "172.16.1.0/24"},
 		"virtual_network_location":            "northeurope",
 		"virtual_network_name":                name,
