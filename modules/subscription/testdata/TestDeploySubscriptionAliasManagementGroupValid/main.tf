@@ -7,11 +7,11 @@ terraform {
   }
 }
 
-variable "subscription_alias_billing_scope" {
+variable "subscription_billing_scope" {
   type = string
 }
 
-variable "subscription_alias_management_group_id" {
+variable "subscription_management_group_id" {
   type = string
 }
 
@@ -19,11 +19,11 @@ variable "subscription_alias_name" {
   type = string
 }
 
-variable "subscription_alias_display_name" {
+variable "subscription_display_name" {
   type = string
 }
 
-variable "subscription_alias_workload" {
+variable "subscription_workload" {
   type = string
 }
 
@@ -44,10 +44,10 @@ resource "azapi_resource" "mg" {
 module "subscription_test" {
   source                                            = "../../"
   subscription_alias_name                           = var.subscription_alias_name
-  subscription_alias_display_name                   = var.subscription_alias_display_name
-  subscription_alias_workload                       = var.subscription_alias_workload
-  subscription_alias_management_group_id            = azapi_resource.mg.name
-  subscription_alias_billing_scope                  = var.subscription_alias_billing_scope
+  subscription_display_name                         = var.subscription_display_name
+  subscription_workload                             = var.subscription_workload
+  subscription_management_group_id                  = azapi_resource.mg.name
+  subscription_billing_scope                        = var.subscription_billing_scope
   subscription_management_group_association_enabled = var.subscription_management_group_association_enabled
   subscription_alias_enabled                        = var.subscription_alias_enabled
 }
