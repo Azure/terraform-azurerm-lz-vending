@@ -3,7 +3,7 @@ name: Deployment test
 
 on:
   pull_request_target:
-    types: [opened, reopened, synchronize, labeled]
+    types: ['opened', 'reopened', 'synchronize', 'labeled']
   workflow_dispatch:
 
 permissions:
@@ -22,8 +22,6 @@ jobs:
       (
         (
           contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:')
-          &&
-          github.event == 'pull_request'
         )
         ||
         (
