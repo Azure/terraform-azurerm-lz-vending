@@ -26,7 +26,8 @@ jobs:
         ||
         (
           github.ref == 'refs/heads/main'
-          && github.event == 'workflow_dispatch'
+          &&
+          github.event == 'workflow_dispatch'
         )
       )
     runs-on: ${{ matrix.os }}
@@ -64,8 +65,8 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      # This is a terrible hack but this is due to the fact that AZURE_TENANT_ID is required.
-      # It allows MSI to be tried. As GitHub actions runners are in Azure, this fails.
+      # This is a terrible hack but this is due to the fact that AZURE_TENANT_ID is required,
+      # it allows MSI to be tried for authentication. As GitHub actions runners are in Azure, this fails.
       # This only works on Linux based runners
       - name: iptables block MSI endpoint
         run: sudo iptables -I OUTPUT --destination 169.254.169.254 -j REJECT
@@ -73,8 +74,12 @@ jobs:
       - name: Go test
         run: make testdeploy
         env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
           AZURE_BILLING_SCOPE: ${{ secrets.AZURE_BILLING_SCOPE }}
-          AZURE_EXISTING_SUBSCRIPTION_ID: ${{ secrets.AZURE_EXISTING_SUBSCRIPTION_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       # This only works on Linux based runners
