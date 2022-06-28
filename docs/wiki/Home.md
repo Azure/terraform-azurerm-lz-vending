@@ -1,3 +1,6 @@
-# ALZ landing zone Terraform module
+<!-- markdownlint-disable MD041 -->
 
-TBC
+Welcome to the alz-landing-zone module documentation.
+More soon.
+
+[Examples](Examples)

@@ -16,5 +16,5 @@ type VirtualNetworkPeeringProperties struct {
 
 // VirtualNetworkPeeringPropertiesRemoteVirtualNetwork represents a reference to a remote virtual network.
 type VirtualNetworkPeeringPropertiesRemoteVirtualNetwork struct {
-	Id string `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 }

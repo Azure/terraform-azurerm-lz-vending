@@ -48,7 +48,7 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
-	v["virtual_network_enable_peering"] = true
+	v["virtual_network_peering_enabled"] = true
 	v["virtual_network_use_remote_gateways"] = false
 	terraformOptions.Vars = v
 
@@ -75,7 +75,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
-	v["virtual_network_enable_vwan_connection"] = true
+	v["virtual_network_vwan_connection_enabled"] = true
 	terraformOptions.Vars = v
 
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
@@ -98,7 +98,7 @@ func getValidInputVariables() (map[string]interface{}, error) {
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
 	return map[string]interface{}{
-		"subscription_id":                     os.Getenv("AZURE_EXISTING_SUBSCRIPTION_ID"),
+		"subscription_id":                     os.Getenv("AZURE_SUBSCRIPTION_ID"),
 		"virtual_network_address_space":       []string{"10.1.0.0/24", "172.16.1.0/24"},
 		"virtual_network_location":            "northeurope",
 		"virtual_network_name":                name,

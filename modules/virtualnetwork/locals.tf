@@ -10,7 +10,7 @@ locals {
   # virtual_network_peering_map is the data required to create the two vnet peerings.
   # If the supplied hub virtual network is an empty string, the map will be empty,
   # resulting on no resources being created.
-  virtual_network_peering_map = var.virtual_network_enable_peering ? {
+  virtual_network_peering_map = var.virtual_network_peering_enabled ? {
     # Peering this network to the remote network
     "outbound" = {
       name               = "peer-${local.hub_network_uuidv5}"
@@ -25,10 +25,15 @@ locals {
     }
   } : {}
 
+  # virtual_network_resource_id is the Azure resource id of the virtual network.
+  # Although we could use the azapi_resource.vnet.id, this is not known until after the resource is created.
+  # Therefore we construct this using the input vars to improve known attributes in unit testing.
+  virtual_network_resource_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.virtual_network_resource_group_name}/providers/Microsoft.Network/virtualNetworks/${var.virtual_network_name}"
+
   # vhub_connection_map is the data required to create the virtual wan hub connection.
   # If the supplied vwan hub is an empty string, the set will be empty,
   # resulting on no resource being created.
-  vhub_connection_set = var.virtual_network_enable_vwan_connection ? toset([
+  vhub_connection_set = var.virtual_network_vwan_connection_enabled ? toset([
     "vhubcon-${local.hub_network_uuidv5}"
   ]) : toset([])
 

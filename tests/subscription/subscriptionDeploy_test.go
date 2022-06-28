@@ -35,6 +35,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	terraformOptions.Vars = v
 
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	require.NoError(t, err)
 
@@ -67,15 +68,17 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
-
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)
 	require.NoError(t, err)
-	v["subscription_alias_billing_scope"] = billingScope
-	v["subscription_alias_management_group_id"] = v["subscription_alias_name"]
+	v["subscription_billing_scope"] = billingScope
+	v["subscription_management_group_id"] = v["subscription_alias_name"]
+	v["subscription_management_group_association_enabled"] = true
 	terraformOptions.Vars = v
 
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	require.NoError(t, err)
 
@@ -84,7 +87,7 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
+	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 30*time.Second, 10)
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
 	assert.NoError(t, err)
@@ -98,7 +101,7 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 		terraformOptions.Logger.Logf(t, "cannot cancel subscription: %v", err)
 	}()
 
-	err = isSubscriptionInManagementGroup(t, u, v["subscription_alias_management_group_id"].(string))
+	err = isSubscriptionInManagementGroup(t, u, v["subscription_management_group_id"].(string))
 	assert.NoError(t, err)
 
 	tid := os.Getenv("AZURE_TENANT_ID")
@@ -107,41 +110,6 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 		t.Logf("could not move subscription to management group %s: %s", tid, err)
 	}
 }
-
-// Creating an alias for an existing subscription is not currently supported.
-// Need use case data to justify the effort in testing support.
-//
-// // TestDeploySubscriptionAliasExistingSubscription tests the creation
-// // of a subscription alias for an existing subscription
-// func TestDeploySubscriptionAliasExistingSubscription(t *testing.T) {
-// 	utils.PreCheckDeployTests(t)
-
-// 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
-// 	v, err := getValidInputVariables(billingScope)
-// 	if err != nil {
-// 		t.Fatalf("Cannot generate valid input variables, %s", err)
-// 	}
-
-// 	existingSub, err := uuid.Parse(os.Getenv("AZURE_EXISTING_SUBSCRIPTION_ID"))
-// 	if err != nil {
-// 		t.Fatalf("Cannot parse AZURE_EXISTING_SUBSCRIPTION_ID as uuid, %s", err)
-// 	}
-// 	v["subscription_id"] = existingSub.String()
-
-// 	terraformOptions := utils.GetDefaultTerraformOptions(v)
-
-// 	_, err = terraform.InitAndPlanE(t, terraformOptions)
-// 	require.NoError(t, err)
-
-// 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
-// 	defer terraform.Destroy(t, terraformOptions)
-// 	require.NoError(t, err)
-
-// 	sid := terraform.Output(t, terraformOptions, "subscription_id")
-// 	_, err = uuid.Parse(sid)
-// 	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
-// 	// DO NOT CANCEL THIS SUBSCRIPTION
-// }
 
 // cancelSubscription cancels the supplied Azure subscription.
 // it retries a few times as the subscription api is eventually consistent.
@@ -245,9 +213,10 @@ func getValidInputVariables(billingScope string) (map[string]interface{}, error)
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
 	return map[string]interface{}{
-		"subscription_alias_name":          name,
-		"subscription_alias_display_name":  name,
-		"subscription_alias_billing_scope": billingScope,
-		"subscription_alias_workload":      "DevTest",
+		"subscription_alias_name":    name,
+		"subscription_display_name":  name,
+		"subscription_billing_scope": billingScope,
+		"subscription_workload":      "DevTest",
+		"subscription_alias_enabled": true,
 	}, nil
 }

@@ -41,7 +41,7 @@ func PreCheckDeployTests(t *testing.T) {
 		"TERRATEST_DEPLOY",
 		"AZURE_BILLING_SCOPE",
 		"AZURE_TENANT_ID",
-		"AZURE_EXISTING_SUBSCRIPTION_ID",
+		"AZURE_SUBSCRIPTION_ID",
 	}
 
 	for _, variable := range variables {
@@ -97,6 +97,7 @@ func TerraformDestroyWithRetry(t *testing.T, to *terraform.Options, dur time.Dur
 	err := try.Do(func(attempt int) (bool, error) {
 		_, err := terraform.DestroyE(t, to)
 		if err != nil {
+			t.Logf("terraform destroy failed, attempt %d/%d", attempt, max)
 			time.Sleep(dur)
 		}
 		return attempt < max, err
@@ -130,9 +131,9 @@ func removeTestDir(t *testing.T, dir string) {
 //  a function that can be used with defer to clean up afterwards.
 func CopyTerraformFolderToTempAndCleanUp(t *testing.T, moduleDir string, testDir string) (string, func(), error) {
 	tmp := test_structure.CopyTerraformFolderToTemp(t, moduleDir, testDir)
-	// We work out the depth of the test directory relative to the test so we know how many
-	// directories to go up to get to the root.
-	// We can then delete the right directory when clean in up.
+	// We normalise, then work out the depth of the test directory relative
+	// to the test so we know how many/ directories to go up to get to the root.
+	// We can then delete the right directory when cleaning up.
 	absTestPath := filepath.Join(moduleDir, testDir)
 	relPath, err := filepath.Rel(moduleDir, absTestPath)
 	if err != nil {
@@ -151,4 +152,22 @@ func CopyTerraformFolderToTempAndCleanUp(t *testing.T, moduleDir string, testDir
 		removeTestDir(t, dir)
 	}
 	return tmp, f, nil
+}
+
+// CreateTerraformProvidersFile creates an azurerm terraform providers file in the supplied directory.
+func CreateTerraformProvidersFile(dir string) error {
+	dir = filepath.Clean(dir)
+	f, err := os.Create(filepath.Join(dir, "providers.tf"))
+	if err != nil {
+		return fmt.Errorf("error creating providers.tf: %v", err)
+	}
+	providerstf := `
+provider "azurerm" {
+  features {}
+}`
+	_, err = f.WriteString(providerstf)
+	if err != nil {
+		return fmt.Errorf("error writing providers.tf: %v", err)
+	}
+	return nil
 }

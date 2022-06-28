@@ -2,7 +2,7 @@
 ### Execute this command in the Terraform module's code folder:
 # terraform-docs -c .tfdocs-config.yml .
 
-formatter: "markdown table" # this is required
+formatter: "markdown document" # this is required
 
 version: "0.16.0"
 
