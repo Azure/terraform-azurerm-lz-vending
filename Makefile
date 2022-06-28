@@ -2,6 +2,12 @@ TESTTIMEOUT=60m
 TESTFILTER=
 TEST?=$$(go list ./... |grep -v 'vendor'|grep -v 'utils')
 
+default:
+	@echo "==> Type make <thing> to run tasks"
+	@echo
+	@echo "Thing is one of:"
+	@echo "docs fmt fmtcheck fumpt lint test testdeploy tfclean tools"
+
 docs:
 	@echo "==> Updating documentation"
 	terraform-docs -c .tfdocs-config.yml .
@@ -27,7 +33,7 @@ lint:
 	cd tests && golangci-lint run
 
 test: fmtcheck
-	cd tests &&  go test $(TEST) $(TESTARGS) -timeout=$(TESTTIMEOUT) -run ^$(TESTFILTER)
+	cd tests && go test $(TEST) $(TESTARGS) -timeout=$(TESTTIMEOUT) -run ^Test$(TESTFILTER)
 
 testdeploy: fmtcheck
 	cd tests &&	TERRATEST_DEPLOY=1 go test $(TEST) $(TESTARGS) -run ^TestDeploy$(TESTFILTER) -timeout $(TESTTIMEOUT)
