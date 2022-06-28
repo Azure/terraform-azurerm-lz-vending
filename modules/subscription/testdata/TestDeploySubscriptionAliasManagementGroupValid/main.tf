@@ -38,7 +38,7 @@ variable "subscription_alias_enabled" {
 resource "azapi_resource" "mg" {
   type      = "Microsoft.Management/managementGroups@2021-04-01"
   parent_id = "/"
-  name      = var.subscription_alias_management_group_id
+  name      = var.subscription_management_group_id
 }
 
 module "subscription_test" {
