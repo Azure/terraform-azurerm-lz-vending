@@ -33,8 +33,6 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.0.0)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 0.3.0)
-
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.7.0)
 
 ## Modules
@@ -141,6 +139,24 @@ Type: `string`
 
 Default: `""`
 
+### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
+
+Description: A map of tags to assign to the newly created subscription.  
+Only valid when `subsciption_alias_enabled` is set to `true`.
+
+Example value:
+
+```terraform
+{
+  mytag  = "myvalue"
+  mytag2 = "myvalue2
+}
+```
+
+Type: `map(string)`
+
+Default: `{}`
+
 ### <a name="input_subscription_workload"></a> [subscription\_workload](#input\_subscription\_workload)
 
 Description: The billing scope for the new subscription alias.
@@ -158,8 +174,8 @@ Default: `""`
 
 The following resources are used by this module:
 
-- [azapi_resource.subscription_alias](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_management_group_subscription_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group_subscription_association) (resource)
+- [azurerm_subscription.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription) (resource)
 
 ## Outputs
 

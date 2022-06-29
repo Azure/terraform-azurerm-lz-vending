@@ -84,15 +84,34 @@ The following input variables are optional (have default values):
 
 ### <a name="input_hub_network_resource_id"></a> [hub\_network\_resource\_id](#input\_hub\_network\_resource\_id)
 
-Description: The resource ID of the virtual network in the hub to which the created virtual network will be peered.
+Description: The resource ID of the virtual network in the hub to which the created virtual network will be peered.  
+The module will fully establish the peering by creating both sides of the peering connection.
+
+You must also set `virtual_network_peering_enabled = true`.
 
 E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet`
 
-Leave blank to create the virtual network without peering.
+Leave blank and set `virtual_network_peering_enabled = false` (the default) to create the virtual network without peering.
 
 Type: `string`
 
 Default: `""`
+
+### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
+
+Description: A map of tags to assign to the newly created subscription.  
+Only valid when `subsciption_alias_enabled` is set to `true`.
+
+Example value:
+
+{  
+  mytag  = "myvalue"  
+  mytag2 = "myvalue2
+}
+
+Type: `map(string)`
+
+Default: `{}`
 
 ### <a name="input_virtual_network_peering_enabled"></a> [virtual\_network\_peering\_enabled](#input\_virtual\_network\_peering\_enabled)
 
@@ -117,10 +136,12 @@ Default: `true`
 
 ### <a name="input_virtual_network_vwan_connection_enabled"></a> [virtual\_network\_vwan\_connection\_enabled](#input\_virtual\_network\_vwan\_connection\_enabled)
 
-Description: Whether to enable connection with supplied vwan hub.  
-Enables a vwan networking topology.
+Description: The resource ID of the vwan hub to which the virtual network will be connected.  
+E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-hub`
 
-If enabled the `vwan_hub_resource_id` must also be suppled.
+You must also set `virtual_network_vwan_connection_enabled = true`.
+
+Leave blank to and set `virtual_network_vwan_connection_enabled = false` (the default) to create a virtual network without a vwan hub connection.
 
 Type: `bool`
 
