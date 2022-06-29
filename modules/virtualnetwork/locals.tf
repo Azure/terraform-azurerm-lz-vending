@@ -39,13 +39,16 @@ locals {
 
   # vwan_propagated_routetables_resource_ids generates the routetable resource ids for the vhub connection
   # if not specified by the input variable, it will be the default routetable for the vwan hub.
-  vwan_propagated_routetables_resource_ids = length(var.virtual_network_vwan_propagated_routetables_resource_ids) > 0 ? [
-    for i in var.virtual_network_vwan_propagated_routetables_resource_ids : { id = i }
-    ] : [
-    { id = "${var.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable" }
-  ]
+  vwan_propagated_routetables_resource_ids = coalescelist(
+    [
+      for i in var.virtual_network_vwan_propagated_routetables_resource_ids : { id = i }
+    ],
+    [
+      { id = "${var.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable" }
+    ]
+  )
 
   # vwan_propagated_labels generates the propagated route labels for the vhub connection
   # if not specified by the input variable, it will be set to a list with a single item: `default`.
-  vwan_propagated_labels = length(var.virtual_network_vwan_propagated_routetables_labels) > 0 ? var.virtual_network_vwan_propagated_routetables_labels : ["default"]
+  vwan_propagated_labels = coalescelist(var.virtual_network_vwan_propagated_routetables_labels, ["default"])
 }

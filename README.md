@@ -211,6 +211,24 @@ Type: `string`
 
 Default: `""`
 
+### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
+
+Description: A map of tags to assign to the newly created subscription.  
+Only valid when `subsciption_alias_enabled` is set to `true`.
+
+Example value:
+
+```terraform
+{
+  mytag  = "myvalue"
+  mytag2 = "myvalue2
+}
+```
+
+Type: `map(string)`
+
+Default: `{}`
+
 ### <a name="input_subscription_workload"></a> [subscription\_workload](#input\_subscription\_workload)
 
 Description: The billing scope for the new subscription alias.

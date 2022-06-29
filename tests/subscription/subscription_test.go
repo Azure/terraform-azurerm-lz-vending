@@ -1,10 +1,8 @@
 package subscription
 
 import (
-	"encoding/json"
 	"testing"
 
-	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/models"
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
@@ -30,25 +28,19 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	require.Equal(t, 1, len(plan.ResourcePlannedValuesMap))
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, "azurerm_subscription.this[0]")
 
 	// Extract values from the plan and compare to the input variables.
-	require.Contains(t, plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues, "body")
-	require.Contains(t, plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues, "name")
-	name := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["name"]
-	bodyText := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["body"]
+	subalias := plan.ResourcePlannedValuesMap["azurerm_subscription.this[0]"]
+	require.Contains(t, subalias.AttributeValues, "alias")
+	require.Contains(t, subalias.AttributeValues, "billing_scope_id")
+	require.Contains(t, subalias.AttributeValues, "subscription_name")
+	require.Contains(t, subalias.AttributeValues, "workload")
 
-	var body models.SubscriptionAliasBody
-	err = json.Unmarshal([]byte(bodyText.(string)), &body)
-	require.NoErrorf(t, err, "Failed to unmarshal body JSON: %s", bodyText)
-
-	require.NotNilf(t, body.Properties.BillingScope, "BillingScope is nil")
-	require.NotNilf(t, body.Properties.DisplayName, "DisplayName is nil")
-	require.NotNilf(t, body.Properties.Workload, "Workload is nil")
-	assert.Equal(t, v["subscription_alias_name"], name)
-	assert.Equal(t, v["subscription_billing_scope"], *body.Properties.BillingScope)
-	assert.Equal(t, v["subscription_display_name"], *body.Properties.DisplayName)
-	assert.Equal(t, v["subscription_workload"], *body.Properties.Workload)
-	assert.Nil(t, body.Properties.SubscriptionId)
+	assert.Equal(t, v["subscription_alias_name"], subalias.AttributeValues["alias"])
+	assert.Equal(t, v["subscription_billing_scope"], subalias.AttributeValues["billing_scope_id"])
+	assert.Equal(t, v["subscription_display_name"], subalias.AttributeValues["subscription_name"])
+	assert.Equal(t, v["subscription_workload"], subalias.AttributeValues["workload"])
 }
 
 // TestSubscriptionAliasCreateValidWithManagementGroup tests the
@@ -69,26 +61,20 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	require.Equal(t, 2, len(plan.ResourcePlannedValuesMap))
-	terraform.RequirePlannedValuesMapKeyExists(t, plan, "azapi_resource.subscription_alias[0]")
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, "azurerm_subscription.this[0]")
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, "azurerm_management_group_subscription_association.this[0]")
 
 	// Extract values from the plan and compare to the input variables.
-	require.Contains(t, plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues, "body")
-	require.Contains(t, plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues, "name")
-	name := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["name"]
-	bodyText := plan.ResourcePlannedValuesMap["azapi_resource.subscription_alias[0]"].AttributeValues["body"]
+	subalias := plan.ResourcePlannedValuesMap["azurerm_subscription.this[0]"]
+	require.Contains(t, subalias.AttributeValues, "alias")
+	require.Contains(t, subalias.AttributeValues, "billing_scope_id")
+	require.Contains(t, subalias.AttributeValues, "subscription_name")
+	require.Contains(t, subalias.AttributeValues, "workload")
 
-	var body models.SubscriptionAliasBody
-	err = json.Unmarshal([]byte(bodyText.(string)), &body)
-	require.NoErrorf(t, err, "Failed to unmarshal body JSON: %s", bodyText)
-
-	assert.Equal(t, v["subscription_alias_name"], name)
-	require.NotNilf(t, body.Properties.BillingScope, "BillingScope is nil")
-	require.NotNilf(t, body.Properties.DisplayName, "DisplayName is nil")
-	require.NotNilf(t, body.Properties.Workload, "Workload is nil")
-	assert.Equal(t, v["subscription_billing_scope"], *body.Properties.BillingScope)
-	assert.Equal(t, v["subscription_display_name"], *body.Properties.DisplayName)
-	assert.Equal(t, v["subscription_workload"], *body.Properties.Workload)
+	assert.Equal(t, v["subscription_alias_name"], subalias.AttributeValues["alias"])
+	assert.Equal(t, v["subscription_billing_scope"], subalias.AttributeValues["billing_scope_id"])
+	assert.Equal(t, v["subscription_display_name"], subalias.AttributeValues["subscription_name"])
+	assert.Equal(t, v["subscription_workload"], subalias.AttributeValues["workload"])
 
 	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
 	mg := plan.ResourcePlannedValuesMap["azurerm_management_group_subscription_association.this[0]"]
@@ -192,7 +178,7 @@ func getMockInputVariables() map[string]interface{} {
 		"subscription_alias_enabled": true,
 		"subscription_alias_name":    "test-subscription-alias",
 		"subscription_display_name":  "test-subscription-alias",
-		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/test-billing-account",
+		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/0000000/enrollmentAccounts/000000",
 		"subscription_workload":      "Production",
 	}
 }
