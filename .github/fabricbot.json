@@ -525,9 +525,7 @@
         "taskName": "Add 'In-PR' label on issue when an open pull request is targeting it",
         "inPrLabelText": "PR: Referenced :eyes:",
         "fixedLabelText": "PR: Merged :arrow_up:",
-        "fixedLabelEnabled": true,
-        "label_inPr": "PR: Referenced :eyes:",
-        "label_fixed": "PR: Merged :arrow_up:"
+        "fixedLabelEnabled": true
       },
       "disabled": false
     },
@@ -1354,6 +1352,69 @@
           }
         ],
         "taskName": "Label PRs that modify GitHub workflows"
+      }
+    },
+    {
+      "taskType": "trigger",
+      "capabilityId": "IssueResponder",
+      "subCapability": "IssuesOnlyResponder",
+      "version": "1.0",
+      "config": {
+        "conditions": {
+          "operator": "and",
+          "operands": [
+            {
+              "name": "isAssignedToSomeone",
+              "parameters": {}
+            }
+          ]
+        },
+        "eventType": "issue",
+        "eventNames": [
+          "issues",
+          "project_card"
+        ],
+        "taskName": "Remove triage label from issues when assigned",
+        "actions": [
+          {
+            "name": "removeLabel",
+            "parameters": {
+              "label": "Needs: Triage :mag:"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "taskType": "trigger",
+      "capabilityId": "IssueResponder",
+      "subCapability": "PullRequestResponder",
+      "version": "1.0",
+      "config": {
+        "conditions": {
+          "operator": "and",
+          "operands": [
+            {
+              "name": "isAssignedToSomeone",
+              "parameters": {}
+            }
+          ]
+        },
+        "eventType": "pull_request",
+        "eventNames": [
+          "pull_request",
+          "issues",
+          "project_card"
+        ],
+        "taskName": "Remove triage label from PRs when assigned",
+        "actions": [
+          {
+            "name": "removeLabel",
+            "parameters": {
+              "label": "Needs: Triage :mag:"
+            }
+          }
+        ]
       }
     }
   ],
