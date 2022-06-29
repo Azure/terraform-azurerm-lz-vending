@@ -3,7 +3,7 @@ locals {
   subscription_resource_id = "/subscriptions/${var.subscription_id}"
 
   # hub_network_uuidv5 generates a unique, but predictable uuid based on the
-  # resource id of the cretaed virtual network.
+  # resource id of the created virtual network.
   hub_network_uuidv5  = uuidv5("url", var.hub_network_resource_id)
   this_network_uuidv5 = uuidv5("url", azapi_resource.vnet.id)
 

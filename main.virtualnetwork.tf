@@ -7,7 +7,7 @@ module "virtualnetwork" {
   # Required variables
   subscription_id                     = local.subscription_id
   virtual_network_address_space       = var.virtual_network_address_space
-  virtual_network_location            = coalesce(var.location, var.virtual_network_location)
+  virtual_network_location            = coalesce(var.virtual_network_location, var.location)
   virtual_network_name                = var.virtual_network_name
   virtual_network_resource_group_name = var.virtual_network_resource_group_name
 
