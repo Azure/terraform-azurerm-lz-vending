@@ -3,5 +3,5 @@ locals {
   subscription_id_alias = try(azurerm_subscription.this[0].subscription_id, null)
 
   # subscription_id is the id of the newly created subscription, or the id supplied by var.subscription_id.
-  subscription_id = try(coalesce(local.subscription_id_alias, var.subscription_id), null)
+  subscription_id = coalesce(local.subscription_id_alias, var.subscription_id)
 }
