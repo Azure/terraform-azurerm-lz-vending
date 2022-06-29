@@ -525,7 +525,9 @@
         "taskName": "Add 'In-PR' label on issue when an open pull request is targeting it",
         "inPrLabelText": "PR: Referenced :eyes:",
         "fixedLabelText": "PR: Merged :arrow_up:",
-        "fixedLabelEnabled": true
+        "fixedLabelEnabled": true,
+        "label_inPr": "PR: Referenced :eyes:",
+        "label_fixed": "PR: Merged :arrow_up:"
       },
       "disabled": false
     },
