@@ -31,10 +31,13 @@ variable "hub_network_resource_id" {
   type        = string
   description = <<DESCRIPTION
 The resource ID of the virtual network in the hub to which the created virtual network will be peered.
+The module will fully establish the peering by creating both sides of the peering connection.
+
+You must also set `virtual_network_peering_enabled = true`.
 
 E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet`
 
-Leave blank to create the virtual network without peering.
+Leave blank and set `virtual_network_peering_enabled = false` (the default) to create the virtual network without peering.
 DESCRIPTION
   default     = ""
   validation {
@@ -46,10 +49,12 @@ DESCRIPTION
 variable "virtual_network_vwan_connection_enabled" {
   type        = bool
   description = <<DESCRIPTION
-Whether to enable connection with supplied vwan hub.
-Enables a vwan networking topology.
+The resource ID of the vwan hub to which the virtual network will be connected.
+E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-hub`
 
-If enabled the `vwan_hub_resource_id` must also be suppled.
+You must also set `virtual_network_vwan_connection_enabled = true`.
+
+Leave blank to and set `virtual_network_vwan_connection_enabled = false` (the default) to create a virtual network without a vwan hub connection.
 DESCRIPTION
   default     = false
 }
@@ -143,6 +148,22 @@ The list of virtual WAN labels to advertise the routes to.
 Leave blank to use the `default` label.
 DESCRIPTION
   default     = []
+}
+
+variable "subscription_tags" {
+  type        = map(string)
+  description = <<DESCRIPTION
+A map of tags to assign to the newly created subscription.
+Only valid when `subsciption_alias_enabled` is set to `true`.
+
+Example value:
+
+{
+  mytag  = "myvalue"
+  mytag2 = "myvalue2
+}
+DESCRIPTION
+  default     = {}
 }
 
 # variable "virtual_network_subnets" {

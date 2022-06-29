@@ -125,3 +125,21 @@ DESCRIPTION
     error_message = "Must be empty, or a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
   }
 }
+
+variable "subscription_tags" {
+  type        = map(string)
+  description = <<DESCRIPTION
+A map of tags to assign to the newly created subscription.
+Only valid when `subsciption_alias_enabled` is set to `true`.
+
+Example value:
+
+```terraform
+{
+  mytag  = "myvalue"
+  mytag2 = "myvalue2
+}
+```
+DESCRIPTION
+  default     = {}
+}
