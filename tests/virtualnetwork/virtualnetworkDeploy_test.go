@@ -29,11 +29,10 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
-	assert.NoError(t, err)
-
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency issues
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 3)
+	assert.NoError(t, err)
 }
 
 // TestDeployVirtualNetworkValidVnetPeering tests the deployment of a virtual network
@@ -56,11 +55,10 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
-	assert.NoError(t, err)
-
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency issues
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 3)
+	assert.NoError(t, err)
 }
 
 // TestDeployVirtualNetworkValidVhubConnection tests the deployment of a virtual network

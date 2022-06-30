@@ -1,5 +1,5 @@
 ---
-name: Docs test
+name: Docs & fmt test
 
 on:
   pull_request:
@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  docstest:
-    name: Docs test
+  docsfmttest:
+    name: Docs & fmt test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,14 +22,15 @@ jobs:
       - name: Install tools
         run: make tools
 
-      - name: Check *.md files
+      - name: Check fmt and docs
         run: |
-          echo "==> Running make docs"
+          echo "==> Running make fmt & make docs"
+          make fmt
           make docs
-          echo "==> Testing for changes to .md files"
+          echo "==> Testing for changes to tracked files"
           CHANGES=$(git status -suno)
           if [ "$CHANGES" ]; then
-            echo "Documentation is not up to date or formatted correctly."
-            echo "Run 'make docs' locally and commit the changes to fix."
+            echo "Repository formatting or documentation is not correct."
+            echo "Run 'make fmt && make docs' locally and commit the changes to fix."
             exit 1
           fi

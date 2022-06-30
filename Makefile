@@ -8,22 +8,25 @@ default:
 	@echo "Thing is one of:"
 	@echo "docs fmt fmtcheck fumpt lint test testdeploy tfclean tools"
 
-docs:
-	@echo "==> Updating documentation"
+docs: fmt
+	@echo "==> Updating documentation..."
 	terraform-docs -c .tfdocs-config.yml .
-	find . | egrep ".md" | sort | while read f; do terraform fmt $f; done
 
 fmt:
 	@echo "==> Fixing source code with gofmt..."
 	find ./tests -name '*.go' | grep -v vendor | xargs gofmt -s -w
 	@echo "==> Fixing Terraform code with terraform fmt..."
 	terraform fmt -recursive
+	@echo "==> Fixing embedded Terraform with terrafmt..."
+	find . | egrep ".md|.tf" | sort | while read f; do terrafmt fmt $$f; done
 
 fmtcheck:
 	@echo "==> Checking source code with gofmt..."
 	@sh "$(CURDIR)/scripts/gofmtcheck.sh"
 	@echo "==> Checking source code with terraform fmt..."
 	terraform fmt -check -recursive
+	@echo "==> Checking embedded Terraform with terrafmt..."
+	find . | egrep ".md|.tf" | sort | while read f; do terrafmt fmt --check $$f; done
 
 fumpt:
 	@echo "==> Fixing source code with Gofumpt..."
@@ -33,7 +36,7 @@ lint:
 	cd tests && golangci-lint run
 
 test: fmtcheck
-	cd tests && go test $(TEST) $(TESTARGS) -timeout=$(TESTTIMEOUT) -run ^Test$(TESTFILTER)
+	cd tests && go test $(TEST) $(TESTARGS) -run ^Test$(TESTFILTER) -timeout=$(TESTTIMEOUT)
 
 testdeploy: fmtcheck
 	cd tests &&	TERRATEST_DEPLOY=1 go test $(TEST) $(TESTARGS) -run ^TestDeploy$(TESTFILTER) -timeout $(TESTTIMEOUT)

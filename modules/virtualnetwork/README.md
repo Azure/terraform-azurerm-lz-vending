@@ -97,22 +97,6 @@ Type: `string`
 
 Default: `""`
 
-### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
-
-Description: A map of tags to assign to the newly created subscription.  
-Only valid when `subsciption_alias_enabled` is set to `true`.
-
-Example value:
-
-{  
-  mytag  = "myvalue"  
-  mytag2 = "myvalue2
-}
-
-Type: `map(string)`
-
-Default: `{}`
-
 ### <a name="input_virtual_network_peering_enabled"></a> [virtual\_network\_peering\_enabled](#input\_virtual\_network\_peering\_enabled)
 
 Description: Whether to enable peering with the supplied hub virtual network.  

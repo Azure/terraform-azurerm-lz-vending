@@ -40,11 +40,10 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
-	assert.NoError(t, err)
-
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
+	assert.NoError(t, err)
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
 	assert.NoError(t, err)
@@ -83,11 +82,10 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
-	assert.NoError(t, err)
-
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 30*time.Second, 10)
+	assert.NoError(t, err)
 
 	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
 	assert.NoError(t, err)
