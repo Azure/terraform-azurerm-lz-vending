@@ -25,10 +25,9 @@ jobs:
         continue-on-error: true
         with:
           inlineScript: |
-            RGS=$(az group list | jq -r '.[] | select(.name|test("testdeploy*")) | .name' )
             echo "==> Deleting the following resource groups:"
-            echo $RGS
-            echo $RGS | xargs -n1 -I% az group delete --yes --name %
+            az group list | jq -r '.[] | select(.name|test("testdeploy*")) | .name'
+            az group list | jq -r '.[] | select(.name|test("testdeploy*")) | .name' | xargs -n1 -I% az group delete --yes --name %
             echo "==> Done deleting resource groups"
 
       - name: Azure logout

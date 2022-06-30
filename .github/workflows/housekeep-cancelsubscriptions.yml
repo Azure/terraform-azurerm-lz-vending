@@ -26,12 +26,10 @@ jobs:
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
-            SUBS=$(az account subscription list | jq -r '.[] | select(.state == "Enabled") | select(.displayName | test("^testdeploy.*")) | .subscriptionId')
             echo "==> Cancelling the following subscriptions:"
-            echo $SUBS
-            echo $SUBS | xargs -n1 -I% az account subscription cancel --yes --id %
+            az account subscription list | jq -r '.[] | select(.state == "Enabled") | select(.displayName | test("^testdeploy.*")) | .subscriptionId'
+            az account subscription list | jq -r '.[] | select(.state == "Enabled") | select(.displayName | test("^testdeploy.*")) | .subscriptionId' | xargs -n1 -I% az account subscription cancel --yes --id %
             echo "==> Done cancelling subscriptions"
-
       - name: Azure logout
         uses: azure/CLI@v1
         if: always()
