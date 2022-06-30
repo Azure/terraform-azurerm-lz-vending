@@ -26,10 +26,9 @@ jobs:
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
-            ALIASES=$(az rest --method GET --uri '/providers/Microsoft.Subscription/aliases/?api-version=2021-10-01' | jq -r '.value[] | select(.name | test("^testdeploy")) | .name')
             echo "==> Deleting the following subscription aliases:"
-            echo $ALIASES
-            echo $ALIASES | xargs -n1 -I% az rest --method DELETE --uri '/providers/Microsoft.Subscription/aliases/%?api-version=2021-10-01'
+            az rest --method GET --uri '/providers/Microsoft.Subscription/aliases/?api-version=2021-10-01' | jq -r '.value[] | select(.name | test("^testdeploy")) | .name'
+            az rest --method GET --uri '/providers/Microsoft.Subscription/aliases/?api-version=2021-10-01' | jq -r '.value[] | select(.name | test("^testdeploy")) | .name' | xargs -n1 -I% az rest --method DELETE --uri '/providers/Microsoft.Subscription/aliases/%?api-version=2021-10-01'
             echo "==> Done deleting subscription aliases"
 
       - name: Azure logout
