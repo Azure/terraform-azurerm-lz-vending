@@ -27,11 +27,11 @@ module "alz_landing_zone" {
   version = "~>0.1.0"
 
   # subscription variables
-  subscription_alias_enabled       = true
-  subscription_alias_billing_scope = "/providers/Microsoft.Billing/billingAccounts/1234567/enrollmentAccounts/123456"
-  subscription_alias_display_name  = "my-subscription-display-name"
-  subscription_alias_name          = "my-subscription-alias"
-  subscription_alias_workload      = "Production"
+  subscription_alias_enabled = true
+  subscription_billing_scope = "/providers/Microsoft.Billing/billingAccounts/1234567/enrollmentAccounts/123456"
+  subscription_display_name  = "my-subscription-display-name"
+  subscription_alias_name    = "my-subscription-alias"
+  subscription_workload      = "Production"
 
   # virtual network variables
   virtual_network_enabled             = true
@@ -219,9 +219,9 @@ Only valid when `subsciption_alias_enabled` is set to `true`.
 Example value:
 
 ```terraform
-{
+subscription_tags = {
   mytag  = "myvalue"
-  mytag2 = "myvalue2
+  mytag2 = "myvalue2"
 }
 ```
 
@@ -300,7 +300,7 @@ Default: `""`
 
 Description: Enables the use of remote gateways for the virtual network.
 
-Applies to both hub and spoke (vnet peerings) as well as virtual WAN connections.
+Applies to hub and spoke (vnet peerings).
 
 Type: `bool`
 

@@ -150,22 +150,6 @@ DESCRIPTION
   default     = []
 }
 
-variable "subscription_tags" {
-  type        = map(string)
-  description = <<DESCRIPTION
-A map of tags to assign to the newly created subscription.
-Only valid when `subsciption_alias_enabled` is set to `true`.
-
-Example value:
-
-{
-  mytag  = "myvalue"
-  mytag2 = "myvalue2
-}
-DESCRIPTION
-  default     = {}
-}
-
 # variable "virtual_network_subnets" {
 #   type = map(object({
 #     address_prefix = string

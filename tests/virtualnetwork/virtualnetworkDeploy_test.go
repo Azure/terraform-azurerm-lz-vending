@@ -28,12 +28,11 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	require.NoError(t, err)
 
+	// defer terraform destroy, but wrap in a try.Do to retry a few times
+	// due to eventual consistency of the subscription aliases API
+	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	assert.NoError(t, err)
-
-	// defer terraform destroy, but wrap in a try.Do to retry a few times
-	// due to eventual consistency issues
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 3)
 }
 
 // TestDeployVirtualNetworkValidVnetPeering tests the deployment of a virtual network
@@ -55,12 +54,11 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	require.NoError(t, err)
 
+	// defer terraform destroy, but wrap in a try.Do to retry a few times
+	// due to eventual consistency of the subscription aliases API
+	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	assert.NoError(t, err)
-
-	// defer terraform destroy, but wrap in a try.Do to retry a few times
-	// due to eventual consistency issues
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 3)
 }
 
 // TestDeployVirtualNetworkValidVhubConnection tests the deployment of a virtual network
@@ -86,7 +84,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency issues
-	// Vhubs cannot be destroyed whinst the routing service is still provisioning
+	// Vhubs cannot be destroyed whilst the routing service is still provisioning
 	// hence extended delay
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 1*time.Minute, 20)
 }

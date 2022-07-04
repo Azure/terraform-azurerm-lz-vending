@@ -95,7 +95,7 @@ variable "virtual_network_use_remote_gateways" {
   description = <<DESCRIPTION
 Enables the use of remote gateways for the virtual network.
 
-Applies to both hub and spoke (vnet peerings) as well as virtual WAN connections.
+Applies to hub and spoke (vnet peerings).
 DESCRIPTION
   default     = true
 }
@@ -130,22 +130,4 @@ The list of virtual WAN labels to advertise the routes to.
 Leave blank to use the `default` label.
 DESCRIPTION
   default     = []
-}
-
-variable "subscription_tags" {
-  type        = map(string)
-  description = <<DESCRIPTION
-A map of tags to assign to the newly created subscription.
-Only valid when `subsciption_alias_enabled` is set to `true`.
-
-Example value:
-
-```terraform
-{
-  mytag  = "myvalue"
-  mytag2 = "myvalue2
-}
-```
-DESCRIPTION
-  default     = {}
 }
