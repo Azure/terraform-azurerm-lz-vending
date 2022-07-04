@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// ListResourceGroup returns all resource groups in the subscription
 func ListResourceGroup(ctx context.Context, subId uuid.UUID) ([]*armresources.ResourceGroup, error) {
 	cred, err := newDefaultAzureCredential()
 	if err != nil {
@@ -31,6 +32,7 @@ func ListResourceGroup(ctx context.Context, subId uuid.UUID) ([]*armresources.Re
 	return resourceGroups, nil
 }
 
+// DeleteResourceGroup deletes a resource group by name and subscription id
 func DeleteResourceGroup(ctx context.Context, rgname string, subId uuid.UUID) error {
 	cred, err := newDefaultAzureCredential()
 	if err != nil {
