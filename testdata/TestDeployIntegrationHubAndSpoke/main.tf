@@ -12,11 +12,13 @@ terraform {
 }
 
 resource "azurerm_resource_group" "hub" {
+  #ts:skip=AC_AZURE_0389 skip resource lock check
   name     = "${var.virtual_network_name}-hub"
   location = var.location
 }
 
 resource "azurerm_virtual_network" "hub" {
+  #ts:skip=AC_AZURE_0356 skip NSG subnet check
   name                = "${var.virtual_network_name}-hub"
   location            = azurerm_resource_group.hub.location
   resource_group_name = azurerm_resource_group.hub.name
