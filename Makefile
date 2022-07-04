@@ -26,8 +26,6 @@ fmtcheck:
 	@sh "$(CURDIR)/scripts/gofmtcheck.sh"
 	@echo "==> Checking source code with terraform fmt..."
 	terraform fmt -check -recursive
-	@echo "==> Checking embedded Terraform with terrafmt..."
-	find . | egrep ".md|.tf" | sort | while read f; do terrafmt fmt --check $$f; done
 
 fumpt:
 	@echo "==> Fixing source code with Gofumpt..."
