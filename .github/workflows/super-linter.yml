@@ -4,6 +4,10 @@ on:
   pull_request:
     types: ['opened', 'synchronize']
 
+concurrency:
+  group: linting-${{ github.event.pull_request.head.repo.full_name }}/${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   superlinter:
     name: super linter

@@ -1,0 +1,40 @@
+---
+name: Docs & fmt test
+
+on:
+  pull_request:
+    types: ['opened', 'reopened', 'synchronize']
+  workflow_dispatch:
+
+concurrency:
+  group: docsfmttest-${{ github.event.pull_request.head.repo.full_name }}/${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  docsfmttest:
+    name: Docs & fmt test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.x'
+
+      - name: Install tools
+        run: make tools
+
+      - name: Check fmt and docs
+        run: |
+          echo "==> Running make fmt & make docs"
+          make fmt
+          make docs
+          echo "==> Testing for changes to tracked files"
+          CHANGES=$(git status -suno)
+          if [ "$CHANGES" ]; then
+            echo "Repository formatting or documentation is not correct."
+            echo "Run 'make fmt && make docs' locally and commit the changes to fix."
+            exit 1
+          fi

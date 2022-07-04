@@ -147,9 +147,9 @@ Only valid when `subsciption_alias_enabled` is set to `true`.
 Example value:
 
 ```terraform
-{
+subscription_tags = {
   mytag  = "myvalue"
-  mytag2 = "myvalue2
+  mytag2 = "myvalue2"
 }
 ```
 
