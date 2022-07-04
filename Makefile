@@ -8,9 +8,10 @@ default:
 	@echo "Thing is one of:"
 	@echo "docs fmt fmtcheck fumpt lint test testdeploy tfclean tools"
 
-docs: fmt
+docs:
 	@echo "==> Updating documentation..."
 	terraform-docs -c .tfdocs-config.yml .
+	find . | egrep ".md" | sort | while read f; do terrafmt fmt $$f; done
 
 fmt:
 	@echo "==> Fixing source code with gofmt..."
