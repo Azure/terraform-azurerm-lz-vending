@@ -7,6 +7,8 @@ resource "azapi_resource" "rg" {
 }
 
 # azapi_resource.vnet is the virtual network that will be created
+# lifecycle ignore changes to the body to prevent subnets being deleted
+# see #45 for more information
 resource "azapi_resource" "vnet" {
   parent_id = azapi_resource.rg.id
   type      = "Microsoft.Network/virtualNetworks@2021-08-01"
@@ -18,6 +20,26 @@ resource "azapi_resource" "vnet" {
         addressPrefixes = var.virtual_network_address_space
       }
     }
+  })
+  tags = {}
+  lifecycle {
+    ignore_changes = [body, tags]
+  }
+}
+
+# azapi_update_resource.vnet is the virtual network that will be created
+# This is a workaround for #45 to allow updates to the virtual network
+# without deleting the subnets created elsewhere
+resource "azapi_update_resource" "vnet" {
+  resource_id = azapi_resource.vnet.id
+  type        = "Microsoft.Network/virtualNetworks@2021-08-01"
+  body = jsonencode({
+    properties = {
+      addressSpace = {
+        addressPrefixes = var.virtual_network_address_space
+      }
+    }
+    tags = {}
   })
 }
 

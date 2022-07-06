@@ -10,8 +10,28 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/managementgroups/armmanagementgroups"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription"
+	"github.com/google/uuid"
 )
+
+// NewSubnetClient creates a new subnet client using
+// armnetwork.NewSubnetsClient
+func NewSubnetClient(id uuid.UUID) (*armnetwork.SubnetsClient, error) {
+	cred, err := newDefaultAzureCredential()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Azure credential: %v", err)
+	}
+	clientOpts := arm.ClientOptions{
+		DisableRPRegistration: true,
+	}
+
+	client, err := armnetwork.NewSubnetsClient(id.String(), cred, &clientOpts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create subnet client: %v", err)
+	}
+	return client, nil
+}
 
 // NewSubscriptionsClient creates a new subscriptions client using
 // azidentity.NewDefaultAzureCredential.

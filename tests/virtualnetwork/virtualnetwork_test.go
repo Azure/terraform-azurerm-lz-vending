@@ -29,7 +29,7 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equal(t, 2, len(plan.ResourcePlannedValuesMap))
+	require.Equal(t, 3, len(plan.ResourcePlannedValuesMap))
 	require.Contains(t, plan.ResourcePlannedValuesMap, "azapi_resource.rg")
 	rg := plan.ResourcePlannedValuesMap["azapi_resource.rg"]
 	require.Contains(t, plan.ResourcePlannedValuesMap, "azapi_resource.vnet")
@@ -59,7 +59,7 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	// Create plan and ensure only two resources are created.
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
+	require.Equal(t, 5, len(plan.ResourcePlannedValuesMap))
 
 	// We can only check the body of the outbound peering as the inbound values
 	// not known until apply
@@ -100,7 +100,7 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 	// Create plan and ensure only two resources are created.
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
+	require.Equal(t, 5, len(plan.ResourcePlannedValuesMap))
 
 	// We can only check the body of the outbound peering as the inbound values
 	// not known until apply
@@ -127,7 +127,7 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	terraformOptions.Vars = v
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equal(t, 3, len(plan.ResourcePlannedValuesMap))
+	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
 	vhcname := "vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5"
 	vhcres := fmt.Sprintf("azapi_resource.vhubconnection[\"%s\"]", vhcname)
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
@@ -169,7 +169,7 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 	terraformOptions.Vars = v
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equal(t, 3, len(plan.ResourcePlannedValuesMap))
+	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
 
 	vhcname := "vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5"
 	vhcres := fmt.Sprintf("azapi_resource.vhubconnection[\"%s\"]", vhcname)
