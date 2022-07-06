@@ -10,8 +10,8 @@ default:
 
 docs:
 	@echo "==> Updating documentation..."
-	terraform-docs -c .tfdocs-config.yml .
 	find . | egrep ".md" | grep -v README.md | sort | while read f; do terrafmt fmt $$f; done
+	terraform-docs -c .tfdocs-config.yml .
 
 fmt:
 	@echo "==> Fixing source code with gofmt..."
