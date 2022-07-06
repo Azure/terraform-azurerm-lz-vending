@@ -59,7 +59,9 @@ Type: `string`
 
 ### <a name="input_role_assignment_scope"></a> [role\_assignment\_scope](#input\_role\_assignment\_scope)
 
-Description: n/a
+Description: The scope of the role assignment.
+
+Must begin with `/subscriptions/{subscription-id}` to avoid accidentally creating a role assignment at higher scopes.
 
 Type: `string`
 

@@ -11,7 +11,7 @@ default:
 docs:
 	@echo "==> Updating documentation..."
 	terraform-docs -c .tfdocs-config.yml .
-	find . | egrep ".md" | sort | while read f; do terrafmt fmt $$f; done
+	find . | egrep ".md" | grep -v README.md | sort | while read f; do terrafmt fmt $$f; done
 
 fmt:
 	@echo "==> Fixing source code with gofmt..."
@@ -19,7 +19,7 @@ fmt:
 	@echo "==> Fixing Terraform code with terraform fmt..."
 	terraform fmt -recursive
 	@echo "==> Fixing embedded Terraform with terrafmt..."
-	find . | egrep ".md|.tf" | sort | while read f; do terrafmt fmt $$f; done
+	find . | egrep ".md|.tf" | grep -v README.md | sort | while read f; do terrafmt fmt $$f; done
 
 fmtcheck:
 	@echo "==> Checking source code with gofmt..."

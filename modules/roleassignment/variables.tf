@@ -15,6 +15,9 @@ DESCRIPTION
 variable "role_assignment_scope" {
   type        = string
   description = <<DESCRIPTION
+The scope of the role assignment.
+
+Must begin with `/subscriptions/{subscription-id}` to avoid accidentally creating a role assignment at higher scopes.
 DESCRIPTION
   validation {
     condition     = can(regex("^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}", var.role_assignment_scope))

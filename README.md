@@ -60,6 +60,12 @@ The following requirements are needed by this module:
 
 The following Modules are called:
 
+### <a name="module_roleassignment"></a> [roleassignment](#module\_roleassignment)
+
+Source: ./modules/roleassignment
+
+Version:
+
 ### <a name="module_subscription"></a> [subscription](#module\_subscription)
 
 Source: ./modules/subscription
@@ -100,6 +106,56 @@ Description: The location of resources deployed by this module.
 Type: `string`
 
 Default: `""`
+
+### <a name="input_role_assignment_enabled"></a> [role\_assignment\_enabled](#input\_role\_assignment\_enabled)
+
+Description: Whether to create role assignments.  
+If enabled, supply the list of role assignments in `var.role_assignments`.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_role_assignments"></a> [role\_assignments](#input\_role\_assignments)
+
+Description: Supply a list of objects containing the details of the role assignments to create.
+
+Object fields:
+
+- `principal_id`: The directory/object id of the principal to assign the role to.
+- `definition`: The role definition to assign. Either use the name or the role definition resource id.
+- `relative_scope`: Scope relative to the created subscription. Leave blank for subscription scope.
+
+E.g.
+
+```terraform
+role_assignments = [
+  # Example using role definition name:
+  {
+    principal_id   = "00000000-0000-0000-0000-000000000000",
+    definition     = "Contributor",
+    relative_scope = "",
+  },
+  # Example using role definition id and RG scope:
+  {
+    principal_id   = "11111111-1111-1111-1111-111111111111",
+    definition     = "/providers/Microsoft.Management/managementGroups/mymg/providers/Microsoft.Authorization/roleDefinitions/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    relative_scope = "/resourceGroups/MyRg",
+  }
+]
+```
+
+Type:
+
+```hcl
+list(object({
+    principal_id   = string,
+    definition     = string,
+    relative_scope = string,
+  }))
+```
+
+Default: `[]`
 
 ### <a name="input_subscription_alias_enabled"></a> [subscription\_alias\_enabled](#input\_subscription\_alias\_enabled)
 
