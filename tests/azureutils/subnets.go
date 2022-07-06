@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// ListSubnets lists all subnets in the given virtual network.
 func ListSubnets(rg, vnet string, subid uuid.UUID) ([]*armnetwork.Subnet, error) {
 	ctx := context.Background()
 	subnets := make([]*armnetwork.Subnet, 0)
