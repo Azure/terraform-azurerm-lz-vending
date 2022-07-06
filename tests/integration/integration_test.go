@@ -34,13 +34,14 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, 5, "expected 5 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, 6, "expected 6 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
 	resources := []string{
 		"module.subscription[0].azurerm_subscription.this[0]",
 		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
 		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
 		"module.virtualnetwork[0].azapi_resource.rg",
 		"module.virtualnetwork[0].azapi_resource.vnet",
+		"module.virtualnetwork[0].azapi_update_resource.vnet",
 	}
 	for _, v := range resources {
 		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
@@ -65,12 +66,13 @@ func TestIntegrationVwan(t *testing.T) {
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, 4, "expected 4 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, 5, "expected 5 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
 	resources := []string{
 		"module.subscription[0].azurerm_subscription.this[0]",
 		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5\"]",
 		"module.virtualnetwork[0].azapi_resource.rg",
 		"module.virtualnetwork[0].azapi_resource.vnet",
+		"module.virtualnetwork[0].azapi_update_resource.vnet",
 	}
 	for _, v := range resources {
 		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
@@ -96,12 +98,13 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, 4, "expected 4 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, 5, "expected 5 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
 	resources := []string{
 		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
 		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
 		"module.virtualnetwork[0].azapi_resource.rg",
 		"module.virtualnetwork[0].azapi_resource.vnet",
+		"module.virtualnetwork[0].azapi_update_resource.vnet",
 	}
 	for _, v := range resources {
 		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)

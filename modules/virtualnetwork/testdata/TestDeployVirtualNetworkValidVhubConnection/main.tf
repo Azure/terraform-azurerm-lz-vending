@@ -7,30 +7,6 @@ terraform {
   }
 }
 
-variable "subscription_id" {
-  type = string
-}
-
-variable "virtual_network_name" {
-  type = string
-}
-
-variable "virtual_network_resource_group_name" {
-  type = string
-}
-
-variable "virtual_network_location" {
-  type = string
-}
-
-variable "virtual_network_address_space" {
-  type = list(string)
-}
-
-variable "virtual_network_vwan_connection_enabled" {
-  type = bool
-}
-
 resource "azapi_resource" "rg" {
   type      = "Microsoft.Resources/resourceGroups@2021-04-01"
   parent_id = "/subscriptions/${var.subscription_id}"
