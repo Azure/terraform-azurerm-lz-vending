@@ -30,7 +30,7 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	require.NoErrorf(t, err, "failed to init and plan")
 
-	require.Lenf(t, plan.ResourcePlannedValuesMap, 7, "expected 7 resources to be planned")
+	require.Lenf(t, plan.ResourcePlannedValuesMap, 8, "expected 8 resources to be planned")
 	resources := []string{
 		"azurerm_resource_group.hub",
 		"azurerm_virtual_network.hub",
@@ -39,6 +39,7 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.rg",
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.vnet",
+		"module.alz_landing_zone.module.virtualnetwork[0].azapi_update_resource.vnet",
 	}
 	for _, r := range resources {
 		require.Contains(t, plan.ResourcePlannedValuesMap, r, "expected resource %s to be planned", r)
