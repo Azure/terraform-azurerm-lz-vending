@@ -1330,10 +1330,21 @@
               "parameters": {}
             },
             {
-              "name": "prIncludesModifiedFile",
-              "parameters": {
-                "pathFilter": ".github/workflows/"
-              }
+              "operator": "or",
+              "operands": [
+                {
+                  "name": "prIncludesModifiedFile",
+                  "parameters": {
+                    "pathFilter": "Makefile"
+                  }
+                },
+                {
+                  "name": "prIncludesModifiedFile",
+                  "parameters": {
+                    "pathFilter": ".github/workflows/"
+                  }
+                }
+              ]
             }
           ]
         },
