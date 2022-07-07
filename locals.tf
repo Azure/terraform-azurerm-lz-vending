@@ -23,11 +23,13 @@ locals {
   subscription_resource_id = coalesce(local.subscription_module_output_subscription_resource_id, local.supplied_subscription_resource_id)
 
   # role_assignments_map is a map of role assignments that will be created.
-  role_assignments_map = var.role_assignment_enabled ? {
-    for ra in var.role_assignments : uuidv5(url, "${ra.principal_id}${ra.definition}${ra.relative_scope}") => {
-      role_assignment_principal_id = ra.principal_id,
-      role_assignment_definition   = ra.definition,
-      role_assignment_scope        = "${local.subscription_resource_id}${ra.relative_scope}",
+  role_assignments_map = {
+    for ra in var.role_assignments :
+    uuidv5("url", "${ra.principal_id}${ra.definition}${ra.relative_scope}") => {
+      principal_id   = ra.principal_id,
+      definition     = ra.definition,
+      relative_scope = "${local.subscription_resource_id}${ra.relative_scope}",
     }
-  } : {}
+    if var.role_assignment_enabled
+  }
 }
