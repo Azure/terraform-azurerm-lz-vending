@@ -11,12 +11,14 @@ This is currently split logically into the following capabilities:
 - Subscription creation and management group placement
 - Hub & spoke networking
 - Virtual WAN networking
-- More to come!
+- Role assignments
+
+We would like feedback on what's missing in the module.
+Please raise an [issue](https://github.com/Azure/terraform-azurerm-alz-landing-zone/issues) if you have any suggestions.
 
 ## Notes
 
-Please see the content in the wiki for more detailed information.
-[https://github.com/Azure/terraform-azurerm-alz-landing-zone/wiki](https://github.com/Azure/terraform-azurerm-alz-landing-zone/wiki)
+Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-alz-landing-zone/wiki) for more detailed information.
 
 ## Example
 

@@ -3,7 +3,7 @@
 
 ## Overview
 
-Creates a subscription alias, optionally in the specified management group.
+Creates a subscription alias, and optionally manages management group association for the resulting subscription.
 
 ## Notes
 

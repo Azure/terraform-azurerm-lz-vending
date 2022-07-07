@@ -26,9 +26,9 @@ locals {
   role_assignments_map = {
     for ra in var.role_assignments :
     uuidv5("url", "${ra.principal_id}${ra.definition}${ra.relative_scope}") => {
-      principal_id   = ra.principal_id,
-      definition     = ra.definition,
-      scope = "${local.subscription_resource_id}${ra.relative_scope}",
+      principal_id = ra.principal_id,
+      definition   = ra.definition,
+      scope        = "${local.subscription_resource_id}${ra.relative_scope}",
     }
     if var.role_assignment_enabled
   }
