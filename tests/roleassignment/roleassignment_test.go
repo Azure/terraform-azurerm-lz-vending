@@ -54,6 +54,30 @@ func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
 	assert.Equalf(t, v["role_assignment_principal_id"], ra.AttributeValues["principal_id"], "role_definition_principal_id incorrect")
 }
 
+// TestRoleAssignmentInvalidScopes tests that the module will not accept a tenant
+// or management group scope for the role assignment.
+func TestRoleAssignmentInvalidScopes(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	v := getMockInputVariables()
+	terraformOptions.Vars = v
+	errString := "Must begin with a subscription scope, e.g. `/subscriptions/00000000-0000-0000-0000-000000000000`. All letters must be lowercase in the subscription id."
+
+	// test tenant scope
+	v["role_assignment_scope"] = "/"
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
+	assert.Contains(t, utils.SanitiseErrorMessage(err), errString)
+
+	// test management group scope
+	v["role_assignment_scope"] = "/providers/Microsoft.Management/managementGroups/myMg"
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
+	_, err = terraform.InitAndPlanE(t, terraformOptions)
+	assert.Contains(t, utils.SanitiseErrorMessage(err), errString)
+}
+
 func getMockInputVariables() map[string]interface{} {
 	return map[string]interface{}{
 		"role_assignment_principal_id": "00000000-0000-0000-0000-000000000000",

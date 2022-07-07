@@ -2,7 +2,7 @@
 
 ## Overview
 
-Create a role assignment at scope.
+Creates a role assignment at subscription or lower scope.
 
 ## Notes
 
