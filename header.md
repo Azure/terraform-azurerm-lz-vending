@@ -43,5 +43,28 @@ module "alz_landing_zone" {
   # virtual network peering
   virtual_network_peering_enabled = true
   hub_network_resource_id         = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network"
+
+  # role assignments
+  role_assignment_enabled = true
+  role_assignments = [
+    # using role definition name, created at subscription scope
+    {
+      principal_id   = "00000000-0000-0000-0000-000000000000"
+      definition     = "Contributor"
+      relative_scope = ""
+    },
+    # using a custom role definition
+    {
+      principal_id   = "11111111-1111-1111-1111-111111111111"
+      definition     = "/providers/Microsoft.Management/MyMg/providers/Microsoft.Authorization/roleDefinitions/ffffffff-ffff-ffff-ffff-ffffffffffff"
+      relative_scope = ""
+    },
+    # using relative scope (to the created or supplied subscription)
+    {
+      principal_id   = "00000000-0000-0000-0000-000000000000"
+      definition     = "Owner"
+      relative_scope = "/resourceGroups/MyRg"
+    },
+  ]
 }
 ```
