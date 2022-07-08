@@ -45,7 +45,14 @@ Therefore the provider can be used to deploy resources to any subscription in th
 
 One of the drawbacks of AzAPI is that we have to be very careful with idempotency.
 Some Azure resource providers accept properties in the PUT, but do not return those properties upon GET.
-This creates idempotency issues where Terraform will detect that the resource has changed and try to remediate the missing properties.
+This creates idempotency issues where Terraform will detect that the resource has changed and try to remediate the missing properties on every subsequent apply.
+
+Also AzAPI exposes us to behavioral issues with the Azure Network Resource Provider.
+Subnets may be specified in the `properties.subnets` value of a virtual network, but they can also be specified as distinct ARM objects.
+This means when we have to make a PUT request to update a virtual network, we have to specify the subnets in the request.
+As this module does not deploy the subnets, none are included in the request and therefore any existing subnets are deleted.
+
+We have managed to avoid this issue by using the `azapi_update_resource` resource type together with a lifecycle `ignore_changes` block in the `azapi_resource` that creates the virtual network.
 
 [comment]: # (Link labels below, please sort a-z, thanks!)
 
