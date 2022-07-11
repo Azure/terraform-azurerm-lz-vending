@@ -33,6 +33,12 @@ jobs:
         &&
         contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:')
       )
+      ||
+      (
+        github.ref == 'refs/heads/main'
+        &&
+        github.event_name == 'workflow_dispatch'
+      )
     strategy:
       fail-fast: false
       matrix:
