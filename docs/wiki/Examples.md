@@ -66,7 +66,7 @@ resource "azurerm_virtual_hub" "example" {
 }
 
 module "landing_zone" {
-  source   = "..."
+  source = "..."
 
   location = each.value.location
 
