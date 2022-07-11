@@ -2,11 +2,25 @@
 Welcome to the alz-landing-zone module documentation.
 
 Please see the [README][readme] for information on module requirements, variables and outputs.
+This wiki contains longer form documentation.
 
-This wiki contains longer form documentation and [examples](Examples) of the module's use both standalone and integrated with other ALZ modules.
+This module can be used standalone, or combined with the [Azure Landing Zones Terraform module][alz_tf_module] to create a landing zone within the [Azure Landing Zones conceptual architecture][alz_conceptual_arch].
 
-See the [about this module](About) page to read about the rationale for selecting the AzAPI provider.
+<!-- markdownlint-disable MD033 -->
+<center><img src="img/journey.png" width="60%" /></center>
+<!-- markdownlint-enable -->
+
+In the above diagram, this module provides the capability to deploy landing zones
+(subscriptions) and the core resources, e.g. networking.
+
+We recommend that you deploy the platform using the [Azure Landing Zones Terraform module][alz_tf_module]
+and then use this module to deploy the landing zones.
+
+Before deployment, please review the [required permissions](Permissions).
+Then to get started, look at one of the [examples](Examples).
 
 [comment]: # (Link labels below, please sort a-z, thanks!)
 
+[alz_conceptual_arch]: https://docs.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/#azure-landing-zone-conceptual-architecture
+[alz_tf_module]: https://aka.ms/alz/tf
 [readme]: https://github.com/Azure/terraform-azurerm-alz-landing-zone#readme

@@ -4,6 +4,7 @@ package integration
 // in specific scenarios.
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
@@ -108,6 +109,41 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	}
 	for _, v := range resources {
 		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
+	}
+}
+
+// TestIntegrationWithYaml tests the use of the module with a for_each loop
+// using YAML files as input.
+func TestIntegrationWithYaml(t *testing.T) {
+	testDir := "testdata/" + t.Name()
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	require.NoErrorf(t, err, "failed to generate plan: %v", err)
+
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, 21, "expected 21 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
+	resources := []string{
+		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_update_resource.vnet",
+		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.vnet",
+		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.rg",
+		"module.alz_landing_zone[\"%s\"].module.subscription[0].azurerm_subscription.this[0]",
+		"module.alz_landing_zone[\"%s\"].module.subscription[0].azurerm_management_group_subscription_association.this[0]",
+		"module.alz_landing_zone[\"%s\"].module.roleassignment[\"8a6eec3e-78d9-5ff3-89cc-b144ae761a9a\"].azurerm_role_assignment.this",
+		"module.alz_landing_zone[\"%s\"].module.roleassignment[\"7f69efa3-575a-5f8b-a989-c3978b92b58a\"].azurerm_role_assignment.this",
+	}
+	lzs := []string{
+		"landing_zone_1.yaml",
+		"landing_zone_2.yaml",
+		"landing_zone_3.yaml",
+	}
+	for _, r := range resources {
+		for _, lz := range lzs {
+			res := fmt.Sprintf(r, lz)
+			terraform.AssertPlannedValuesMapKeyExists(t, plan, res)
+		}
 	}
 }
 

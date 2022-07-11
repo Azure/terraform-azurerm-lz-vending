@@ -21,4 +21,15 @@ locals {
   # We use the created sub resource id first, if it exists, otherwise we pick the subscription_id variable.
   # If this is blank then the subscription submodule is disabled an no subscription id has been supplied as an input variable.
   subscription_resource_id = coalesce(local.subscription_module_output_subscription_resource_id, local.supplied_subscription_resource_id)
+
+  # role_assignments_map is a map of role assignments that will be created.
+  role_assignments_map = {
+    for ra in var.role_assignments :
+    uuidv5("url", "${ra.principal_id}${ra.definition}${ra.relative_scope}") => {
+      principal_id = ra.principal_id,
+      definition   = ra.definition,
+      scope        = "${local.subscription_resource_id}${ra.relative_scope}",
+    }
+    if var.role_assignment_enabled
+  }
 }

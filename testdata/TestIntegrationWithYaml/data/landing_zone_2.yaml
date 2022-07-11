@@ -1,0 +1,16 @@
+---
+name: lz2
+workload: Production
+location: northeurope
+billing_enrollment_account: 123456
+management_group_id: Online
+vnet_address_space:
+  - "10.0.2.0/24"
+  - "192.168.2.0/24"
+role_assignments:
+  - principal_id: 00000000-0000-0000-0000-000000000000
+    definition: Owner
+    relative_scope: ''
+  - principal_id: 11111111-1111-1111-1111-111111111111
+    definition: Reader
+    relative_scope: ''
