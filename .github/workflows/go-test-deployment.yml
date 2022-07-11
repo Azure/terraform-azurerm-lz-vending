@@ -5,6 +5,12 @@ on:
   pull_request_target:
     types: ['opened', 'reopened', 'synchronize', 'labeled']
   workflow_dispatch:
+    inputs:
+      test_filter:
+        type: string
+        default: ''
+        description: Filter for the tests to run
+        required: false
 
 permissions:
   contents: read
@@ -76,7 +82,7 @@ jobs:
         run: sudo iptables -I OUTPUT --destination 169.254.169.254 -j REJECT
 
       - name: Go test
-        run: make TESTARGS='-v' testdeploy
+        run: make TESTARGS='-v' TESTFILTER='${{ github.event.inputs.test_filter }}' testdeploy
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}

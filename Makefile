@@ -42,10 +42,10 @@ testdeploy: fmtcheck
 
 tfclean:
 	@echo "==> Cleaning terraform files..."
-	find ./ -type d -name '.terraform' | xargs rm -vrf
-	find ./ -type f -name 'tfplan' | xargs rm -vf
-	find ./ -type f -name 'terraform.tfstate*' | xargs rm -vf
-	find ./ -type f -name '.terraform.lock.hcl' | xargs rm -vf
+	find . -type d -name '.terraform' | xargs rm -vrf
+	find . -type f -name 'tfplan' | xargs rm -vf
+	find . -type f -name 'terraform.tfstate*' | xargs rm -vf
+	find . -type f -name '.terraform.lock.hcl' | xargs rm -vf
 
 tools:
 	go install mvdan.cc/gofumpt@latest

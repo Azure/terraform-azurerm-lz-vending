@@ -65,13 +65,13 @@ func TestRoleAssignmentInvalidScopes(t *testing.T) {
 	terraformOptions.Vars = v
 	errString := "Must begin with a subscription scope, e.g. `/subscriptions/00000000-0000-0000-0000-000000000000`. All letters must be lowercase in the subscription id."
 
-	// test tenant scope
+	// test tenant scope error
 	v["role_assignment_scope"] = "/"
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	assert.Contains(t, utils.SanitiseErrorMessage(err), errString)
 
-	// test management group scope
+	// test management group scope error
 	v["role_assignment_scope"] = "/providers/Microsoft.Management/managementGroups/myMg"
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	_, err = terraform.InitAndPlanE(t, terraformOptions)
