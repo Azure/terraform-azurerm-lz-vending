@@ -3,7 +3,7 @@ package subscription
 import (
 	"testing"
 
-	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
+	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

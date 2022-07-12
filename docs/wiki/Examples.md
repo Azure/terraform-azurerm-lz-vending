@@ -168,7 +168,7 @@ module "landing_zone" {
 }
 ```
 
-We have provided a working example of this in the [testdata/TestIntegrationWithYaml](https://github.com/Azure/terraform-azurerm-alz-landing-zone/tree/main/testdata/TestIntegrationWithYaml) directory.
+We have provided a working example of this in the [testdata/TestIntegrationWithYaml](https://github.com/Azure/terraform-azurerm-lz-vending/tree/main/testdata/TestIntegrationWithYaml) directory.
 
 [comment]: # (Link labels below, please sort a-z, thanks!)
 

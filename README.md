@@ -1,9 +1,9 @@
 <!-- BEGIN_TF_DOCS -->
-# ALZ landing zone module
+# Terraform landing zone vending module for Azure
 
 ## Overview
 
-The landing zone Terraform module is designed to accelerate deployment of the individual landing zones into the ALZ conceptual architecture.
+The landing zone Terraform module is designed to accelerate deployment of the individual landing zones within an Azure tenant.
 
 The module is designed to be instantiated many times, once for each desired landing zone.
 
@@ -15,17 +15,17 @@ This is currently split logically into the following capabilities:
 - Role assignments
 
 We would like feedback on what's missing in the module.
-Please raise an [issue](https://github.com/Azure/terraform-azurerm-alz-landing-zone/issues) if you have any suggestions.
+Please raise an [issue](https://github.com/Azure/terraform-azurerm-lz-vending/issues) if you have any suggestions.
 
 ## Notes
 
-Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-alz-landing-zone/wiki) for more detailed information.
+Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-lz-vending/wiki) for more detailed information.
 
 ## Example
 
 ```terraform
 module "alz_landing_zone" {
-  source  = "Azure/alz-landing-zone/azurerm"
+  source  = "Azure/lz-vending/azurerm"
   version = "~>0.1.0"
 
   # subscription variables

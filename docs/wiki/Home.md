@@ -1,5 +1,5 @@
 <!-- markdownlint-disable MD041 -->
-Welcome to the alz-landing-zone module documentation.
+Welcome to the lz-vending module documentation.
 
 Please see the [README][readme] for information on module requirements, variables and outputs.
 This wiki contains longer form documentation.
@@ -23,4 +23,4 @@ Then to get started, look at one of the [examples](Examples).
 
 [alz_conceptual_arch]: https://docs.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/#azure-landing-zone-conceptual-architecture
 [alz_tf_module]: https://aka.ms/alz/tf
-[readme]: https://github.com/Azure/terraform-azurerm-alz-landing-zone#readme
+[readme]: https://github.com/Azure/terraform-azurerm-lz-vending#readme

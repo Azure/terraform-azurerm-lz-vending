@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/azureutils"
-	"github.com/Azure/terraform-azurerm-alz-landing-zone/tests/utils"
+	"github.com/Azure/terraform-azurerm-lz-vending/tests/azureutils"
+	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"

@@ -13,7 +13,7 @@ See [README.md](../../README.md) in the parent module for more information.
 
 ```terraform
 module "roleassignment" {
-  source          = "Azure/alz-landing-zone/azurerm/modules/roleassignment"
+  source          = "Azure/lz-vending/azurerm/modules/roleassignment"
   version         = "~> 0.1.0"
   role_definition = "Owner"
   scope           = "/subscriptions/00000000-0000-0000-0000-000000000000"
