@@ -5,6 +5,12 @@ on:
   pull_request_target:
     types: ['opened', 'reopened', 'synchronize']
   workflow_dispatch:
+    inputs:
+      test_filter:
+        type: string
+        default: ''
+        description: Filter for the tests to run
+        required: false
 
 permissions:
   contents: read
@@ -25,18 +31,16 @@ jobs:
     environment: CSUTF-RO
     if: |
       (
-        github.event.pull_request.head.repo.full_name == 'Azure/terraform-azurerm-alz-landing-zone'
+        github.event.pull_request.head.repo.full_name == 'Azure/terraform-azurerm-lz-vending'
       )
       ||
       (
-        github.event.pull_request.head.repo.full_name != 'Azure/terraform-azurerm-alz-landing-zone'
+        github.event.pull_request.head.repo.full_name != 'Azure/terraform-azurerm-lz-vending'
         &&
         contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:')
       )
       ||
       (
-        github.ref == 'refs/heads/main'
-        &&
         github.event_name == 'workflow_dispatch'
       )
     strategy:
@@ -44,6 +48,11 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         terraform_version: ['~1.0.0', '~1.2.0']
+        test: ${{ if(
+            github.event.inputs.test_filter,
+            format('[''{0}'']', github.event.inputs.test_filter),
+            '[''Integration'', ''Subscription'', ''VirtualNetwork'', RoleAssignment'']'
+          ) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -63,7 +72,7 @@ jobs:
           go-version: '1.18.x'
 
       - name: Go test
-        run: make test
+        run: make TESTARGS='-v' TESTFILTER='${{ matrix.test }}' test
         env:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}

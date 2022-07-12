@@ -15,17 +15,17 @@ This is currently split logically into the following capabilities:
 - Role assignments
 
 We would like feedback on what's missing in the module.
-Please raise an [issue](https://github.com/Azure/terraform-azurerm-alz-landing-zone/issues) if you have any suggestions.
+Please raise an [issue](https://github.com/Azure/terraform-azurerm-lz-vending/issues) if you have any suggestions.
 
 ## Notes
 
-Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-alz-landing-zone/wiki) for more detailed information.
+Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-lz-vending/wiki) for more detailed information.
 
 ## Example
 
 ```terraform
 module "alz_landing_zone" {
-  source  = "Azure/alz-landing-zone/azurerm"
+  source  = "Azure/lz-vending/azurerm"
   version = "~>0.1.0"
 
   # subscription variables
@@ -134,7 +134,7 @@ Default: `""`
 
 ### <a name="input_role_assignment_enabled"></a> [role\_assignment\_enabled](#input\_role\_assignment\_enabled)
 
-Description: Whether to create role assignments.  
+Description: Whether to create role assignments.
 If enabled, supply the list of role assignments in `var.role_assignments`.
 
 Type: `bool`
@@ -208,10 +208,10 @@ Default: `false`
 
 Description: The name of the subscription alias.
 
-The string must be comprised of a-z, A-Z, 0-9, - and \_.  
+The string must be comprised of a-z, A-Z, 0-9, - and \_.
 The maximum length is 63 characters.
 
-You may also supply an empty string if you do not want to create a new subscription alias.  
+You may also supply an empty string if you do not want to create a new subscription alias.
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -224,7 +224,7 @@ Description: The billing scope for the new subscription alias.
 
 A valid billing scope starts with `/providers/Microsoft.Billing/billingAccounts/` and is case sensitive.
 
-You may also supply an empty string if you do not want to create a new subscription alias.  
+You may also supply an empty string if you do not want to create a new subscription alias.
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -235,10 +235,10 @@ Default: `""`
 
 Description: The display name of the subscription alias.
 
-The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.  
+The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.
 The maximum length is 63 characters.
 
-You may also supply an empty string if you do not want to create a new subscription alias.  
+You may also supply an empty string if you do not want to create a new subscription alias.
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -249,16 +249,16 @@ Default: `""`
 
 Description: An existing subscription id.
 
-Use this when you do not want the module to create a new subscription.  
+Use this when you do not want the module to create a new subscription.
 But do want to manage the management group membership.
 
-A GUID should be supplied in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.  
+A GUID should be supplied in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
 All letters must be lowercase.
 
-When using this, `subscription_management_group_association_enabled` should be enabled,  
+When using this, `subscription_management_group_association_enabled` should be enabled,
 and `subscription_management_group_id` should be supplied.
 
-You may also supply an empty string if you want to create a new subscription alias.  
+You may also supply an empty string if you want to create a new subscription alias.
 In this scenario, `subscription_alias_enabled` should be set to `true` and the following other variables must be supplied:
 
 - `subscription_alias_name`
@@ -284,7 +284,7 @@ Default: `false`
 
 Description:   The destination management group ID for the new subscription.
 
-**Note:** Do not supply the display name.  
+**Note:** Do not supply the display name.
 The management group ID forms part of the Azure resource ID. E.g.,
 `/providers/Microsoft.Management/managementGroups/{managementGroupId}`.
 
@@ -294,7 +294,7 @@ Default: `""`
 
 ### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
 
-Description: A map of tags to assign to the newly created subscription.  
+Description: A map of tags to assign to the newly created subscription.
 Only valid when `subsciption_alias_enabled` is set to `true`.
 
 Example value:
@@ -316,7 +316,7 @@ Description: The billing scope for the new subscription alias.
 
 The workload type can be either `Production` or `DevTest` and is case sensitive.
 
-You may also supply an empty string if you do not want to create a new subscription alias.  
+You may also supply an empty string if you do not want to create a new subscription alias.
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -343,7 +343,7 @@ Default: `false`
 
 Description: The location of the virtual network.
 
-Use this to override the default location defined by `var.location`.  
+Use this to override the default location defined by `var.location`.
 Leave blank to use the default location.
 
 Type: `string`
@@ -360,7 +360,7 @@ Default: `""`
 
 ### <a name="input_virtual_network_peering_enabled"></a> [virtual\_network\_peering\_enabled](#input\_virtual\_network\_peering\_enabled)
 
-Description: Whether to enable peering with the supplied hub virtual network.  
+Description: Whether to enable peering with the supplied hub virtual network.
 Enables a hub & spoke networking topology.
 
 If enabled the `hub_network_resource_id` must also be suppled.
@@ -389,7 +389,7 @@ Default: `true`
 
 ### <a name="input_virtual_network_vwan_connection_enabled"></a> [virtual\_network\_vwan\_connection\_enabled](#input\_virtual\_network\_vwan\_connection\_enabled)
 
-Description: Whether to enable connection with supplied vwan hub.  
+Description: Whether to enable connection with supplied vwan hub.
 Enables a vwan networking topology.
 
 If enabled the `vwan_hub_resource_id` must also be supplied.
@@ -432,7 +432,7 @@ Default: `""`
 
 ### <a name="input_vwan_hub_resource_id"></a> [vwan\_hub\_resource\_id](#input\_vwan\_hub\_resource\_id)
 
-Description: The resource ID of the vwan hub to which the virtual network will be connected.  
+Description: The resource ID of the vwan hub to which the virtual network will be connected.
 E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-hub`
 
 Leave blank to create a virtual network without a vwan hub connection.

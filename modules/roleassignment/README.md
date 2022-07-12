@@ -13,7 +13,7 @@ See [README.md](../../README.md) in the parent module for more information.
 
 ```terraform
 module "roleassignment" {
-  source          = "Azure/alz-landing-zone/azurerm/modules/roleassignment"
+  source          = "Azure/lz-vending/azurerm/modules/roleassignment"
   version         = "~> 0.1.0"
   role_definition = "Owner"
   scope           = "/subscriptions/00000000-0000-0000-0000-000000000000"
@@ -43,14 +43,14 @@ The following input variables are required:
 
 ### <a name="input_role_assignment_definition"></a> [role\_assignment\_definition](#input\_role\_assignment\_definition)
 
-Description: Either the role definition resource id, e.g. `/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c`.  
+Description: Either the role definition resource id, e.g. `/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c`.
 Or, the role definition name, e.g. `Contributor`.
 
 Type: `string`
 
 ### <a name="input_role_assignment_principal_id"></a> [role\_assignment\_principal\_id](#input\_role\_assignment\_principal\_id)
 
-Description: The principal (object) ID of the role assignment.  
+Description: The principal (object) ID of the role assignment.
 Note, for a service principal, this is not the application id.
 
 Can be user, group or service principal.

@@ -13,7 +13,7 @@ See [README.md](../../README.md) in the parent module for more information.
 
 ```terraform
 module "virtualnetwork" {
-  source  = "Azure/alz-landing-zone/azurerm/modules/virtualnetwork"
+  source  = "Azure/lz-vending/azurerm/modules/virtualnetwork"
   version = "~> 0.1.0"
 
   subscription_id                     = "00000000-0000-0000-0000-000000000000"

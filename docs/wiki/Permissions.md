@@ -15,6 +15,8 @@ The identity used must have permission to:
 - Create subscriptions using the `Microsoft.Subscription/aliases` resource.
 See the [documentation][programatically_create_subscription] for details.
 
+> **Note:** The following process explains how to [assign EA roles to SPNs][assign_ea_roles_to_spns].
+
 - Manage the subscription's management group using the `Microsoft.Management/managementGroups` resource.
 For a detailed explanation of the permissions required, see the [documentation][moving_management_groups].
 
@@ -43,6 +45,7 @@ The identity of the AzureRM provider must have permission to create these resour
 
 [comment]: # (Link labels below, please sort a-z, thanks!)
 
+[assign_ea_roles_to_spns]: https://docs.microsoft.com/azure/cost-management-billing/manage/assign-roles-azure-service-principals
 [azurerm_management_group_subscription_association]: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group_subscription_association
 [azurerm_role_assignment]: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment
 [azurerm_subscription]: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription

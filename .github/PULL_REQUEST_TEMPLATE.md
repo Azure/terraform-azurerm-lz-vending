@@ -20,8 +20,8 @@ Please provide testing evidence to show that your Pull Request works/fixes as de
 
 ## As part of this Pull Request I have
 
-- [ ] Checked for duplicate [Pull Requests](https://github.com/Azure/terraform-azurerm-alz-landing-zone/pulls)
-- [ ] Associated it with relevant [issues](https://github.com/Azure/terraform-azurerm-alz-landing-zone/issues), for tracking and closure.
+- [ ] Checked for duplicate [Pull Requests](https://github.com/Azure/terraform-azurerm-lz-vending/pulls)
+- [ ] Associated it with relevant [issues](https://github.com/Azure/terraform-azurerm-lz-vending/issues), for tracking and closure.
 - [ ] Run `make docs` and `make fmt` to update the documentation and format your code.
 - [ ] Created unit and deployment tests and provided evidence.
 - [ ] Updated relevant and associated documentation.

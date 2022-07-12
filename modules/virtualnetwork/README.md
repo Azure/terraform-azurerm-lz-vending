@@ -14,7 +14,7 @@ See [README.md](../../README.md) in the parent module for more information.
 
 ```terraform
 module "virtualnetwork" {
-  source  = "Azure/alz-landing-zone/azurerm/modules/virtualnetwork"
+  source  = "Azure/lz-vending/azurerm/modules/virtualnetwork"
   version = "~> 0.1.0"
 
   subscription_id                     = "00000000-0000-0000-0000-000000000000"
@@ -84,7 +84,7 @@ The following input variables are optional (have default values):
 
 ### <a name="input_hub_network_resource_id"></a> [hub\_network\_resource\_id](#input\_hub\_network\_resource\_id)
 
-Description: The resource ID of the virtual network in the hub to which the created virtual network will be peered.  
+Description: The resource ID of the virtual network in the hub to which the created virtual network will be peered.
 The module will fully establish the peering by creating both sides of the peering connection.
 
 You must also set `virtual_network_peering_enabled = true`.
@@ -99,7 +99,7 @@ Default: `""`
 
 ### <a name="input_virtual_network_peering_enabled"></a> [virtual\_network\_peering\_enabled](#input\_virtual\_network\_peering\_enabled)
 
-Description: Whether to enable peering with the supplied hub virtual network.  
+Description: Whether to enable peering with the supplied hub virtual network.
 Enables a hub & spoke networking topology.
 
 If enabled the `hub_network_resource_id` must also be suppled.
@@ -120,7 +120,7 @@ Default: `true`
 
 ### <a name="input_virtual_network_vwan_connection_enabled"></a> [virtual\_network\_vwan\_connection\_enabled](#input\_virtual\_network\_vwan\_connection\_enabled)
 
-Description: The resource ID of the vwan hub to which the virtual network will be connected.  
+Description: The resource ID of the vwan hub to which the virtual network will be connected.
 E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-hub`
 
 You must also set `virtual_network_vwan_connection_enabled = true`.

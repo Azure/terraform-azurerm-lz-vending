@@ -12,7 +12,7 @@ See [README.md](../../README.md) in the parent module for more information.
 
 ```terraform
 module "subscription" {
-  source  = "Azure/alz-landing-zone/azurerm/modules/subscription"
+  source  = "Azure/lz-vending/azurerm/modules/subscription"
   version = "~> 0.1.0"
 
   subscription_alias_billing_scope       = "/providers/Microsoft.Billing/billingAccounts/1234567/enrollmentAccounts/123456"

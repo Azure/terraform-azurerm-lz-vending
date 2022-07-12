@@ -1,4 +1,4 @@
-module github.com/Azure/terraform-azurerm-alz-landing-zone/tests
+module github.com/Azure/terraform-azurerm-lz-vending/tests
 
 go 1.18
 
