@@ -79,3 +79,44 @@ The following environment variables are required for deployment testing:
 * `AZURE_SUBSCRIPTION_ID` - set to the subscription id to use for deployment testing.
 * `AZURE_TENANT_ID` - set to the tenant id of the Azure account.
 * `TERRATEST_DEPLOY` - set to a non-empty value to run the deployemnt tests. `make testdeploy` will do this for you.
+
+## PR Naming
+
+We have adopted [conventional commit](https://www.conventionalcommits.org/) naming standards for PRs.
+
+E.g.:
+
+```text
+feat(roleassignment)!: Add `relative_scope` value.
+^    ^              ^ ^
+|    |              | |__ Subject
+|    |_____ Scope   |____ Breaking change flag
+|__________ Type
+```
+
+### Type
+
+The following types are permitted:
+
+* `chore` - Other changes that do not modify src or test files
+* `ci` - changes to the CI system
+* `docs` - documentation only changes
+* `feat` - a new feature (this correlates with `MINOR` in Semantic Versioning)
+* `fix` - a bug fix (this correlates with `PATCH` in Semantic Versioning)
+* `refactor` - a code change that neither fixes a bug or adds a feature
+* `revert` - revert to a previous commit
+* `style` - changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+* `test` - adding or correcting tests
+
+### Scope (Optional)
+
+The following scopes are permitted:
+
+* roleassignment - pertaining to the roleassignment sub-module
+* root - pertaining to the root module
+* subscription - pertaining to the subscription sub-module
+* virtualnetwork - pertaining to the virtual network sub-module
+
+### Breaking Changes
+
+An exclamation mark `!` is appended to the type/scope of a breaking change PR (this correlates with `MAJOR` in Semantic Versioning).
