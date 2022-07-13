@@ -1,5 +1,5 @@
 ---
-name: "pr lint"
+name: "PR lint"
 
 on:
   pull_request_target:
@@ -55,7 +55,7 @@ jobs:
             didn't match the configured pattern. Please ensure that the subject
             doesn't start with an uppercase character.
           # If you use GitHub Enterprise, you can set this to the URL of your server
-          githubBaseUrl: https://github.myorg.com/api/v3
+          ## githubBaseUrl: https://github.myorg.com/api/v3
           # If the PR contains one of these labels, the validation is skipped.
           # Multiple labels can be separated by newlines.
           # If you want to rerun the validation when labels change, you might want
