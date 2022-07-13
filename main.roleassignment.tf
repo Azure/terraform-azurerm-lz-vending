@@ -2,7 +2,7 @@
 # supplied in the var.role_assignments variable.
 # var.role_assignment_enabled must also be set to true.
 module "roleassignment" {
-  source                       = "./modules/roleassignment"
+  source = "./modules/roleassignment"
   depends_on = [
     module.subscription,
     module.virtualnetwork,
