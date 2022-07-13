@@ -20,7 +20,6 @@ func TestRoleAssignmentValidWithRoleName(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
-	// Create plan and ensure only one resource is created.
 
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
@@ -41,7 +40,6 @@ func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
 	v := getMockInputVariables()
 	v["role_assignment_definition"] = "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/00000000-0000-0000-0000-000000000000"
 	terraformOptions.Vars = v
-	// Create plan and ensure only one resource is created.
 
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)

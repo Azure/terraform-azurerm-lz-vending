@@ -23,14 +23,12 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
 
-	// Create plan and ensure only a single resource is created.
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	require.Equal(t, 1, len(plan.ResourcePlannedValuesMap))
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, "azurerm_subscription.this[0]")
 
-	// Extract values from the plan and compare to the input variables.
 	subalias := plan.ResourcePlannedValuesMap["azurerm_subscription.this[0]"]
 	require.Contains(t, subalias.AttributeValues, "alias")
 	require.Contains(t, subalias.AttributeValues, "billing_scope_id")
@@ -56,7 +54,6 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 	v["subscription_management_group_association_enabled"] = true
 	terraformOptions.Vars = v
 
-	// Create plan and ensure only a two resources are created.
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
@@ -64,7 +61,6 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, "azurerm_subscription.this[0]")
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, "azurerm_management_group_subscription_association.this[0]")
 
-	// Extract values from the plan and compare to the input variables.
 	subalias := plan.ResourcePlannedValuesMap["azurerm_subscription.this[0]"]
 	require.Contains(t, subalias.AttributeValues, "alias")
 	require.Contains(t, subalias.AttributeValues, "billing_scope_id")
@@ -97,7 +93,6 @@ func TestSubscriptionExistingWithManagementGroup(t *testing.T) {
 	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
 	terraformOptions.Vars = v
 
-	// Create plan and ensure only a two resources are created.
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
