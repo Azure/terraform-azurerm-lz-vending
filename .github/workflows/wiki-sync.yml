@@ -45,7 +45,7 @@ jobs:
 
       - name: Stage & Push Files Into Wiki Repo
         run: |
-          if [ ! $(git status -s) ]; then exit 0; fi 
+          if [ ! "$(git status -s)" ]; then exit 0; fi
           git add .
           git commit -m "$github_commit_message [$GITHUB_ACTOR/${GITHUB_SHA::8}]"
           git push --set-upstream "https://$GITHUB_TOKEN@github.com/$wiki_target_repo.git" master
