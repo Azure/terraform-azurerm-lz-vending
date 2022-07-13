@@ -3,6 +3,7 @@ package integration
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -30,7 +31,7 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	require.NoErrorf(t, err, "failed to init and plan")
 
-	require.Lenf(t, plan.ResourcePlannedValuesMap, 8, "expected 8 resources to be planned")
+	require.Lenf(t, plan.ResourcePlannedValuesMap, 9, "expected 9 resources to be planned")
 	resources := []string{
 		"azurerm_resource_group.hub",
 		"azurerm_virtual_network.hub",
@@ -44,6 +45,18 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	for _, r := range resources {
 		require.Contains(t, plan.ResourcePlannedValuesMap, r, "expected resource %s to be planned", r)
 	}
+
+	// As the map key of the role assignment is a predictable UUID based on the object ID
+	// of the calling identity, we cannot search for the literal value of the role assignment.
+	// Instead, we search for the role assignment prefix in the ResourcePlannedValuesMap.
+	i := 0
+	for k := range plan.ResourcePlannedValuesMap {
+		if !strings.Contains(k, "module.alz_landing_zone.module.roleassignment[") {
+			continue
+		}
+		i++
+	}
+	require.Equal(t, 1, i, "expected 1 role assignment to be planned")
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.
@@ -88,5 +101,6 @@ func getValidInputVariables() (map[string]interface{}, error) {
 		"virtual_network_resource_group_name": name,
 		"virtual_network_peering_enabled":     true,
 		"virtual_network_use_remote_gateways": false,
+		"role_assignment_enabled":             true,
 	}, nil
 }
