@@ -11,6 +11,8 @@ terraform {
   }
 }
 
+data "azurerm_client_config" "current" {}
+
 resource "azurerm_resource_group" "hub" {
   #ts:skip=AC_AZURE_0389 skip resource lock check
   name     = "${var.virtual_network_name}-hub"
@@ -47,4 +49,14 @@ module "alz_landing_zone" {
   virtual_network_peering_enabled     = var.virtual_network_peering_enabled
   virtual_network_use_remote_gateways = var.virtual_network_use_remote_gateways
   hub_network_resource_id             = azurerm_virtual_network.hub.id
+
+  # role assignment
+  role_assignment_enabled = var.role_assignment_enabled
+  role_assignments = [
+    {
+      principal_id = data.azurerm_client_config.current.object_id
+      definition = "Storage Blob Data Contributor"
+      relative_scope = ""
+    }
+  ]
 }

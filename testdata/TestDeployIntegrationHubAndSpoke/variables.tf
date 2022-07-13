@@ -45,3 +45,7 @@ variable "virtual_network_name" {
 variable "location" {
   type = string
 }
+
+variable "role_assignment_enabled" {
+  type = bool
+}
