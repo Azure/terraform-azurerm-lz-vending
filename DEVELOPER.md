@@ -70,3 +70,12 @@ To run only a partial set of tests, add the TESTFILTER variable:
 ```bash
 make testdeploy TESTFILTER=Subscription
 ```
+
+#### Deployment environment variables
+
+The following environment variables are required for deployment testing:
+
+* `AZURE_BILLING_SCOPE` - set to the resource id of the billing scope to use for the deployment.
+* `AZURE_SUBSCRIPTION_ID` - set to the subscription id to use for deployment testing.
+* `AZURE_TENANT_ID` - set to the tenant id of the Azure account.
+* `TERRATEST_DEPLOY` - set to a non-empty value to run the deployemnt tests. `make testdeploy` will do this for you.

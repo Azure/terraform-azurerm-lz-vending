@@ -25,7 +25,6 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
-	// Create plan and ensure only two resources are created.
 
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
@@ -56,10 +55,9 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	v["virtual_network_peering_enabled"] = true
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
 	terraformOptions.Vars = v
-	// Create plan and ensure only two resources are created.
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equal(t, 5, len(plan.ResourcePlannedValuesMap))
+	require.Equalf(t, 5, len(plan.ResourcePlannedValuesMap), "expected 5 resources to be created, got %d", len(plan.ResourcePlannedValuesMap))
 
 	// We can only check the body of the outbound peering as the inbound values
 	// not known until apply
@@ -97,10 +95,10 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 	v["virtual_network_peering_enabled"] = true
 	v["virtual_network_use_remote_gateways"] = false
 	terraformOptions.Vars = v
-	// Create plan and ensure only two resources are created.
+
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equal(t, 5, len(plan.ResourcePlannedValuesMap))
+	require.Equalf(t, 5, len(plan.ResourcePlannedValuesMap), "expected 5 resources to be created, got %d", len(plan.ResourcePlannedValuesMap))
 
 	// We can only check the body of the outbound peering as the inbound values
 	// not known until apply

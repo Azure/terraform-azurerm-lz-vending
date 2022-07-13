@@ -31,7 +31,6 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	v["virtual_network_peering_enabled"] = true
 	terraformOptions.Vars = v
 
-	// Create plan and ensure only a single resource is created.
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
@@ -63,7 +62,6 @@ func TestIntegrationVwan(t *testing.T) {
 	v["virtual_network_vwan_connection_enabled"] = true
 	terraformOptions.Vars = v
 
-	// Create plan and ensure only a single resource is created.
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
@@ -74,6 +72,41 @@ func TestIntegrationVwan(t *testing.T) {
 		"module.virtualnetwork[0].azapi_resource.rg",
 		"module.virtualnetwork[0].azapi_resource.vnet",
 		"module.virtualnetwork[0].azapi_update_resource.vnet",
+	}
+	for _, v := range resources {
+		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
+	}
+}
+
+// TestIntegrationSubscriptionAndRoleAssignmentOnly tests the resource plan when creating a new subscription,
+// with a role assignments, but no networking.
+// This tests that the depends_on property of the roleassignments module is working
+// when a dependent resource is disabled through the use of count.
+func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	v := getMockInputVariables()
+	v["subscription_alias_enabled"] = true
+	v["virtual_network_enabled"] = false
+	v["role_assignment_enabled"] = true
+	v["role_assignments"] = []interface{}{
+		map[string]interface{}{
+			"principal_id":   "00000000-0000-0000-0000-000000000000",
+			"definition":     "Owner",
+			"relative_scope": "",
+		},
+	}
+	terraformOptions.Vars = v
+
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoError(t, err)
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, 2, "expected 2 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
+	resources := []string{
+		"module.subscription[0].azurerm_subscription.this[0]",
+		"module.roleassignment[\"7f69efa3-575a-5f8b-a989-c3978b92b58a\"].azurerm_role_assignment.this",
 	}
 	for _, v := range resources {
 		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
@@ -95,7 +128,6 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	v["virtual_network_peering_enabled"] = true
 	terraformOptions.Vars = v
 
-	// Create plan and ensure only a single resource is created.
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
