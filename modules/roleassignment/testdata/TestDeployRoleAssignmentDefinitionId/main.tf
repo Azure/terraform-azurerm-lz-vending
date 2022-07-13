@@ -16,6 +16,7 @@ data "azurerm_client_config" "current" {}
 data "azurerm_subscription" "current" {}
 
 resource "azurerm_resource_group" "test" {
+  #ts:skip=AC_AZURE_0389 skip resource lock check
   name     = "testdeploy-${var.random_hex}"
   location = "northeurope"
 }
