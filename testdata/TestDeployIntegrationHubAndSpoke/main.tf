@@ -54,8 +54,8 @@ module "alz_landing_zone" {
   role_assignment_enabled = var.role_assignment_enabled
   role_assignments = [
     {
-      principal_id = data.azurerm_client_config.current.object_id
-      definition = "Storage Blob Data Contributor"
+      principal_id   = data.azurerm_client_config.current.object_id
+      definition     = "Storage Blob Data Contributor"
       relative_scope = ""
     }
   ]
