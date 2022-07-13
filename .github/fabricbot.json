@@ -525,7 +525,9 @@
         "taskName": "Add 'In-PR' label on issue when an open pull request is targeting it",
         "inPrLabelText": "PR: Referenced :eyes:",
         "fixedLabelText": "PR: Merged :arrow_up:",
-        "fixedLabelEnabled": true
+        "fixedLabelEnabled": true,
+        "label_inPr": "PR: Referenced :eyes:",
+        "label_fixed": "PR: Merged :arrow_up:"
       },
       "disabled": false
     },
@@ -1426,6 +1428,17 @@
             }
           }
         ]
+      }
+    },
+    {
+      "taskType": "trigger",
+      "capabilityId": "ReleaseAnnouncement",
+      "subCapability": "ReleaseAnnouncement",
+      "version": "1.0",
+      "config": {
+        "prReply": "This functionality has been released in ${version} of the module. Please see the module documentation on versioning or reach out if you need any assistance upgrading.\n\nFor further feature requests or bug reports with this functionality, please create a new GitHub issue following the template. Thank you!",
+        "issueReply": "This functionality has been released in ${version} of the module. Please see the module documentation on versioning or reach out if you need any assistance upgrading.\n\nFor further feature requests or bug reports with this functionality, please create a new GitHub issue following the template. Thank you!",
+        "taskName": "Release comment"
       }
     }
   ],
