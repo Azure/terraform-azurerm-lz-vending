@@ -24,6 +24,7 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 
 	v, err := getValidInputVariables()
+	v["virtual_network_resource_lock_enabled"] = true
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
 	terraformOptions.Vars = v
 
@@ -128,10 +129,11 @@ func getValidInputVariables() (map[string]interface{}, error) {
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
 	return map[string]interface{}{
-		"subscription_id":                     os.Getenv("AZURE_SUBSCRIPTION_ID"),
-		"virtual_network_address_space":       []string{"10.1.0.0/24", "172.16.1.0/24"},
-		"virtual_network_location":            "northeurope",
-		"virtual_network_name":                name,
-		"virtual_network_resource_group_name": name,
+		"subscription_id":                       os.Getenv("AZURE_SUBSCRIPTION_ID"),
+		"virtual_network_address_space":         []string{"10.1.0.0/24", "172.16.1.0/24"},
+		"virtual_network_location":              "northeurope",
+		"virtual_network_name":                  name,
+		"virtual_network_resource_group_name":   name,
+		"virtual_network_resource_lock_enabled": false,
 	}, nil
 }

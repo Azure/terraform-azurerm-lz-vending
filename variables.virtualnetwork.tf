@@ -131,3 +131,12 @@ Leave blank to use the `default` label.
 DESCRIPTION
   default     = []
 }
+
+variable "virtual_network_resource_lock_enabled" {
+  type        = bool
+  description = <<DESCRIPTION
+Enables the deployment of resource locks to the virtual network's resource group.
+Currently only `CanNotDelete` locks are supported.
+DESCRIPTION
+  default     = true
+}

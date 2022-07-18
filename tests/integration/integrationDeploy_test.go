@@ -31,13 +31,15 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	require.NoErrorf(t, err, "failed to init and plan")
 
-	require.Lenf(t, plan.ResourcePlannedValuesMap, 9, "expected 9 resources to be planned")
+	require.Lenf(t, plan.ResourcePlannedValuesMap, 10, "expected 10 resources to be planned")
+	// List of resources to find in the plan, excluding the role assignment
 	resources := []string{
 		"azurerm_resource_group.hub",
 		"azurerm_virtual_network.hub",
 		"module.alz_landing_zone.module.subscription[0].azurerm_subscription.this[0]",
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
+		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.rg_lock[0]",
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.rg",
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.vnet",
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_update_resource.vnet",
@@ -56,7 +58,7 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 		}
 		i++
 	}
-	require.Equal(t, 1, i, "expected 1 role assignment to be planned")
+	require.Equal(t, 1, i, "expected 1 role assignment to be planned, got %d", i)
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.

@@ -44,13 +44,14 @@ resource "azapi_resource" "hub" {
 }
 
 module "virtualnetwork_test" {
-  source                              = "../../"
-  subscription_id                     = var.subscription_id
-  virtual_network_address_space       = var.virtual_network_address_space
-  virtual_network_location            = var.virtual_network_location
-  virtual_network_resource_group_name = var.virtual_network_resource_group_name
-  virtual_network_name                = var.virtual_network_name
-  virtual_network_peering_enabled     = var.virtual_network_peering_enabled
-  hub_network_resource_id             = azapi_resource.hub.id
-  virtual_network_use_remote_gateways = var.virtual_network_use_remote_gateways
+  source                                = "../../"
+  subscription_id                       = var.subscription_id
+  virtual_network_address_space         = var.virtual_network_address_space
+  virtual_network_location              = var.virtual_network_location
+  virtual_network_resource_group_name   = var.virtual_network_resource_group_name
+  virtual_network_name                  = var.virtual_network_name
+  virtual_network_peering_enabled       = var.virtual_network_peering_enabled
+  hub_network_resource_id               = azapi_resource.hub.id
+  virtual_network_use_remote_gateways   = var.virtual_network_use_remote_gateways
+  virtual_network_resource_lock_enabled = var.virtual_network_resource_lock_enabled
 }

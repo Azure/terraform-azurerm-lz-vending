@@ -26,3 +26,7 @@ variable "virtual_network_use_remote_gateways" {
 variable "virtual_network_peering_enabled" {
   type = bool
 }
+
+variable "virtual_network_resource_lock_enabled" {
+  type = bool
+}

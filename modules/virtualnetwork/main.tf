@@ -6,6 +6,26 @@ resource "azapi_resource" "rg" {
   location  = var.virtual_network_location
 }
 
+# azapi_resource.rg_lock is an optional resource group lock that can be used
+# to prevent accidental deletion.
+resource "azapi_resource" "rg_lock" {
+  count     = var.virtual_network_resource_lock_enabled ? 1 : 0
+  parent_id = azapi_resource.rg.id
+  type      = "Microsoft.Authorization/locks@2017-04-01"
+  name      = substr("lock-${var.virtual_network_resource_group_name}", 0, 90)
+  body = jsonencode({
+    properties = {
+      level = "CanNotDelete"
+    }
+  })
+  depends_on = [
+    azapi_resource.vnet,
+    azapi_update_resource.vnet,
+    azapi_resource.peering,
+    azapi_resource.vhubconnection,
+  ]
+}
+
 # azapi_resource.vnet is the virtual network that will be created
 # lifecycle ignore changes to the body to prevent subnets being deleted
 # see #45 for more information
@@ -86,16 +106,3 @@ resource "azapi_resource" "vhubconnection" {
     }
   })
 }
-
-# Subnet resources not in scope due to complexity of creation, e.g. route tables/nsgs
-# resource "azapi_resource" "subnet" {
-#   for_each = var.virtual_network_subnets
-#   parent_id = azapi_resource.vnet.id
-#   type = "Microsoft.Network/virtualNetworks/subnets@2021-08-01"
-#   name = each.key
-#   body = jsonencode({
-#     properties = {
-#       addressPrefix = each.value.address_prefix
-#     }
-#   })
-# }

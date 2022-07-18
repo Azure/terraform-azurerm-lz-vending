@@ -29,16 +29,18 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = true
 	v["virtual_network_peering_enabled"] = true
+	v["virtual_network_resource_lock_enabled"] = true
 	terraformOptions.Vars = v
 
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, 6, "expected 6 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, 7, "expected 6 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
 	resources := []string{
 		"module.subscription[0].azurerm_subscription.this[0]",
 		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
 		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
+		"module.virtualnetwork[0].azapi_resource.rg_lock[0]",
 		"module.virtualnetwork[0].azapi_resource.rg",
 		"module.virtualnetwork[0].azapi_resource.vnet",
 		"module.virtualnetwork[0].azapi_update_resource.vnet",
@@ -156,10 +158,11 @@ func TestIntegrationWithYaml(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	require.NoErrorf(t, err, "failed to generate plan: %v", err)
 
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, 21, "expected 21 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, 24, "expected 24 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
 	resources := []string{
 		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_update_resource.vnet",
 		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.vnet",
+		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.rg_lock[0]",
 		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.rg",
 		"module.alz_landing_zone[\"%s\"].module.subscription[0].azurerm_subscription.this[0]",
 		"module.alz_landing_zone[\"%s\"].module.subscription[0].azurerm_management_group_subscription_association.this[0]",
@@ -192,9 +195,10 @@ func getMockInputVariables() map[string]interface{} {
 		},
 
 		// virtualnetwork variables
-		"virtual_network_address_space":       []string{"10.1.0.0/24", "172.16.1.0/24"},
-		"virtual_network_location":            "northeurope",
-		"virtual_network_name":                "testvnet",
-		"virtual_network_resource_group_name": "testrg",
+		"virtual_network_address_space":         []string{"10.1.0.0/24", "172.16.1.0/24"},
+		"virtual_network_location":              "northeurope",
+		"virtual_network_name":                  "testvnet",
+		"virtual_network_resource_group_name":   "testrg",
+		"virtual_network_resource_lock_enabled": false,
 	}
 }

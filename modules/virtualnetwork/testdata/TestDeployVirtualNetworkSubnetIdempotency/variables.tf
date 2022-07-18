@@ -18,3 +18,7 @@ variable "virtual_network_location" {
 variable "virtual_network_address_space" {
   type = list(string)
 }
+
+variable "virtual_network_resource_lock_enabled" {
+  type = bool
+}

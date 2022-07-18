@@ -150,23 +150,11 @@ DESCRIPTION
   default     = []
 }
 
-# variable "virtual_network_subnets" {
-#   type = map(object({
-#     address_prefix = string
-#     }))
-#   description = <<DESCRIPTION
-#The subnets of the virtual network, supplied as multiple objects.
-
-#e.g.
-
-#```terraform
-#virtual_network_subnets = {
-#subnet0 = {
-#  address_prefix = "10.0.0.0/24"
-# },
-# subnet1 = {
-#   address_prefix = "10.0.1.0/24"
-# } }
-# ```
-#   DESCRIPTION
-# }
+variable "virtual_network_resource_lock_enabled" {
+  type        = bool
+  description = <<DESCRIPTION
+Enables the deployment of resource locks to the virtual network's resource group.
+Currently only `CanNotDelete` locks are supported.
+DESCRIPTION
+  default     = true
+}
