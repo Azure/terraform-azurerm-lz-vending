@@ -158,10 +158,11 @@ func TestIntegrationWithYaml(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	require.NoErrorf(t, err, "failed to generate plan: %v", err)
 
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, 21, "expected 21 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, 24, "expected 24 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
 	resources := []string{
 		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_update_resource.vnet",
 		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.vnet",
+		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.rg_lock[0]",
 		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.rg",
 		"module.alz_landing_zone[\"%s\"].module.subscription[0].azurerm_subscription.this[0]",
 		"module.alz_landing_zone[\"%s\"].module.subscription[0].azurerm_management_group_subscription_association.this[0]",
