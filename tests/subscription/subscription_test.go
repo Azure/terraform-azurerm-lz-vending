@@ -34,11 +34,13 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 	require.Contains(t, subalias.AttributeValues, "billing_scope_id")
 	require.Contains(t, subalias.AttributeValues, "subscription_name")
 	require.Contains(t, subalias.AttributeValues, "workload")
+	require.Contains(t, subalias.AttributeValues, "tags")
 
 	assert.Equal(t, v["subscription_alias_name"], subalias.AttributeValues["alias"])
 	assert.Equal(t, v["subscription_billing_scope"], subalias.AttributeValues["billing_scope_id"])
 	assert.Equal(t, v["subscription_display_name"], subalias.AttributeValues["subscription_name"])
 	assert.Equal(t, v["subscription_workload"], subalias.AttributeValues["workload"])
+	assert.Equal(t, v["subscription_tags"], subalias.AttributeValues["tags"])
 }
 
 // TestSubscriptionAliasCreateValidWithManagementGroup tests the
@@ -175,5 +177,9 @@ func getMockInputVariables() map[string]interface{} {
 		"subscription_display_name":  "test-subscription-alias",
 		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/0000000/enrollmentAccounts/000000",
 		"subscription_workload":      "Production",
+		"subscription_tags": map[string]interface{}{
+			"test-tag":   "test-value",
+			"test-tag2:": "test-value2",
+		},
 	}
 }

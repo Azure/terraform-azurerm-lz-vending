@@ -186,6 +186,10 @@ func getMockInputVariables() map[string]interface{} {
 		"subscription_display_name":  "test-subscription-alias",
 		"subscription_alias_name":    "test-subscription-alias",
 		"subscription_workload":      "Production",
+		"subscription_tags": map[string]interface{}{
+			"test-tag":   "test-value",
+			"test-tag-2": "test-value-2",
+		},
 
 		// virtualnetwork variables
 		"virtual_network_address_space":       []string{"10.1.0.0/24", "172.16.1.0/24"},
