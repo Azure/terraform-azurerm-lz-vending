@@ -29,7 +29,7 @@ func SanitiseErrorMessage(err error) string {
 // Set TERRATEST_LOGGER to a non empty value to enable verbose logging.
 func GetLogger() *logger.Logger {
 	if os.Getenv("TERRATEST_LOG") != "" {
-		return logger.Default
+		return logger.TestingT
 	}
 	return logger.Discard
 }
