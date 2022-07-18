@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/Azure/terraform-azurerm-lz-vending/tests/models"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
@@ -18,10 +19,9 @@ const (
 	moduleDir = "../../"
 )
 
-type TestCases map[string]func(*testing.T)
-
+// TestIntegration tests all the integration unit tests in parallel.
 func TestIntegration(t *testing.T) {
-	tcs := TestCases{
+	tcs := models.TestCases{
 		"testIntegrationHubAndSpoke":                       testIntegrationHubAndSpoke,
 		"testIntegrationVwan":                              testIntegrationVwan,
 		"testIntegrationSubscriptionAndRoleAssignmentOnly": testIntegrationSubscriptionAndRoleAssignmentOnly,

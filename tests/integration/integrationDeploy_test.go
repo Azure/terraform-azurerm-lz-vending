@@ -3,11 +3,13 @@ package integration
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/azureutils"
+	"github.com/Azure/terraform-azurerm-lz-vending/tests/models"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -15,9 +17,25 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDeployIntegrationHubAndSpoke(t *testing.T) {
+// TestIntegration tests all the integration unit tests in parallel.
+func TestDeployIntegration(t *testing.T) {
+	tcs := models.TestCases{
+		"testDeployIntegrationHubAndSpoke":                 testDeployIntegrationHubAndSpoke,
+		"testIntegrationVwan":                              testIntegrationVwan,
+		"testIntegrationSubscriptionAndRoleAssignmentOnly": testIntegrationSubscriptionAndRoleAssignmentOnly,
+		"testIntegrationHubAndSpokeExistingSubscription":   testIntegrationHubAndSpokeExistingSubscription,
+		"testIntegrationWithYaml":                          testIntegrationWithYaml,
+	}
+	for tn, tf := range tcs {
+		t.Run(tn, tf)
+	}
+}
+
+// testDeployIntegrationHubAndSpoke deploys a hub and spoke architecture and verifies the deployment succeeds.
+// This includes role assignments, virtual network, and subscription.
+func testDeployIntegrationHubAndSpoke(t *testing.T) {
 	utils.PreCheckDeployTests(t)
-	testDir := "testdata/" + t.Name()
+	testDir := "testdata/" + filepath.Base(t.Name())
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
