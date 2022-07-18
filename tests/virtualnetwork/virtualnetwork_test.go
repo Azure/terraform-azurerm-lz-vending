@@ -24,14 +24,23 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	defer cleanup()
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
+	v["virtual_network_resource_lock_enabled"] = true
 	terraformOptions.Vars = v
 
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equal(t, 3, len(plan.ResourcePlannedValuesMap))
-	require.Contains(t, plan.ResourcePlannedValuesMap, "azapi_resource.rg")
+	require.Equalf(t, 4, len(plan.ResourcePlannedValuesMap), "expected 4 resources to be created, got %d", len(plan.ResourcePlannedValuesMap))
+	resources := []string{
+		"azapi_resource.rg",
+		"azapi_resource.vnet",
+		"azapi_update_resource.vnet",
+		"azapi_resource.rg_lock[0]",
+	}
+	for _, r := range resources {
+		require.Contains(t, plan.ResourcePlannedValuesMap, r)
+	}
+
 	rg := plan.ResourcePlannedValuesMap["azapi_resource.rg"]
-	require.Contains(t, plan.ResourcePlannedValuesMap, "azapi_resource.vnet")
 	vnet := plan.ResourcePlannedValuesMap["azapi_resource.vnet"]
 	require.Contains(t, rg.AttributeValues, "name")
 	assert.Equal(t, v["virtual_network_resource_group_name"].(string), rg.AttributeValues["name"])
@@ -221,10 +230,11 @@ func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.
 func getMockInputVariables() map[string]interface{} {
 	return map[string]interface{}{
-		"subscription_id":                     "00000000-0000-0000-0000-000000000000",
-		"virtual_network_address_space":       []string{"10.1.0.0/24", "172.16.1.0/24"},
-		"virtual_network_location":            "northeurope",
-		"virtual_network_name":                "testvnet",
-		"virtual_network_resource_group_name": "testrg",
+		"subscription_id":                       "00000000-0000-0000-0000-000000000000",
+		"virtual_network_address_space":         []string{"10.1.0.0/24", "172.16.1.0/24"},
+		"virtual_network_location":              "northeurope",
+		"virtual_network_name":                  "testvnet",
+		"virtual_network_resource_group_name":   "testrg",
+		"virtual_network_resource_lock_enabled": false,
 	}
 }

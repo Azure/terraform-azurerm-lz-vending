@@ -108,6 +108,15 @@ Type: `bool`
 
 Default: `false`
 
+### <a name="input_virtual_network_resource_lock_enabled"></a> [virtual\_network\_resource\_lock\_enabled](#input\_virtual\_network\_resource\_lock\_enabled)
+
+Description: Enables the deployment of resource locks to the virtual network's resource group.  
+Currently only `CanNotDelete` locks are supported.
+
+Type: `bool`
+
+Default: `true`
+
 ### <a name="input_virtual_network_use_remote_gateways"></a> [virtual\_network\_use\_remote\_gateways](#input\_virtual\_network\_use\_remote\_gateways)
 
 Description: Enables the use of remote gateways for the virtual network.
@@ -181,6 +190,7 @@ The following resources are used by this module:
 
 - [azapi_resource.peering](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.rg](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.rg_lock](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.vhubconnection](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.vnet](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_update_resource.vnet](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/update_resource) (resource)
