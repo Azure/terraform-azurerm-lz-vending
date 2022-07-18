@@ -21,3 +21,7 @@ variable "virtual_network_address_space" {
 variable "virtual_network_vwan_connection_enabled" {
   type = bool
 }
+
+variable "virtual_network_resource_lock_enabled" {
+  type = bool
+}

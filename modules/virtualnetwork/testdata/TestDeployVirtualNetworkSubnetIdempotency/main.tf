@@ -19,10 +19,11 @@ resource "azapi_resource" "subnet" {
 }
 
 module "virtualnetwork_test" {
-  source                              = "../../"
-  subscription_id                     = var.subscription_id
-  virtual_network_address_space       = var.virtual_network_address_space
-  virtual_network_location            = var.virtual_network_location
-  virtual_network_resource_group_name = var.virtual_network_resource_group_name
-  virtual_network_name                = var.virtual_network_name
+  source                                = "../../"
+  subscription_id                       = var.subscription_id
+  virtual_network_address_space         = var.virtual_network_address_space
+  virtual_network_location              = var.virtual_network_location
+  virtual_network_resource_group_name   = var.virtual_network_resource_group_name
+  virtual_network_name                  = var.virtual_network_name
+  virtual_network_resource_lock_enabled = var.virtual_network_resource_lock_enabled
 }

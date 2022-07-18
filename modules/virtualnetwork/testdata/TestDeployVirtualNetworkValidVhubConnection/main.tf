@@ -53,4 +53,5 @@ module "virtualnetwork_test" {
   virtual_network_name                    = var.virtual_network_name
   virtual_network_vwan_connection_enabled = var.virtual_network_vwan_connection_enabled
   vwan_hub_resource_id                    = azapi_resource.vhub.id
+  virtual_network_resource_lock_enabled   = var.virtual_network_resource_lock_enabled
 }
