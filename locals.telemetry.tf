@@ -24,7 +24,7 @@ TEMPLATE
   # subscription telemetry bit fields
   telem_root_subscription_alias_enabled                        = var.subscription_alias_enabled ? 1 : 0
   telem_root_subscription_management_group_association_enabled = var.subscription_management_group_association_enabled ? 2 : 0
-  telem_root_subscription_tags_enabled                         = var.subscription_tags != {} > 0 ? 4 : 0
+  telem_root_subscription_tags_enabled                         = var.subscription_tags != {} ? 4 : 0
 
   # virtualnetwork telemetry bit fields
   telem_root_virtual_network_enabled                 = var.virtual_network_enabled ? 256 : 0
@@ -50,20 +50,19 @@ TEMPLATE
   )
 
   # Convert the denary value to hexadecimal and pad with zeros to the left to a length of 8 characters.
-  telem_root_bitfield_hex = format("%08x", telem_root_bitfield_denary)
+  telem_root_bitfield_hex = format("%08x", local.telem_root_bitfield_denary)
 
   # This constructs the ARM deployment name that is used for the telemetry.
   # We shouldn't ever hit the 64 character limit but use substr just in case
-  locals {
-    telem_root_arm_deployment_name = substr(
-      format(
-        "pid-%s_%s_%s",
-        local.telem_root_puid,
-        local.module_version,
-        local.telem_root_bitfield_hex,
-      ),
-      0,
-      64
-    )
-  }
+
+  telem_root_arm_deployment_name = substr(
+    format(
+      "pid-%s_%s_%s",
+      local.telem_root_puid,
+      local.module_version,
+      local.telem_root_bitfield_hex,
+    ),
+    0,
+    64
+  )
 }
