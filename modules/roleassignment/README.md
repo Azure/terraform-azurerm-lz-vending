@@ -4,10 +4,11 @@
 ## Overview
 
 Creates a role assignment at subscription or lower scope.
+Module is designed to be instantiated many times, once per role assignment.
 
 ## Notes
 
-See [README.md](../../README.md) in the parent module for more information.
+See [README.md](https://github.com/Azure/terraform-azurerm-lz-vending#readme) in the parent module for more information.
 
 ## Example
 

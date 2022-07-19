@@ -3,3 +3,4 @@
 - [About this module](About)
 - [Permissions required](Permissions)
 - [Examples](Examples)
+- [Upgrades](Upgrades)
