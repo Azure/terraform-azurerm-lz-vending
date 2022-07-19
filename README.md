@@ -118,6 +118,31 @@ No required inputs.
 
 The following input variables are optional (have default values):
 
+### <a name="input_disable_telemetry"></a> [disable\_telemetry](#input\_disable\_telemetry)
+
+Description: To disable tracking, we have included this variable with a simple boolean flag.  
+The default value is `false` which does not disable the telemetry.  
+If you would like to disable this tracking, then simply set this value to true and this module will not create the telemetry tracking resources and therefore telemetry tracking will be disabled.
+
+For more information, see the [wiki](https://aka.ms/lz-vending/tf/telemetry)
+
+E.g.
+
+```terraform
+module "lz-vending" {
+  source  = "Azure/lz-vending/azurerm"
+  version = "..."
+
+  # ... other module variables
+
+  disable_telemetry = true
+}
+```
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_hub_network_resource_id"></a> [hub\_network\_resource\_id](#input\_hub\_network\_resource\_id)
 
 Description: The resource ID of the virtual network in the hub to which the created virtual network will be peered.
@@ -458,7 +483,9 @@ Default: `""`
 
 ## Resources
 
-No resources.
+The following resources are used by this module:
+
+- [azapi_resource.telemetry_root](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 
 ## Outputs
 
@@ -474,8 +501,18 @@ Description: The subscription\_resource\_id is the Azure subscription resource i
 
 <!-- markdownlint-enable -->
 <!-- markdownlint-disable MD041 -->
-## Contributing
+## Telemetry
 <!-- markdownlint-enable -->
+
+When you deploy one or more modules using the landing zone vending module, Microsoft can identify the installation of said module/s with the deployed Azure resources.
+Microsoft can correlate these resources used to support the software.
+Microsoft collects this information to provide the best experiences with their products and to operate their business.
+The telemetry is collected through customer usage attribution.
+The data is collected and governed by Microsoft's privacy policies.
+
+If you don't wish to send usage data to Microsoft, details on how to turn it off can be found [here](https://github.com/Azure/terraform-azurerm-lz-vending/wiki/Telemetry).
+
+## Contributing
 
 This project welcomes contributions and suggestions.
 Most contributions require you to agree to a Contributor License Agreement (CLA)
@@ -493,7 +530,7 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## Developing the Module
 
-See [DEVELOPER.md](DEVELOPER.md).
+See [DEVELOPER.md](https://github.com/Azure/terraform-azurerm-lz-vending/blob/main/DEVELOPER.md).
 
 ## Trademarks
 
