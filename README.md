@@ -17,6 +17,10 @@ This is currently split logically into the following capabilities:
 We would like feedback on what's missing in the module.
 Please raise an [issue](https://github.com/Azure/terraform-azurerm-lz-vending/issues) if you have any suggestions.
 
+## Change log
+
+Please see the [GitHub releases pages](https://github.com/Azure/terraform-azurerm-lz-vending/releases/latest) for change log information.
+
 ## Notes
 
 Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-lz-vending/wiki) for more detailed information.

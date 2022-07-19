@@ -6,7 +6,7 @@ Creates a subscription alias, and optionally manages management group associatio
 
 ## Notes
 
-See [README.md](../../README.md) in the parent module for more information.
+See [README.md](https://github.com/Azure/terraform-azurerm-lz-vending#readme) in the parent module for more information.
 
 ## Example
 
