@@ -35,8 +35,9 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, 7, "expected 6 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, 8, "expected 8 resources to be created, but got %d", len(plan.ResourcePlannedValuesMap))
 	resources := []string{
+		"azapi_resource.telemetry_root[0]",
 		"module.subscription[0].azurerm_subscription.this[0]",
 		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
 		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
