@@ -1,5 +1,4 @@
 <!-- markdownlint-disable MD041 -->
-
 This module uses [Semantic Versioning (SemVer)](https://semver.org/s) versioning.
 
 Given a version number `MAJOR.MINOR.PATCH`, we increment the:
@@ -8,7 +7,7 @@ Given a version number `MAJOR.MINOR.PATCH`, we increment the:
 * `MINOR` version when we add functionality in a backwards compatible manner, and
 * `PATCH` version when we make backwards compatible bug fixes.
 
-## Upgrade Process
+## Upgrade process
 
 If you are upgrading to a new `MINOR` or `PATCH` release, you will not see any breaking changes.
 If you are using the Terraform registry, you can update the version number for the module.
