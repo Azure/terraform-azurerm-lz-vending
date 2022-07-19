@@ -504,7 +504,7 @@ Description: The subscription\_resource\_id is the Azure subscription resource i
 ## Telemetry
 <!-- markdownlint-enable -->
 
-When you deploy one or more modules using the landing zone vending module, Microsoft can identify the installation of said module/s with the deployed Azure resources.
+When you deploy one or more modules using the landing zone vending module, Microsoft can identify the installation of said module with the deployed Azure resources.
 Microsoft can correlate these resources used to support the software.
 Microsoft collects this information to provide the best experiences with their products and to operate their business.
 The telemetry is collected through customer usage attribution.
