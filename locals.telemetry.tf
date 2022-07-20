@@ -4,22 +4,20 @@ locals {
   # root_module_puid is the UUID that identifies the root module in the telemetry ARM deployment.
   telem_root_puid = "50a8a460-d517-4b11-b86c-6de447806b67"
 
-  # telem_arm_subscription_template_content is the ARM template content for the telemetry deployment.
-  telem_arm_subscription_template_content = <<TEMPLATE
-{
-  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {},
-  "variables": {},
-  "resources": [],
-  "outputs": {
-    "telemetry": {
-      "type": "String",
-      "value": "For more information, see https://aka.ms/lz-vending/tf/telemetry"
+  # telem_arm_subscription_template is the ARM template content for the telemetry deployment.
+  telem_arm_subscription_template = {
+    "$schema"      = "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#"
+    contentVersion = "1.0.0.0"
+    parameters     = {}
+    variables      = {}
+    resources      = []
+    outputs = {
+      telemetry = {
+        type  = "String"
+        value = "For more information, see https://aka.ms/lz-vending/tf/telemetry"
+      }
     }
   }
-}
-TEMPLATE
 
   # subscription telemetry bit fields
   telem_root_subscription_alias_enabled                        = var.subscription_alias_enabled ? 1 : 0

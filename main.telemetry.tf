@@ -9,7 +9,7 @@ resource "azapi_resource" "telemetry_root" {
   body = jsonencode({
     properties = {
       mode     = "Incremental"
-      template = local.telem_arm_subscription_template_content
+      template = local.telem_arm_subscription_template
     }
   })
 }
