@@ -28,9 +28,9 @@ Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-
 ## Example
 
 ```terraform
-module "alz_landing_zone" {
+module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
-  version = "~>0.1.0"
+  version = "<version>" # change this to your desired version
 
   # subscription variables
   subscription_alias_enabled = true
@@ -38,6 +38,10 @@ module "alz_landing_zone" {
   subscription_display_name  = "my-subscription-display-name"
   subscription_alias_name    = "my-subscription-alias"
   subscription_workload      = "Production"
+
+  # management group association variables
+  subscription_management_group_association_enabled = true
+  subscription_management_group_id                  = "Corp"
 
   # virtual network variables
   virtual_network_enabled             = true
