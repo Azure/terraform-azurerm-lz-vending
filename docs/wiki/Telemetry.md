@@ -47,40 +47,40 @@ The UUID for this module is `50a8a460-d517-4b11-b86c-6de447806b67`
 
 The bit field is composed of the following bits:
 
-| Bit | Value (hex) | Description |
-| - | - | - |
-| 1 (LSB) | 00000001 | `subscription_alias_enabled` is `true` |
-| 2 | 00000002 | `subscription_management_group_association_enabled` is `true` |
-| 3 | 00000004 | `subscripton_tags` is not an empty object |
-| 4 | 00000008 | reserved |
-| 5 | 00000010 | reserved |
-| 6 | 00000020 | reserved |
-| 7 | 00000040 | reserved |
-| 8 | 00000080 | reserved |
-| 9 | 00000100 | `virtual_network_enabled` is `true` |
-| 10 | 00000200 | `virtual_network_peering_enabled` is `true` |
-| 11 | 00000400 | `virtual_network_vwan_connection_enabled` is `true` |
-| 12 | 00000800 | `virtual_network_resource_lock_enabled` is `true` |
-| 13 | 00001000 | Either `virtual_network_vwan_propagated_routetables_labels` OR `virtual_network_vwan_propagated_routetables_resource_ids` are not an empty lists OR `virtual_network_vwan_routetable_resource_id` is not an empty string |
-| 14 | 00002000 | reserved |
-| 15 | 00004000 | reserved |
-| 16 | 00008000 | reserved |
-| 17 | 00010000 | `role_assignment_enabled` is `true` |
-| 18 | 00020000 | reserved|
-| 19 | 00040000 | reserved|
-| 20 | 00080000 | reserved |
-| 21 | 00100000 | reserved |
-| 22 | 00200000 | reserved |
-| 23 | 00400000 | reserved |
-| 24 | 00800000 | reserved |
-| 25 | 01000000 | reserved |
-| 26 | 02000000 | reserved |
-| 27 | 04000000 | reserved |
-| 28 | 08000000 | reserved |
-| 29 | 10000000 | reserved |
-| 30 | 20000000 | reserved |
-| 31 | 40000000 | reserved |
-| 32 | 80000000 | reserved |
+| Bit | Value (hex) | Value (denary) | Description |
+| - | - | - | - |
+| 0 (LSB) | 00000001 | 1 | `subscription_alias_enabled` is `true` |
+| 1 | 00000002 | 2 | `subscription_management_group_association_enabled` is `true` |
+| 2 | 00000004 | 4 | `subscription_tags` is not an empty object |
+| 3 | 00000008 | 8 | reserved |
+| 4 | 00000010 | 16 | reserved |
+| 5 | 00000020 | 32 | reserved |
+| 6 | 00000040 | 64 | reserved |
+| 7 | 00000080 | 128 | reserved |
+| 8 | 00000100 | 256 | `virtual_network_enabled` is `true` |
+| 9 | 00000200 | 512 | `virtual_network_peering_enabled` is `true` |
+| 10 | 00000400 | 1024 | `virtual_network_vwan_connection_enabled` is `true` |
+| 11 | 00000800 | 2048 | `virtual_network_resource_lock_enabled` is `true` |
+| 12 | 00001000 | 4096 |Either `virtual_network_vwan_propagated_routetables_labels` OR `virtual_network_vwan_propagated_routetables_resource_ids` are not empty lists OR `virtual_network_vwan_routetable_resource_id` is not an empty string |
+| 13 | 00002000 | 8192 | reserved |
+| 14 | 00004000 | 16384 | reserved |
+| 15 | 00008000 | 32768 | reserved |
+| 16 | 00010000 | 65536 | `role_assignment_enabled` is `true` |
+| 17 | 00020000 | 131072 | reserved|
+| 18 | 00040000 | 262144 | reserved|
+| 19 | 00080000 | 524288 | reserved |
+| 20 | 00100000 | 1048576 | reserved |
+| 21 | 00200000 | 2097152 | reserved |
+| 22 | 00400000 | 4194304 | reserved |
+| 23 | 00800000 | 8388608 | reserved |
+| 24 | 01000000 | 16777216 | reserved |
+| 25 | 02000000 | 33554432 | reserved |
+| 26 | 04000000 | 67108864 | reserved |
+| 27 | 08000000 | 134217728 | reserved |
+| 28 | 10000000 | 268435456 | reserved |
+| 29 | 20000000 | 536870912 | reserved |
+| 30 | 40000000 | 1073741824 | reserved |
+| 31 | 80000000 | 2147483648 | reserved |
 
 [comment]: # (Link labels below, please sort a-z, thanks!)
 
