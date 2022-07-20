@@ -218,6 +218,40 @@ func TestIntegrationWithYaml(t *testing.T) {
 	}
 }
 
+// TestIntegrationHubAndSpoke tests the resource plan when creating a new subscription,
+// with a new virtual network with peerings to a supplied hub network.
+func TestIntegrationDisableTelemetry(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	defer cleanup()
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	v := getMockInputVariables()
+	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
+	v["subscription_alias_enabled"] = true
+	v["virtual_network_enabled"] = true
+	v["virtual_network_peering_enabled"] = true
+	v["virtual_network_resource_lock_enabled"] = true
+	v["disable_telemetry"] = true
+	terraformOptions.Vars = v
+
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoError(t, err)
+	resources := []string{
+		"module.subscription[0].azurerm_subscription.this[0]",
+		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
+		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
+		"module.virtualnetwork[0].azapi_resource.rg_lock[0]",
+		"module.virtualnetwork[0].azapi_resource.rg",
+		"module.virtualnetwork[0].azapi_resource.vnet",
+		"module.virtualnetwork[0].azapi_update_resource.vnet",
+	}
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
+	for _, v := range resources {
+		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
+	}
+}
+
 func getMockInputVariables() map[string]interface{} {
 	return map[string]interface{}{
 		// subscription variables
