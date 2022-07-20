@@ -31,11 +31,11 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	require.NoErrorf(t, err, "failed to init and plan")
 
-	require.Lenf(t, plan.ResourcePlannedValuesMap, 10, "expected 10 resources to be planned")
 	// List of resources to find in the plan, excluding the role assignment
 	resources := []string{
 		"azurerm_resource_group.hub",
 		"azurerm_virtual_network.hub",
+		"module.alz_landing_zone.azapi_resource.telemetry_root[0]",
 		"module.alz_landing_zone.module.subscription[0].azurerm_subscription.this[0]",
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
@@ -44,6 +44,8 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_resource.vnet",
 		"module.alz_landing_zone.module.virtualnetwork[0].azapi_update_resource.vnet",
 	}
+	// Require len(resources)+1 becasue role assignment address is not determinable here, see below
+	require.Lenf(t, plan.ResourcePlannedValuesMap, len(resources)+1, "expected %d resources to be created, but got %d", len(resources)+1, len(plan.ResourcePlannedValuesMap))
 	for _, r := range resources {
 		require.Contains(t, plan.ResourcePlannedValuesMap, r, "expected resource %s to be planned", r)
 	}

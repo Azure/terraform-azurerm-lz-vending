@@ -24,14 +24,14 @@ TEMPLATE
   # subscription telemetry bit fields
   telem_root_subscription_alias_enabled                        = var.subscription_alias_enabled ? 1 : 0
   telem_root_subscription_management_group_association_enabled = var.subscription_management_group_association_enabled ? 2 : 0
-  telem_root_subscription_tags_enabled                         = var.subscription_tags != {} ? 4 : 0
+  telem_root_subscription_tags_enabled                         = length(var.subscription_tags) > 0 ? 4 : 0
 
   # virtualnetwork telemetry bit fields
   telem_root_virtual_network_enabled                 = var.virtual_network_enabled ? 256 : 0
   telem_root_virtual_network_peering_enabled         = var.virtual_network_peering_enabled ? 512 : 0
   telem_root_virtual_network_vwan_connection_enabled = var.virtual_network_vwan_connection_enabled ? 1024 : 0
   telem_virtual_network_resource_lock_enabled        = var.virtual_network_resource_lock_enabled ? 2048 : 0
-  telem_root_vwan_advanced_routing_enabled           = var.virtual_network_vwan_propagated_routetables_labels != [] || var.virtual_network_vwan_propagated_routetables_resource_ids != [] || var.virtual_network_vwan_routetable_resource_id != "" ? 4096 : 0
+  telem_root_vwan_advanced_routing_enabled           = length(var.virtual_network_vwan_propagated_routetables_labels) > 0 || length(var.virtual_network_vwan_propagated_routetables_resource_ids) > 0 || var.virtual_network_vwan_routetable_resource_id != "" ? 4096 : 0
 
   # roleassignment telemetry bit fields
   telem_root_role_assignment_enabled = var.role_assignment_enabled ? 65536 : 0
