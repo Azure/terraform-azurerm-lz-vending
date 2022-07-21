@@ -29,7 +29,7 @@ Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-
 ```terraform
 module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
-  version = "<version>" # change this to your desired version
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   # subscription variables
   subscription_alias_enabled = true

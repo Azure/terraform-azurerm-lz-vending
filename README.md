@@ -30,7 +30,7 @@ Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-
 ```terraform
 module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
-  version = "<version>" # change this to your desired version
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   # subscription variables
   subscription_alias_enabled = true
@@ -133,9 +133,9 @@ For more information, see the [wiki](https://aka.ms/lz-vending/tf/telemetry)
 E.g.
 
 ```terraform
-module "lz-vending" {
+module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
-  version = "<version>" # change this to your desired version
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   # ... other module variables
 

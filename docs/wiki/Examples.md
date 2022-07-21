@@ -20,7 +20,7 @@ resource "azurerm_virtual_network" "example" {
 
 module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
-  version = "<version>" # change this to your desired version
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   location = var.location
 
@@ -68,7 +68,7 @@ resource "azurerm_virtual_hub" "example" {
 
 module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
-  version = "<version>" # change this to your desired version
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   location = each.value.location
 
@@ -143,7 +143,7 @@ Finally, we use a for_each on the module:
 # in the data directory.
 module "lz_vending" {
   source   = "Azure/lz-vending/azurerm"
-  version  = "<version>" # change this to your desired version
+  version  = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
   for_each = local.landing_zone_data_map
 
   location = each.value.location
