@@ -6,6 +6,8 @@ import (
 	"text/template"
 )
 
+// RequiredProvidersData is the data struct for the Terraform required providers block.
+// It should ordinarily be generated using utils.NewRequiredProvidersData().
 type RequiredProvidersData struct {
 	AzAPIVersion   string
 	AzureRMVersion string
