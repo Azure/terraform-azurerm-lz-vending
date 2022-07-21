@@ -4,3 +4,4 @@
 - [Permissions required](Permissions)
 - [Examples](Examples)
 - [Upgrades](Upgrades)
+- [Telemetry](Telemetry)

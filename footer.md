@@ -1,6 +1,16 @@
 <!-- markdownlint-disable MD041 -->
-## Contributing
+## Telemetry
 <!-- markdownlint-enable -->
+
+When you deploy one or more modules using the landing zone vending module, Microsoft can identify the installation of said module with the deployed Azure resources.
+Microsoft can correlate these resources used to support the software.
+Microsoft collects this information to provide the best experiences with their products and to operate their business.
+The telemetry is collected through customer usage attribution.
+The data is collected and governed by Microsoft's privacy policies.
+
+If you don't wish to send usage data to Microsoft, details on how to turn it off can be found [here](https://github.com/Azure/terraform-azurerm-lz-vending/wiki/Telemetry).
+
+## Contributing
 
 This project welcomes contributions and suggestions.
 Most contributions require you to agree to a Contributor License Agreement (CLA)
@@ -18,7 +28,7 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## Developing the Module
 
-See [DEVELOPER.md](DEVELOPER.md).
+See [DEVELOPER.md](https://github.com/Azure/terraform-azurerm-lz-vending/blob/main/DEVELOPER.md).
 
 ## Trademarks
 

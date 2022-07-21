@@ -18,8 +18,9 @@ resource "azurerm_virtual_network" "example" {
   address_space       = ["192.168.0.0/23"]
 }
 
-module "alz_landing_zone" {
-  source = "..."
+module "lz_vending" {
+  source  = "Azure/lz-vending/azurerm"
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   location = var.location
 
@@ -65,8 +66,9 @@ resource "azurerm_virtual_hub" "example" {
   address_prefix      = "10.0.0.0/23"
 }
 
-module "landing_zone" {
-  source = "..."
+module "lz_vending" {
+  source  = "Azure/lz-vending/azurerm"
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   location = each.value.location
 
@@ -139,8 +141,9 @@ Finally, we use a for_each on the module:
 ```terraform
 # The landing zone module will be called once per landing_zone_*.yaml file
 # in the data directory.
-module "landing_zone" {
-  source   = "..."
+module "lz_vending" {
+  source   = "Azure/lz-vending/azurerm"
+  version  = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
   for_each = local.landing_zone_data_map
 
   location = each.value.location
