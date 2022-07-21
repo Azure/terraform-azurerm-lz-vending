@@ -19,7 +19,7 @@ resource "azurerm_virtual_network" "example" {
 }
 
 module "lz_vending" {
-  source = "Azure/lz-vending/azurerm"
+  source  = "Azure/lz-vending/azurerm"
   version = "<version>" # change this to your desired version
 
   location = var.location
@@ -67,7 +67,7 @@ resource "azurerm_virtual_hub" "example" {
 }
 
 module "lz_vending" {
-  source = "Azure/lz-vending/azurerm"
+  source  = "Azure/lz-vending/azurerm"
   version = "<version>" # change this to your desired version
 
   location = each.value.location
@@ -142,8 +142,8 @@ Finally, we use a for_each on the module:
 # The landing zone module will be called once per landing_zone_*.yaml file
 # in the data directory.
 module "lz_vending" {
-  source = "Azure/lz-vending/azurerm"
-  version = "<version>" # change this to your desired version
+  source   = "Azure/lz-vending/azurerm"
+  version  = "<version>" # change this to your desired version
   for_each = local.landing_zone_data_map
 
   location = each.value.location
