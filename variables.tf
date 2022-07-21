@@ -20,7 +20,7 @@ E.g.
 ```terraform
 module "lz-vending" {
   source  = "Azure/lz-vending/azurerm"
-  version = "..."
+  version = "<version>" # change this to your desired version
 
   # ... other module variables
 
