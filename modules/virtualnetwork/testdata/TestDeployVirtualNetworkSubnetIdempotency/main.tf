@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    azapi = {
-      source  = "azure/azapi"
-      version = ">= 0.3.0"
-    }
-  }
-}
-
 resource "azapi_resource" "subnet" {
   parent_id = module.virtualnetwork_test.virtual_network_resource_id
   type      = "Microsoft.Network/virtualNetworks/subnets@2021-08-01"
