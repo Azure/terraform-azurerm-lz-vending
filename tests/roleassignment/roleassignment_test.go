@@ -1,6 +1,7 @@
 package roleassignment
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
@@ -15,8 +16,10 @@ const (
 
 func TestRoleAssignmentValidWithRoleName(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
@@ -34,8 +37,10 @@ func TestRoleAssignmentValidWithRoleName(t *testing.T) {
 
 func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["role_assignment_definition"] = "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/00000000-0000-0000-0000-000000000000"
@@ -56,8 +61,10 @@ func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
 // or management group scope for the role assignment.
 func TestRoleAssignmentInvalidScopes(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v

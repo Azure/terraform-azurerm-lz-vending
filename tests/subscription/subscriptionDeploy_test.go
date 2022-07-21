@@ -3,6 +3,7 @@ package subscription
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -20,8 +21,10 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	utils.PreCheckDeployTests(t)
 
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)
@@ -65,8 +68,10 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 
 	testDir := "testdata/" + t.Name()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 
 	billingScope := os.Getenv("AZURE_BILLING_SCOPE")

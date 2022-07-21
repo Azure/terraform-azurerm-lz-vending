@@ -3,6 +3,7 @@ package integration
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -19,8 +20,10 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "failed to create terraform providers file")
 
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
