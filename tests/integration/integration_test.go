@@ -233,10 +233,8 @@ func TestIntegrationWithYaml(t *testing.T) {
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationDisableTelemetry(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	defer cleanup()
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"

@@ -12,4 +12,5 @@ resource "azapi_resource" "telemetry_root" {
       template = local.telem_arm_subscription_template
     }
   })
+  ignore_missing_property = true
 }

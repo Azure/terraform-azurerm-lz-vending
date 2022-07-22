@@ -18,9 +18,9 @@ For more information, see the [wiki](https://aka.ms/lz-vending/tf/telemetry)
 E.g.
 
 ```terraform
-module "lz-vending" {
+module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
-  version = "..."
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   # ... other module variables
 
