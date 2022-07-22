@@ -147,7 +147,6 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	vhcres := "azapi_resource.vhubconnection[\"this\"]"
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
 	vhc := plan.ResourcePlannedValuesMap[vhcres]
-	require.Contains(t, vhc.AttributeValues, "name")
 	require.Contains(t, vhc.AttributeValues, "parent_id")
 	assert.Equal(t, v["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"])
 
@@ -191,7 +190,6 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 	vhcres := fmt.Sprintf("azapi_resource.vhubconnection[\"%s\"]", vhcname)
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
 	vhc := plan.ResourcePlannedValuesMap[vhcres]
-	require.Contains(t, vhc.AttributeValues, "name")
 	assert.Equal(t, vhcname, vhc.AttributeValues["name"])
 	require.Contains(t, vhc.AttributeValues, "parent_id")
 	assert.Equal(t, v["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"])
