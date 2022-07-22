@@ -88,7 +88,7 @@ resource "azapi_resource" "vhubconnection" {
   for_each  = local.vhub_connection_set
   type      = "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2021-08-01"
   parent_id = var.vwan_hub_resource_id
-  name      = each.key
+  name      = "vhc-${local.this_network_uuidv5}"
   body = jsonencode({
     properties = {
       remoteVirtualNetwork = {
@@ -96,7 +96,7 @@ resource "azapi_resource" "vhubconnection" {
       }
       routingConfiguration = {
         associatedRouteTable = {
-          id = var.virtual_network_vwan_routetable_resource_id != "" ? var.virtual_network_vwan_routetable_resource_id : "${var.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
+          id = var.virtual_network_vwan_associated_routetable_resource_id != "" ? var.virtual_network_vwan_associated_routetable_resource_id : "${var.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
         }
         propagatedRouteTables = {
           ids    = local.vwan_propagated_routetables_resource_ids

@@ -5,6 +5,7 @@ package integration
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -22,8 +23,10 @@ const (
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpoke(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
@@ -64,8 +67,10 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 // RG resource lock is disabled
 func TestIntegrationVwan(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualHubs/testhub"
@@ -80,7 +85,7 @@ func TestIntegrationVwan(t *testing.T) {
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
 		"module.subscription[0].azurerm_subscription.this[0]",
-		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5\"]",
+		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"this\"]",
 		"module.virtualnetwork[0].azapi_resource.rg",
 		"module.virtualnetwork[0].azapi_resource.vnet",
 		"module.virtualnetwork[0].azapi_update_resource.vnet",
@@ -104,8 +109,10 @@ func TestIntegrationVwan(t *testing.T) {
 // when a dependent resource is disabled through the use of count.
 func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_alias_enabled"] = true
@@ -145,8 +152,10 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
@@ -186,8 +195,10 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 func TestIntegrationWithYaml(t *testing.T) {
 	testDir := "testdata/" + t.Name()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)

@@ -114,7 +114,7 @@ DESCRIPTION
   default     = true
 }
 
-variable "virtual_network_vwan_routetable_resource_id" {
+variable "virtual_network_vwan_associated_routetable_resource_id" {
   type        = string
   description = <<DESCRIPTION
 The resource ID of the virtual network route table to use for the virtual network.
@@ -125,7 +125,7 @@ E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/p
 DESCRIPTION
   default     = ""
   validation {
-    condition     = can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", var.virtual_network_vwan_routetable_resource_id))
+    condition     = can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", var.virtual_network_vwan_associated_routetable_resource_id))
     error_message = "Value must be an Azure vwan hub resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
   }
 }

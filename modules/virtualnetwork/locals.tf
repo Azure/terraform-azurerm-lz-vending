@@ -34,7 +34,7 @@ locals {
   # If the supplied vwan hub is an empty string, the set will be empty,
   # resulting on no resource being created.
   vhub_connection_set = var.virtual_network_vwan_connection_enabled ? toset([
-    "vhubcon-${local.hub_network_uuidv5}"
+    "this"
   ]) : toset([])
 
   # vwan_propagated_routetables_resource_ids generates the routetable resource ids for the vhub connection

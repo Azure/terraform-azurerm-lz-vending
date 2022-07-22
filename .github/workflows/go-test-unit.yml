@@ -11,6 +11,11 @@ on:
         default: ''
         description: Filter for the tests to run
         required: false
+      terratest_log:
+        type: string
+        default: ''
+        description: Enable Terratest logging
+        required: false
 
 permissions:
   contents: read
@@ -27,7 +32,7 @@ concurrency:
 jobs:
   unittest:
     name: Unit test
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     environment: CSUTF-RO
     if: |
       (
@@ -46,8 +51,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        terraform_version: ['~1.0.0', '~1.2.0']
+        azapi_version: ['latest', '0.3.0']
+        azurerm_version: ['latest', '3.7.0']
+        terraform_version: ['~1.2.0', '~1.0.0']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -73,3 +79,6 @@ jobs:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
+          AZAPI_VERSION: ${{ matrix.azapi_version }}
+          AZURERM_VERSION: ${{ matrix.azurerm_version }}
+          TERRATEST_LOG: ${{ github.event.inputs.terratest_log }}

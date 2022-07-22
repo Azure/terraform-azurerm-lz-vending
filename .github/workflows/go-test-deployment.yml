@@ -11,6 +11,11 @@ on:
         default: ''
         description: Filter for the tests to run
         required: false
+      terratest_log:
+        type: string
+        default: ''
+        description: Enable Terratest logging
+        required: false
 
 permissions:
   contents: read
@@ -38,16 +43,16 @@ jobs:
           github.event_name == 'workflow_dispatch'
         )
       )
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        terraform_version: ['~1.0.0', '~1.2.0']
+        azapi_version: ['latest', '0.3.0']
+        azurerm_version: ['latest', '3.7.0']
+        terraform_version: ['~1.2.0', '~1.0.0']
     steps:
       - name: Show env
         run: env | sort
-        if: ${{ matrix.os }} == 'ubuntu-latest'
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -89,6 +94,9 @@ jobs:
           AZURE_BILLING_SCOPE: ${{ secrets.AZURE_BILLING_SCOPE }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZAPI_VERSION: ${{ matrix.azapi_version }}
+          AZURERM_VERSION: ${{ matrix.azurerm_version }}
+          TERRATEST_LOG: ${{ github.event.inputs.terratest_log }}
 
       # This only works on Linux based runners
       - name: Azure logout

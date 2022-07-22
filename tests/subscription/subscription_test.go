@@ -1,6 +1,7 @@
 package subscription
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
@@ -17,8 +18,10 @@ const (
 // then creates a plan and compares the input variables to the planned values.
 func TestSubscriptionAliasCreateValid(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	terraformOptions.Vars = v
@@ -48,8 +51,10 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 // then creates a plan and compares the input variables to the planned values.
 func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_management_group_id"] = "testdeploy"
@@ -85,8 +90,10 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 // then creates a plan and compares the input variables to the planned values.
 func TestSubscriptionExistingWithManagementGroup(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_management_group_id"] = "testdeploy"
@@ -110,8 +117,10 @@ func TestSubscriptionExistingWithManagementGroup(t *testing.T) {
 // TestSubscriptionAliasCreateInvalidBillingScope tests the validation function of the subscription_billing_scope variable.
 func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_billing_scope"] = "/PRoviders/Microsoft.Billing/billingAccounts/test-billing-account"
@@ -125,8 +134,10 @@ func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
 // TestSubscriptionAliasCreateInvalidWorkload tests the validation function of the subscription_workload variable.
 func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_workload"] = "PRoduction"
@@ -141,8 +152,10 @@ func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
 // subscription_alias_management_group_id variable.
 func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_management_group_id"] = "invalid/chars"
@@ -157,8 +170,10 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.
 // subscription_alias_management_group_id variable.
 func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "Failed to copy module to temp: %s", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["subscription_management_group_id"] = "tooooooooooooooooooooooooooloooooooooooooooooooooonnnnnnnnnnnnnnnnnnngggggggggggggggggggggg"

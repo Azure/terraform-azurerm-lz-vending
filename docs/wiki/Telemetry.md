@@ -61,7 +61,7 @@ The bit field is composed of the following bits:
 | 9 | 00000200 | 512 | `virtual_network_peering_enabled` is `true` |
 | 10 | 00000400 | 1024 | `virtual_network_vwan_connection_enabled` is `true` |
 | 11 | 00000800 | 2048 | `virtual_network_resource_lock_enabled` is `true` |
-| 12 | 00001000 | 4096 |Either `virtual_network_vwan_propagated_routetables_labels` OR `virtual_network_vwan_propagated_routetables_resource_ids` are not empty lists OR `virtual_network_vwan_routetable_resource_id` is not an empty string |
+| 12 | 00001000 | 4096 |Either `virtual_network_vwan_propagated_routetables_labels` OR `virtual_network_vwan_propagated_routetables_resource_ids` are not empty lists OR `virtual_network_vwan_associated_routetable_resource_id` is not an empty string |
 | 13 | 00002000 | 8192 | reserved |
 | 14 | 00004000 | 16384 | reserved |
 | 15 | 00008000 | 32768 | reserved |

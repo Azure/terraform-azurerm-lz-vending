@@ -2,7 +2,7 @@ package virtualnetwork
 
 import (
 	"encoding/json"
-	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/models"
@@ -20,8 +20,10 @@ const (
 // creates a virtual network in the specified resource group.
 func TestVirtualNetworkCreateValid(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["virtual_network_resource_lock_enabled"] = true
@@ -57,8 +59,10 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 // creates a virtual network with bidirectional peering.
 func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["virtual_network_peering_enabled"] = true
@@ -96,8 +100,10 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 // with useRemoteGateways disabled.
 func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/tes.-tvnet2"
@@ -125,8 +131,10 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 // creates a virtual network with a vhub connection.
 func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
@@ -135,12 +143,9 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
-	vhcname := "vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5"
-	vhcres := fmt.Sprintf("azapi_resource.vhubconnection[\"%s\"]", vhcname)
+	vhcres := "azapi_resource.vhubconnection[\"this\"]"
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
 	vhc := plan.ResourcePlannedValuesMap[vhcres]
-	require.Contains(t, vhc.AttributeValues, "name")
-	assert.Equal(t, vhcname, vhc.AttributeValues["name"])
 	require.Contains(t, vhc.AttributeValues, "parent_id")
 	assert.Equal(t, v["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"])
 
@@ -161,8 +166,10 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 // creates a virtual network with a vhub connection with custom routing.
 func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
@@ -172,18 +179,15 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 		v["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable",
 		v["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable2",
 	}
-	v["virtual_network_vwan_routetable_resource_id"] = v["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable3"
+	v["virtual_network_vwan_associated_routetable_resource_id"] = v["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable3"
 	terraformOptions.Vars = v
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
 
-	vhcname := "vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5"
-	vhcres := fmt.Sprintf("azapi_resource.vhubconnection[\"%s\"]", vhcname)
+	vhcres := "azapi_resource.vhubconnection[\"this\"]"
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
 	vhc := plan.ResourcePlannedValuesMap[vhcres]
-	require.Contains(t, vhc.AttributeValues, "name")
-	assert.Equal(t, vhcname, vhc.AttributeValues["name"])
 	require.Contains(t, vhc.AttributeValues, "parent_id")
 	assert.Equal(t, v["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"])
 
@@ -191,7 +195,7 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 	var body models.HubVirtualNetworkConnectionBody
 	err = json.Unmarshal([]byte(vhc.AttributeValues["body"].(string)), &body)
 	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
-	assert.Equal(t, v["virtual_network_vwan_routetable_resource_id"], body.Properties.RoutingConfiguration.AssociatedRouteTable.ID)
+	assert.Equal(t, v["virtual_network_vwan_associated_routetable_resource_id"], body.Properties.RoutingConfiguration.AssociatedRouteTable.ID)
 	assert.EqualValues(t, v["virtual_network_vwan_propagated_routetables_labels"], body.Properties.RoutingConfiguration.PropagatedRouteTables.Labels)
 	assert.Len(t, body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs, 2)
 	for _, rt := range body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs {
@@ -203,8 +207,10 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroup/testrg/providers/Microsoft.Network/virtualNetworks/tes.-tvnet2"
@@ -217,8 +223,10 @@ func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
 	v["vwan_hub_resource_id"] = "/subscription/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"

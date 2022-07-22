@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    azapi = {
-      source  = "azure/azapi"
-      version = ">= 0.3.0"
-    }
-  }
-}
-
 variable "subscription_billing_scope" {
   type = string
 }

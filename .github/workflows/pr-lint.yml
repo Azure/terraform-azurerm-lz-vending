@@ -24,14 +24,23 @@ jobs:
           # Default: https://github.com/commitizen/conventional-commit-types
           types: |
             chore
+            chore!
             ci
+            ci!
             docs
+            docs!
             feat
+            feat!
             fix
+            fix!
             refactor
+            refactor!
             revert
+            revert!
             style
+            style!
             test
+            test!
           # Configure which scopes are allowed.
           scopes: |
             roleassignment

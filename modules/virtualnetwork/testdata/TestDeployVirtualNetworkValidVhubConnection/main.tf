@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    azapi = {
-      source  = "azure/azapi"
-      version = ">= 0.3.0"
-    }
-  }
-}
-
 resource "azapi_resource" "rg" {
   type      = "Microsoft.Resources/resourceGroups@2021-04-01"
   parent_id = "/subscriptions/${var.subscription_id}"
