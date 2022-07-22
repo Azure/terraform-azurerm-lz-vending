@@ -85,7 +85,7 @@ func TestIntegrationVwan(t *testing.T) {
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
 		"module.subscription[0].azurerm_subscription.this[0]",
-		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5\"]",
+		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"this\"]",
 		"module.virtualnetwork[0].azapi_resource.rg",
 		"module.virtualnetwork[0].azapi_resource.vnet",
 		"module.virtualnetwork[0].azapi_update_resource.vnet",
