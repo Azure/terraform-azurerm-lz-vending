@@ -18,7 +18,7 @@ Please raise an [issue](https://github.com/Azure/terraform-azurerm-lz-vending/is
 
 ## Change log
 
-Please see the [GitHub releases pages](https://github.com/Azure/terraform-azurerm-lz-vending/releases/latest) for change log information.
+Please see the [GitHub releases pages](https://github.com/Azure/terraform-azurerm-lz-vending/releases) for change log information.
 
 ## Notes
 
