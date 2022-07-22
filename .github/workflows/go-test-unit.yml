@@ -11,6 +11,11 @@ on:
         default: ''
         description: Filter for the tests to run
         required: false
+      terratest_log:
+        type: string
+        default: ''
+        description: Enable Terratest logging
+        required: false
 
 permissions:
   contents: read
@@ -76,3 +81,4 @@ jobs:
           ARM_USE_OIDC: true
           AZAPI_VERSION: ${{ matrix.azapi_version }}
           AZURERM_VERSION: ${{ matrix.azurerm_version }}
+          TERRATEST_LOG: ${{ github.event.inputs.terratest_log }}
