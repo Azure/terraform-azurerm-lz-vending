@@ -22,7 +22,7 @@ Please provide testing evidence to show that your Pull Request works/fixes as de
 
 - [ ] Checked for duplicate [Pull Requests](https://github.com/Azure/terraform-azurerm-lz-vending/pulls)
 - [ ] Associated it with relevant [issues](https://github.com/Azure/terraform-azurerm-lz-vending/issues), for tracking and closure.
-- [ ] Run `make docs` and `make fmt` to update the documentation and format your code.
+- [ ] Run and `make fmt` & `make docs` to format your code and update documentation.
 - [ ] Created unit and deployment tests and provided evidence.
 - [ ] Updated relevant and associated documentation.
 - [ ] (Optionally) Updated the ["What's New?"](https://github.com/Azure/Enterprise-Scale/wiki/Whats-new) wiki page (located in the [Enterprise-Scale repo](https://github.com/Azure/Enterprise-Scale) in the directory: `/docs/wiki/whats-new.md`)
