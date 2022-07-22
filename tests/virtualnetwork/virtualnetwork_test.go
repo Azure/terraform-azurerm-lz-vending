@@ -2,7 +2,6 @@ package virtualnetwork
 
 import (
 	"encoding/json"
-	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -186,11 +185,9 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 	assert.NoError(t, err)
 	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
 
-	vhcname := "vhubcon-1b4db7eb-4057-5ddf-91e0-36dec72071f5"
-	vhcres := fmt.Sprintf("azapi_resource.vhubconnection[\"%s\"]", vhcname)
+	vhcres := "azapi_resource.vhubconnection[\"this\"]"
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
 	vhc := plan.ResourcePlannedValuesMap[vhcres]
-	assert.Equal(t, vhcname, vhc.AttributeValues["name"])
 	require.Contains(t, vhc.AttributeValues, "parent_id")
 	assert.Equal(t, v["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"])
 
