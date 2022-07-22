@@ -127,6 +127,18 @@ Type: `bool`
 
 Default: `true`
 
+### <a name="input_virtual_network_vwan_associated_routetable_resource_id"></a> [virtual\_network\_vwan\_associated\_routetable\_resource\_id](#input\_virtual\_network\_vwan\_associated\_routetable\_resource\_id)
+
+Description: The resource ID of the virtual network route table to use for the virtual network.
+
+Leave blank to use the `defaultRouteTable`.
+
+E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable`
+
+Type: `string`
+
+Default: `""`
+
 ### <a name="input_virtual_network_vwan_connection_enabled"></a> [virtual\_network\_vwan\_connection\_enabled](#input\_virtual\_network\_vwan\_connection\_enabled)
 
 Description: The resource ID of the vwan hub to which the virtual network will be connected.  
@@ -159,18 +171,6 @@ Leave blank to use the `defaultRouteTable`.
 Type: `list(string)`
 
 Default: `[]`
-
-### <a name="input_virtual_network_vwan_routetable_resource_id"></a> [virtual\_network\_vwan\_routetable\_resource\_id](#input\_virtual\_network\_vwan\_routetable\_resource\_id)
-
-Description: The resource ID of the virtual network route table to use for the virtual network.
-
-Leave blank to use the `defaultRouteTable`.
-
-E.g. `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable`
-
-Type: `string`
-
-Default: `""`
 
 ### <a name="input_vwan_hub_resource_id"></a> [vwan\_hub\_resource\_id](#input\_vwan\_hub\_resource\_id)
 

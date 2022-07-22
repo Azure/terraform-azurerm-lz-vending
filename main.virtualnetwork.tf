@@ -19,6 +19,6 @@ module "virtualnetwork" {
   virtual_network_vwan_connection_enabled                  = var.virtual_network_vwan_connection_enabled
   virtual_network_vwan_propagated_routetables_labels       = var.virtual_network_vwan_propagated_routetables_labels
   virtual_network_vwan_propagated_routetables_resource_ids = var.virtual_network_vwan_propagated_routetables_resource_ids
-  virtual_network_vwan_routetable_resource_id              = var.virtual_network_vwan_routetable_resource_id
+  virtual_network_vwan_associated_routetable_resource_id   = var.virtual_network_vwan_associated_routetable_resource_id
   vwan_hub_resource_id                                     = var.vwan_hub_resource_id
 }

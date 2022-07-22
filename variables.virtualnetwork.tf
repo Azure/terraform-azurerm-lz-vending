@@ -100,7 +100,7 @@ DESCRIPTION
   default     = true
 }
 
-variable "virtual_network_vwan_routetable_resource_id" {
+variable "virtual_network_vwan_associated_routetable_resource_id" {
   type        = string
   description = <<DESCRIPTION
 The resource ID of the virtual network route table to use for the virtual network.
