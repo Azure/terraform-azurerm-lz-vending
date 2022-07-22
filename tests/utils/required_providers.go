@@ -54,10 +54,10 @@ func NewRequiredProvidersData() RequiredProvidersData {
 	azapiver := ">= 0.3.0"
 	azurermver := ">= 3.7.0"
 
-	if val := os.Getenv("AZAPI_VERSION"); val != "" || val == "latest" {
+	if val := os.Getenv("AZAPI_VERSION"); val != "" && val != "latest" {
 		azapiver = "= " + val
 	}
-	if val := os.Getenv("AZURERM_VERSION"); val != "" || val == "latest" {
+	if val := os.Getenv("AZURERM_VERSION"); val != "" && val != "latest" {
 		azurermver = "= " + val
 	}
 	rpd.AzAPIVersion = azapiver
