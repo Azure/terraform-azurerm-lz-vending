@@ -48,7 +48,6 @@ The identity of the AzureRM provider must have permission to create these resour
 [azurerm_role_assignment]: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment
 [azurerm_subscription]: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription
 [hubVirtualNetworkConnections]: https://docs.microsoft.com/azure/templates/microsoft.network/virtualhubs/hubvirtualnetworkconnections?tabs=bicep
-[management_group_contributor]: https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#management-group-contributor
 [moving_management_groups]: https://docs.microsoft.com/azure/governance/management-groups/overview#moving-management-groups-and-subscriptions
 [programatically_create_subscription]: https://docs.microsoft.com/azure/cost-management-billing/manage/programmatically-create-subscription
 [resourceGroups]: https://docs.microsoft.com/azure/templates/microsoft.resources/resourceGroups?tabs=bicep
