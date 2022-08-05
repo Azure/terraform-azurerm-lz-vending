@@ -190,6 +190,51 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	assert.Equalf(t, expectBf, telemBf, "expected bit field to be %s, but got %s", expectBf, telemBf)
 }
 
+// TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc tests the resource plan when supplying an existing subscription,
+// with a new virtual network with peerings to a supplied hub network.
+func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	v := getMockInputVariables()
+	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
+	v["subscription_alias_enabled"] = false
+	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
+	v["virtual_network_enabled"] = true
+	v["virtual_network_peering_enabled"] = true
+	v["subscription_management_group_association_enabled"] = true
+	v["subscription_management_group_id"] = "Test"
+	delete(v, "subscription_tags")
+	terraformOptions.Vars = v
+
+	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoError(t, err)
+	resources := []string{
+		"azapi_resource.telemetry_root[0]",
+		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
+		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
+		"module.virtualnetwork[0].azapi_resource.rg",
+		"module.virtualnetwork[0].azapi_resource.vnet",
+		"module.virtualnetwork[0].azapi_update_resource.vnet",
+		"module.subscription[0].azurerm_management_group_subscription_association.this[0]",
+	}
+	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
+	for _, v := range resources {
+		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
+	}
+	// check bit field is correct
+	telem := plan.ResourcePlannedValuesMap["azapi_resource.telemetry_root[0]"]
+	require.Contains(t, telem.AttributeValues, "name")
+	telemName := telem.AttributeValues["name"].(string)
+	telemBf := strings.Split(telemName, "_")[2]
+	expectBf := "00000302"
+	assert.Equalf(t, expectBf, telemBf, "expected bit field to be %s, but got %s", expectBf, telemBf)
+}
+
 // TestIntegrationWithYaml tests the use of the module with a for_each loop
 // using YAML files as input.
 func TestIntegrationWithYaml(t *testing.T) {
