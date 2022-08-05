@@ -54,8 +54,6 @@ As this module does not deploy the subnets, none are included in the request and
 
 We have managed to avoid this issue by using the `azapi_update_resource` resource type together with a lifecycle `ignore_changes` block in the `azapi_resource` that creates the virtual network.
 
-[comment]: # (Link labels below, please sort a-z, thanks!)
-
 [github_azapi]: https://github.com/Azure/terraform-provider-azapi
 [github_azurerm]: https://github.com/hashicorp/terraform-provider-azurerm
 [hashicorp_azurerm_auth_to_azure]: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs#authenticating-to-azure

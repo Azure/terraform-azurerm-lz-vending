@@ -13,4 +13,5 @@ module "subscription" {
   subscription_management_group_id                  = var.subscription_management_group_id
   subscription_workload                             = var.subscription_workload
   subscription_tags                                 = var.subscription_tags
+  subscription_id                                   = var.subscription_id
 }

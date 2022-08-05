@@ -173,8 +173,4 @@ module "lz_vending" {
 
 We have provided a working example of this in the [testdata/TestIntegrationWithYaml](https://github.com/Azure/terraform-azurerm-lz-vending/tree/main/testdata/TestIntegrationWithYaml) directory.
 
-[comment]: # (Link labels below, please sort a-z, thanks!)
-
-[comment]: # (Link labels below, please sort a-z, thanks!)
-
 [alz_tf_module]: https://aka.ms/alz/tf

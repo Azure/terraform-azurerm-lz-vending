@@ -19,8 +19,6 @@ and then use this module to deploy the landing zones.
 Before deployment, please review the [required permissions](Permissions).
 Then to get started, look at one of the [examples](Examples).
 
-[comment]: # (Link labels below, please sort a-z, thanks!)
-
 [alz_conceptual_arch]: https://docs.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/#azure-landing-zone-conceptual-architecture
 [alz_tf_module]: https://aka.ms/alz/tf
 [readme]: https://github.com/Azure/terraform-azurerm-lz-vending#readme

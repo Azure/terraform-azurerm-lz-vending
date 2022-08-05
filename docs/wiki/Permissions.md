@@ -43,14 +43,11 @@ This sub-module manages the following resources using the AzureRM provider:
 The role assignments are deployed into either the new or the supplied subscription, at subscription or child scopes.
 The identity of the AzureRM provider must have permission to create these resources, typically this means having the `Owner` or `User Access Administrator` roles.
 
-[comment]: # (Link labels below, please sort a-z, thanks!)
-
 [assign_ea_roles_to_spns]: https://docs.microsoft.com/azure/cost-management-billing/manage/assign-roles-azure-service-principals
 [azurerm_management_group_subscription_association]: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group_subscription_association
 [azurerm_role_assignment]: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment
 [azurerm_subscription]: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription
 [hubVirtualNetworkConnections]: https://docs.microsoft.com/azure/templates/microsoft.network/virtualhubs/hubvirtualnetworkconnections?tabs=bicep
-[management_group_contributor]: https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#management-group-contributor
 [moving_management_groups]: https://docs.microsoft.com/azure/governance/management-groups/overview#moving-management-groups-and-subscriptions
 [programatically_create_subscription]: https://docs.microsoft.com/azure/cost-management-billing/manage/programmatically-create-subscription
 [resourceGroups]: https://docs.microsoft.com/azure/templates/microsoft.resources/resourceGroups?tabs=bicep
