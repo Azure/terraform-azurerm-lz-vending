@@ -46,6 +46,7 @@ module "lz_vending" {
   virtual_network_enabled             = true
   virtual_network_address_space       = ["192.168.1.0/24"]
   virtual_network_location            = "eastus"
+  virtual_network_name                = "myvnet"
   virtual_network_resource_group_name = "my-network-rg"
 
   # virtual network peering
