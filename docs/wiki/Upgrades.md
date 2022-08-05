@@ -14,5 +14,3 @@ If you are using the Terraform registry, you can update the version number for t
 
 For a new `MAJOR` release, you will see breaking changes.
 We will publish guidance in the release notes on GitHub.
-
-[comment]: # (Link labels below, please sort a-z, thanks!)

@@ -82,6 +82,4 @@ The bit field is composed of the following bits:
 | 30 | 40000000 | 1073741824 | reserved |
 | 31 | 80000000 | 2147483648 | reserved |
 
-[comment]: # (Link labels below, please sort a-z, thanks!)
-
 [bit_field]: https://en.wikipedia.org/wiki/Bit_field
