@@ -2,6 +2,16 @@
 - [Home](Home)
 - [About this module](About)
 - [Permissions required](Permissions)
+
+---
+
 - [Examples](Examples)
+  - [Example 1 - Hub & Spoke](Examples-1---Hub-&-Spoke.md)
+  - [Example 2 - Virtual WAN](Examples-2---Virtual-WAN.md)
+  - [Example 3 - YAML data files](Example-3---YAML-data-files.md)
+  - [Example 4 - Integration with ALZ module](Example-4---Integration-with-ALZ-module.md)
+
+---
+
 - [Upgrades](Upgrades)
 - [Telemetry](Telemetry)
