@@ -39,3 +39,5 @@ module "lz_vending" {
   hub_network_resource_id             = azurerm_virtual_network.example.id
 }
 ```
+
+Back to [Examples](Examples)
