@@ -3,7 +3,7 @@ Here are some example configurations that demonstrate the module usage and integ
 
 | Example | Description |
 | - | - |
-| [Hub & Spoke](Example-1---Hub-&-Spoke.md) | Example of how to create a landing zone with hub & spoke peering |
+| [Hub & Spoke](Example-1---Hub-and-Spoke.md) | Example of how to create a landing zone with hub & spoke peering |
 | [Virtual WAN](Example-2---Virtual-WAN.md) | Example of how to create a landing zone with Virtual WAN connection |
 | [YAML data files](Example-3---YAML-data-files.md) | Example of how to create a landing zone using YAML input files for input |
 | [Integration with ALZ module](Example-4---Integration-with-ALZ-module.md) | Example of how to integrate this module with the [ALZ Terraform module][alz_tf_module] |
