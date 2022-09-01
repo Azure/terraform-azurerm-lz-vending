@@ -10,8 +10,8 @@ The identity used by the AzAPI provider must have permissions to create the reso
 
 ```terraform
 module "lz_vending" {
-  source   = "Azure/lz-vending/azurerm"
-  version  = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
+  source  = "Azure/lz-vending/azurerm"
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   location = "northeurope"
 
