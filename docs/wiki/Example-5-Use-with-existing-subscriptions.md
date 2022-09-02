@@ -30,4 +30,4 @@ module "lz_vending" {
 }
 ```
 
-Back to [Examples](Examples.md)
+Back to [Examples](Examples)
