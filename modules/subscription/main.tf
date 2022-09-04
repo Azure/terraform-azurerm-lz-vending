@@ -7,6 +7,7 @@ resource "azurerm_subscription" "this" {
   workload          = var.subscription_workload
   tags              = var.subscription_tags
 
+  # This provisioner requires az cli to be installed and logged in.
   provisioner "local-exec" {
     when = destroy
     command = "az resource delete --ids /subscriptions/${self.subscription_id}/resourceGroups/NetworkWatcherRG"
