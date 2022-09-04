@@ -6,6 +6,12 @@ resource "azurerm_subscription" "this" {
   billing_scope_id  = var.subscription_billing_scope
   workload          = var.subscription_workload
   tags              = var.subscription_tags
+
+  provisioner "local-exec" {
+    when = destroy
+    command = "az resource delete --ids /subscriptions/${self.subscription_id}/resourceGroups/NetworkWatcherRG"
+    on_failure = continue
+  }
 }
 
 # This resource ensures that we can manage the management group for the subscription
