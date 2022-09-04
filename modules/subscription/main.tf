@@ -9,8 +9,8 @@ resource "azurerm_subscription" "this" {
 
   # This provisioner requires az cli to be installed and logged in.
   provisioner "local-exec" {
-    when = destroy
-    command = "az resource delete --ids /subscriptions/${self.subscription_id}/resourceGroups/NetworkWatcherRG"
+    when       = destroy
+    command    = "az resource delete --ids /subscriptions/${self.subscription_id}/resourceGroups/NetworkWatcherRG"
     on_failure = continue
   }
 }
