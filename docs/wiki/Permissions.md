@@ -1,7 +1,9 @@
 <!-- markdownlint-disable MD041 -->
 ## Permissions required
 
-This module uses two providers, `azapi` and `azurerm`. We recommend that you use the same identity for both providers.
+This module uses two providers, `AzAPI` and `AzureRM`.
+We recommend that you use the same identity for both providers.
+See [provider configuration](Provider-configuration) for more information.
 
 ### Subscription sub-module
 
@@ -20,7 +22,8 @@ See the [documentation][programatically_create_subscription] for details.
 - Manage the subscription's management group using the `Microsoft.Management/managementGroups` resource.
 For a detailed explanation of the permissions required, see the [documentation][moving_management_groups].
 
-> **Note**: the identity that creates the subscription will have `Owner` permissions assigned by default. If you instead supply an existing subscription id, you must ensure that the identity of the provider has the `Owner` permissions assigned.
+> **Note**: the identity that creates the subscription will have `Owner` permissions assigned by default.
+> If you instead supply an existing subscription id, you must ensure that the identity of the provider has the `Owner` permissions assigned.
 
 ### Virtual network sub-module
 

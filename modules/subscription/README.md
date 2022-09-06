@@ -64,6 +64,12 @@ Optionally, supply the following to enable the placement of the subscription int
 - `subscription_management_group_id`
 - `subscription_management_group_association_enabled`
 
+If disabled, supply the `subscription_id` variable to use an existing subscription instead.
+
+> **Note**: When the subscription is destroyed, this module will try to remove the NetworkWatcherRG resource group using `az cli`.
+> This requires the `az cli` tool be installed and authenticated.
+> If the command fails for any reason, the provider will attempt to cancel the subscription anyway.
+
 Type: `bool`
 
 Default: `false`
@@ -87,6 +93,12 @@ Default: `""`
 Description: The billing scope for the new subscription alias.
 
 A valid billing scope starts with `/providers/Microsoft.Billing/billingAccounts/` and is case sensitive.
+
+E.g.
+
+- For CustomerLed and FieldLed, e.g. MCA - `/providers/Microsoft.Billing/billingAccounts/{billingAccountName}/billingProfiles/{billingProfileName}/invoiceSections/{invoiceSectionName}`
+- For PartnerLed, e.g. MPA - `/providers/Microsoft.Billing/billingAccounts/{billingAccountName}/customers/{customerName}`
+- For Legacy EA - `/providers/Microsoft.Billing/billingAccounts/{billingAccountName}/enrollmentAccounts/{enrollmentAccountName}`
 
 You may also supply an empty string if you do not want to create a new subscription alias.  
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.

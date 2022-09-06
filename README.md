@@ -3,7 +3,8 @@
 
 ## Overview
 
-The landing zone Terraform module is designed to accelerate deployment of the individual landing zones within an Azure tenant.
+The landing zone Terraform module is designed to accelerate deployment of individual landing zones within an Azure tenant.
+We use the [AzureRM][azurem\_provider] and [AzAPI][azapi\_provider] providers to create the subscription and deploy the resources in a single `terrafom apply` step.
 
 The module is designed to be instantiated many times, once for each desired landing zone.
 
@@ -78,6 +79,9 @@ module "lz_vending" {
   ]
 }
 ```
+
+[azurem\_provider]: https://registry.terraform.io/providers/hashicorp/azurerm/latest
+[azapi\_provider]: https://registry.terraform.io/providers/azure/azapi/latest
 
 ## Documentation
 <!-- markdownlint-disable MD033 -->
@@ -234,7 +238,11 @@ Optionally, supply the following to enable the placement of the subscription int
 - `subscription_management_group_id`
 - `subscription_management_group_association_enabled`
 
-If disabled, supply the `subscription_id` variable instead.
+If disabled, supply the `subscription_id` variable to use an existing subscription instead.
+
+> **Note**: When the subscription is destroyed, this module will try to remove the NetworkWatcherRG resource group using `az cli`.
+> This requires the `az cli` tool be installed and authenticated.
+> If the command fails for any reason, the provider will attempt to cancel the subscription anyway.
 
 Type: `bool`
 

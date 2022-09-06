@@ -16,7 +16,7 @@ In the above diagram, this module provides the capability to deploy landing zone
 We recommend that you deploy the platform using the [Azure Landing Zones Terraform module][alz_tf_module]
 and then use this module to deploy the landing zones.
 
-Before deployment, please review the [required permissions](Permissions).
+Before deployment, please review the [required permissions](Permissions) and [provider configuration](Provider-configuration).
 Then to get started, look at one of the [examples](Examples).
 
 [alz_conceptual_arch]: https://docs.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/#azure-landing-zone-conceptual-architecture
