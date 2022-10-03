@@ -13,7 +13,7 @@ jobs:
     name: super linter
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Run github/super-linter/slim
         uses: github/super-linter/slim@v4
         env:
@@ -45,7 +45,7 @@ jobs:
     name: golangci-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup go
         uses: actions/setup-go@v3
         with:
