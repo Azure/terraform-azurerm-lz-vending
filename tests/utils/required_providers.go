@@ -16,7 +16,7 @@ type RequiredProvidersData struct {
 const (
 	requiredProvidersContent = `
 terraform {
-	required_version = ">= 1.0.0"
+	required_version = ">= 1.3.0"
 	required_providers {
 		azurerm = {
 			source  = "hashicorp/azurerm"
@@ -51,7 +51,7 @@ func GenerateRequiredProvidersFile(data RequiredProvidersData, path string) erro
 // If the environment variables are not set or the value is "latest", it will use the default values.
 func NewRequiredProvidersData() RequiredProvidersData {
 	var rpd RequiredProvidersData
-	azapiver := ">= 0.3.0"
+	azapiver := ">= 1.0.0"
 	azurermver := ">= 3.7.0"
 
 	if val := os.Getenv("AZAPI_VERSION"); val != "" && val != "latest" {
