@@ -30,18 +30,19 @@ resource "azapi_resource" "rg_lock" {
 # lifecycle ignore changes to the body to prevent subnets being deleted
 # see #45 for more information
 resource "azapi_resource" "vnet" {
+  for_each  = var.virtual_networks
   parent_id = azapi_resource.rg.id
   type      = "Microsoft.Network/virtualNetworks@2021-08-01"
-  name      = var.virtual_network_name
-  location  = azapi_resource.rg.location
+  name      = each.value.name
+  location  = each.value.location
   body = jsonencode({
     properties = {
       addressSpace = {
-        addressPrefixes = var.virtual_network_address_space
+        addressPrefixes = each.value.virtual_network_address_space
       }
     }
   })
-  tags = {}
+  tags = each.value.tags
   lifecycle {
     ignore_changes = [body, tags]
   }
@@ -51,7 +52,8 @@ resource "azapi_resource" "vnet" {
 # This is a workaround for #45 to allow updates to the virtual network
 # without deleting the subnets created elsewhere
 resource "azapi_update_resource" "vnet" {
-  resource_id = azapi_resource.vnet.id
+  for_each    = var.virtual_networks
+  resource_id = azapi_resource.vnet[each.key].id
   type        = "Microsoft.Network/virtualNetworks@2021-08-01"
   body = jsonencode({
     properties = {
@@ -59,15 +61,55 @@ resource "azapi_update_resource" "vnet" {
         addressPrefixes = var.virtual_network_address_space
       }
     }
-    tags = {}
+    tags = each.value.tags
   })
 }
 
 # azapi_resource.peerings creates two-way peering from the spoke to the supplied hub virtual network.
 # They are not created if the hub virtual network is an empty string.
-resource "azapi_resource" "peering" {
-  for_each  = local.virtual_network_peering_map
+resource "azapi_resource" "peering_hub_outbound" {
+  for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled }
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
+  parent_id = local.virtual_networks_data[each.key].hub_peering_map["outbound"].this_resource_id
+  name      = local.virtual_networks_data[each.key].hub_peering_map["outbound"].name
+  body = jsonencode({
+    properties = {
+      remoteVirtualNetwork = {
+        id = local.virtual_networks_data[each.key].hub_peering_map["outbound"].remote_resource_id
+      }
+      allowVirtualNetworkAccess = true
+      allowForwardedTraffic     = true
+      allowGatewayTransit       = false
+      useRemoteGateways         = each.value.hub_peering_use_remote_gateways
+    }
+  })
+}
+
+# azapi_resource.peerings creates two-way peering from the spoke to the supplied hub virtual network.
+# They are not created if the hub virtual network is an empty string.
+resource "azapi_resource" "peering_hub_inbound" {
+  for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled }
+  type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
+  parent_id = local.virtual_networks_data[each.key].hub_peering_map["inbound"].this_resource_id
+  name      = local.virtual_networks_data[each.key].hub_peering_map["inbound"].name
+  body = jsonencode({
+    properties = {
+      remoteVirtualNetwork = {
+        id = local.virtual_networks_data[each.key].hub_peering_map["outbound"].remote_resource_id
+      }
+      allowVirtualNetworkAccess = true
+      allowForwardedTraffic     = true
+      allowGatewayTransit       = true
+      useRemoteGateways         = false
+    }
+  })
+}
+
+# azapi_resource.peering_mesh creates mesh peerings between the supplied var.virtual_networks.
+# They are created if the boolean mesh_peering_enabled is set to true.
+resource "azapi_resource" "peering_mesh" {
+  for_each  = { for i in local.virtual_networks_mesh_peering_list : "${i.source_key}-${i.destination_key}" => i }
+  type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2022-05-01"
   parent_id = each.value.this_resource_id
   name      = each.value.name
   body = jsonencode({
@@ -76,19 +118,19 @@ resource "azapi_resource" "peering" {
         id = each.value.remote_resource_id
       }
       allowVirtualNetworkAccess = true
-      allowForwardedTraffic     = true
-      allowGatewayTransit       = each.key == "inbound" ? true : false
-      useRemoteGateways         = each.key == "outbound" && var.virtual_network_use_remote_gateways ? true : false
+      allowForwardedTraffic     = each.value.allow_forwarded_traffic
+      allowGatewayTransit       = false
+      useRemoteGateways         = false
     }
   })
 }
 
 # azapi_resource.vhubconnection creates a virtual wan hub connection between the spoke and the supplied vwan hub.
 resource "azapi_resource" "vhubconnection" {
-  for_each  = local.vhub_connection_set
+  for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_connection_enabled }
   type      = "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2021-08-01"
-  parent_id = var.vwan_hub_resource_id
-  name      = "vhc-${local.this_network_uuidv5}"
+  parent_id = v.vwan_hub_resource_id
+  name      = "vhc-${uuidv5("url", azapi_resource.vnet[each.key].id)}"
   body = jsonencode({
     properties = {
       remoteVirtualNetwork = {
@@ -96,11 +138,11 @@ resource "azapi_resource" "vhubconnection" {
       }
       routingConfiguration = {
         associatedRouteTable = {
-          id = var.virtual_network_vwan_associated_routetable_resource_id != "" ? var.virtual_network_vwan_associated_routetable_resource_id : "${var.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
+          id = each.value.virtual_network_vwan_associated_routetable_resource_id != "" ? each.value.virtual_network_vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
         }
         propagatedRouteTables = {
-          ids    = local.vwan_propagated_routetables_resource_ids
-          labels = local.vwan_propagated_labels
+          ids    = local.virtual_networks_data[each.key].vwan_propagated_routetables_resource_ids
+          labels = each.value.vwan_propagated_labels
         }
       }
     }

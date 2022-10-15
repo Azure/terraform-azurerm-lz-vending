@@ -161,14 +161,18 @@ DESCRIPTION
 
 variable "virtual_networks" {
   type = map(object({
+    name                = string
     address_space       = string
     location            = string
-    subscription_id     = string
     resource_group_name = string
 
-    hub_network_resource_id = optional(string, "")
-    hub_peering_enabled     = optional(string, false)
-    mesh_peering_enabled    = optional(bool, false)
+    hub_network_resource_id              = optional(string, "")
+    hub_peering_enabled                  = optional(string, false)
+    hub_peering_name_tohub               = optional(string, "")
+    hub_peering_name_fromhub             = optional(string, "")
+    hub_peering_use_remote_gateways      = optional(string, false)
+    mesh_peering_enabled                 = optional(bool, false)
+    mesh_peering_allow_forwarded_traffic = optional(bool, false)
     other_peerings = optional(map(object({
       virtual_network_resource_id  = string
       peering_name                 = optional(string, "")
@@ -184,6 +188,8 @@ variable "virtual_networks" {
     vwan_hub_resource_id                     = optional(string, "")
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
+
+    tags = optional(map(string), {})
   }))
   description = <<DESCRIPTION
 DESCRIPTION
