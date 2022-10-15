@@ -158,3 +158,34 @@ Currently only `CanNotDelete` locks are supported.
 DESCRIPTION
   default     = true
 }
+
+variable "virtual_networks" {
+  type = map(object({
+    address_space       = string
+    location            = string
+    subscription_id     = string
+    resource_group_name = string
+
+    hub_network_resource_id = optional(string, "")
+    hub_peering_enabled     = optional(string, false)
+    mesh_peering_enabled    = optional(bool, false)
+    other_peerings = optional(map(object({
+      virtual_network_resource_id  = string
+      peering_name                 = optional(string, "")
+      outbound_only                = optional(bool, false)
+      allow_virtual_network_access = optional(bool, true)
+      allow_forwarded_traffic      = optional(bool, true)
+      allow_gateway_transit        = optional(bool, false)
+      use_remote_gateways          = optional(bool, false)
+    })), {})
+    resource_group_lock_enabled              = optional(bool, true)
+    vwan_associated_routetable_resource_id   = optional(string, "")
+    vwan_connection_enabled                  = optional(bool, false)
+    vwan_hub_resource_id                     = optional(string, "")
+    vwan_propagated_routetables_labels       = optional(list(string), [])
+    vwan_propagated_routetables_resource_ids = optional(list(string), [])
+  }))
+  description = <<DESCRIPTION
+DESCRIPTION
+  default     = {}
+}

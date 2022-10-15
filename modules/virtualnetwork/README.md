@@ -172,6 +172,33 @@ Type: `list(string)`
 
 Default: `[]`
 
+### <a name="input_virtual_networks"></a> [virtual\_networks](#input\_virtual\_networks)
+
+Description: n/a
+
+Type:
+
+```hcl
+list(object({
+    name                = string
+    address_space       = string
+    location            = string
+    subscription_id     = string
+    resource_group_name = string
+
+    hub_network_resource_id                  = optional(string, "")
+    peering_enabled                          = optional(string, false)
+    resource_group_lock_enabled              = optional(bool, true)
+    vwan_associated_routetable_resource_id   = optional(string, "")
+    vwan_connection_enabled                  = optional(bool, false)
+    vwan_hub_resource_id                     = optional(string, "")
+    vwan_propagated_routetables_labels       = optional(list(string), [])
+    vwan_propagated_routetables_resource_ids = optional(list(string), [])
+  }))
+```
+
+Default: `[]`
+
 ### <a name="input_vwan_hub_resource_id"></a> [vwan\_hub\_resource\_id](#input\_vwan\_hub\_resource\_id)
 
 Description: The resource ID of the vwan hub to which the virtual network will be connected.
