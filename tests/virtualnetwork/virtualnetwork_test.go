@@ -2,6 +2,7 @@ package virtualnetwork
 
 import (
 	"encoding/json"
+	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -17,7 +18,7 @@ const (
 )
 
 // TestVirtualNetworkCreateValid tests the creation of a plan that
-// creates a virtual network in the specified resource group.
+// creates two virtual networks in the specified resource groups.
 func TestVirtualNetworkCreateValid(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
@@ -25,33 +26,45 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
-	v := getMockInputVariables()
-	terraformOptions.Vars = v
+	vars := getMockInputVariables()
+	terraformOptions.Vars = vars
 
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equalf(t, 4, len(plan.ResourcePlannedValuesMap), "expected 4 resources to be created, got %d", len(plan.ResourcePlannedValuesMap))
 	resources := []string{
-		"azapi_resource.rg",
-		"azapi_resource.vnet",
-		"azapi_update_resource.vnet",
-		"azapi_resource.rg_lock[0]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"azapi_resource.vnet[\"primary\"]",
+		"azapi_resource.vnet[\"secondary\"]",
+		"azapi_update_resource.vnet[\"primary\"]",
+		"azapi_update_resource.vnet[\"secondary\"]",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
+	require.Equalf(t, len(resources), len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", len(resources), len(plan.ResourcePlannedValuesMap))
+
 	for _, r := range resources {
-		require.Contains(t, plan.ResourcePlannedValuesMap, r)
+		require.Containsf(t, plan.ResourcePlannedValuesMap, r, "plan does not contain expected resource %s", r)
 	}
 
-	rg := plan.ResourcePlannedValuesMap["azapi_resource.rg"]
-	vnet := plan.ResourcePlannedValuesMap["azapi_resource.vnet"]
-	require.Contains(t, rg.AttributeValues, "name")
-	assert.Equal(t, v["virtual_network_resource_group_name"].(string), rg.AttributeValues["name"])
-	require.Contains(t, vnet.AttributeValues, "name")
-	assert.Equal(t, v["virtual_network_name"].(string), vnet.AttributeValues["name"])
-	var vnb models.VirtualNetworkBody
-	require.Contains(t, vnet.AttributeValues, "body")
-	err = json.Unmarshal([]byte(vnet.AttributeValues["body"].(string)), &vnb)
-	require.NoErrorf(t, err, "Could not unmarshal virtual network body")
-	assert.Equal(t, v["virtual_network_address_space"], vnb.Properties.AddressSpace.AddressPrefixes)
+	// Loop through each virtual network and check the values
+	vns := vars["virtual_networks"].(map[string]map[string]interface{})
+	for k, v := range vns {
+		rg := plan.ResourcePlannedValuesMap[fmt.Sprintf("azapi_resource.rg[\"%s-rg\"]", k)]
+		vnet := plan.ResourcePlannedValuesMap[fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)]
+
+		require.Containsf(t, rg.AttributeValues, "name", "resource group %s does not contain name", k)
+		assert.Equal(t, v["resource_group_name"].(string), rg.AttributeValues["name"])
+
+		require.Containsf(t, vnet.AttributeValues, "name", "virtual network %s does not contain name", k)
+		assert.Equal(t, v["name"].(string), vnet.AttributeValues["name"])
+
+		var vnb models.VirtualNetworkBody
+		require.Contains(t, vnet.AttributeValues, "body")
+		err = json.Unmarshal([]byte(vnet.AttributeValues["body"].(string)), &vnb)
+		require.NoErrorf(t, err, "Could not unmarshal virtual network body")
+		assert.Equal(t, v["address_space"], vnb.Properties.AddressSpace.AddressPrefixes)
+	}
 }
 
 // TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
@@ -240,16 +253,16 @@ func getMockInputVariables() map[string]interface{} {
 		"subscription_id": "00000000-0000-0000-0000-000000000000",
 		"virtual_networks": map[string]map[string]interface{}{
 			"primary": {
-				"name":                "test-vnet",
+				"name":                "primary-vnet",
 				"address_space":       []string{"192.168.0.0/24"},
 				"location":            "westeurope",
-				"resource_group_name": "test-rg",
+				"resource_group_name": "primary-rg",
 			},
 			"secondary": {
-				"name":                "test-vnet2",
+				"name":                "secondary-vnet",
 				"address_space":       []string{"192.168.1.0/24"},
 				"location":            "northeurope",
-				"resource_group_name": "test-rg2",
+				"resource_group_name": "secondary-rg",
 			},
 		},
 	}
