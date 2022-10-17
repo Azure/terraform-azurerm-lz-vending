@@ -68,7 +68,7 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 }
 
 // TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
-// creates a virtual network with bidirectional peering.
+// creates a virtual network with bidirectional peering to a hub.
 func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
@@ -76,35 +76,39 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
-	v := getMockInputVariables()
-	v["virtual_network_peering_enabled"] = true
-	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
-	terraformOptions.Vars = v
+	vars := getMockInputVariables()
+
+	// Enable hub network peering to primary vnet in test mock input variables
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
+	primaryvnet["hub_peering_enabled"] = true
+
+	terraformOptions.Vars = vars
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equalf(t, 5, len(plan.ResourcePlannedValuesMap), "expected 5 resources to be created, got %d", len(plan.ResourcePlannedValuesMap))
+	require.Equalf(t, 10, len(plan.ResourcePlannedValuesMap), "expected 10 resources to be created, got %d", len(plan.ResourcePlannedValuesMap))
 
 	// We can only check the body of the outbound peering as the inbound values
-	// not known until apply
-	res := "azapi_resource.peering[\"outbound\"]"
+	// are not known until apply
+	res := "azapi_resource.peering_hub_outbound[\"primary\"]"
 	require.Contains(t, plan.ResourcePlannedValuesMap, res)
 	vnp := plan.ResourcePlannedValuesMap[res]
 	require.Contains(t, vnp.AttributeValues, "body")
 	var body models.VirtualNetworkPeeringBody
 	err = json.Unmarshal([]byte(vnp.AttributeValues["body"].(string)), &body)
 	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
-	assert.True(t, *body.Properties.AllowForwardedTraffic)
-	assert.True(t, *body.Properties.AllowVirtualNetworkAccess)
-	assert.False(t, *body.Properties.AllowGatewayTransit)
-	assert.True(t, *body.Properties.UseRemoteGateways)
-	assert.Equal(t, body.Properties.RemoteVirtualNetwork.ID, v["hub_network_resource_id"])
+	assert.Truef(t, *body.Properties.AllowForwardedTraffic, "expected allow forwarded traffic to be true")
+	assert.Truef(t, *body.Properties.AllowVirtualNetworkAccess, "expected allow virtual network access to be true")
+	assert.Falsef(t, *body.Properties.AllowGatewayTransit, "expected allow gateway transit to be false")
+	assert.Truef(t, *body.Properties.UseRemoteGateways, "expected use remote gateways to be true")
+	assert.Equalf(t, body.Properties.RemoteVirtualNetwork.ID, primaryvnet["hub_network_resource_id"], "expected remote virtual network id to be %s", primaryvnet["hub_network_resource_id"])
 
 	// More limited checks on the inbound peering
-	res = "azapi_resource.peering[\"inbound\"]"
+	res = "azapi_resource.peering_hub_inbound[\"primary\"]"
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, res)
 	vnp = plan.ResourcePlannedValuesMap[res]
-	require.Contains(t, vnp.AttributeValues, "parent_id")
-	assert.Equal(t, v["hub_network_resource_id"], vnp.AttributeValues["parent_id"])
+	require.Containsf(t, vnp.AttributeValues, "parent_id", "virtual network peering %s does not contain parent_id", res)
+	assert.Equalf(t, primaryvnet["hub_network_resource_id"], vnp.AttributeValues["parent_id"], "expected parent_id to be %s", primaryvnet["hub_network_resource_id"])
 }
 
 // TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled

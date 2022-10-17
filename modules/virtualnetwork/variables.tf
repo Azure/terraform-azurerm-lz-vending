@@ -20,7 +20,7 @@ variable "virtual_networks" {
     hub_peering_enabled             = optional(string, false)
     hub_peering_name_tohub          = optional(string, "")
     hub_peering_name_fromhub        = optional(string, "")
-    hub_peering_use_remote_gateways = optional(string, false)
+    hub_peering_use_remote_gateways = optional(bool, true)
 
     mesh_peering_enabled                 = optional(bool, false)
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
