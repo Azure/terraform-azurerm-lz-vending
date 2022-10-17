@@ -78,12 +78,12 @@ resource "azapi_update_resource" "vnet" {
 resource "azapi_resource" "peering_hub_outbound" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled }
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
-  parent_id = local.virtual_networks_data[each.key].hub_peering_map["outbound"].this_resource_id
-  name      = local.virtual_networks_data[each.key].hub_peering_map["outbound"].name
+  parent_id = local.hub_peering_map[each.key]["outbound"].this_resource_id
+  name      = local.hub_peering_map[each.key]["outbound"].name
   body = jsonencode({
     properties = {
       remoteVirtualNetwork = {
-        id = local.virtual_networks_data[each.key].hub_peering_map["outbound"].remote_resource_id
+        id = local.hub_peering_map[each.key]["outbound"].remote_resource_id
       }
       allowVirtualNetworkAccess = true
       allowForwardedTraffic     = true
@@ -98,12 +98,12 @@ resource "azapi_resource" "peering_hub_outbound" {
 resource "azapi_resource" "peering_hub_inbound" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled }
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
-  parent_id = local.virtual_networks_data[each.key].hub_peering_map["inbound"].this_resource_id
-  name      = local.virtual_networks_data[each.key].hub_peering_map["inbound"].name
+  parent_id = local.hub_peering_map[each.key]["inbound"].this_resource_id
+  name      = local.hub_peering_map[each.key]["inbound"].name
   body = jsonencode({
     properties = {
       remoteVirtualNetwork = {
-        id = local.virtual_networks_data[each.key].hub_peering_map["outbound"].remote_resource_id
+        id = local.hub_peering_map[each.key]["outbound"].remote_resource_id
       }
       allowVirtualNetworkAccess = true
       allowForwardedTraffic     = true
@@ -142,17 +142,30 @@ resource "azapi_resource" "vhubconnection" {
   body = jsonencode({
     properties = {
       remoteVirtualNetwork = {
-        id = azapi_resource.vnet[each.key].id
+        id = local.virtual_network_resource_ids[each.key]
       }
       routingConfiguration = {
         associatedRouteTable = {
-          id = each.value.virtual_network_vwan_associated_routetable_resource_id != "" ? each.value.virtual_network_vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
+          id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
         }
         propagatedRouteTables = {
-          ids    = local.virtual_networks_data[each.key].vwan_propagated_routetables_resource_ids
-          labels = local.virtual_networks_data[each.key].vwan_propagated_routetables_labels
+          ids    = local.vwan_propagated_routetables_resource_ids[each.key]
+          labels = local.vwan_propagated_routetables_labels[each.key]
         }
       }
     }
   })
 }
+
+# output test {
+#   value = {
+#     for k, v in var.virtual_networks : k => {
+#       body = jsonencode({
+#         propagatedRouteTables = {
+#           ids    = local.vwan_propagated_routetables_resource_ids[k]
+#           labels = local.vwan_propagated_routetables_labels[k]
+#         }
+#       })
+#     } if v.vwan_connection_enabled
+#   }
+# }

@@ -86,7 +86,11 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	terraformOptions.Vars = vars
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equalf(t, 10, len(plan.ResourcePlannedValuesMap), "expected 10 resources to be created, got %d", len(plan.ResourcePlannedValuesMap))
+
+	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	numres := 10
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
 
 	// We can only check the body of the outbound peering as the inbound values
 	// are not known until apply
@@ -121,26 +125,32 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
-	v := getMockInputVariables()
-	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/tes.-tvnet2"
-	v["virtual_network_peering_enabled"] = true
-	v["virtual_network_use_remote_gateways"] = false
-	terraformOptions.Vars = v
+	vars := getMockInputVariables()
+	// Enable hub network peering to primary vnet in test mock input variables
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
+	primaryvnet["hub_peering_enabled"] = true
+	primaryvnet["hub_peering_use_remote_gateways"] = false
+	terraformOptions.Vars = vars
 
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equalf(t, 5, len(plan.ResourcePlannedValuesMap), "expected 5 resources to be created, got %d", len(plan.ResourcePlannedValuesMap))
+
+	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	numres := 10
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
 
 	// We can only check the body of the outbound peering as the inbound values
 	// not known until apply
-	res := "azapi_resource.peering[\"outbound\"]"
+	res := "azapi_resource.peering_hub_outbound[\"primary\"]"
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, res)
 	vnp := plan.ResourcePlannedValuesMap[res]
-	require.Contains(t, vnp.AttributeValues, "body")
+	require.Containsf(t, vnp.AttributeValues, "body", "virtual network peering %s does not contain body", res)
 	var body models.VirtualNetworkPeeringBody
 	err = json.Unmarshal([]byte(vnp.AttributeValues["body"].(string)), &body)
 	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
-	assert.False(t, *body.Properties.UseRemoteGateways)
+	assert.Falsef(t, *body.Properties.UseRemoteGateways, "expected use remote gateways to be false")
 }
 
 // TestVirtualNetworkCreateValidWithVhub tests the creation of a plan that
@@ -152,29 +162,38 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
-	v := getMockInputVariables()
-	v["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
-	v["virtual_network_vwan_connection_enabled"] = true
-	terraformOptions.Vars = v
+	vars := getMockInputVariables()
+
+	// Enable vhub connection to primary vnet in test mock input variables
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
+	primaryvnet["vwan_connection_enabled"] = true
+
+	terraformOptions.Vars = vars
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
-	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
-	vhcres := "azapi_resource.vhubconnection[\"this\"]"
+
+	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	numres := 9
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+
+	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
 	vhc := plan.ResourcePlannedValuesMap[vhcres]
 	require.Contains(t, vhc.AttributeValues, "parent_id")
-	assert.Equal(t, v["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"])
+	assert.Equal(t, primaryvnet["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"])
 
 	require.Contains(t, vhc.AttributeValues, "body")
 	var body models.HubVirtualNetworkConnectionBody
 	err = json.Unmarshal([]byte(vhc.AttributeValues["body"].(string)), &body)
 	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
-	drt := v["vwan_hub_resource_id"].(string) + "/hubRouteTables/defaultRouteTable"
-	assert.Equal(t, drt, body.Properties.RoutingConfiguration.AssociatedRouteTable.ID)
-	assert.EqualValues(t, []string{"default"}, body.Properties.RoutingConfiguration.PropagatedRouteTables.Labels)
-	assert.Len(t, body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs, 1)
+	drt := primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/defaultRouteTable"
+	assert.Equalf(t, drt, body.Properties.RoutingConfiguration.AssociatedRouteTable.ID, "expected default route table to be %s", drt)
+	assert.EqualValuesf(t, []string{"default"}, body.Properties.RoutingConfiguration.PropagatedRouteTables.Labels, "expected propagated route tables to be %v", []string{"default"})
+	assert.Lenf(t, body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs, 1, "expected length of propageted route tables to be 1")
 	for _, rt := range body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs {
-		assert.Contains(t, drt, rt.ID)
+		assert.Containsf(t, drt, rt.ID, "expected propagated route tables to contain %s", rt.ID)
 	}
 }
 
