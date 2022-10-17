@@ -26,7 +26,6 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
-	v["virtual_network_resource_lock_enabled"] = true
 	terraformOptions.Vars = v
 
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
@@ -238,11 +237,20 @@ func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.
 func getMockInputVariables() map[string]interface{} {
 	return map[string]interface{}{
-		"subscription_id":                       "00000000-0000-0000-0000-000000000000",
-		"virtual_network_address_space":         []string{"10.1.0.0/24", "172.16.1.0/24"},
-		"virtual_network_location":              "northeurope",
-		"virtual_network_name":                  "testvnet",
-		"virtual_network_resource_group_name":   "testrg",
-		"virtual_network_resource_lock_enabled": false,
+		"subscription_id": "00000000-0000-0000-0000-000000000000",
+		"virtual_networks": map[string]map[string]interface{}{
+			"primary": {
+				"name":                "test-vnet",
+				"address_space":       []string{"192.168.0.0/24"},
+				"location":            "westeurope",
+				"resource_group_name": "test-rg",
+			},
+			"secondary": {
+				"name":                "test-vnet2",
+				"address_space":       []string{"192.168.1.0/24"},
+				"location":            "northeurope",
+				"resource_group_name": "test-rg2",
+			},
+		},
 	}
 }
