@@ -67,7 +67,7 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	}
 }
 
-// TestVirtualNetworkCreateValid tests the creation of a plan that
+// TestVirtualNetworkCreateValidWithMeshPeering tests the creation of a plan that
 // creates two virtual networks in the specified resource groups with mesh peering.
 func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
@@ -120,8 +120,9 @@ func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 	assert.Equalf(t, body.Properties.RemoteVirtualNetwork.ID, rvnid, "expected remote virtual network id to be %s", rvnid)
 }
 
-// TestVirtualNetworkCreateValid tests the creation of a plan that
-// creates two virtual networks in the specified resource groups with mesh peering.
+// TestVirtualNetworkCreateValidInvalidMeshPeering tests the creation of a plan that
+// creates two virtual networks in the specified resource groups with mesh peering
+// enabled on only one of the two vnets.
 func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
@@ -139,6 +140,30 @@ func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
 
 	// We want 8 resources here, as only one of the two vnets has mesh peering enabled, then no peerings should be created
 	numres := 8
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+}
+
+// TestVirtualNetworkCreateValidSameRg tests the creation of a plan that
+// creates two virtual networks in the same resource group.
+func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["resource_group_name"] = "secondary-rg"
+	primaryvnet["resource_group_creation_enabled"] = false
+
+	terraformOptions.Vars = vars
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+
+	// We want 6 resources here, as the two vnets have the same rg, then 2 fewer resources than
+	// TestVirtualNetworkCreateValid (rg + rg lock)
+	numres := 6
 	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
 }
 
