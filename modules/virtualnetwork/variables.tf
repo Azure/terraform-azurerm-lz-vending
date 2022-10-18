@@ -26,13 +26,17 @@ variable "virtual_networks" {
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
 
     other_peerings = optional(map(object({
-      remote_network_resource_id   = string
-      peering_name                 = optional(string, "")
-      outbound_only                = optional(bool, false)
-      allow_virtual_network_access = optional(bool, true)
-      allow_forwarded_traffic      = optional(bool, true)
-      allow_gateway_transit        = optional(bool, false)
-      use_remote_gateways          = optional(bool, false)
+      remote_network_resource_id            = string
+      peering_name                          = optional(string, "")
+      outbound_only                         = optional(bool, false)
+      allow_forwarded_traffic_inbound       = optional(bool, true)
+      allow_forwarded_traffic_outbound      = optional(bool, true)
+      allow_gateway_transit_inbound         = optional(bool, false)
+      allow_gateway_transit_outbound        = optional(bool, false)
+      allow_virtual_network_access_inbound  = optional(bool, true)
+      allow_virtual_network_access_outbound = optional(bool, true)
+      use_remote_gateways_inbound           = optional(bool, false)
+      use_remote_gateways_outbound          = optional(bool, false)
     })), {})
 
     resource_group_creation_enabled = optional(bool, true)
@@ -57,7 +61,7 @@ DESCRIPTION
     condition = alltrue([
       for k, v in var.virtual_networks : can(regex("^[\\w-_.]{2,64}$", v.name))
     ])
-    error_message = "The string must consist of a-z, A-Z, 0-9, -, _, and . (period) and be between 2 and 64 characters in length."
+    error_message = "The virtual network name must consist of a-z, A-Z, 0-9, -, _, and . (period) and be between 2 and 64 characters in length."
   }
   default = {}
 }

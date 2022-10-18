@@ -30,7 +30,7 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	terraformOptions.Vars = vars
 
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
+	assert.NoErrorf(t, err, "failed to init and plan")
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -85,7 +85,7 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 
 	terraformOptions.Vars = vars
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
+	assert.NoErrorf(t, err, "failed to init and plan")
 
 	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
@@ -134,7 +134,7 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 	terraformOptions.Vars = vars
 
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
+	assert.NoErrorf(t, err, "failed to init and plan")
 
 	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
@@ -171,7 +171,7 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 
 	terraformOptions.Vars = vars
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
+	assert.NoErrorf(t, err, "failed to init and plan")
 
 	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
@@ -206,35 +206,44 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
-	v := getMockInputVariables()
-	v["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
-	v["virtual_network_vwan_connection_enabled"] = true
-	v["virtual_network_vwan_propagated_routetables_labels"] = []string{"testlabel", "testlabel2"}
-	v["virtual_network_vwan_propagated_routetables_resource_ids"] = []string{
-		v["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable",
-		v["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable2",
-	}
-	v["virtual_network_vwan_associated_routetable_resource_id"] = v["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable3"
-	terraformOptions.Vars = v
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
-	require.Equal(t, 4, len(plan.ResourcePlannedValuesMap))
+	vars := getMockInputVariables()
 
-	vhcres := "azapi_resource.vhubconnection[\"this\"]"
+	// Enable vhub connection to primary vnet in test mock input variables
+	// & add custom routing
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
+	primaryvnet["vwan_connection_enabled"] = true
+	primaryvnet["vwan_propagated_routetables_labels"] = []string{"testlabel", "testlabel2"}
+	primaryvnet["vwan_propagated_routetables_resource_ids"] = []string{
+		primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable",
+		primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable2",
+	}
+	primaryvnet["vwan_associated_routetable_resource_id"] = primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/testRouteTable3"
+
+	terraformOptions.Vars = vars
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+
+	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	numres := 9
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+
+	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
 	vhc := plan.ResourcePlannedValuesMap[vhcres]
-	require.Contains(t, vhc.AttributeValues, "parent_id")
-	assert.Equal(t, v["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"])
+	require.Containsf(t, vhc.AttributeValues, "parent_id", "expected parent_id to be set")
+	assert.Equalf(t, primaryvnet["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"], "expected parent_id to be %s", primaryvnet["vwan_hub_resource_id"])
 
-	require.Contains(t, vhc.AttributeValues, "body")
+	require.Containsf(t, vhc.AttributeValues, "body", "expected body to be set")
 	var body models.HubVirtualNetworkConnectionBody
 	err = json.Unmarshal([]byte(vhc.AttributeValues["body"].(string)), &body)
 	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
-	assert.Equal(t, v["virtual_network_vwan_associated_routetable_resource_id"], body.Properties.RoutingConfiguration.AssociatedRouteTable.ID)
-	assert.EqualValues(t, v["virtual_network_vwan_propagated_routetables_labels"], body.Properties.RoutingConfiguration.PropagatedRouteTables.Labels)
-	assert.Len(t, body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs, 2)
+	assert.Equalf(t, primaryvnet["vwan_associated_routetable_resource_id"], body.Properties.RoutingConfiguration.AssociatedRouteTable.ID, "expected associated route table to be %s", primaryvnet["vwan_associated_routetable_resource_id"])
+	assert.EqualValuesf(t, primaryvnet["vwan_propagated_routetables_labels"], body.Properties.RoutingConfiguration.PropagatedRouteTables.Labels, "expected propagated route tables to be %v", primaryvnet["vwan_propagated_routetables_labels"])
+	assert.Lenf(t, body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs, 2, "expected length of propagated route tables to be 2")
 	for _, rt := range body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs {
-		assert.Contains(t, v["virtual_network_vwan_propagated_routetables_resource_ids"], rt.ID)
+		assert.Containsf(t, primaryvnet["vwan_propagated_routetables_resource_ids"], rt.ID, "expected propagated route tables to contain %s", rt.ID)
 	}
 }
 
