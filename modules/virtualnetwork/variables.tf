@@ -27,7 +27,8 @@ variable "virtual_networks" {
 
     other_peerings = optional(map(object({
       remote_network_resource_id            = string
-      peering_name                          = optional(string, "")
+      name_inbound                          = optional(string, "")
+      name_outbound                         = optional(string, "")
       outbound_only                         = optional(bool, false)
       allow_forwarded_traffic_inbound       = optional(bool, true)
       allow_forwarded_traffic_outbound      = optional(bool, true)
@@ -56,13 +57,14 @@ variable "virtual_networks" {
   description = <<DESCRIPTION
 TODO
 DESCRIPTION
+
   # validate virtual network name
   validation {
     condition = alltrue([
       for k, v in var.virtual_networks :
       can(regex("^[\\w-_.]{2,64}$", v.name))
     ])
-    error_message = "The virtual network name must consist of a-z, A-Z, 0-9, -, _, and . (period) and be between 2 and 64 characters in length."
+    error_message = "Virtual network name must consist of a-z, A-Z, 0-9, -, _, and . (period) and be between 2 and 64 characters in length."
   }
 
   # validate address space is not zero length
@@ -71,7 +73,7 @@ DESCRIPTION
       for k, v in var.virtual_networks :
       length(v.address_space) > 0
     ])
-    error_message = "The address space must be specified."
+    error_message = "At least 1 address space must be specified."
   }
 
   # validate address space CIDR blocks are valid
@@ -83,7 +85,7 @@ DESCRIPTION
         can(regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(3[0-2]|[1-2][0-9]|[0-9]))$", cidr))
       ]
     ]))
-    error_message = "The address space must be specified in CIDR notation."
+    error_message = "Address space entries must be specified in CIDR notation, e.g. 192.168.0.0/24."
   }
 
   # validate hub network resource id
@@ -92,7 +94,7 @@ DESCRIPTION
       for k, v in var.virtual_networks :
       can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", v.hub_network_resource_id))
     ])
-    error_message = "Value must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
+    error_message = "Hub network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
   }
 
   # validate vwan hub resource id
@@ -101,7 +103,7 @@ DESCRIPTION
       for k, v in var.virtual_networks :
       can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}$", v.vwan_hub_resource_id))
     ])
-    error_message = "Value must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
+    error_message = "vWAN hub resource id must be an Azure vWAN hub network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub."
   }
 
   # validate vwan associated routetable resource id
@@ -110,7 +112,7 @@ DESCRIPTION
       for k, v in var.virtual_networks :
       can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", v.vwan_associated_routetable_resource_id))
     ])
-    error_message = "Value must be an Azure vwan hub routetable resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
+    error_message = "vWAN associated routetable resource id must be an Azure vwan hub routetable resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
   }
 
   # validate vwan propagated routetable resource ids
@@ -122,7 +124,20 @@ DESCRIPTION
         can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", i))
       ]
     ]))
-    error_message = "Value must be an Azure vwan hub routetable resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
+    error_message = "vWAN propagated routetables resource id must be an Azure vwan hub routetable resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
   }
+
+  # validate other peering network resource id
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.virtual_networks :
+      [
+        for k2, v2 in v.other_peerings :
+        can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", v2.remote_network_resource_id))
+      ]
+    ]))
+    error_message = "Remote network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
+  }
+
   default = {}
 }

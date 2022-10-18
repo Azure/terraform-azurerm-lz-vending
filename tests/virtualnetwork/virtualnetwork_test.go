@@ -60,16 +60,91 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 		assert.Equal(t, v["name"].(string), vnet.AttributeValues["name"])
 
 		var vnb models.VirtualNetworkBody
-		require.Contains(t, vnet.AttributeValues, "body")
+		require.Containsf(t, vnet.AttributeValues, "body", "virtual network %s does not contain body", k)
 		err = json.Unmarshal([]byte(vnet.AttributeValues["body"].(string)), &vnb)
 		require.NoErrorf(t, err, "Could not unmarshal virtual network body")
-		assert.Equal(t, v["address_space"], vnb.Properties.AddressSpace.AddressPrefixes)
+		assert.Equalf(t, v["address_space"], vnb.Properties.AddressSpace.AddressPrefixes, "virtual network %s address space does not match", k)
 	}
+}
+
+// TestVirtualNetworkCreateValid tests the creation of a plan that
+// creates two virtual networks in the specified resource groups with mesh peering.
+func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	secondaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["secondary"]
+	primaryvnet["mesh_peering_enabled"] = true
+	secondaryvnet["mesh_peering_enabled"] = true
+	secondaryvnet["mesh_peering_allow_forwarded_traffic"] = true
+
+	terraformOptions.Vars = vars
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+
+	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	numres := 10
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+
+	res := "azapi_resource.peering_mesh[\"primary-secondary\"]"
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, res)
+	vnp := plan.ResourcePlannedValuesMap[res]
+	require.Containsf(t, vnp.AttributeValues, "body", "virtual network peering %s does not contain body", res)
+	var body models.VirtualNetworkPeeringBody
+	err = json.Unmarshal([]byte(vnp.AttributeValues["body"].(string)), &body)
+	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
+	assert.Falsef(t, *body.Properties.AllowForwardedTraffic, "expected allow forwarded traffic to be false")
+	assert.Truef(t, *body.Properties.AllowVirtualNetworkAccess, "expected allow virtual network access to be true")
+	assert.Falsef(t, *body.Properties.AllowGatewayTransit, "expected allow gateway transit to be false")
+	assert.Falsef(t, *body.Properties.UseRemoteGateways, "expected use remote gateways to be true")
+	rvnid := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/secondary-rg/providers/Microsoft.Network/virtualNetworks/secondary-vnet"
+	assert.Equalf(t, body.Properties.RemoteVirtualNetwork.ID, rvnid, "expected remote virtual network id to be %s", rvnid)
+
+	res = "azapi_resource.peering_mesh[\"secondary-primary\"]"
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, res)
+	vnp = plan.ResourcePlannedValuesMap[res]
+	require.Containsf(t, vnp.AttributeValues, "body", "virtual network peering %s does not contain body", res)
+	err = json.Unmarshal([]byte(vnp.AttributeValues["body"].(string)), &body)
+	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
+	assert.Truef(t, *body.Properties.AllowForwardedTraffic, "expected allow forwarded traffic to be true")
+	assert.Truef(t, *body.Properties.AllowVirtualNetworkAccess, "expected allow virtual network access to be true")
+	assert.Falsef(t, *body.Properties.AllowGatewayTransit, "expected allow gateway transit to be false")
+	assert.Falsef(t, *body.Properties.UseRemoteGateways, "expected use remote gateways to be true")
+	rvnid = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/primary-rg/providers/Microsoft.Network/virtualNetworks/primary-vnet"
+	assert.Equalf(t, body.Properties.RemoteVirtualNetwork.ID, rvnid, "expected remote virtual network id to be %s", rvnid)
+}
+
+// TestVirtualNetworkCreateValid tests the creation of a plan that
+// creates two virtual networks in the specified resource groups with mesh peering.
+func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["mesh_peering_enabled"] = true
+
+	terraformOptions.Vars = vars
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+
+	// We want 8 resources here, as only one of the two vnets has mesh peering enabled, then no peerings should be created
+	numres := 8
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
 }
 
 // TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
 // creates a virtual network with bidirectional peering to a hub.
-func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
+func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -95,9 +170,9 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	// We can only check the body of the outbound peering as the inbound values
 	// are not known until apply
 	res := "azapi_resource.peering_hub_outbound[\"primary\"]"
-	require.Contains(t, plan.ResourcePlannedValuesMap, res)
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, res)
 	vnp := plan.ResourcePlannedValuesMap[res]
-	require.Contains(t, vnp.AttributeValues, "body")
+	require.Containsf(t, vnp.AttributeValues, "body", "virtual network peering %s does not contain body", res)
 	var body models.VirtualNetworkPeeringBody
 	err = json.Unmarshal([]byte(vnp.AttributeValues["body"].(string)), &body)
 	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
@@ -113,6 +188,48 @@ func TestVirtualNetworkCreateValidWithPeering(t *testing.T) {
 	vnp = plan.ResourcePlannedValuesMap[res]
 	require.Containsf(t, vnp.AttributeValues, "parent_id", "virtual network peering %s does not contain parent_id", res)
 	assert.Equalf(t, primaryvnet["hub_network_resource_id"], vnp.AttributeValues["parent_id"], "expected parent_id to be %s", primaryvnet["hub_network_resource_id"])
+}
+
+// TestVirtualNetworkCreateValidWithPeeringCustomNames tests the creation of a plan that
+// creates a virtual network with bidirectional peering to a hub, with custom names for peers.
+func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+
+	// Enable hub network peering to primary vnet in test mock input variables
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
+	primaryvnet["hub_peering_enabled"] = true
+	primaryvnet["hub_peering_name_tohub"] = "test-tohub"
+	primaryvnet["hub_peering_name_fromhub"] = "test-fromhub"
+
+	terraformOptions.Vars = vars
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+
+	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	numres := 10
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+
+	// Check outbound peering name
+	res := "azapi_resource.peering_hub_outbound[\"primary\"]"
+	require.Containsf(t, plan.ResourcePlannedValuesMap, res, "virtual network peering %s does not exist", res)
+	vnp := plan.ResourcePlannedValuesMap[res]
+	require.Containsf(t, vnp.AttributeValues, "name", "virtual network peering %s does not contain name", res)
+	assert.Equalf(t, primaryvnet["hub_peering_name_tohub"], vnp.AttributeValues["name"], "expected name to be %s", primaryvnet["hub_peering_name_tohub"])
+
+	// Check inbound peering name
+	res = "azapi_resource.peering_hub_inbound[\"primary\"]"
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, res)
+	vnp = plan.ResourcePlannedValuesMap[res]
+	require.Containsf(t, vnp.AttributeValues, "name", "virtual network peering %s does not contain name", res)
+	assert.Equalf(t, primaryvnet["hub_peering_name_fromhub"], vnp.AttributeValues["name"], "expected name to be %s", primaryvnet["hub_peering_name_fromhub"])
 }
 
 // TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled
@@ -256,14 +373,15 @@ func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {
 	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
-	v := getMockInputVariables()
-	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroup/testrg/providers/Microsoft.Network/virtualNetworks/tes.-tvnet2"
-	terraformOptions.Vars = v
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroup/testrg/providers/Microsoft.Network/virtualNetworks/tes.-tvnet2"
+	terraformOptions.Vars = vars
 	_, err = terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.ErrorContains(t, err, "Value must be an Azure virtual network resource id")
+	assert.ErrorContains(t, err, "Hub network resource id must be an Azure virtual network resource id")
 }
 
-// TestVirtualNetworkCreateInvalidHubNetResId tests the regex of the
+// TestVirtualNetworkCreateInvalidVhubResId tests the regex of the
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
@@ -272,11 +390,44 @@ func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
 	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
-	v := getMockInputVariables()
-	v["vwan_hub_resource_id"] = "/subscription/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
-	terraformOptions.Vars = v
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["vwan_hub_resource_id"] = "/subscription/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
+	terraformOptions.Vars = vars
 	_, err = terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.ErrorContains(t, err, "Value must be an Azure vwan hub resource id")
+	assert.ErrorContains(t, err, "vWAN hub resource id must be an Azure vWAN hub network resource id")
+}
+
+// TestVirtualNetworkCreateZeroLengthAddressSpace tests the length of address_space > 0
+func TestVirtualNetworkCreateZeroLengthAddressSpace(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["address_space"] = []string{}
+	terraformOptions.Vars = vars
+	_, err = terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.ErrorContains(t, err, "At least 1 address space must be specified")
+}
+
+// TestVirtualNetworkCreateInvalidAddressSpace tests the length of address_space > 0
+func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["address_space"] = []string{"10.37.242/35"}
+	terraformOptions.Vars = vars
+	_, err = terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.ErrorContains(t, err, "Address space entries must be specified in CIDR notation")
 }
 
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.

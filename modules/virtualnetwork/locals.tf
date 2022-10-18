@@ -24,7 +24,7 @@ locals {
         },
         # Peering the remote network to this network
         inbound = {
-          name               = coalesce(v.hub_peering_name_fromhub, "peer-${uuidv5("url", azapi_resource.vnet[k].id)}")
+          name               = coalesce(v.hub_peering_name_fromhub, "peer-${uuidv5("url", local.virtual_network_resource_ids[k])}")
           this_resource_id   = v.hub_network_resource_id
           remote_resource_id = azapi_resource.vnet[k].id
         }
@@ -63,7 +63,7 @@ locals {
         name                    = "peer-${uuidv5("url", v_dst)}"
         this_resource_id        = azapi_resource.vnet[k_src].id
         remote_resource_id      = v_dst
-        allow_forwarded_traffic = var.virtual_networks[v_src].mesh_peering_allow_forwarded_traffic
+        allow_forwarded_traffic = var.virtual_networks[k_src].mesh_peering_allow_forwarded_traffic
       } if var.virtual_networks[k_dst].mesh_peering_enabled && k_src != k_dst
     ] if var.virtual_networks[k_src].mesh_peering_enabled
   ])
