@@ -15,7 +15,7 @@ See [README.md](https://github.com/Azure/terraform-azurerm-lz-vending#readme) in
 
 ## Example
 
-See remaining documentation for optional parameters.
+See documentation for optional parameters.
 
 ```terraform
 module "virtualnetwork" {
