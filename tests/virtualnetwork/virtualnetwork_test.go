@@ -486,7 +486,7 @@ func TestVirtualNetworkCreateZeroLengthAddressSpace(t *testing.T) {
 	assert.ErrorContains(t, err, "At least 1 address space must be specified")
 }
 
-// TestVirtualNetworkCreateInvalidAddressSpace tests the length of address_space > 0
+// TestVirtualNetworkCreateInvalidAddressSpace tests a valid CIDR address space is used
 func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
@@ -500,6 +500,23 @@ func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
 	terraformOptions.Vars = vars
 	_, err = terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.ErrorContains(t, err, "Address space entries must be specified in CIDR notation")
+}
+
+// TestVirtualNetworkCreateInvalidResourceGroupCreation tests that resource group naming is unique
+// whe
+func TestVirtualNetworkCreateInvalidResourceGroupCreation(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["resource_group_name"] = "secondary-rg"
+	terraformOptions.Vars = vars
+	_, err = terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.Containsf(t, utils.SanitiseErrorMessage(err), "Resource group names with creation enabled must be unique. Virtual networks deployed into the same resource group must have only one enabled for resource group creation.", "Expected error message not found")
 }
 
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.

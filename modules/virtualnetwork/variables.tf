@@ -139,5 +139,19 @@ DESCRIPTION
     error_message = "Remote network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
   }
 
+  validation {
+    condition = can(
+      {
+        for i in toset([
+          for k, v in var.virtual_networks : {
+            name     = v.resource_group_name
+            location = v.location
+          } if v.resource_group_creation_enabled
+        ]) : i.name => i.location
+      }
+    )
+    error_message = "Resource group names with creation enabled must be unique. Virtual networks deployed into the same resource group must have only one enabled for resource group creation."
+  }
+
   default = {}
 }
