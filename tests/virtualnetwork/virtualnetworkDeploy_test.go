@@ -97,6 +97,9 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 1*time.Minute, 20)
 }
 
+// TestDeployVirtualNetworkSubnetIdempotency tests that we can make changes
+// to the subnet configuration outside the module and that subsequent runs of terraform apply
+// are idempotent. See main.tf file in the testdata directory for more details.
 func TestDeployVirtualNetworkSubnetIdempotency(t *testing.T) {
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
