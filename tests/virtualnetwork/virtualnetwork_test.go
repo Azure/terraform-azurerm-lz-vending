@@ -73,6 +73,47 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	}
 }
 
+// TestVirtualNetworkCreateValidWithTags tests the creation of a plan that
+// creates two virtual networks in the specified resource groups with tags on vnet and rg.
+func TestVirtualNetworkCreateValidWithTags(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["tags"] = map[string]interface{}{
+		"tag1": "value1",
+		"tag2": "2",
+	}
+	primaryvnet["resource_group_tags"] = map[string]interface{}{
+		"tag1": "value1",
+		"tag2": "2",
+	}
+
+	terraformOptions.Vars = vars
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+
+	// We want 8 resources here, same as TestVirtualNetworkCreateValid test
+	numres := 8
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+
+	vnet := "azapi_resource.vnet[\"primary\"]"
+	rg := "azapi_resource.rg[\"primary-rg\"]"
+	for k, v := range map[string]map[string]interface{}{
+		vnet: primaryvnet["tags"].(map[string]interface{}),
+		rg:   primaryvnet["resource_group_tags"].(map[string]interface{})} {
+		terraform.RequirePlannedValuesMapKeyExists(t, plan, k)
+		require.Containsf(t, plan.ResourcePlannedValuesMap[k].AttributeValues, "tags", "resource %s does not contain tags", k)
+		assert.Equalf(t, v, plan.ResourcePlannedValuesMap[k].AttributeValues["tags"], "resource %s tags do not match", k)
+	}
+
+	assert.Equalf(t, primaryvnet["tags"], plan.ResourcePlannedValuesMap[vnet].AttributeValues["tags"], "virtual network %s tags do not match", vnet)
+}
+
 // TestVirtualNetworkCreateValidWithMeshPeering tests the creation of a plan that
 // creates two virtual networks in the specified resource groups with mesh peering.
 func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
