@@ -13,8 +13,8 @@ resource "azapi_resource" "rg" {
 # to prevent accidental deletion.
 resource "azapi_resource" "rg_lock" {
   for_each  = { for i in local.resource_group_data : i.name => i if i.lock }
-  parent_id = azapi_resource.rg[each.key].id
   type      = "Microsoft.Authorization/locks@2017-04-01"
+  parent_id = azapi_resource.rg[each.key].id
   name      = coalesce(each.value.lock_name, substr("lock-${each.key}", 0, 90))
   body = jsonencode({
     properties = {
@@ -73,7 +73,7 @@ resource "azapi_update_resource" "vnet" {
   })
 }
 
-# azapi_resource.peerings creates two-way peering from the spoke to the supplied hub virtual network.
+# azapi_resource.peering_hub_outbound creates one-way peering from the spoke to the supplied hub virtual network.
 # They are not created if the hub virtual network is an empty string.
 resource "azapi_resource" "peering_hub_outbound" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled }
@@ -93,7 +93,7 @@ resource "azapi_resource" "peering_hub_outbound" {
   })
 }
 
-# azapi_resource.peerings creates two-way peering from the spoke to the supplied hub virtual network.
+# azapi_resource.peering_hub_inbound creates one-way peering from the supplied hub network to the spoke.
 # They are not created if the hub virtual network is an empty string.
 resource "azapi_resource" "peering_hub_inbound" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled }
@@ -114,7 +114,7 @@ resource "azapi_resource" "peering_hub_inbound" {
 }
 
 # azapi_resource.peering_mesh creates mesh peerings between the supplied var.virtual_networks.
-# They are created if the boolean mesh_peering_enabled is set to true.
+# They are created if the boolean mesh_peering_enabled is set to true on more than one network.
 resource "azapi_resource" "peering_mesh" {
   for_each  = { for i in local.virtual_networks_mesh_peering_list : "${i.source_key}-${i.destination_key}" => i }
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2022-05-01"
@@ -156,16 +156,3 @@ resource "azapi_resource" "vhubconnection" {
     }
   })
 }
-
-# output test {
-#   value = {
-#     for k, v in var.virtual_networks : k => {
-#       body = jsonencode({
-#         propagatedRouteTables = {
-#           ids    = local.vwan_propagated_routetables_resource_ids[k]
-#           labels = local.vwan_propagated_routetables_labels[k]
-#         }
-#       })
-#     } if v.vwan_connection_enabled
-#   }
-# }

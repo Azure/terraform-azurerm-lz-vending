@@ -59,6 +59,12 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 		require.Containsf(t, vnet.AttributeValues, "name", "virtual network %s does not contain name", k)
 		assert.Equal(t, v["name"].(string), vnet.AttributeValues["name"])
 
+		require.Containsf(t, rg.AttributeValues, "location", "resource group %s does not contain location", k)
+		assert.Equalf(t, v["location"].(string), rg.AttributeValues["location"], "resource group %s location does not match %s", k, v["location"].(string))
+
+		require.Containsf(t, vnet.AttributeValues, "location", "virtual network %s does not contain location", k)
+		assert.Equalf(t, v["location"].(string), vnet.AttributeValues["location"], "virtual network %s location does not match %s", k, v["location"].(string))
+
 		var vnb models.VirtualNetworkBody
 		require.Containsf(t, vnet.AttributeValues, "body", "virtual network %s does not contain body", k)
 		err = json.Unmarshal([]byte(vnet.AttributeValues["body"].(string)), &vnb)
