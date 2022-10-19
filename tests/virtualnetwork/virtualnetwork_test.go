@@ -214,6 +214,29 @@ func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
 	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
 }
 
+// TestVirtualNetworkCreateValidSameRgSameLocation tests the creation of a plan that
+// creates two virtual networks in the same resource group in the same location.
+func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["resource_group_name"] = "secondary-rg"
+	primaryvnet["location"] = "northeurope"
+	terraformOptions.Vars = vars
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+
+	// We want 6 resources here, as the two vnets have the same rg, then 2 fewer resources than
+	// TestVirtualNetworkCreateValid (rg + rg lock)
+	numres := 6
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+}
+
 // TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
 // creates a virtual network with bidirectional peering to a hub.
 func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
@@ -503,7 +526,8 @@ func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
 }
 
 // TestVirtualNetworkCreateInvalidResourceGroupCreation tests that resource group naming is unique
-// whe
+// when using vnets in multiple locaitons that share a resoruce group.
+// NOTE - this is not a recommended deployment pattern.
 func TestVirtualNetworkCreateInvalidResourceGroupCreation(t *testing.T) {
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
