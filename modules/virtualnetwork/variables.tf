@@ -55,7 +55,58 @@ variable "virtual_networks" {
     tags = optional(map(string), {})
   }))
   description = <<DESCRIPTION
+A map of the virtual networks to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply.
+
+### Required fields
+
+- `name`: The name of the virtual network. [required]
+- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. ["192.168.0.0/24, 10.0.0.0/24"]. [required]
+- `location`: The location of the virtual network. [required]
+- `resource_group_name`: The name of the resource group to create the virtual network in. [required]
+
+### Hub network peering values
+
+The following values configure bi-directional hub & spoke peering for the given virtual network.
+
+- `hub_peering_enabled`: Whether to enable hub peering. [optional]
+- `hub_network_resource_id`: The resource ID of the hub network to peer with. [optional - but required if hub_peering_enabled is `true`]
+- `hub_peering_name_tohub`: The name of the peering to the hub network. [optional - leave empty to use calculated name]
+- `hub_peering_name_fromhub`: The name of the peering from the hub network. [optional - leave empty to use calculated name]
+- `hub_peering_use_remote_gateways`: Whether to use remote gateways for the hub peering. [optional - default true]
+
+### Mesh peering values
+
+Mesh peering is the capability to create a bi-directional peerings between all supplied virtual networks in `var.virtual_networks`.
+Peerings will only be created between virtual networks with the `mesh_peering_enabled` value set to `true`.
+
+- `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
+- `mesh_peering_allow_forwarded_traffic`: Whether to allow forwarded traffic for the mesh peering. [optional - default false]
+
+### Other peerings
+
 TODO
+
+### Resource group values
+
+A resource group will be created for
+
+- `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default true]
+- `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default true]
+- `resource_group_lock_name`: The name of the resource lock. [optional - leave empty to use calculated name]
+- `resource_group_tags`: A map of tags to apply to the resource group, e.g. `{ mytag = "myvalue", mytag2 = "myvalue2" }`. [optional - default empty]
+
+### Virtual WAN values
+
+- `vwan_associated_routetable_resource_id`: The resource ID of the route table to associate with the virtual network. [optional - leave empty to use `defaultRouteTable` on hub]
+- `vwan_connection_enabled`: Whether to create a connection to a Virtual WAN. [optional - default false]
+- `vwan_connection_name`: The name of the connection to the Virtual WAN. [optional - leave empty to use calculated name]
+- `vwan_hub_resource_id`: The resource ID of the hub to connect to. [optional - but required if vwan_connection_enabled is `true`]
+- `vwan_propagated_routetables_labels`: A list of labels of route tables to propagate to the virtual network. [optional - leave empty to use `["default"]`]
+- `vwan_propagated_routetables_resource_ids`: A list of resource IDs of route tables to propagate to the virtual network. [optional - leave empty to use `defaultRouteTable` on hub]
+
+### Tags
+
+- `tags`: A map of tags to apply to the virtual network, e.g. `{ mytag = "myvalue", mytag2 = "myvalue2" }`. [optional - default empty]
 DESCRIPTION
 
   # validate virtual network name
@@ -88,41 +139,41 @@ DESCRIPTION
     error_message = "Address space entries must be specified in CIDR notation, e.g. 192.168.0.0/24."
   }
 
-  # validate hub network resource id
+  # validate hub network resource id for networks with hub peering enabled
   validation {
     condition = alltrue([
       for k, v in var.virtual_networks :
-      can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", v.hub_network_resource_id))
+      can(regex("^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", v.hub_network_resource_id)) if v.hub_peering_enabled
     ])
     error_message = "Hub network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
   }
 
-  # validate vwan hub resource id
+  # validate vwan hub resource id for networks with vwan connection enabled
   validation {
     condition = alltrue([
       for k, v in var.virtual_networks :
-      can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}$", v.vwan_hub_resource_id))
+      can(regex("^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}$", v.vwan_hub_resource_id)) if v.vwan_connection_enabled
     ])
     error_message = "vWAN hub resource id must be an Azure vWAN hub network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub."
   }
 
-  # validate vwan associated routetable resource id
+  # validate vwan associated routetable resource id for networks with vwan connection enabled
   validation {
     condition = alltrue([
       for k, v in var.virtual_networks :
-      can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", v.vwan_associated_routetable_resource_id))
+      can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", v.vwan_associated_routetable_resource_id)) if v.vwan_connection_enabled
     ])
     error_message = "vWAN associated routetable resource id must be an Azure vwan hub routetable resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
   }
 
-  # validate vwan propagated routetable resource ids
+  # validate vwan propagated routetable resource ids for networks with vwan connection enabled
   validation {
     condition = alltrue(flatten([
       for k, v in var.virtual_networks :
       [
         for i in v.vwan_propagated_routetables_resource_ids :
         can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", i))
-      ]
+      ] if v.vwan_connection_enabled
     ]))
     error_message = "vWAN propagated routetables resource id must be an Azure vwan hub routetable resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
   }
@@ -136,7 +187,7 @@ DESCRIPTION
         can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", v2.remote_network_resource_id))
       ]
     ]))
-    error_message = "Remote network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
+    error_message = "Other peering remote network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
   }
 
   # validate resource groups with creation enabled have unique names.
@@ -153,6 +204,4 @@ DESCRIPTION
     )
     error_message = "Resource group names with creation enabled must be unique. Virtual networks deployed into the same resource group must have only one enabled for resource group creation."
   }
-
-  default = {}
 }

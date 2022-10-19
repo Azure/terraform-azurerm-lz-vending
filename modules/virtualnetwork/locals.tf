@@ -16,41 +16,41 @@ locals {
   # with hub peering enabled
   hub_peering_map = {
     for k, v in var.virtual_networks : k => {
-        # Peering this network to the remote network
-        outbound = {
-          name               = coalesce(v.hub_peering_name_tohub, "peer-${uuidv5("url", v.hub_network_resource_id)}")
-          this_resource_id   = azapi_resource.vnet[k].id
-          remote_resource_id = v.hub_network_resource_id
-        },
-        # Peering the remote network to this network
-        inbound = {
-          name               = coalesce(v.hub_peering_name_fromhub, "peer-${uuidv5("url", local.virtual_network_resource_ids[k])}")
-          this_resource_id   = v.hub_network_resource_id
-          remote_resource_id = azapi_resource.vnet[k].id
-        }
-      } if v.hub_peering_enabled
+      # Peering this network to the remote network
+      outbound = {
+        name               = coalesce(v.hub_peering_name_tohub, "peer-${uuidv5("url", v.hub_network_resource_id)}")
+        this_resource_id   = azapi_resource.vnet[k].id
+        remote_resource_id = v.hub_network_resource_id
+      },
+      # Peering the remote network to this network
+      inbound = {
+        name               = coalesce(v.hub_peering_name_fromhub, "peer-${uuidv5("url", local.virtual_network_resource_ids[k])}")
+        this_resource_id   = v.hub_network_resource_id
+        remote_resource_id = azapi_resource.vnet[k].id
+      }
+    } if v.hub_peering_enabled
   }
 
   # vwan_propagated_routetables_resource_ids is a map of the virtual network vwan propagated routetable ids
   # for each virtual network that enabled for vwan connectivity.
   vwan_propagated_routetables_resource_ids = {
     for k, v in var.virtual_networks : k => coalescelist(
-        [
-          for i in v.vwan_propagated_routetables_resource_ids : { id = i }
-        ],
-        [
-          { id = "${v.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable" }
-        ]
-      ) if v.vwan_connection_enabled
+      [
+        for i in v.vwan_propagated_routetables_resource_ids : { id = i }
+      ],
+      [
+        { id = "${v.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable" }
+      ]
+    ) if v.vwan_connection_enabled
   }
 
   # vwan_propagated_routetables_labels is a map of the virtual network vwan propagated routetables labels
   # for each virtual network that enabled for vwan connectivity.
   vwan_propagated_routetables_labels = {
     for k, v in var.virtual_networks : k => coalescelist(
-        v.vwan_propagated_routetables_labels,
-        [ "default" ]
-      ) if v.vwan_connection_enabled
+      v.vwan_propagated_routetables_labels,
+      ["default"]
+    ) if v.vwan_connection_enabled
   }
 
   # virtual_networks_mesh_peering_map is the data required to create the mesh peerings.
