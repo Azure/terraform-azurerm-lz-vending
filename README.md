@@ -11,8 +11,10 @@ The module is designed to be instantiated many times, once for each desired land
 This is currently split logically into the following capabilities:
 
 - Subscription creation and management group placement
-- Hub & spoke networking
-- Virtual WAN networking
+- Networking - deploy multiple vnets with:
+  - Hub & spoke connectivity
+  - vWAN connectivity
+  - Mesh peering (peering between spokes)
 - Role assignments
 
 We would like feedback on what's missing in the module.
@@ -45,15 +47,25 @@ module "lz_vending" {
   subscription_management_group_id                  = "Corp"
 
   # virtual network variables
-  virtual_network_enabled             = true
-  virtual_network_address_space       = ["192.168.1.0/24"]
-  virtual_network_location            = "eastus"
-  virtual_network_name                = "myvnet"
-  virtual_network_resource_group_name = "my-network-rg"
-
-  # virtual network peering
-  virtual_network_peering_enabled = true
-  hub_network_resource_id         = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network"
+  virtual_network_enabled = true
+  virtual_networks = {
+    one = {
+      name                    = "my-vnet"
+      location                = "westeurope"
+      address_space           = ["192.168.1.0/24"]
+      hub_peering_enabled     = true
+      hub_network_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network"
+      mesh_peering_enabled    = true
+    }
+    two = {
+      name                    = "my-vnet2"
+      location                = "northeurope"
+      address_space           = ["192.168.2.0/24"]
+      hub_peering_enabled     = true
+      hub_network_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network2"
+      mesh_peering_enabled    = true
+    }
+  }
 
   # role assignments
   role_assignment_enabled = true
@@ -121,111 +133,7 @@ Version:
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
-The following input variables are required:
-
-### <a name="input_virtual_networks"></a> [virtual\_networks](#input\_virtual\_networks)
-
-Description: A map of the virtual networks to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply.
-
-### Required fields
-
-- `name`: The name of the virtual network. [required]
-- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. ["192.168.0.0/24, 10.0.0.0/24"]. [required]
-- `location`: The location of the virtual network. [required]
-- `resource_group_name`: The name of the resource group to create the virtual network in. [required]
-
-### Hub network peering values
-
-The following values configure bi-directional hub & spoke peering for the given virtual network.
-
-- `hub_peering_enabled`: Whether to enable hub peering. [optional]
-- `hub_network_resource_id`: The resource ID of the hub network to peer with. [optional - but required if hub\_peering\_enabled is `true`]
-- `hub_peering_name_tohub`: The name of the peering to the hub network. [optional - leave empty to use calculated name]
-- `hub_peering_name_fromhub`: The name of the peering from the hub network. [optional - leave empty to use calculated name]
-- `hub_peering_use_remote_gateways`: Whether to use remote gateways for the hub peering. [optional - default true]
-
-### Mesh peering values
-
-Mesh peering is the capability to create a bi-directional peerings between all supplied virtual networks in `var.virtual_networks`.  
-Peerings will only be created between virtual networks with the `mesh_peering_enabled` value set to `true`.
-
-- `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
-- `mesh_peering_allow_forwarded_traffic`: Whether to allow forwarded traffic for the mesh peering. [optional - default false]
-
-### Other peerings
-
-TODO
-
-### Resource group values
-
-A resource group will be created for
-
-- `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default true]
-- `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default true]
-- `resource_group_lock_name`: The name of the resource lock. [optional - leave empty to use calculated name]
-- `resource_group_tags`: A map of tags to apply to the resource group, e.g. `{ mytag = "myvalue", mytag2 = "myvalue2" }`. [optional - default empty]
-
-### Virtual WAN values
-
-- `vwan_associated_routetable_resource_id`: The resource ID of the route table to associate with the virtual network. [optional - leave empty to use `defaultRouteTable` on hub]
-- `vwan_connection_enabled`: Whether to create a connection to a Virtual WAN. [optional - default false]
-- `vwan_connection_name`: The name of the connection to the Virtual WAN. [optional - leave empty to use calculated name]
-- `vwan_hub_resource_id`: The resource ID of the hub to connect to. [optional - but required if vwan\_connection\_enabled is `true`]
-- `vwan_propagated_routetables_labels`: A list of labels of route tables to propagate to the virtual network. [optional - leave empty to use `["default"]`]
-- `vwan_propagated_routetables_resource_ids`: A list of resource IDs of route tables to propagate to the virtual network. [optional - leave empty to use `defaultRouteTable` on hub]
-
-### Tags
-
-- `tags`: A map of tags to apply to the virtual network, e.g. `{ mytag = "myvalue", mytag2 = "myvalue2" }`. [optional - default empty]
-
-Type:
-
-```hcl
-map(object({
-    name                = string
-    address_space       = list(string)
-    location            = string
-    resource_group_name = string
-
-    hub_network_resource_id         = optional(string, "")
-    hub_peering_enabled             = optional(string, false)
-    hub_peering_name_tohub          = optional(string, "")
-    hub_peering_name_fromhub        = optional(string, "")
-    hub_peering_use_remote_gateways = optional(bool, true)
-
-    mesh_peering_enabled                 = optional(bool, false)
-    mesh_peering_allow_forwarded_traffic = optional(bool, false)
-
-    other_peerings = optional(map(object({
-      remote_network_resource_id            = string
-      name_inbound                          = optional(string, "")
-      name_outbound                         = optional(string, "")
-      outbound_only                         = optional(bool, false)
-      allow_forwarded_traffic_inbound       = optional(bool, true)
-      allow_forwarded_traffic_outbound      = optional(bool, true)
-      allow_gateway_transit_inbound         = optional(bool, false)
-      allow_gateway_transit_outbound        = optional(bool, false)
-      allow_virtual_network_access_inbound  = optional(bool, true)
-      allow_virtual_network_access_outbound = optional(bool, true)
-      use_remote_gateways_inbound           = optional(bool, false)
-      use_remote_gateways_outbound          = optional(bool, false)
-    })), {})
-
-    resource_group_creation_enabled = optional(bool, true)
-    resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string, "")
-    resource_group_tags             = optional(map(string), {})
-
-    vwan_associated_routetable_resource_id   = optional(string, "")
-    vwan_connection_enabled                  = optional(bool, false)
-    vwan_connection_name                     = optional(string, "")
-    vwan_hub_resource_id                     = optional(string, "")
-    vwan_propagated_routetables_labels       = optional(list(string), [])
-    vwan_propagated_routetables_resource_ids = optional(list(string), [])
-
-    tags = optional(map(string), {})
-  }))
-```
+No required inputs.
 
 ## Optional Inputs
 
@@ -465,6 +373,119 @@ Type: `string`
 
 Default: `""`
 
+### <a name="input_virtual_networks"></a> [virtual\_networks](#input\_virtual\_networks)
+
+Description: A map of the virtual networks to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply.
+
+### Required fields
+
+- `name`: The name of the virtual network. [required]
+- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. ["192.168.0.0/24, 10.0.0.0/24"]. [required]
+- `location`: The location of the virtual network. [required]
+- `resource_group_name`: The name of the resource group to create the virtual network in. [required]
+
+### Hub network peering values
+
+The following values configure bi-directional hub & spoke peering for the given virtual network.
+
+- `hub_peering_enabled`: Whether to enable hub peering. [optional]
+- `hub_network_resource_id`: The resource ID of the hub network to peer with. [optional - but required if hub\_peering\_enabled is `true`]
+- `hub_peering_name_tohub`: The name of the peering to the hub network. [optional - leave empty to use calculated name]
+- `hub_peering_name_fromhub`: The name of the peering from the hub network. [optional - leave empty to use calculated name]
+- `hub_peering_use_remote_gateways`: Whether to use remote gateways for the hub peering. [optional - default true]
+
+### Mesh peering values
+
+Mesh peering is the capability to create a bi-directional peerings between all supplied virtual networks in `var.virtual_networks`.  
+Peerings will only be created between virtual networks with the `mesh_peering_enabled` value set to `true`.
+
+- `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
+- `mesh_peering_allow_forwarded_traffic`: Whether to allow forwarded traffic for the mesh peering. [optional - default false]
+
+### Other peerings
+
+TODO
+
+### Resource group values
+
+A resource group will be created for
+
+- `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default true]
+- `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default true]
+- `resource_group_lock_name`: The name of the resource lock. [optional - leave empty to use calculated name]
+- `resource_group_tags`: A map of tags to apply to the resource group, e.g. `{ mytag = "myvalue", mytag2 = "myvalue2" }`. [optional - default empty]
+
+### Virtual WAN values
+
+- `vwan_associated_routetable_resource_id`: The resource ID of the route table to associate with the virtual network. [optional - leave empty to use `defaultRouteTable` on hub]
+- `vwan_connection_enabled`: Whether to create a connection to a Virtual WAN. [optional - default false]
+- `vwan_connection_name`: The name of the connection to the Virtual WAN. [optional - leave empty to use calculated name]
+- `vwan_hub_resource_id`: The resource ID of the hub to connect to. [optional - but required if vwan\_connection\_enabled is `true`]
+- `vwan_propagated_routetables_labels`: A list of labels of route tables to propagate to the virtual network. [optional - leave empty to use `["default"]`]
+- `vwan_propagated_routetables_resource_ids`: A list of resource IDs of route tables to propagate to the virtual network. [optional - leave empty to use `defaultRouteTable` on hub]
+
+### Tags
+
+- `tags`: A map of tags to apply to the virtual network. [optional - default empty]
+
+```terraform
+subscription_tags = {
+  mytag  = "myvalue"
+  mytag2 = "myvalue2"
+}
+```
+
+Type:
+
+```hcl
+map(object({
+    name                = string
+    address_space       = list(string)
+    location            = string
+    resource_group_name = string
+
+    hub_network_resource_id         = optional(string, "")
+    hub_peering_enabled             = optional(string, false)
+    hub_peering_name_tohub          = optional(string, "")
+    hub_peering_name_fromhub        = optional(string, "")
+    hub_peering_use_remote_gateways = optional(bool, true)
+
+    mesh_peering_enabled                 = optional(bool, false)
+    mesh_peering_allow_forwarded_traffic = optional(bool, false)
+
+    other_peerings = optional(map(object({
+      remote_network_resource_id            = string
+      name_inbound                          = optional(string, "")
+      name_outbound                         = optional(string, "")
+      outbound_only                         = optional(bool, false)
+      allow_forwarded_traffic_inbound       = optional(bool, true)
+      allow_forwarded_traffic_outbound      = optional(bool, true)
+      allow_gateway_transit_inbound         = optional(bool, false)
+      allow_gateway_transit_outbound        = optional(bool, false)
+      allow_virtual_network_access_inbound  = optional(bool, true)
+      allow_virtual_network_access_outbound = optional(bool, true)
+      use_remote_gateways_inbound           = optional(bool, false)
+      use_remote_gateways_outbound          = optional(bool, false)
+    })), {})
+
+    resource_group_creation_enabled = optional(bool, true)
+    resource_group_lock_enabled     = optional(bool, true)
+    resource_group_lock_name        = optional(string, "")
+    resource_group_tags             = optional(map(string), {})
+
+    vwan_associated_routetable_resource_id   = optional(string, "")
+    vwan_connection_enabled                  = optional(bool, false)
+    vwan_connection_name                     = optional(string, "")
+    vwan_hub_resource_id                     = optional(string, "")
+    vwan_propagated_routetables_labels       = optional(list(string), [])
+    vwan_propagated_routetables_resource_ids = optional(list(string), [])
+
+    tags = optional(map(string), {})
+  }))
+```
+
+Default: `{}`
+
 ## Resources
 
 The following resources are used by this module:
@@ -482,6 +503,10 @@ Description: The subscription\_id is the Azure subscription id that resources ha
 ### <a name="output_subscription_resource_id"></a> [subscription\_resource\_id](#output\_subscription\_resource\_id)
 
 Description: The subscription\_resource\_id is the Azure subscription resource id that resources have been deployed into
+
+### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
+
+Description: A map of virtual network resource ids, keyed by the var.virtual\_networks input map. Only populated if the virtualnetwork submodule is enabled.
 
 <!-- markdownlint-enable -->
 <!-- markdownlint-disable MD041 -->

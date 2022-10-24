@@ -10,8 +10,10 @@ The module is designed to be instantiated many times, once for each desired land
 This is currently split logically into the following capabilities:
 
 - Subscription creation and management group placement
-- Hub & spoke networking
-- Virtual WAN networking
+- Networking - deploy multiple vnets with:
+  - Hub & spoke connectivity
+  - vWAN connectivity
+  - Mesh peering (peering between spokes)
 - Role assignments
 
 We would like feedback on what's missing in the module.
@@ -44,15 +46,25 @@ module "lz_vending" {
   subscription_management_group_id                  = "Corp"
 
   # virtual network variables
-  virtual_network_enabled             = true
-  virtual_network_address_space       = ["192.168.1.0/24"]
-  virtual_network_location            = "eastus"
-  virtual_network_name                = "myvnet"
-  virtual_network_resource_group_name = "my-network-rg"
-
-  # virtual network peering
-  virtual_network_peering_enabled = true
-  hub_network_resource_id         = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network"
+  virtual_network_enabled = true
+  virtual_networks = {
+    one = {
+      name                    = "my-vnet"
+      location                = "westeurope"
+      address_space           = ["192.168.1.0/24"]
+      hub_peering_enabled     = true
+      hub_network_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network"
+      mesh_peering_enabled    = true
+    }
+    two = {
+      name                    = "my-vnet2"
+      location                = "northeurope"
+      address_space           = ["192.168.2.0/24"]
+      hub_peering_enabled     = true
+      hub_network_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network2"
+      mesh_peering_enabled    = true
+    }
+  }
 
   # role assignments
   role_assignment_enabled = true
