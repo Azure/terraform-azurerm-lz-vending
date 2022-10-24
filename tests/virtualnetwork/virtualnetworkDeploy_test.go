@@ -52,13 +52,20 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v, err := getValidInputVariables()
+	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["secondary"]
+	primaryvnet["hub_peering_enabled"] = true
+	secondaryvnet["hub_peering_enabled"] = true
+	primaryvnet["hub_peering_use_remote_gateways"] = false
+	secondaryvnet["hub_peering_use_remote_gateways"] = false
+
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
-	v["virtual_network_peering_enabled"] = true
-	v["virtual_network_use_remote_gateways"] = false
 	terraformOptions.Vars = v
 
-	_, err = terraform.InitAndPlanE(t, terraformOptions)
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	require.NoError(t, err)
+	numres := 14
+	require.Lenf(t, plan.ResourcePlannedValuesMap, numres, "expected %d resources, got %d", numres, len(plan.ResourcePlannedValuesMap))
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)

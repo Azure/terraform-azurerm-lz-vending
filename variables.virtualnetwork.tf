@@ -104,4 +104,5 @@ subscription_tags = {
 }
 ```
 DESCRIPTION
+default = {}
 }

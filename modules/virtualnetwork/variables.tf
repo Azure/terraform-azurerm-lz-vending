@@ -116,6 +116,12 @@ subscription_tags = {
 ```
 DESCRIPTION
 
+  # validate virtual_networks is no zero length
+  validation {
+    condition     = length(var.virtual_networks) > 0
+    error_message = "The virtual_networks variable must not be empty."
+  }
+
   # validate virtual network name
   validation {
     condition = alltrue([

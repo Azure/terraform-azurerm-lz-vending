@@ -103,7 +103,7 @@ resource "azapi_resource" "peering_hub_inbound" {
   body = jsonencode({
     properties = {
       remoteVirtualNetwork = {
-        id = local.hub_peering_map[each.key]["outbound"].remote_resource_id
+        id = local.hub_peering_map[each.key]["inbound"].remote_resource_id
       }
       allowVirtualNetworkAccess = true
       allowForwardedTraffic     = true

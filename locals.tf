@@ -22,6 +22,10 @@ locals {
   # If this is blank then the subscription submodule is disabled an no subscription id has been supplied as an input variable.
   subscription_resource_id = coalesce(local.subscription_module_output_subscription_resource_id, local.supplied_subscription_resource_id)
 
+  # virtual_networks_merged is a map of virtual networks created, if the module has been enabled.
+  # This is used in the outputs.tf file to return the virtual network resource ids.
+  virtual_network_resource_ids = try(module.virtualnetwork[0].virtual_network_resource_ids, {})
+
   # role_assignments_map is a map of role assignments that will be created.
   # We need this as a for_each loop must have unique keys, these are generated using
   # the uuidv5 function to ensure predictable output.
