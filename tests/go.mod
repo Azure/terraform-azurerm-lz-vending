@@ -10,9 +10,9 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.0.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.0.0
 	github.com/google/uuid v1.3.0
-	github.com/gruntwork-io/terratest v0.40.23
+	github.com/gruntwork-io/terratest v0.40.24
 	github.com/matryer/try v0.0.0-20161228173917-9ac251b645a2
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0
 	gopkg.in/matryer/try.v1 v1.0.0-20150601225556-312d2599e12e
 )
