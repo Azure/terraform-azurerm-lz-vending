@@ -4,7 +4,7 @@ resource "azapi_resource" "subnet" {
   name      = "vnet-subnet"
   body = jsonencode({
     properties = {
-      addressPrefix = "10.1.0.0/26"
+      addressPrefix = "192.168.0.0/26"
     }
   })
 }

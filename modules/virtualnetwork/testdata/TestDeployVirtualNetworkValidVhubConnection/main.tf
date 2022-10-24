@@ -49,7 +49,7 @@ locals {
 }
 
 module "virtualnetwork_test" {
-  source                                  = "../../"
-  subscription_id                         = var.subscription_id
-  virtual_networks                        = local.virtual_networks_merged
+  source           = "../../"
+  subscription_id  = var.subscription_id
+  virtual_networks = local.virtual_networks_merged
 }
