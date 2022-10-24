@@ -37,7 +37,7 @@ jobs:
           VALIDATE_GITHUB_ACTIONS: true
           VALIDATE_JSON: true
           VALIDATE_MARKDOWN: true
-          VALIDATE_TERRAFORM_TERRASCAN: true
+          # VALIDATE_TERRAFORM_TERRASCAN: true # disabled for now as does not support TF 1.3 optional(type, default)
           VALIDATE_TERRAFORM_TFLINT: true
           VALIDATE_YAML: true
           # VALIDATE_GO: true # Disabled because it down not work :(
