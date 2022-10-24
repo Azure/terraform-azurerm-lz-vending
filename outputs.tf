@@ -7,3 +7,9 @@ output "subscription_resource_id" {
   value       = local.subscription_resource_id
   description = "The subscription_resource_id is the Azure subscription resource id that resources have been deployed into"
 }
+
+
+output "virtual_network_resource_ids" {
+  value       = module.virtualnetwork.virtual_network_resource_ids
+  description = "value is a map of virtual network resource ids, keyed by the var.virtual_networks input map"
+}
