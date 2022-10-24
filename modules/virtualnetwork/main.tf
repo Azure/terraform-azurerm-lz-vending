@@ -39,7 +39,7 @@ resource "azapi_resource" "vnet" {
   parent_id = "${local.subscription_resource_id}/resourceGroups/${each.value.resource_group_name}"
   type      = "Microsoft.Network/virtualNetworks@2021-08-01"
   name      = each.value.name
-  location  = each.value.location
+  location  = coalesce(each.value.location, var.location)
   body = jsonencode({
     properties = {
       addressSpace = {

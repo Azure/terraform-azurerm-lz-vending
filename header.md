@@ -29,10 +29,18 @@ Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-
 
 ## Example
 
+The below example created a landing zone subscription with two virtual networks.
+One virtual network is in the default location of the subscription, the other is in a different location.
+
+The virtual networks are peered with the supplied hub network resource ids, they are also peered with each other using the mesh peering option.
+
 ```terraform
 module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
   version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
+
+  # Set the default location for resources
+  location = "westeurope"
 
   # subscription variables
   subscription_alias_enabled = true
@@ -50,7 +58,6 @@ module "lz_vending" {
   virtual_networks = {
     one = {
       name                    = "my-vnet"
-      location                = "westeurope"
       address_space           = ["192.168.1.0/24"]
       hub_peering_enabled     = true
       hub_network_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network"

@@ -4,7 +4,7 @@ module "virtualnetwork" {
   source = "./modules/virtualnetwork"
   count  = var.virtual_network_enabled ? 1 : 0
 
-  # Required variables
   subscription_id  = local.subscription_id
   virtual_networks = var.virtual_networks
+  location         = var.location
 }

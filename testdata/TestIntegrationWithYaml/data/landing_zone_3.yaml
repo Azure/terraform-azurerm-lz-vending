@@ -4,9 +4,14 @@ workload: DevTest
 location: northeurope
 billing_enrollment_account: 123456
 management_group_id: Sandboxes
-vnet_address_space:
-  - "10.0.3.0/24"
-  - "192.168.3.0/24"
+virtual_networks:
+  primary:
+    name: spoke1
+    location : northeurope
+    address_space:
+      - "10.0.3.0/24"
+      - "192.168.3.0/24"
+    resource_group_name: primary-rg
 role_assignments:
   - principal_id: 00000000-0000-0000-0000-000000000000
     definition: Owner

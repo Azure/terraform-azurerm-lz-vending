@@ -30,10 +30,18 @@ Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-
 
 ## Example
 
+The below example created a landing zone subscription with two virtual networks.
+One virtual network is in the default location of the subscription, the other is in a different location.
+
+The virtual networks are peered with the supplied hub network resource ids, they are also peered with each other using the mesh peering option.
+
 ```terraform
 module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
   version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
+
+  # Set the default location for resources
+  location = "westeurope"
 
   # subscription variables
   subscription_alias_enabled = true
@@ -51,7 +59,6 @@ module "lz_vending" {
   virtual_networks = {
     one = {
       name                    = "my-vnet"
-      location                = "westeurope"
       address_space           = ["192.168.1.0/24"]
       hub_peering_enabled     = true
       hub_network_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network"
@@ -133,7 +140,14 @@ Version:
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
-No required inputs.
+The following input variables are required:
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The default location of resources created by this module.  
+Virtual networks will be created in this location unless overridden by the `location` attribute.
+
+Type: `string`
 
 ## Optional Inputs
 
@@ -163,14 +177,6 @@ module "lz_vending" {
 Type: `bool`
 
 Default: `false`
-
-### <a name="input_location"></a> [location](#input\_location)
-
-Description: The location of resources deployed by this module.
-
-Type: `string`
-
-Default: `""`
 
 ### <a name="input_role_assignment_enabled"></a> [role\_assignment\_enabled](#input\_role\_assignment\_enabled)
 
@@ -373,6 +379,14 @@ Type: `string`
 
 Default: `""`
 
+### <a name="input_virtual_network_enabled"></a> [virtual\_network\_enabled](#input\_virtual\_network\_enabled)
+
+Description: Enables and disables the virtual network submodule.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_virtual_networks"></a> [virtual\_networks](#input\_virtual\_networks)
 
 Description: A map of the virtual networks to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply.
@@ -381,8 +395,14 @@ Description: A map of the virtual networks to create. The map key must be known 
 
 - `name`: The name of the virtual network. [required]
 - `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. ["192.168.0.0/24, 10.0.0.0/24"]. [required]
-- `location`: The location of the virtual network. [required]
 - `resource_group_name`: The name of the resource group to create the virtual network in. [required]
+
+### Location
+
+- `location`: The location of the virtual network (and resource group if creation is enabled). [optional, will use `var.location` if not specified or empty string]
+
+> Note at least one of `location` or `var.location` must be specified.
+> If both are empty then the module will fail.
 
 ### Hub network peering values
 

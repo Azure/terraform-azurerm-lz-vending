@@ -1,9 +1,9 @@
 variable "location" {
   type        = string
   description = <<DESCRIPTION
-The location of resources deployed by this module.
+The default location of resources created by this module.
+Virtual networks will be created in this location unless overridden by the `location` attribute.
 DESCRIPTION
-  default     = ""
 }
 
 variable "disable_telemetry" {

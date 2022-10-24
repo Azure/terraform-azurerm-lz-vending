@@ -2,19 +2,28 @@ data "azurerm_client_config" "current" {}
 
 resource "azurerm_resource_group" "hub" {
   #ts:skip=AC_AZURE_0389 skip resource lock check
-  name     = "${var.virtual_network_name}-hub"
+  name     = "${var.virtual_networks["primary"].name}-hub"
   location = var.location
 }
 
 resource "azurerm_virtual_network" "hub" {
   #ts:skip=AC_AZURE_0356 skip NSG subnet check
-  name                = "${var.virtual_network_name}-hub"
+  name                = "${var.virtual_networks["primary"].name}-hub"
   location            = azurerm_resource_group.hub.location
   resource_group_name = azurerm_resource_group.hub.name
-  address_space       = ["192.168.0.0/23"]
+  address_space       = ["192.168.10.0/23"]
 }
 
-module "alz_landing_zone" {
+locals {
+  virtual_network_primary_merged = merge(var.virtual_networks["primary"], {
+    hub_network_resource_id = azurerm_virtual_network.hub.id
+  })
+  virtual_networks_merged = {
+    primary = local.virtual_network_primary_merged
+  }
+}
+
+module "lz_vending" {
   source = "../../"
 
   location = var.location
@@ -27,15 +36,8 @@ module "alz_landing_zone" {
   subscription_workload      = var.subscription_workload
 
   # virtual network variables
-  virtual_network_enabled             = var.virtual_network_enabled
-  virtual_network_address_space       = var.virtual_network_address_space
-  virtual_network_name                = var.virtual_network_name
-  virtual_network_resource_group_name = var.virtual_network_resource_group_name
-
-  # virtual network peering
-  virtual_network_peering_enabled     = var.virtual_network_peering_enabled
-  virtual_network_use_remote_gateways = var.virtual_network_use_remote_gateways
-  hub_network_resource_id             = azurerm_virtual_network.hub.id
+  virtual_network_enabled = var.virtual_network_enabled
+  virtual_networks        = local.virtual_networks_merged
 
   # role assignment
   role_assignment_enabled = var.role_assignment_enabled

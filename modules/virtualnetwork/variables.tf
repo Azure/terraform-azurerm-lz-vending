@@ -9,12 +9,22 @@ DESCRIPTION
   }
 }
 
+variable "location" {
+  type        = string
+  description = <<DESCRIPTION
+The default location of resources created by this module.
+Virtual networks will be created in this location unless overridden by the `location` attribute.
+DESCRIPTION
+  default     = ""
+}
+
 variable "virtual_networks" {
   type = map(object({
     name                = string
     address_space       = list(string)
-    location            = string
     resource_group_name = string
+
+    location = optional(string, "")
 
     hub_network_resource_id         = optional(string, "")
     hub_peering_enabled             = optional(string, false)
@@ -61,8 +71,14 @@ A map of the virtual networks to create. The map key must be known at the plan s
 
 - `name`: The name of the virtual network. [required]
 - `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. ["192.168.0.0/24, 10.0.0.0/24"]. [required]
-- `location`: The location of the virtual network. [required]
 - `resource_group_name`: The name of the resource group to create the virtual network in. [required]
+
+### Location
+
+- `location`: The location of the virtual network (and resource group if creation is enabled). [optional, will use `var.location` if not specified or empty string]
+
+> Note at least one of `location` or `var.location` must be specified.
+> If both are empty then the module will fail.
 
 ### Hub network peering values
 
