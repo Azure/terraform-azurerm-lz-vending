@@ -52,6 +52,7 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v, err := getValidInputVariables()
+	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
 	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
 	secondaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["secondary"]
 	primaryvnet["hub_peering_enabled"] = true
@@ -87,11 +88,16 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
-	v["virtual_network_vwan_connection_enabled"] = true
+	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["secondary"]
+	primaryvnet["vwan_connection_enabled"] = true
+	secondaryvnet["vwan_connection_enabled"] = true
 	terraformOptions.Vars = v
 
-	_, err = terraform.InitAndPlanE(t, terraformOptions)
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	require.NoError(t, err)
+	numres := 13
+	require.Lenf(t, plan.ResourcePlannedValuesMap, numres, "expected %d resources, got %d", numres, len(plan.ResourcePlannedValuesMap))
 
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	assert.NoError(t, err)
@@ -100,7 +106,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	// due to eventual consistency issues
 	// Vhubs cannot be destroyed whilst the routing service is still provisioning
 	// hence extended delay
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 1*time.Minute, 20)
+	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 5*time.Minute, 5)
 }
 
 // TestDeployVirtualNetworkSubnetIdempotency tests that we can make changes
