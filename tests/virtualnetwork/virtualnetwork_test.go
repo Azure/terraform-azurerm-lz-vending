@@ -470,6 +470,7 @@ func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	vars := getMockInputVariables()
 	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["hub_peering_enabled"] = true
 	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroup/testrg/providers/Microsoft.Network/virtualNetworks/tes.-tvnet2"
 	terraformOptions.Vars = vars
 	_, err = terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
@@ -487,6 +488,7 @@ func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	vars := getMockInputVariables()
 	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["vwan_connection_enabled"] = true
 	primaryvnet["vwan_hub_resource_id"] = "/subscription/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
 	terraformOptions.Vars = vars
 	_, err = terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)

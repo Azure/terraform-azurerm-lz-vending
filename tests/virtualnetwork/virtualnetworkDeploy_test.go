@@ -36,10 +36,10 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	require.Lenf(t, plan.ResourcePlannedValuesMap, numres, "expected %d resources, got %d", numres, len(plan.ResourcePlannedValuesMap))
 
 	resources := []string{
-		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork_test.azapi_resource.vnet[\"secondary\"]",
-		"module.virtualnetwork_test.azapi_update_resource.vnet[\"primary\"]",
-		"module.virtualnetwork_test.azapi_update_resource.vnet[\"secondary\"]",
+		"azapi_resource.vnet[\"primary\"]",
+		"azapi_resource.vnet[\"secondary\"]",
+		"azapi_update_resource.vnet[\"primary\"]",
+		"azapi_update_resource.vnet[\"secondary\"]",
 	}
 	for _, r := range resources {
 		terraform.RequirePlannedValuesMapKeyExists(t, plan, r)
@@ -49,6 +49,11 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	assert.NoError(t, err)
+
+	// check there two outputs for the virtual network resource ids
+	vnri, err := terraform.OutputMapE(t, terraformOptions, "virtual_network_resource_ids")
+	require.NoErrorf(t, err, "could not get virtual_network_resource_ids output, %s", err)
+	assert.Lenf(t, vnri, 2, "expected 2 virtual networks, got %d", len(vnri))
 }
 
 // TestDeployVirtualNetworkValidVnetPeering tests the deployment of a virtual network
@@ -170,7 +175,7 @@ func TestDeployVirtualNetworkSubnetIdempotency(t *testing.T) {
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// test an update to vnet address space, then check for subnet still existing
 	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
