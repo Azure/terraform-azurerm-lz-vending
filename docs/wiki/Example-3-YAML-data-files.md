@@ -11,9 +11,12 @@ workload: Production
 location: northeurope
 billing_enrollment_account: 123456
 management_group_id: Corp
-vnet_address_space:
-  - "10.0.1.0/24"
-  - "192.168.1.0/24"
+virtual_networks:
+  vnet1:
+    name: my-vnet
+    address_space:
+      - "10.0.0.0/24"
+    resource_group_name: my-rg
 role_assignments:
   - principal_id: 00000000-0000-0000-0000-000000000000
     definition: Owner
@@ -66,10 +69,8 @@ module "lz_vending" {
   subscription_management_group_id                  = each.value.management_group_id
 
   # virtual network variables
-  virtual_network_enabled             = true
-  virtual_network_address_space       = each.value.vnet_address_space
-  virtual_network_name                = "spoke"
-  virtual_network_resource_group_name = "rg-networking"
+  virtual_network_enabled = true
+  virtual_networks        = each.value.virtual_networks
 
   # role assignment variables
   role_assignment_enabled = true

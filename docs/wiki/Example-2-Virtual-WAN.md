@@ -35,14 +35,16 @@ module "lz_vending" {
   subscription_workload      = Production
 
   # virtual network variables
-  virtual_network_enabled             = true
-  virtual_network_address_space       = ["192.168.1.0/24"]
-  virtual_network_name                = "spoke"
-  virtual_network_resource_group_name = "rg-networking"
-
-  # virtual network vwan connection
-  virtual_network_vwan_connection_enabled = true
-  vwan_hub_resource_id                    = azurerm_virtual_hub.example.id
+  virtual_network_enabled = true
+  virtual_networks = {
+    vnet1 = {
+      name                    = "spoke"
+      address_space           = ["192.168.1.0/24"]
+      resource_group_name     = "rg-networking"
+      vwan_connection_enabled = true
+      vwan_hub_resource_id    = azurerm_virtual_hub.example.id
+    }
+  }
 }
 ```
 
