@@ -448,13 +448,6 @@ A resource group will be created for
 
 - `tags`: A map of tags to apply to the virtual network. [optional - default empty]
 
-```terraform
-subscription_tags = {
-  mytag  = "myvalue"
-  mytag2 = "myvalue2"
-}
-```
-
 Type:
 
 ```hcl
