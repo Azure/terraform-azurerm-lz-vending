@@ -10,9 +10,13 @@ The module is designed to be instantiated many times, once for each desired land
 This is currently split logically into the following capabilities:
 
 - Subscription creation and management group placement
-- Hub & spoke networking
-- Virtual WAN networking
+- Networking - deploy multiple vnets with:
+  - Hub & spoke connectivity (peering to a hub network)
+  - vWAN connectivity
+  - Mesh peering (peering between spokes)
 - Role assignments
+
+> When creating virtual network peerings, be aware of the [limit of peerings per virtual network][vnet_peering_limit].
 
 We would like feedback on what's missing in the module.
 Please raise an [issue](https://github.com/Azure/terraform-azurerm-lz-vending/issues) if you have any suggestions.
@@ -27,10 +31,18 @@ Please see the content in the [wiki](https://github.com/Azure/terraform-azurerm-
 
 ## Example
 
+The below example created a landing zone subscription with two virtual networks.
+One virtual network is in the default location of the subscription, the other is in a different location.
+
+The virtual networks are peered with the supplied hub network resource ids, they are also peered with each other using the mesh peering option.
+
 ```terraform
 module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
   version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
+
+  # Set the default location for resources
+  location = "westeurope"
 
   # subscription variables
   subscription_alias_enabled = true
@@ -44,15 +56,24 @@ module "lz_vending" {
   subscription_management_group_id                  = "Corp"
 
   # virtual network variables
-  virtual_network_enabled             = true
-  virtual_network_address_space       = ["192.168.1.0/24"]
-  virtual_network_location            = "eastus"
-  virtual_network_name                = "myvnet"
-  virtual_network_resource_group_name = "my-network-rg"
-
-  # virtual network peering
-  virtual_network_peering_enabled = true
-  hub_network_resource_id         = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network"
+  virtual_network_enabled = true
+  virtual_networks = {
+    one = {
+      name                    = "my-vnet"
+      address_space           = ["192.168.1.0/24"]
+      hub_peering_enabled     = true
+      hub_network_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network"
+      mesh_peering_enabled    = true
+    }
+    two = {
+      name                    = "my-vnet2"
+      location                = "northeurope"
+      address_space           = ["192.168.2.0/24"]
+      hub_peering_enabled     = true
+      hub_network_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network2"
+      mesh_peering_enabled    = true
+    }
+  }
 
   # role assignments
   role_assignment_enabled = true
@@ -81,3 +102,4 @@ module "lz_vending" {
 
 [azurem_provider]: https://registry.terraform.io/providers/hashicorp/azurerm/latest
 [azapi_provider]: https://registry.terraform.io/providers/azure/azapi/latest
+[vnet_peering_limit]: https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits?toc=%2Fazure%2Fvirtual-network%2Ftoc.json#azure-resource-manager-virtual-networking-limits

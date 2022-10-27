@@ -4,7 +4,7 @@ Here is a simple example of deploying a landing zone with a hub & spoke peering 
 ```terraform
 resource "azurerm_resource_group" "example" {
   name     = "rg-hub"
-  location = var.location
+  location = "northeurope"
 }
 
 resource "azurerm_virtual_network" "example" {
@@ -18,25 +18,26 @@ module "lz_vending" {
   source  = "Azure/lz-vending/azurerm"
   version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
-  location = var.location
+  location = "northeurope"
 
   # subscription variables
-  subscription_alias_enabled = var.subscription_alias_enabled
-  subscription_billing_scope = var.subscription_billing_scope
-  subscription_display_name  = var.subscription_display_name
-  subscription_alias_name    = var.subscription_alias_name
-  subscription_workload      = var.subscription_workload
+  subscription_alias_enabled = true
+  subscription_billing_scope = "/providers/Microsoft.Billing/billingAccounts/1234567/enrollmentAccounts/123456"
+  subscription_display_name  = "mysub"
+  subscription_alias_name    = "mysub"
+  subscription_workload      = "DevTest"
 
   # virtual network variables
-  virtual_network_enabled             = true
-  virtual_network_address_space       = ["192.168.1.0/24"]
-  virtual_network_name                = "spoke"
-  virtual_network_resource_group_name = "rg-networking"
-
-  # virtual network peering
-  virtual_network_peering_enabled     = true
-  virtual_network_use_remote_gateways = false
-  hub_network_resource_id             = azurerm_virtual_network.example.id
+  virtual_network_enabled = true
+  virtual_networks = {
+    vnet1 = {
+      name                    = "spoke"
+      address_space           = ["192.168.1.0/24"]
+      resource_group_name     = "rg-networking"
+      hub_peering_enabled     = true
+      hub_network_resource_id = azurerm_virtual_network.example.id
+    }
+  }
 }
 ```
 

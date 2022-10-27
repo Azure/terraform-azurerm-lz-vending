@@ -1,3 +1,3 @@
 output "module" {
-  value = module.alz_landing_zone
+  value = module.lz_vending
 }

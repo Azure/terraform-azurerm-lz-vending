@@ -243,13 +243,16 @@ module "lz_vending" {
   subscription_management_group_id                  = "mymg"
 
   # virtual network variables
-  virtual_network_enabled             = true
-  virtual_network_address_space       = ["192.168.2.0/24"]
-  virtual_network_name                = "spoke"
-  virtual_network_resource_group_name = "rg-networking"
-  virtual_network_peering_enabled     = true
-  virtual_network_use_remote_gateways = false
-  hub_network_resource_id             = local.hub_networks_by_location["northeurope"].id
+  virtual_network_enabled = true
+  virtual_networks = {
+    vnet1 = {
+      name                    = "spoke"
+      address_space           = ["192.168.2.0/24"]
+      resource_group_name     = "rg-networking"
+      hub_peering_enabled     = true
+      hub_network_resource_id = local.hub_networks_by_location["northeurope"].id
+    }
+  }
 }
 ```
 

@@ -1,4 +1,6 @@
-output "virtual_network_resource_id" {
-  description = "The created virtual network resource ID"
-  value       = azapi_resource.vnet.id
+output "virtual_network_resource_ids" {
+  description = "The created virtual network resource IDs, expressed as a map."
+  value = {
+    for k, v in azapi_resource.vnet : k => v.id
+  }
 }

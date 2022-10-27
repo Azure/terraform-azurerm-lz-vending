@@ -1,6 +1,6 @@
 # The landing zone module will be called once per landing_zone_*.yaml file
 # in the data directory.
-module "alz_landing_zone" {
+module "lz_vending" {
   source   = "../../"
   for_each = local.landing_zone_data_map
 
@@ -18,10 +18,8 @@ module "alz_landing_zone" {
   subscription_management_group_id                  = each.value.management_group_id
 
   # virtual network variables
-  virtual_network_enabled             = true
-  virtual_network_address_space       = each.value.vnet_address_space
-  virtual_network_name                = "spoke"
-  virtual_network_resource_group_name = "rg-networking"
+  virtual_network_enabled = true
+  virtual_networks        = each.value.virtual_networks
 
   # role assignment variables
   role_assignment_enabled = true

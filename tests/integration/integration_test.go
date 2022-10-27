@@ -29,11 +29,12 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
-	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
+	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["hub_peering_enabled"] = true
+	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
+	primaryvnet["resource_group_lock_enabled"] = true
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = true
-	v["virtual_network_peering_enabled"] = true
-	v["virtual_network_resource_lock_enabled"] = true
 	terraformOptions.Vars = v
 
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
@@ -42,12 +43,12 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
 		"module.subscription[0].azurerm_subscription.this[0]",
-		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
-		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
-		"module.virtualnetwork[0].azapi_resource.rg_lock[0]",
-		"module.virtualnetwork[0].azapi_resource.rg",
-		"module.virtualnetwork[0].azapi_resource.vnet",
-		"module.virtualnetwork[0].azapi_update_resource.vnet",
+		"module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.virtualnetwork[0].azapi_resource.peering_hub_outbound[\"primary\"]",
+		"module.virtualnetwork[0].azapi_resource.rg_lock[\"primary-rg\"]",
+		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
+		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
+		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 	}
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
 	for _, v := range resources {
@@ -73,10 +74,11 @@ func TestIntegrationVwan(t *testing.T) {
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
-	v["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualHubs/testhub"
+	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualHubs/testhub"
+	primaryvnet["vwan_connection_enabled"] = true
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = true
-	v["virtual_network_vwan_connection_enabled"] = true
 	terraformOptions.Vars = v
 
 	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
@@ -85,10 +87,10 @@ func TestIntegrationVwan(t *testing.T) {
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
 		"module.subscription[0].azurerm_subscription.this[0]",
-		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"this\"]",
-		"module.virtualnetwork[0].azapi_resource.rg",
-		"module.virtualnetwork[0].azapi_resource.vnet",
-		"module.virtualnetwork[0].azapi_update_resource.vnet",
+		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"primary\"]",
+		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
+		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
+		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 	}
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
 	for _, v := range resources {
@@ -158,11 +160,13 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
-	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
+	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+
+	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
+	primaryvnet["hub_peering_enabled"] = true
 	v["subscription_alias_enabled"] = false
 	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
 	v["virtual_network_enabled"] = true
-	v["virtual_network_peering_enabled"] = true
 	delete(v, "subscription_tags")
 	terraformOptions.Vars = v
 
@@ -171,11 +175,11 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	assert.NoError(t, err)
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
-		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
-		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
-		"module.virtualnetwork[0].azapi_resource.rg",
-		"module.virtualnetwork[0].azapi_resource.vnet",
-		"module.virtualnetwork[0].azapi_update_resource.vnet",
+		"module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.virtualnetwork[0].azapi_resource.peering_hub_outbound[\"primary\"]",
+		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
+		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
+		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
 	}
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
 	for _, v := range resources {
@@ -200,11 +204,12 @@ func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
 	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
-	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
+	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
+	primaryvnet["hub_peering_enabled"] = true
 	v["subscription_alias_enabled"] = false
 	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
 	v["virtual_network_enabled"] = true
-	v["virtual_network_peering_enabled"] = true
 	v["subscription_management_group_association_enabled"] = true
 	v["subscription_management_group_id"] = "Test"
 	delete(v, "subscription_tags")
@@ -215,11 +220,11 @@ func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
 	assert.NoError(t, err)
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
-		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
-		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
-		"module.virtualnetwork[0].azapi_resource.rg",
-		"module.virtualnetwork[0].azapi_resource.vnet",
-		"module.virtualnetwork[0].azapi_update_resource.vnet",
+		"module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.virtualnetwork[0].azapi_resource.peering_hub_outbound[\"primary\"]",
+		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
+		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
+		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
 		"module.subscription[0].azurerm_management_group_subscription_association.this[0]",
 	}
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
@@ -250,15 +255,15 @@ func TestIntegrationWithYaml(t *testing.T) {
 	require.NoErrorf(t, err, "failed to generate plan: %v", err)
 
 	resources := []string{
-		"module.alz_landing_zone[\"%s\"].azapi_resource.telemetry_root[0]",
-		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_update_resource.vnet",
-		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.vnet",
-		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.rg_lock[0]",
-		"module.alz_landing_zone[\"%s\"].module.virtualnetwork[0].azapi_resource.rg",
-		"module.alz_landing_zone[\"%s\"].module.subscription[0].azurerm_subscription.this[0]",
-		"module.alz_landing_zone[\"%s\"].module.subscription[0].azurerm_management_group_subscription_association.this[0]",
-		"module.alz_landing_zone[\"%s\"].module.roleassignment[\"8a6eec3e-78d9-5ff3-89cc-b144ae761a9a\"].azurerm_role_assignment.this",
-		"module.alz_landing_zone[\"%s\"].module.roleassignment[\"7f69efa3-575a-5f8b-a989-c3978b92b58a\"].azurerm_role_assignment.this",
+		"module.lz_vending[\"%s\"].azapi_resource.telemetry_root[0]",
+		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
+		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
+		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_resource.rg_lock[\"primary-rg\"]",
+		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
+		"module.lz_vending[\"%s\"].module.subscription[0].azurerm_subscription.this[0]",
+		"module.lz_vending[\"%s\"].module.subscription[0].azurerm_management_group_subscription_association.this[0]",
+		"module.lz_vending[\"%s\"].module.roleassignment[\"8a6eec3e-78d9-5ff3-89cc-b144ae761a9a\"].azurerm_role_assignment.this",
+		"module.lz_vending[\"%s\"].module.roleassignment[\"7f69efa3-575a-5f8b-a989-c3978b92b58a\"].azurerm_role_assignment.this",
 	}
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources)*3, "expected %d resources to be created, but got %d", len(resources)*3, len(plan.ResourcePlannedValuesMap))
 	lzs := []string{
@@ -282,11 +287,7 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 	defer cleanup()
 	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v := getMockInputVariables()
-	v["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
 	v["subscription_alias_enabled"] = true
-	v["virtual_network_enabled"] = true
-	v["virtual_network_peering_enabled"] = true
-	v["virtual_network_resource_lock_enabled"] = true
 	v["disable_telemetry"] = true
 	terraformOptions.Vars = v
 
@@ -295,12 +296,6 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 	assert.NoError(t, err)
 	resources := []string{
 		"module.subscription[0].azurerm_subscription.this[0]",
-		"module.virtualnetwork[0].azapi_resource.peering[\"inbound\"]",
-		"module.virtualnetwork[0].azapi_resource.peering[\"outbound\"]",
-		"module.virtualnetwork[0].azapi_resource.rg_lock[0]",
-		"module.virtualnetwork[0].azapi_resource.rg",
-		"module.virtualnetwork[0].azapi_resource.vnet",
-		"module.virtualnetwork[0].azapi_update_resource.vnet",
 	}
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
 	for _, v := range resources {
@@ -310,6 +305,7 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 
 func getMockInputVariables() map[string]interface{} {
 	return map[string]interface{}{
+		"location": "northeurope",
 		// subscription variables
 		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/0000000/enrollmentAccounts/000000",
 		"subscription_display_name":  "test-subscription-alias",
@@ -321,10 +317,14 @@ func getMockInputVariables() map[string]interface{} {
 		},
 
 		// virtualnetwork variables
-		"virtual_network_address_space":         []string{"10.1.0.0/24", "172.16.1.0/24"},
-		"virtual_network_location":              "northeurope",
-		"virtual_network_name":                  "testvnet",
-		"virtual_network_resource_group_name":   "testrg",
-		"virtual_network_resource_lock_enabled": false,
+		"virtual_networks": map[string]map[string]interface{}{
+			"primary": {
+				"name":                        "primary-vnet",
+				"address_space":               []string{"192.168.0.0/24"},
+				"location":                    "westeurope",
+				"resource_group_name":         "primary-rg",
+				"resource_group_lock_enabled": false,
+			},
+		},
 	}
 }
