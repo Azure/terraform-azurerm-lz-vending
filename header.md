@@ -11,10 +11,12 @@ This is currently split logically into the following capabilities:
 
 - Subscription creation and management group placement
 - Networking - deploy multiple vnets with:
-  - Hub & spoke connectivity
+  - Hub & spoke connectivity (peering to a hub network)
   - vWAN connectivity
   - Mesh peering (peering between spokes)
 - Role assignments
+
+> When creating virtual network peerings, be aware of the [limit of peerings per virtual network][vnet_peering_limit].
 
 We would like feedback on what's missing in the module.
 Please raise an [issue](https://github.com/Azure/terraform-azurerm-lz-vending/issues) if you have any suggestions.
@@ -100,3 +102,4 @@ module "lz_vending" {
 
 [azurem_provider]: https://registry.terraform.io/providers/hashicorp/azurerm/latest
 [azapi_provider]: https://registry.terraform.io/providers/azure/azapi/latest
+[vnet_peering_limit]: https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits?toc=%2Fazure%2Fvirtual-network%2Ftoc.json#azure-resource-manager-virtual-networking-limits

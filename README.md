@@ -12,10 +12,12 @@ This is currently split logically into the following capabilities:
 
 - Subscription creation and management group placement
 - Networking - deploy multiple vnets with:
-  - Hub & spoke connectivity
+  - Hub & spoke connectivity (peering to a hub network)
   - vWAN connectivity
   - Mesh peering (peering between spokes)
 - Role assignments
+
+> When creating virtual network peerings, be aware of the [limit of peerings per virtual network][vnet\_peering\_limit].
 
 We would like feedback on what's missing in the module.
 Please raise an [issue](https://github.com/Azure/terraform-azurerm-lz-vending/issues) if you have any suggestions.
@@ -101,6 +103,7 @@ module "lz_vending" {
 
 [azurem\_provider]: https://registry.terraform.io/providers/hashicorp/azurerm/latest
 [azapi\_provider]: https://registry.terraform.io/providers/azure/azapi/latest
+[vnet\_peering\_limit]: https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits?toc=%2Fazure%2Fvirtual-network%2Ftoc.json#azure-resource-manager-virtual-networking-limits
 
 ## Documentation
 <!-- markdownlint-disable MD033 -->
@@ -466,20 +469,22 @@ map(object({
     mesh_peering_enabled                 = optional(bool, false)
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
 
-    other_peerings = optional(map(object({
-      remote_network_resource_id            = string
-      name_inbound                          = optional(string, "")
-      name_outbound                         = optional(string, "")
-      outbound_only                         = optional(bool, false)
-      allow_forwarded_traffic_inbound       = optional(bool, true)
-      allow_forwarded_traffic_outbound      = optional(bool, true)
-      allow_gateway_transit_inbound         = optional(bool, false)
-      allow_gateway_transit_outbound        = optional(bool, false)
-      allow_virtual_network_access_inbound  = optional(bool, true)
-      allow_virtual_network_access_outbound = optional(bool, true)
-      use_remote_gateways_inbound           = optional(bool, false)
-      use_remote_gateways_outbound          = optional(bool, false)
-    })), {})
+    # Reserved for future capability
+    #
+    # other_peerings = optional(map(object({
+    #   remote_network_resource_id            = string
+    #   name_inbound                          = optional(string, "")
+    #   name_outbound                         = optional(string, "")
+    #   outbound_only                         = optional(bool, false)
+    #   allow_forwarded_traffic_inbound       = optional(bool, true)
+    #   allow_forwarded_traffic_outbound      = optional(bool, true)
+    #   allow_gateway_transit_inbound         = optional(bool, false)
+    #   allow_gateway_transit_outbound        = optional(bool, false)
+    #   allow_virtual_network_access_inbound  = optional(bool, true)
+    #   allow_virtual_network_access_outbound = optional(bool, true)
+    #   use_remote_gateways_inbound           = optional(bool, false)
+    #   use_remote_gateways_outbound          = optional(bool, false)
+    # })), {})
 
     resource_group_creation_enabled = optional(bool, true)
     resource_group_lock_enabled     = optional(bool, true)
