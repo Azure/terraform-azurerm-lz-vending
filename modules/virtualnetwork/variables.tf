@@ -198,17 +198,19 @@ DESCRIPTION
     error_message = "The vWAN propagated routetables resource id must be an Azure vwan hub routetable resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
   }
 
-  # validate other peering network resource id
-  validation {
-    condition = alltrue(flatten([
-      for k, v in var.virtual_networks :
-      [
-        for k2, v2 in v.other_peerings :
-        can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", v2.remote_network_resource_id))
-      ]
-    ]))
-    error_message = "Other peering remote network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
-  }
+  # Reserved for future functionality
+  #
+  # # validate other peering network resource id
+  # validation {
+  #   condition = alltrue(flatten([
+  #     for k, v in var.virtual_networks :
+  #     [
+  #       for k2, v2 in v.other_peerings :
+  #       can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", v2.remote_network_resource_id))
+  #     ]
+  #   ]))
+  #   error_message = "Other peering remote network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
+  # }
 
   # validate resource groups with creation enabled have unique names.
   validation {
