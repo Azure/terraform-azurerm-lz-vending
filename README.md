@@ -4,7 +4,7 @@
 ## Overview
 
 The landing zone Terraform module is designed to accelerate deployment of individual landing zones within an Azure tenant.
-We use the [AzureRM][azurem\_provider] and [AzAPI][azapi\_provider] providers to create the subscription and deploy the resources in a single `terrafom apply` step.
+We use the [AzureRM](https://registry.terraform.io/providers/hashicorp/azurerm/latest) and [AzAPI](https://registry.terraform.io/providers/azure/azapi/latest) providers to create the subscription and deploy the resources in a single `terrafom apply` step.
 
 The module is designed to be instantiated many times, once for each desired landing zone.
 
@@ -17,7 +17,7 @@ This is currently split logically into the following capabilities:
   - Mesh peering (peering between spokes)
 - Role assignments
 
-> When creating virtual network peerings, be aware of the [limit of peerings per virtual network][vnet\_peering\_limit].
+> When creating virtual network peerings, be aware of the [limit of peerings per virtual network](https://learn.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits?toc=%2Fazure%2Fvirtual-network%2Ftoc.json#azure-resource-manager-virtual-networking-limits).
 
 We would like feedback on what's missing in the module.
 Please raise an [issue](https://github.com/Azure/terraform-azurerm-lz-vending/issues) if you have any suggestions.
@@ -100,10 +100,6 @@ module "lz_vending" {
   ]
 }
 ```
-
-[azurem\_provider]: https://registry.terraform.io/providers/hashicorp/azurerm/latest
-[azapi\_provider]: https://registry.terraform.io/providers/azure/azapi/latest
-[vnet\_peering\_limit]: https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits?toc=%2Fazure%2Fvirtual-network%2Ftoc.json#azure-resource-manager-virtual-networking-limits
 
 ## Documentation
 <!-- markdownlint-disable MD033 -->
@@ -424,10 +420,6 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 
 - `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
 - `mesh_peering_allow_forwarded_traffic`: Whether to allow forwarded traffic for the mesh peering. [optional - default false]
-
-### Other peerings
-
-TODO
 
 ### Resource group values
 
