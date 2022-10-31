@@ -85,10 +85,6 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 - `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
 - `mesh_peering_allow_forwarded_traffic`: Whether to allow forwarded traffic for the mesh peering. [optional - default false]
 
-### Other peerings
-
-TODO
-
 ### Resource group values
 
 A resource group will be created for
