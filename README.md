@@ -393,7 +393,7 @@ Description: A map of the virtual networks to create. The map key must be known 
 ### Required fields
 
 - `name`: The name of the virtual network. [required]
-- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. ["192.168.0.0/24, 10.0.0.0/24"]. [required]
+- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [required]
 - `resource_group_name`: The name of the resource group to create the virtual network in. [required]
 
 ### Location
@@ -453,7 +453,7 @@ map(object({
     resource_group_name = string
 
     hub_network_resource_id         = optional(string, "")
-    hub_peering_enabled             = optional(string, false)
+    hub_peering_enabled             = optional(bool, false)
     hub_peering_name_tohub          = optional(string, "")
     hub_peering_name_fromhub        = optional(string, "")
     hub_peering_use_remote_gateways = optional(bool, true)
