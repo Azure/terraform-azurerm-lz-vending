@@ -45,6 +45,9 @@ resource "azapi_resource" "vnet" {
       addressSpace = {
         addressPrefixes = each.value.address_space
       }
+      dhcpOptions = {
+        dnsServers = each.value.dns_servers
+      }
     }
   })
   tags = each.value.tags
@@ -67,6 +70,9 @@ resource "azapi_update_resource" "vnet" {
     properties = {
       addressSpace = {
         addressPrefixes = each.value.address_space
+      }
+      dhcpOptions = {
+        dnsServers = each.value.dns_servers
       }
     }
     tags = each.value.tags

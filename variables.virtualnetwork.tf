@@ -11,6 +11,8 @@ variable "virtual_networks" {
     location            = string
     resource_group_name = string
 
+    dns_servers = optional(list(string), [])
+
     hub_network_resource_id         = optional(string, "")
     hub_peering_enabled             = optional(bool, false)
     hub_peering_name_tohub          = optional(string, "")
@@ -87,7 +89,11 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 
 ### Resource group values
 
-A resource group will be created for
+The default is that a resource group will be created for each resource_group_name specified in the `var.virtual_networks` map.
+It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.
+We recommend using resource groups aligned to the region of the virtual network,
+however if you want multiple virtual networks in more than one location to share a resource group,
+only one of the virtual networks should have `resource_group_creation_enabled` set to `true`.
 
 - `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default true]
 - `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default true]
