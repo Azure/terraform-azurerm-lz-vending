@@ -398,7 +398,7 @@ Description: A map of the virtual networks to create. The map key must be known 
 
 ### DNS servers
 
-- `dns_servers`: A list of DNS servers to use for the virtual network, e.g. `["192.168.0.1/24", "10.0.0.1/24"]`. If empty will use the Azure default DNS. [optional - default empty list]
+- `dns_servers`: A list of DNS servers to use for the virtual network, e.g. `["192.168.0.1", "10.0.0.1"]`. If empty will use the Azure default DNS. [optional - default empty list]
 
 ### Location
 
