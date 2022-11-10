@@ -8,8 +8,9 @@ variable "virtual_networks" {
   type = map(object({
     name                = string
     address_space       = list(string)
-    location            = string
     resource_group_name = string
+
+    location = optional(string, "")
 
     dns_servers = optional(list(string), [])
 
@@ -61,6 +62,10 @@ A map of the virtual networks to create. The map key must be known at the plan s
 - `name`: The name of the virtual network. [required]
 - `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [required]
 - `resource_group_name`: The name of the resource group to create the virtual network in. [required]
+
+### DNS servers
+
+- `dns_servers`: A list of DNS servers to use for the virtual network, e.g. `["192.168.0.1/24", "10.0.0.1/24"]`. If empty will use the Azure default DNS. [optional - default empty list]
 
 ### Location
 
