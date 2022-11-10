@@ -103,7 +103,7 @@ func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
 		require.Containsf(t, vnet.AttributeValues, "body", "virtual network %s does not contain body", k)
 		err = json.Unmarshal([]byte(vnet.AttributeValues["body"].(string)), &vnb)
 		require.NoErrorf(t, err, "Could not unmarshal virtual network body")
-		require.NotNil(t, vnb.Properties.DhcpOptions)
+		require.NotNilf(t, vnb.Properties.DhcpOptions, "virtual network %s does not contain DHCP options", k)
 		assert.Equalf(t, v["dns_servers"], vnb.Properties.DhcpOptions.DnsServers, "virtual network %s DNS servers don't match", k)
 	}
 }
