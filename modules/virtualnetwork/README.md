@@ -91,7 +91,7 @@ Description: A map of the virtual networks to create. The map key must be known 
 
 The following values configure bi-directional hub & spoke peering for the given virtual network.
 
-- `hub_peering_enabled`: Whether to enable hub peering. [optional - default false]
+- `hub_peering_enabled`: Whether to enable hub peering. [optional - default `false`]
 - `hub_network_resource_id`: The resource ID of the hub network to peer with. [optional - but required if hub\_peering\_enabled is `true`]
 - `hub_peering_name_tohub`: The name of the peering to the hub network. [optional - leave empty to use calculated name]
 - `hub_peering_name_fromhub`: The name of the peering from the hub network. [optional - leave empty to use calculated name]
