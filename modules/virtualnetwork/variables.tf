@@ -114,8 +114,8 @@ We recommend using resource groups aligned to the region of the virtual network,
 however if you want multiple virtual networks in more than one location to share a resource group,
 only one of the virtual networks should have `resource_group_creation_enabled` set to `true`.
 
-- `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default true]
-- `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default true]
+- `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default `true`]
+- `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default `true`]
 - `resource_group_lock_name`: The name of the resource lock. [optional - leave empty to use calculated name]
 - `resource_group_tags`: A map of tags to apply to the resource group, e.g. `{ mytag = "myvalue", mytag2 = "myvalue2" }`. [optional - default empty]
 
