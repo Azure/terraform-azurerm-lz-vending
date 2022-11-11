@@ -74,7 +74,11 @@ Description: A map of the virtual networks to create. The map key must be known 
 
 - `name`: The name of the virtual network. [required]
 - `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [required]
-- `resource_group_name`: The name of the resource group to create the virtual network in. [required]
+- `resource_group_name`: The name of the resource group to create the virtual network in. The default is that the resource group will be created by this module. [required]
+
+### DNS servers
+
+- `dns_servers`: A list of DNS servers to use for the virtual network, e.g. `["192.168.0.1", "10.0.0.1]`. If empty will use the Azure default DNS. [optional - default empty list]
 
 ### Location
 
@@ -87,7 +91,7 @@ Description: A map of the virtual networks to create. The map key must be known 
 
 The following values configure bi-directional hub & spoke peering for the given virtual network.
 
-- `hub_peering_enabled`: Whether to enable hub peering. [optional]
+- `hub_peering_enabled`: Whether to enable hub peering. [optional - default `false`]
 - `hub_network_resource_id`: The resource ID of the hub network to peer with. [optional - but required if hub\_peering\_enabled is `true`]
 - `hub_peering_name_tohub`: The name of the peering to the hub network. [optional - leave empty to use calculated name]
 - `hub_peering_name_fromhub`: The name of the peering from the hub network. [optional - leave empty to use calculated name]
@@ -103,10 +107,14 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 
 ### Resource group values
 
-A resource group will be created for
+The default is that a resource group will be created for each resource\_group\_name specified in the `var.virtual_networks` map.  
+It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.  
+We recommend using resource groups aligned to the region of the virtual network,  
+however if you want multiple virtual networks in more than one location to share a resource group,  
+only one of the virtual networks should have `resource_group_creation_enabled` set to `true`.
 
-- `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default true]
-- `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default true]
+- `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default `true`]
+- `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default `true`]
 - `resource_group_lock_name`: The name of the resource lock. [optional - leave empty to use calculated name]
 - `resource_group_tags`: A map of tags to apply to the resource group, e.g. `{ mytag = "myvalue", mytag2 = "myvalue2" }`. [optional - default empty]
 

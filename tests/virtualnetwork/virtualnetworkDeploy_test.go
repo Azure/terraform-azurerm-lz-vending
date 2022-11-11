@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
+// TestDeployVirtualNetworkValid tests the deployment of virtual networks
 // with valid input variables.
 func TestDeployVirtualNetworkValid(t *testing.T) {
 	utils.PreCheckDeployTests(t)
@@ -28,6 +28,51 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
+	terraformOptions.Vars = v
+
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	require.NoError(t, err)
+	numres := 8
+	require.Lenf(t, plan.ResourcePlannedValuesMap, numres, "expected %d resources, got %d", numres, len(plan.ResourcePlannedValuesMap))
+
+	resources := []string{
+		"azapi_resource.vnet[\"primary\"]",
+		"azapi_resource.vnet[\"secondary\"]",
+		"azapi_update_resource.vnet[\"primary\"]",
+		"azapi_update_resource.vnet[\"secondary\"]",
+	}
+	for _, r := range resources {
+		terraform.RequirePlannedValuesMapKeyExists(t, plan, r)
+	}
+
+	// defer terraform destroy, but wrap in a try.Do to retry a few times
+	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
+	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+	assert.NoError(t, err)
+
+	// check there two outputs for the virtual network resource ids
+	vnri, err := terraform.OutputMapE(t, terraformOptions, "virtual_network_resource_ids")
+	require.NoErrorf(t, err, "could not get virtual_network_resource_ids output, %s", err)
+	assert.Lenf(t, vnri, 2, "expected 2 virtual networks, got %d", len(vnri))
+}
+
+// TestDeployVirtualNetworkValidCustomDns tests the deployment of virtual networks
+// with valid input variables and custom DNS servers.
+func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
+	utils.PreCheckDeployTests(t)
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+
+	v, err := getValidInputVariables()
+	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
+	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["secondary"]
+	primaryvnet["dns_servers"] = []string{"192.168.0.250", "192.168.0.251"}
+	secondaryvnet["dns_servers"] = []string{"192.168.1.250", "192.168.1.251"}
 	terraformOptions.Vars = v
 
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)

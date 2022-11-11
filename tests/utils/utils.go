@@ -161,6 +161,7 @@ func CreateTerraformProvidersFile(dir string) error {
 	if err != nil {
 		return fmt.Errorf("error creating providers.tf: %v", err)
 	}
+	defer f.Close()
 	providerstf := `
 provider "azurerm" {
   features {}

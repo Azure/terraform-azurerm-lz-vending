@@ -73,6 +73,41 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	}
 }
 
+// TestVirtualNetworkCreateValid tests the creation of a plan that
+// creates two virtual networks in the specified resource groups with custom DNS servers.
+func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	secondaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["secondary"]
+	primaryvnet["dns_servers"] = []string{"1.2.3.4", "4.3.2.1"}
+	secondaryvnet["dns_servers"] = []string{}
+	terraformOptions.Vars = vars
+
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+	// want 8 resources, like TestVirtualNetworkCreateValid
+	numres := 8
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+
+	// Loop through each virtual network and check the values
+	vns := vars["virtual_networks"].(map[string]map[string]interface{})
+	for k, v := range vns {
+		vnet := plan.ResourcePlannedValuesMap[fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)]
+		var vnb models.VirtualNetworkBody
+		require.Containsf(t, vnet.AttributeValues, "body", "virtual network %s does not contain body", k)
+		err = json.Unmarshal([]byte(vnet.AttributeValues["body"].(string)), &vnb)
+		require.NoErrorf(t, err, "Could not unmarshal virtual network body")
+		require.NotNilf(t, vnb.Properties.DhcpOptions, "virtual network %s does not contain DHCP options", k)
+		assert.Equalf(t, v["dns_servers"], vnb.Properties.DhcpOptions.DnsServers, "virtual network %s DNS servers don't match", k)
+	}
+}
+
 // TestVirtualNetworkCreateValidWithTags tests the creation of a plan that
 // creates two virtual networks in the specified resource groups with tags on vnet and rg.
 func TestVirtualNetworkCreateValidWithTags(t *testing.T) {

@@ -8,9 +8,15 @@ type VirtualNetworkBody struct {
 // VirtualNetworkBodyProperties represents the JSON property bag of a virtualNetwork.
 type VirtualNetworkBodyProperties struct {
 	AddressSpace *VirtualNetworkBodyPropertiesAddressSpace `json:"addressSpace"`
+	DhcpOptions  *VirtualNetworkBodyPropertiesDhcpOptions  `json:"dhcpOptions"`
 }
 
 // VirtualNetworkBodyPropertiesAddressSpace represents the JSON addressSpace of a virtualNetwork.
 type VirtualNetworkBodyPropertiesAddressSpace struct {
 	AddressPrefixes []string `json:"addressPrefixes"`
+}
+
+// VirtualNetworkBodyPropertiesDhcpOptions represents the JSON dhcpOptions of a virtualNetwork.
+type VirtualNetworkBodyPropertiesDhcpOptions struct {
+	DnsServers []string `json:"dnsServers"`
 }
