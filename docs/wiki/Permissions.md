@@ -49,6 +49,8 @@ We recommend that you create a custom role in order to maintain the least privil
 | `Microsoft.Network/virtualNetworks/virtualNetworkPeerings/read` | Read a virtual network peering |
 | `Microsoft.Network/virtualNetworks/virtualNetworkPeerings/delete` | Delete a virtual network peering |
 
+See the [documentation](https://learn.microsoft.com/azure/virtual-network/virtual-network-manage-peering?tabs=peering-portal#permissions) for more information.
+
 #### Azure vWAN hub virtual network connection
 
 The identity assigned to the AzAPI provider must also have the following permissions on hub networks to create virtual network connections.
