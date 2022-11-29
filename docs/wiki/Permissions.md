@@ -37,6 +37,25 @@ This sub-module manages the following resources using the AzAPI provider:
 These resources are deployed into the new or the supplied subscription.
 The identity of the AzAPI provider must have permission to create these resources.
 
+#### Hub virtual network peering
+
+The identity assigned to the AzAPI provider must also have the following permissions on hub networks to create virtual network peerings.
+We recommend that you create a custom role in order to maintain the least privilege principle.
+
+| Action | Name |
+| - | - |
+| `Microsoft.Network/virtualNetworks/virtualNetworkPeerings/write` | Required to create a peering from the supplied hub network. |
+| `Microsoft.Network/virtualNetworks/peer/action` | Required to create a peering from the supplied hub network. |
+| `Microsoft.Network/virtualNetworks/virtualNetworkPeerings/read` | Read a virtual network peering |
+| `Microsoft.Network/virtualNetworks/virtualNetworkPeerings/delete` | Delete a virtual network peering |
+
+#### Azure vWAN hub virtual network connection
+
+The identity assigned to the AzAPI provider must also have the following permissions on hub networks to create virtual network connections.
+We recommend that you create a custom tole in order to maintain the least privilege principle.
+
+> TBC
+
 ### Role assignments sub-module
 
 This sub-module manages the following resources using the AzureRM provider:
