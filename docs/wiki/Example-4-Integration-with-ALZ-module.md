@@ -6,6 +6,17 @@ The below example steps through a sample configuration.
 
 In the below sample, `strict_subscription_association` is set to `false`. This means that the ALZ module is not authoritative for each subscription that is a member of a management group that it created. The result is that the lz-vending module can add subscriptions to these management groups and the ALZ module will not attempt to remove them.
 
+### Avoiding circular dependencies
+
+We recommend that you only create dependencies between the ALZ module and the lz-vending module in one direction.
+Typically this would be that the lz-vending module depends on the ALZ module, for example to supply the resource IDs for the vWAN hubs or the hub virtual networks.
+
+Creating a dependency in the other direction, for example to supply the resource IDs for the virtual networks to the ALZ module (for the `spoke_network_resource_ids` value in the hub network configuration), can lead to circular dependencies.
+Instead we recommend using the lz-vending module to create the central resources, e.g. peerings.
+If the lz-vending module is not able to meet your requirements, then please open a [feature request](https://github.com/Azure/terraform-azurerm-lz-vending/issues/new/choose).
+
+### Example
+
 ```terraform
 module "alz" {
   source  = "Azure/caf-enterprise-scale/azurerm"
