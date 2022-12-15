@@ -1,7 +1,7 @@
 ---
 name: "Bug report \U0001F41B"
 about: Report errors or unexpected behaviour
-title: 'Bug Report'
+title: 'bug: '
 assignees: ''
 ---
 
@@ -19,21 +19,21 @@ assignees: ''
 
 <!-- Please tell us the versions of terraform, azure provider and this module you are using, to help us replicate the issue. -->
 
-**terraform**:
+Please paste the output of `terraform version` command from within the initialized directory:
 
-**azure provider**:
+```text
+<output of terraform version>
+```
 
-**module**:
+Please enter the module version that you are using:
+
+```text
+<module version>
+```
 
 ### Description
 
-#### Describe the bug
-
-<!-- A clear and concise description of what the bug is. -->
-
 #### Steps to Reproduce
-
-<!-- Please provide detailed steps for reproducing the issue. -->
 
 1. step 1
 2. step 2
