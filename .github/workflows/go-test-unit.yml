@@ -76,6 +76,7 @@ jobs:
         run: |
           CORES="$(grep -Pc '^processor\t' /proc/cpuinfo)"
           ((DOUBLE=CORES*2))
+          echo "Setting GOMAXPROCS to $DOUBLE"
           echo "GOMAXPROCS=$DOUBLE" >> "$GITHUB_ENV"
 
       - name: Go test
