@@ -107,7 +107,7 @@ func newDefaultAzureCredential() (azcore.TokenCredential, error) {
 
 	useoidc := multiEnvDefault([]string{"USE_OIDC", "ARM_USE_OIDC"}, "")
 	if useoidc != "" {
-		o := OidcCredential{
+		o := oidcCredential{
 			oidcTokenRequestUrl:   multiEnvDefault([]string{"ARM_OIDC_REQUEST_URL", "ACTIONS_ID_TOKEN_REQUEST_URL"}, ""),
 			oidcTokenRequestToken: multiEnvDefault([]string{"ARM_OIDC_REQUEST_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_TOKEN"}, ""),
 		}

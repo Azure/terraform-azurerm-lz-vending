@@ -9,11 +9,11 @@ import (
 	"net/url"
 )
 
-type OidcCredential struct {
+type oidcCredential struct {
 	assertion, oidcTokenRequestUrl, oidcTokenRequestToken string
 }
 
-func (o *OidcCredential) getAssertion(c context.Context) (string, error) {
+func (o *oidcCredential) getAssertion(c context.Context) (string, error) {
 	req, err := http.NewRequestWithContext(c, http.MethodGet, o.oidcTokenRequestUrl, http.NoBody)
 	if err != nil {
 		return "", fmt.Errorf("oidc: failed to create new request")
