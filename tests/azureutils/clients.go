@@ -88,8 +88,9 @@ func NewManagementGroupSubscriptionsClient() (*armmanagementgroups.ManagementGro
 }
 
 // newDefaultAzureCredential creates a new default AzureCredential using
-// azidentity.NewDefaultAzureCredential.
-func newDefaultAzureCredential() (*azidentity.DefaultAzureCredential, error) {
+// OIDC or azidentity.NewDefaultAzureCredential.
+// OIDC is used if the environment variable USE_OIDC or ARM_USE_OIDC is set to non-empty.
+func newDefaultAzureCredential() (azcore.TokenCredential, error) {
 	// Select the Azure cloud from the AZURE_ENVIRONMENT env var
 	var cloudConfig cloud.Configuration
 	env := os.Getenv("AZURE_ENVIRONMENT")
@@ -104,15 +105,43 @@ func newDefaultAzureCredential() (*azidentity.DefaultAzureCredential, error) {
 		cloudConfig = cloud.AzurePublic
 	}
 
-	// Get default credentials, this will look for the well-known environment variables,
-	// managed identity credentials, and az cli credentials
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: cloudConfig,
-		},
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create Azure credential: %v", err)
+	useoidc := multiEnvDefault([]string{"USE_OIDC", "ARM_USE_OIDC"}, "")
+	if useoidc != "" {
+		o := OidcCredential{
+			oidcTokenRequestUrl:   multiEnvDefault([]string{"ARM_OIDC_REQUEST_URL", "ACTIONS_ID_TOKEN_REQUEST_URL"}, ""),
+			oidcTokenRequestToken: multiEnvDefault([]string{"ARM_OIDC_REQUEST_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_TOKEN"}, ""),
+		}
+		cid := multiEnvDefault([]string{"ARM_CLIENT_ID", "AZURE_CLIENT_ID"}, "")
+		tid := multiEnvDefault([]string{"ARM_TENANT_ID", "AZURE_TENANT_ID"}, "")
+		cred, err := azidentity.NewClientAssertionCredential(tid, cid, o.getAssertion, &azidentity.ClientAssertionCredentialOptions{
+			ClientOptions: azcore.ClientOptions{
+				Cloud: cloudConfig,
+			},
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create oidc credential: %v", err)
+		}
+		return cred, nil
+	} else {
+		// Get default credentials, this will look for the well-known environment variables,
+		// managed identity credentials, and az cli credentials
+		cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
+			ClientOptions: azcore.ClientOptions{
+				Cloud: cloudConfig,
+			},
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create Azure credential: %v", err)
+		}
+		return cred, nil
 	}
-	return cred, nil
+}
+
+func multiEnvDefault(envs []string, dv string) string {
+	for _, e := range envs {
+		if v := os.Getenv(e); v != "" {
+			return v
+		}
+	}
+	return dv
 }
