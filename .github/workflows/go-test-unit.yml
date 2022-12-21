@@ -74,9 +74,9 @@ jobs:
 
       - name: Set GOMAXPROCS to 2 * number of cores
         run: |
-          declare -i CORES=$(grep -Pc '^processor\t' /proc/cpuinfo)
-          ((DOUBLE=$CORES*2))
-          echo "GOMAXPROCS=$DOUBLE" >> $GITHUB_ENV
+          CORES=$(grep -Pc '^processor\t' /proc/cpuinfo)
+          ((DOUBLE=CORES*2))
+          echo "GOMAXPROCS=\"$DOUBLE\"" >> $GITHUB_ENV
 
       - name: Go test
         run: make TESTARGS='-v' TESTFILTER='${{ github.event.inputs.test_filter }}' test
