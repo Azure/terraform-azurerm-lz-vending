@@ -22,6 +22,7 @@ const (
 // TestIntegrationHubAndSpoke tests the resource plan when creating a new subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpoke(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -67,6 +68,7 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 // with a new virtual network and vwan connection to a supplied vhub.
 // RG resource lock is disabled
 func TestIntegrationVwan(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -110,6 +112,7 @@ func TestIntegrationVwan(t *testing.T) {
 // This tests that the depends_on property of the roleassignments module is working
 // when a dependent resource is disabled through the use of count.
 func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -153,6 +156,7 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 // TestIntegrationHubAndSpokeExistingSubscription tests the resource plan when supplying an existing subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -197,6 +201,7 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 // TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc tests the resource plan when supplying an existing subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -243,6 +248,7 @@ func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
 // TestIntegrationWithYaml tests the use of the module with a for_each loop
 // using YAML files as input.
 func TestIntegrationWithYaml(t *testing.T) {
+	t.Parallel()
 	testDir := "testdata/" + t.Name()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
 	defer cleanup()
@@ -282,6 +288,7 @@ func TestIntegrationWithYaml(t *testing.T) {
 // TestIntegrationHubAndSpoke tests the resource plan when creating a new subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationDisableTelemetry(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
 	defer cleanup()
