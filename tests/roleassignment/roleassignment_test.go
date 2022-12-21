@@ -15,6 +15,7 @@ const (
 )
 
 func TestRoleAssignmentValidWithRoleName(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -36,6 +37,7 @@ func TestRoleAssignmentValidWithRoleName(t *testing.T) {
 }
 
 func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -60,6 +62,7 @@ func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
 // TestRoleAssignmentInvalidScopes tests that the module will not accept a tenant
 // or management group scope for the role assignment.
 func TestRoleAssignmentInvalidScopes(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)

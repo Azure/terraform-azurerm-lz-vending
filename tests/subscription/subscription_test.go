@@ -17,6 +17,7 @@ const (
 // TestSubscriptionAliasCreateValid tests the validation functions with valid data,
 // then creates a plan and compares the input variables to the planned values.
 func TestSubscriptionAliasCreateValid(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -50,6 +51,7 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 // validation functions with valid data, including a destination management group,
 // then creates a plan and compares the input variables to the planned values.
 func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -89,6 +91,7 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 // validation functions with an existing subscription id, including a destination management group,
 // then creates a plan and compares the input variables to the planned values.
 func TestSubscriptionExistingWithManagementGroup(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -116,6 +119,7 @@ func TestSubscriptionExistingWithManagementGroup(t *testing.T) {
 
 // TestSubscriptionAliasCreateInvalidBillingScope tests the validation function of the subscription_billing_scope variable.
 func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -133,6 +137,7 @@ func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
 
 // TestSubscriptionAliasCreateInvalidWorkload tests the validation function of the subscription_workload variable.
 func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -151,6 +156,7 @@ func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
 // TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars tests the validation function of the
 // subscription_alias_management_group_id variable.
 func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -169,6 +175,7 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.
 // TestSubscriptionAliasCreateInvalidManagementGroupIdLength tests the validation function of the
 // subscription_alias_management_group_id variable.
 func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)

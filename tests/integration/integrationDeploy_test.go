@@ -17,6 +17,7 @@ import (
 )
 
 func TestDeployIntegrationHubAndSpoke(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)

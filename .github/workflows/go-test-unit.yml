@@ -72,6 +72,13 @@ jobs:
         with:
           go-version: '1.18.x'
 
+      - name: Set GOMAXPROCS to 2 * number of cores
+        run: |
+          CORES="$(grep -Pc '^processor\t' /proc/cpuinfo)"
+          ((DOUBLE=CORES*2))
+          echo "Setting GOMAXPROCS to $DOUBLE"
+          echo "GOMAXPROCS=$DOUBLE" >> "$GITHUB_ENV"
+
       - name: Go test
         run: make TESTARGS='-v' TESTFILTER='${{ github.event.inputs.test_filter }}' test
         env:
