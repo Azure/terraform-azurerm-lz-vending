@@ -18,6 +18,7 @@ import (
 // TestDeployVirtualNetworkValid tests the deployment of virtual networks
 // with valid input variables.
 func TestDeployVirtualNetworkValid(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
@@ -59,6 +60,7 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 // TestDeployVirtualNetworkValidCustomDns tests the deployment of virtual networks
 // with valid input variables and custom DNS servers.
 func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
@@ -104,6 +106,7 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 // TestDeployVirtualNetworkValidVnetPeering tests the deployment of a virtual network
 // with bidirectional peering to a hub virtual network.
 func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
@@ -153,6 +156,7 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 // TestDeployVirtualNetworkValidVhubConnection tests the deployment of a virtual network
 // with a virtual WAN connection.
 func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
@@ -201,6 +205,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 // to the subnet configuration outside the module and that subsequent runs of terraform apply
 // are idempotent. See main.tf file in the testdata directory for more details.
 func TestDeployVirtualNetworkSubnetIdempotency(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
@@ -238,6 +243,7 @@ func TestDeployVirtualNetworkSubnetIdempotency(t *testing.T) {
 // TestDeployVirtualNetworkValidMeshPeering tests the deployment of virtual networks
 // with mesh peering enables.
 func TestDeployVirtualNetworkValidMeshPeering(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()

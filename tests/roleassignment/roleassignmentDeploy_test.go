@@ -16,6 +16,7 @@ import (
 // TestDeployRoleAssignmentDefinitionName tests the deployment of a role assignment
 // by defining the role definition name
 func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
@@ -45,6 +46,7 @@ func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
 // TestDeployRoleAssignmentDefinitionId tests the deployment of a role assignment
 // by defining a role definition id
 func TestDeployRoleAssignmentDefinitionId(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)

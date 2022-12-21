@@ -18,6 +18,7 @@ import (
 // TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
 // with valid input variables.
 func TestDeploySubscriptionAliasValid(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
@@ -64,6 +65,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 // TestDeploySubscriptionAliasManagementGroupValid tests the deployment of a subscription alias
 // with valid input variables.
 func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
+	t.Parallel()
 	utils.PreCheckDeployTests(t)
 
 	testDir := "testdata/" + t.Name()

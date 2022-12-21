@@ -20,6 +20,7 @@ const (
 // TestVirtualNetworkCreateValid tests the creation of a plan that
 // creates two virtual networks in the specified resource groups.
 func TestVirtualNetworkCreateValid(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -76,6 +77,7 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 // TestVirtualNetworkCreateValid tests the creation of a plan that
 // creates two virtual networks in the specified resource groups with custom DNS servers.
 func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -111,6 +113,7 @@ func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
 // TestVirtualNetworkCreateValidWithTags tests the creation of a plan that
 // creates two virtual networks in the specified resource groups with tags on vnet and rg.
 func TestVirtualNetworkCreateValidWithTags(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -152,6 +155,7 @@ func TestVirtualNetworkCreateValidWithTags(t *testing.T) {
 // TestVirtualNetworkCreateValidWithMeshPeering tests the creation of a plan that
 // creates two virtual networks in the specified resource groups with mesh peering.
 func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -206,6 +210,7 @@ func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 // creates two virtual networks in the specified resource groups with mesh peering
 // enabled on only one of the two vnets.
 func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -228,6 +233,7 @@ func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
 // TestVirtualNetworkCreateValidSameRg tests the creation of a plan that
 // creates two virtual networks in the same resource group.
 func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -252,6 +258,7 @@ func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
 // TestVirtualNetworkCreateValidSameRgSameLocation tests the creation of a plan that
 // creates two virtual networks in the same resource group in the same location.
 func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -275,6 +282,7 @@ func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
 // TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
 // creates a virtual network with bidirectional peering to a hub.
 func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -323,6 +331,7 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 // TestVirtualNetworkCreateValidWithPeeringCustomNames tests the creation of a plan that
 // creates a virtual network with bidirectional peering to a hub, with custom names for peers.
 func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -366,6 +375,7 @@ func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
 // tests the creation of a plan that configured the outbound peering
 // with useRemoteGateways disabled.
 func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -403,6 +413,7 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 // TestVirtualNetworkCreateValidWithVhub tests the creation of a plan that
 // creates a virtual network with a vhub connection.
 func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -447,6 +458,7 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 // TestVirtualNetworkCreateValidWithVhubCustomRouting tests the creation of a plan that
 // creates a virtual network with a vhub connection with custom routing.
 func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -497,6 +509,7 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 // TestVirtualNetworkCreateInvalidHubNetResId tests the regex of the
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -515,6 +528,7 @@ func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {
 // TestVirtualNetworkCreateInvalidVhubResId tests the regex of the
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -532,6 +546,7 @@ func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
 
 // TestVirtualNetworkCreateZeroLengthAddressSpace tests the length of address_space > 0
 func TestVirtualNetworkCreateZeroLengthAddressSpace(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -548,6 +563,7 @@ func TestVirtualNetworkCreateZeroLengthAddressSpace(t *testing.T) {
 
 // TestVirtualNetworkCreateInvalidAddressSpace tests a valid CIDR address space is used
 func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
@@ -566,6 +582,7 @@ func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
 // when using vnets in multiple locaitons that share a resoruce group.
 // NOTE - this is not a recommended deployment pattern.
 func TestVirtualNetworkCreateInvalidResourceGroupCreation(t *testing.T) {
+	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
 	defer cleanup()
 	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
