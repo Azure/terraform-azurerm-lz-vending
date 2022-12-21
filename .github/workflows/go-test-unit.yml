@@ -74,7 +74,7 @@ jobs:
 
       - name: Set GOMAXPROCS to 2 * number of cores
         run: |
-          CORES=$(grep -Pc '^processor\t' /proc/cpuinfo)
+          CORES="$(grep -Pc '^processor\t' /proc/cpuinfo)"
           ((DOUBLE=CORES*2))
           echo "GOMAXPROCS=\"$DOUBLE\"" >> $GITHUB_ENV
 
