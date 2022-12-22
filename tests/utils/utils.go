@@ -73,13 +73,14 @@ func GetDefaultTerraformOptions(t *testing.T, dir string) *terraform.Options {
 		dir += "/"
 	}
 	pf := dir + "tfplan"
-	return &terraform.Options{
+	o := terraform.Options{
 		Logger:       GetLogger(),
 		NoColor:      true,
 		PlanFilePath: pf,
 		TerraformDir: dir,
 		Vars:         make(map[string]interface{}),
 	}
+	return terraform.WithDefaultRetryableErrors(t, &o)
 }
 
 // GetTestDir returns the directory of the test file.
