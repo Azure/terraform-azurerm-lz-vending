@@ -18,8 +18,8 @@ cloud.google.com/go/longrunning v0.3.0 h1:NjljC+FYPV3uh5/OwWT6pVU+doBqMg2x/rZlE+
 cloud.google.com/go/storage v1.28.0 h1:DLrIZ6xkeZX6K70fU/boWx5INJumt6f+nwwWSHXzzGY=
 cloud.google.com/go/storage v1.28.0/go.mod h1:qlgZML35PXA3zoEnIkiPLY4/TOkUleufRlu6qmcf7sI=
 github.com/Azure/azure-sdk-for-go v50.2.0+incompatible h1:w9EF1btRfLLWbNEp6XvkMjeA6nQ3e1GZ2KNDqB/SjOQ=
-github.com/Azure/azure-sdk-for-go/sdk/azcore v1.2.0 h1:sVW/AFBTGyJxDaMYlq0ct3jUXTtj12tQ6zE2GZUgVQw=
-github.com/Azure/azure-sdk-for-go/sdk/azcore v1.2.0/go.mod h1:uGG2W01BaETf0Ozp+QxxKJdMBNRWPdstHG0Fmdwn1/U=
+github.com/Azure/azure-sdk-for-go/sdk/azcore v1.3.0 h1:VuHAcMq8pU1IWNT/m5yRaGqbK0BiQKHT8X4DTp9CHdI=
+github.com/Azure/azure-sdk-for-go/sdk/azcore v1.3.0/go.mod h1:tZoQYdDZNOiIjdSn0dVWVfl0NEPGOJqVLzSrcFk4Is0=
 github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.2.0 h1:t/W5MYAuQy81cvM8VUNfRLzhtKpXhVUAN7Cd7KVbTyc=
 github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.2.0/go.mod h1:NBanQUfSWiWn3QEpWDTCU0IjBECKOYvl2R8xdRtMtiM=
 github.com/Azure/azure-sdk-for-go/sdk/internal v1.1.1 h1:Oj853U9kG+RLTCQXpjvOnrv0WaZHxgmZz1TlLywgOPY=
