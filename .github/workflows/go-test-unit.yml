@@ -3,7 +3,7 @@ name: Unit test
 
 on:
   pull_request_target:
-    types: ['opened', 'reopened', 'synchronize']
+    types: ['opened', 'reopened', 'synchronize', 'labeled']
   workflow_dispatch:
     inputs:
       test_filter:
