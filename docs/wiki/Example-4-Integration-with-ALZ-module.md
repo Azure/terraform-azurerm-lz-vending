@@ -15,6 +15,18 @@ Creating a dependency in the other direction, for example to supply the resource
 Instead we recommend using the lz-vending module to create the central resources, e.g. peerings.
 If the lz-vending module is not able to meet your requirements, then please open a [feature request](https://github.com/Azure/terraform-azurerm-lz-vending/issues/new/choose).
 
+```mermaid
+C4Component
+  title Dependencies between ALZ core module and lz-vending
+  Container(SystemAlz, "ALZ core module (caf-enterprise-scale)", "Module to deploy the ALZ platfom.")
+  Container(SystemLzVending, "Subscription vending module (lz-vending)", "Module to deploy landing zone subscriptions.")
+
+  Rel(SystemAlz, SystemLzVending, "Supplies platform resource ids to", "data")
+
+  UpdateLayoutConfig($c4ShapeInRow="1", $c4BoundaryInRow="1")
+  UpdateRelStyle(SystemAlz, SystemLzVending, $textColor="gray", $lineColor="gray", $offsetY="-10")
+```
+
 ### Example
 
 ```terraform
