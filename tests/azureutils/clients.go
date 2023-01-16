@@ -105,39 +105,31 @@ func newDefaultAzureCredential() (azcore.TokenCredential, error) {
 		cloudConfig = cloud.AzurePublic
 	}
 
-	useoidc := multiEnvDefault([]string{"USE_OIDC", "ARM_USE_OIDC"}, "")
+	useoidc := multiEnvDefault("", "USE_OIDC", "ARM_USE_OIDC")
 	if useoidc != "" {
-		o := oidcCredential{
-			oidcTokenRequestUrl:   multiEnvDefault([]string{"ARM_OIDC_REQUEST_URL", "ACTIONS_ID_TOKEN_REQUEST_URL"}, ""),
-			oidcTokenRequestToken: multiEnvDefault([]string{"ARM_OIDC_REQUEST_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_TOKEN"}, ""),
-		}
-		cid := multiEnvDefault([]string{"ARM_CLIENT_ID", "AZURE_CLIENT_ID"}, "")
-		tid := multiEnvDefault([]string{"ARM_TENANT_ID", "AZURE_TENANT_ID"}, "")
-		cred, err := azidentity.NewClientAssertionCredential(tid, cid, o.getAssertion, &azidentity.ClientAssertionCredentialOptions{
+		return NewOidcCredential(&OidcCredentialOptions{
 			ClientOptions: azcore.ClientOptions{
 				Cloud: cloudConfig,
 			},
+			TenantID:      multiEnvDefault("", "ARM_TENANT_ID", "AZURE_TENANT_ID"),
+			ClientID:      multiEnvDefault("", "ARM_CLIENT_ID", "AZURE_CLIENT_ID"),
+			RequestToken:  multiEnvDefault("", "ARM_OIDC_REQUEST_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_TOKEN"),
+			RequestUrl:    multiEnvDefault("", "ARM_OIDC_REQUEST_URL", "ACTIONS_ID_TOKEN_REQUEST_URL"),
+			Token:         multiEnvDefault("", "ARM_OIDC_TOKEN"),
+			TokenFilePath: multiEnvDefault("", "ARM_OIDC_TOKEN_FILE_PATH"),
 		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create oidc credential: %v", err)
-		}
-		return cred, nil
-	} else {
-		// Get default credentials, this will look for the well-known environment variables,
-		// managed identity credentials, and az cli credentials
-		cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-			ClientOptions: azcore.ClientOptions{
-				Cloud: cloudConfig,
-			},
-		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create Azure credential: %v", err)
-		}
-		return cred, nil
 	}
+
+	// Get default credentials, this will look for the well-known environment variables,
+	// managed identity credentials, and az cli credentials
+	return azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
+		ClientOptions: azcore.ClientOptions{
+			Cloud: cloudConfig,
+		},
+	})
 }
 
-func multiEnvDefault(envs []string, dv string) string {
+func multiEnvDefault(dv string, envs ...string) string {
 	for _, e := range envs {
 		if v := os.Getenv(e); v != "" {
 			return v
