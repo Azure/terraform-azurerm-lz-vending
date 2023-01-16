@@ -14,6 +14,7 @@ const (
 	moduleDir = "../../modules/roleassignment"
 )
 
+// TestRoleAssignmentValidWithRoleName tests that the module will accept a role by name
 func TestRoleAssignmentValidWithRoleName(t *testing.T) {
 	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
@@ -37,6 +38,7 @@ func TestRoleAssignmentValidWithRoleName(t *testing.T) {
 	utils.AssertResourcePlannedValues(t, plan, "azurerm_role_assignment.this", expectedValues)
 }
 
+// TestRoleAssignmentValidWithRoleDefId tests that the module will accept a role by id
 func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
 	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
@@ -59,7 +61,6 @@ func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
 		"principal_id":         v["role_assignment_principal_id"],
 	}
 	utils.AssertResourcePlannedValues(t, plan, "azurerm_role_assignment.this", expectedValues)
-	require.Contains(t, plan.ResourcePlannedValuesMap, "azurerm_role_assignment.this")
 }
 
 // TestRoleAssignmentInvalidScopes tests that the module will not accept a tenant
