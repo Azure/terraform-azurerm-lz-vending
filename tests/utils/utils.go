@@ -14,6 +14,8 @@ import (
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/matryer/try.v1"
 )
 
@@ -172,4 +174,15 @@ provider "azurerm" {
 		return fmt.Errorf("error writing providers.tf: %v", err)
 	}
 	return nil
+}
+
+// AssertResourcePlannedValues asserts that the planned values of a Terraform resource match the expected values.
+// It takes the test object, the Terraform plan that contains the resource, the name of the resource to check and
+// a map of expected attribute values for the resource.
+func AssertResourcePlannedValues(t *testing.T, plan *terraform.PlanStruct, resourceName string, expectedValues map[string]interface{}) {
+	require.Containsf(t, plan.ResourcePlannedValuesMap, resourceName, "Resource %s not found in plan", resourceName)
+	resource := plan.ResourcePlannedValuesMap[resourceName]
+	for key, expectedValue := range expectedValues {
+		assert.Equalf(t, expectedValue, resource.AttributeValues[key], "Attribute %s value incorrect", key)
+	}
 }

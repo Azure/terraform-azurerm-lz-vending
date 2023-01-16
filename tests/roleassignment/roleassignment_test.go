@@ -29,11 +29,12 @@ func TestRoleAssignmentValidWithRoleName(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	require.Equal(t, 1, len(plan.ResourcePlannedValuesMap))
-	require.Contains(t, plan.ResourcePlannedValuesMap, "azurerm_role_assignment.this")
-	ra := plan.ResourcePlannedValuesMap["azurerm_role_assignment.this"]
-	assert.Equalf(t, v["role_assignment_definition"], ra.AttributeValues["role_definition_name"], "role_definition_name incorrect")
-	assert.Nilf(t, ra.AttributeValues["role_definition_id"], "role_definition_id should be nil")
-	assert.Equalf(t, v["role_assignment_principal_id"], ra.AttributeValues["principal_id"], "role_definition_principal_id incorrect")
+	expectedValues := map[string]interface{}{
+		"role_definition_name": v["role_assignment_definition"],
+		"role_definition_id":   nil,
+		"principal_id":         v["role_assignment_principal_id"],
+	}
+	utils.AssertResourcePlannedValues(t, plan, "azurerm_role_assignment.this", expectedValues)
 }
 
 func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
@@ -52,11 +53,13 @@ func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
 	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	assert.NoError(t, err)
 	require.Equal(t, 1, len(plan.ResourcePlannedValuesMap))
+	expectedValues := map[string]interface{}{
+		"role_definition_id":   v["role_assignment_definition"],
+		"role_definition_name": nil,
+		"principal_id":         v["role_assignment_principal_id"],
+	}
+	utils.AssertResourcePlannedValues(t, plan, "azurerm_role_assignment.this", expectedValues)
 	require.Contains(t, plan.ResourcePlannedValuesMap, "azurerm_role_assignment.this")
-	ra := plan.ResourcePlannedValuesMap["azurerm_role_assignment.this"]
-	assert.Equalf(t, v["role_assignment_definition"], ra.AttributeValues["role_definition_id"], "role_definition_id incorrect")
-	assert.Nilf(t, ra.AttributeValues["role_definition_name"], "role_definition_name should be nil")
-	assert.Equalf(t, v["role_assignment_principal_id"], ra.AttributeValues["principal_id"], "role_definition_principal_id incorrect")
 }
 
 // TestRoleAssignmentInvalidScopes tests that the module will not accept a tenant
