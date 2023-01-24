@@ -147,6 +147,7 @@ resource "azapi_resource" "vhubconnection" {
   name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", azapi_resource.vnet[each.key].id)}")
   body = jsonencode({
     properties = {
+      enableInternetSecurity = each.value.security_configuration.secure_internet_traffic
       remoteVirtualNetwork = {
         id = local.virtual_network_resource_ids[each.key]
       }
@@ -159,6 +160,32 @@ resource "azapi_resource" "vhubconnection" {
           labels = local.vwan_propagated_routetables_labels[each.key]
         }
       }
+    }
+  })
+}
+
+# azapi_update_resource.vhubdefaultroutetable
+resource "azapi_update_resource" "vhubdefaultroutetable" {
+  for_each  = { for k, v in var.virtual_networks : k => v if v.security_configuration.secure_internet_traffic }
+  type      = "Microsoft.Network/virtualHubs/hubRouteTables@2022-07-01"
+  parent_id = each.value.vwan_hub_resource_id
+  name = "defaultRouteTable"
+  body = jsonencode({
+    properties = {
+      labels = [
+        "default"
+      ]
+      routes = [
+        {
+          "name"            = "public_traffic"
+          "destinationType" = "CIDR"
+          "destinations" = [
+            "0.0.0.0/0"
+          ]
+          "nextHopType" = "ResourceId"
+          "nextHop"     = each.value.security_configuration.next_hop
+        }
+      ]
     }
   })
 }
