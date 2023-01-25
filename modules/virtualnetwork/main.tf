@@ -191,7 +191,8 @@ resource "azapi_update_resource" "vhubdefaultroutetableinternettraffic" {
   })
 }
 
-# azapi_update_resource.vhubdefaultroutetableprivatetraffic creates 
+# azapi_update_resource.vhubdefaultroutetableprivatetraffic creates private_traffic route which associated vnets then learn
+# with a next hop route for martian prefix list as the vhub's azure firewall
 resource "azapi_update_resource" "vhubdefaultroutetableprivatetraffic" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.secure_private_traffic && !v.vwan_security_configuration.secure_internet_traffic }
   type      = "Microsoft.Network/virtualHubs/hubRouteTables@2022-07-01"
@@ -219,7 +220,8 @@ resource "azapi_update_resource" "vhubdefaultroutetableprivatetraffic" {
   })
 }
 
-# azapi_update_resource.vhubdefaultroutetablealltraffic
+# azapi_update_resource.vhubdefaultroutetablealltraffic creates private_traffic route which associated vnets then learn
+# with a next hop route for the internet and martian prefix list as the vhub's azure firewall
 resource "azapi_update_resource" "vhubdefaultroutetablealltraffic" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.secure_private_traffic && v.vwan_security_configuration.secure_internet_traffic }
   type      = "Microsoft.Network/virtualHubs/hubRouteTables@2022-07-01"
