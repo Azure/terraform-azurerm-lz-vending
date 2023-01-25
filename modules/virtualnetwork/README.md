@@ -180,6 +180,11 @@ map(object({
     vwan_hub_resource_id                     = optional(string, "")
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
+    vwan_security_configuration = object({
+      secure_internet_traffic = optional(bool, false)
+      secure_private_traffic  = optional(bool, false)
+      next_hop                = optional(string, "")
+    })
 
     tags = optional(map(string), {})
   }))
@@ -209,6 +214,9 @@ The following resources are used by this module:
 - [azapi_resource.rg_lock](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.vhubconnection](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.vnet](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_update_resource.vhubdefaultroutetablealltraffic](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/update_resource) (resource)
+- [azapi_update_resource.vhubdefaultroutetableinternettraffic](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/update_resource) (resource)
+- [azapi_update_resource.vhubdefaultroutetableprivatetraffic](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/update_resource) (resource)
 - [azapi_update_resource.vnet](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/update_resource) (resource)
 
 ## Outputs
