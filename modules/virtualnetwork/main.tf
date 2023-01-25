@@ -183,7 +183,7 @@ resource "azapi_update_resource" "vhubdefaultroutetable" {
             "0.0.0.0/0"
           ]
           "nextHopType" = "ResourceId"
-          "nextHop"     = each.value.security_configuration.next_hop
+          "nextHop"     = each.value.vwan_security_configuration.next_hop
         }
       ]
     }
