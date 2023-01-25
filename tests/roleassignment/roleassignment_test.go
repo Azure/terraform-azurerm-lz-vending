@@ -57,7 +57,6 @@ func TestRoleAssignmentInvalidScopes(t *testing.T) {
 	testTenant := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, testTenant.Err)
 	defer testTenant.Cleanup()
-
 	errString := "Must begin with a subscription scope, e.g. `/subscriptions/00000000-0000-0000-0000-000000000000`. All letters must be lowercase in the subscription id."
 	assert.Contains(t, testTenant.Err, errString)
 

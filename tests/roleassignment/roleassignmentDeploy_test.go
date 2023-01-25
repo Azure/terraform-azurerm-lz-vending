@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
-	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/matt-FFFFFF/terratest-terraform-fluent/check"
+	"github.com/matt-FFFFFF/terratest-terraform-fluent/setuptest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -17,29 +17,23 @@ import (
 // by defining the role definition name
 func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
 	t.Parallel()
-	utils.PreCheckDeployTests(t)
-	testDir := "testdata/" + t.Name()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 
+	utils.PreCheckDeployTests(t)
 	name, err := utils.RandomHex(4)
 	require.NoErrorf(t, err, "could not generate random hex")
-	terraformOptions.Vars = map[string]interface{}{
+
+	v := map[string]interface{}{
 		"random_hex":      name,
 		"role_definition": "Storage Blob Data Contributor",
 	}
+	testDir := filepath.Join("testdata", t.Name())
+	test := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, test.Err)
+	defer test.Cleanup()
 
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	require.NoError(t, err)
-	require.Lenf(t, plan.ResourcePlannedValuesMap, 2, "expected 2 resources to be planned")
-
-	// defer terraform destroy, but wrap in a try.Do to retry a few times
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
-	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(2).IfNotFail(t)
+	defer test.DestroyWithRetry(t, setuptest.DefaultRetry)
+	err = test.ApplyIdempotent(t)
 	assert.NoError(t, err)
 }
 
@@ -47,29 +41,25 @@ func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
 // by defining a role definition id
 func TestDeployRoleAssignmentDefinitionId(t *testing.T) {
 	t.Parallel()
-	utils.PreCheckDeployTests(t)
-	testDir := "testdata/" + t.Name()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 
+	utils.PreCheckDeployTests(t)
 	name, err := utils.RandomHex(4)
 	require.NoErrorf(t, err, "could not generate random hex")
+
 	rd := fmt.Sprintf("/subscriptions/%s/providers/Microsoft.Authorization/roleDefinitions/ba92f5b4-2d11-453d-a403-e96b0029c9fe", os.Getenv("AZURE_SUBSCRIPTION_ID"))
-	terraformOptions.Vars = map[string]interface{}{
+	v := map[string]interface{}{
 		"random_hex":      name,
 		"role_definition": rd,
 	}
 
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	require.NoError(t, err)
-	require.Lenf(t, plan.ResourcePlannedValuesMap, 2, "expected 2 resources to be planned")
+	testDir := filepath.Join("testdata/", t.Name())
+	test := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	require.NoError(t, test.Err)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(2).IfNotFailNow(t)
 
-	// defer terraform destroy, but wrap in a try.Do to retry a few times
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
-	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+	defer test.DestroyWithRetry(t, setuptest.DefaultRetry)
+
+	err = test.ApplyIdempotent(t)
 	assert.NoError(t, err)
 }
