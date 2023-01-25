@@ -147,7 +147,7 @@ resource "azapi_resource" "vhubconnection" {
   name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", azapi_resource.vnet[each.key].id)}")
   body = jsonencode({
     properties = {
-      enableInternetSecurity = each.value.security_configuration.secure_internet_traffic
+      enableInternetSecurity = each.value.vwan_security_configuration.secure_internet_traffic
       remoteVirtualNetwork = {
         id = local.virtual_network_resource_ids[each.key]
       }
@@ -164,9 +164,9 @@ resource "azapi_resource" "vhubconnection" {
   })
 }
 
-# azapi_update_resource.vhubdefaultroutetable
+# azapi_update_resource.vhubdefaultroutetable creates a next hop route for the internet as the vhub's associated azure firewall which associated vnets learn
 resource "azapi_update_resource" "vhubdefaultroutetable" {
-  for_each  = { for k, v in var.virtual_networks : k => v if v.security_configuration.secure_internet_traffic }
+  for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.secure_internet_traffic }
   type      = "Microsoft.Network/virtualHubs/hubRouteTables@2022-07-01"
   parent_id = each.value.vwan_hub_resource_id
   name = "defaultRouteTable"
