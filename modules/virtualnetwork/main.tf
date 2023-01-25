@@ -155,7 +155,7 @@ resource "azapi_resource" "vhubconnection" {
         associatedRouteTable = {
           id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
         }
-        propagatedRouteTables = { 
+        propagatedRouteTables = {
           ids    = each.value.vwan_security_configuration.secure_private_traffic == true ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
           labels = each.value.vwan_security_configuration.secure_private_traffic == true ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
         }
@@ -170,7 +170,7 @@ resource "azapi_update_resource" "vhubdefaultroutetableinternettraffic" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.secure_internet_traffic && !v.vwan_security_configuration.secure_private_traffic }
   type      = "Microsoft.Network/virtualHubs/hubRouteTables@2022-07-01"
   parent_id = each.value.vwan_hub_resource_id
-  name = "defaultRouteTable"
+  name      = "defaultRouteTable"
   body = jsonencode({
     properties = {
       labels = [
@@ -197,7 +197,7 @@ resource "azapi_update_resource" "vhubdefaultroutetableprivatetraffic" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.secure_private_traffic && !v.vwan_security_configuration.secure_internet_traffic }
   type      = "Microsoft.Network/virtualHubs/hubRouteTables@2022-07-01"
   parent_id = each.value.vwan_hub_resource_id
-  name = "defaultRouteTable"
+  name      = "defaultRouteTable"
   body = jsonencode({
     properties = {
       labels = [
@@ -226,7 +226,7 @@ resource "azapi_update_resource" "vhubdefaultroutetablealltraffic" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.secure_private_traffic && v.vwan_security_configuration.secure_internet_traffic }
   type      = "Microsoft.Network/virtualHubs/hubRouteTables@2022-07-01"
   parent_id = each.value.vwan_hub_resource_id
-  name = "defaultRouteTable"
+  name      = "defaultRouteTable"
   body = jsonencode({
     properties = {
       labels = [
