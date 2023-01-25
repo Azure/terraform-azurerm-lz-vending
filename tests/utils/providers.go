@@ -38,7 +38,7 @@ terraform {
 //
 // - a required providers file in the given temporary directory (with version constraints from env vars)
 // - a azurerm providers file in the given temporary directory
-var AzureRmAndRequiredProviders setuptest.SetupTestPrepFunc = func(resp setuptest.SetupTestResponse) error {
+var AzureRmAndRequiredProviders setuptest.PrepFunc = func(resp setuptest.Response) error {
 	if err := createAzureRmProvidersFile(resp.TmpDir); err != nil {
 		return err
 	}
