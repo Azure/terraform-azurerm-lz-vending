@@ -1440,6 +1440,39 @@
         "issueReply": "This functionality has been released in ${version} of the module. Please see the module documentation on versioning or reach out if you need any assistance upgrading.\n\nFor further feature requests or bug reports with this functionality, please create a new GitHub issue following the template. Thank you!",
         "taskName": "Release comment"
       }
+    },
+    {
+      "taskType": "trigger",
+      "capabilityId": "IssueResponder",
+      "subCapability": "IssuesOnlyResponder",
+      "version": "1.0",
+      "config": {
+        "conditions": {
+          "operator": "and",
+          "operands": [
+            {
+              "name": "labelAdded",
+              "parameters": {
+                "label": "Needs: Author Feedback :pencil2:"
+              }
+            }
+          ]
+        },
+        "eventType": "issue",
+        "eventNames": [
+          "issues",
+          "project_card"
+        ],
+        "taskName": "Remove needs attention label when needs author feedback label is added",
+        "actions": [
+          {
+            "name": "removeLabel",
+            "parameters": {
+              "label": "Needs: Attention :wave:"
+            }
+          }
+        ]
+      }
     }
   ],
   "userGroups": []
