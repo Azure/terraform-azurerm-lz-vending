@@ -155,18 +155,19 @@ resource "azapi_resource" "vhubconnection" {
         associatedRouteTable = {
           id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
         }
-        propagatedRouteTables = {
-          ids    = local.vwan_propagated_routetables_resource_ids[each.key]
-          labels = local.vwan_propagated_routetables_labels[each.key]
+        propagatedRouteTables = { 
+          ids    = each.value.vwan_security_configuration.secure_private_traffic == true ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
+          labels = each.value.vwan_security_configuration.secure_private_traffic == true ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
         }
       }
     }
   })
 }
 
-# azapi_update_resource.vhubdefaultroutetable creates a next hop route for the internet as the vhub's associated azure firewall which associated vnets learn
-resource "azapi_update_resource" "vhubdefaultroutetable" {
-  for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.secure_internet_traffic }
+# azapi_update_resource.vhubdefaultroutetableinternettraffic creates public_traffic route which associated vnets then learn
+# with a next hop route for the internet as the vhub's azure firewall
+resource "azapi_update_resource" "vhubdefaultroutetableinternettraffic" {
+  for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.secure_internet_traffic && !v.vwan_security_configuration.secure_private_traffic }
   type      = "Microsoft.Network/virtualHubs/hubRouteTables@2022-07-01"
   parent_id = each.value.vwan_hub_resource_id
   name = "defaultRouteTable"
@@ -181,6 +182,63 @@ resource "azapi_update_resource" "vhubdefaultroutetable" {
           "destinationType" = "CIDR"
           "destinations" = [
             "0.0.0.0/0"
+          ]
+          "nextHopType" = "ResourceId"
+          "nextHop"     = each.value.vwan_security_configuration.next_hop
+        }
+      ]
+    }
+  })
+}
+
+# azapi_update_resource.vhubdefaultroutetableprivatetraffic creates 
+resource "azapi_update_resource" "vhubdefaultroutetableprivatetraffic" {
+  for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.secure_private_traffic && !v.vwan_security_configuration.secure_internet_traffic }
+  type      = "Microsoft.Network/virtualHubs/hubRouteTables@2022-07-01"
+  parent_id = each.value.vwan_hub_resource_id
+  name = "defaultRouteTable"
+  body = jsonencode({
+    properties = {
+      labels = [
+        "default"
+      ]
+      routes = [
+        {
+          "name"            = "private_traffic"
+          "destinationType" = "CIDR"
+          "destinations" = [
+            "10.0.0.0/8",
+            "172.16.0.0/12",
+            "192.168.0.0/16"
+          ]
+          "nextHopType" = "ResourceId"
+          "nextHop"     = each.value.vwan_security_configuration.next_hop
+        }
+      ]
+    }
+  })
+}
+
+# azapi_update_resource.vhubdefaultroutetablealltraffic
+resource "azapi_update_resource" "vhubdefaultroutetablealltraffic" {
+  for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.secure_private_traffic && v.vwan_security_configuration.secure_internet_traffic }
+  type      = "Microsoft.Network/virtualHubs/hubRouteTables@2022-07-01"
+  parent_id = each.value.vwan_hub_resource_id
+  name = "defaultRouteTable"
+  body = jsonencode({
+    properties = {
+      labels = [
+        "default"
+      ]
+      routes = [
+        {
+          "name"            = "all_traffic"
+          "destinationType" = "CIDR"
+          "destinations" = [
+            "0.0.0.0/0",
+            "10.0.0.0/8",
+            "172.16.0.0/12",
+            "192.168.0.0/16"
           ]
           "nextHopType" = "ResourceId"
           "nextHop"     = each.value.vwan_security_configuration.next_hop
