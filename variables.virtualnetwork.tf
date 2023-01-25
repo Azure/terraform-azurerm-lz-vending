@@ -51,10 +51,10 @@ variable "virtual_networks" {
     vwan_hub_resource_id                     = optional(string, "")
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
-    security_configuration = object({
+    vwan_security_configuration = object({
         secure_internet_traffic = optional(bool, false)
-        secure_private_traffic = optional(bool, false)
-        next_hop = string
+        secure_private_traffic  = optional(bool, false)
+        next_hop                = optional(string, "")
     })
 
     tags = optional(map(string), {})
