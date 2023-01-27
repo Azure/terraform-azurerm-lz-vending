@@ -8,11 +8,8 @@ import (
 	"runtime"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/gruntwork-io/terratest/modules/logger"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"gopkg.in/matryer/try.v1"
 )
 
 // SanitiseErrorMessage replaces the newline characters in an error.Error() output with a single space to allow us to check for the entire error message.
@@ -65,23 +62,4 @@ func RandomHex(n int) (string, error) {
 func GetTestDir(t *testing.T) string {
 	_, filename, _, _ := runtime.Caller(1)
 	return filepath.Dir(filename)
-}
-
-// TerraformDestroyWithRetry is a helper function that wraps a terraform destroy in a try.Do
-// designed to be used as a defer function.
-func TerraformDestroyWithRetry(t *testing.T, to *terraform.Options, dur time.Duration, max int) {
-	if try.MaxRetries < max {
-		try.MaxRetries = max
-	}
-	err := try.Do(func(attempt int) (bool, error) {
-		_, err := terraform.DestroyE(t, to)
-		if err != nil {
-			t.Logf("terraform destroy failed, attempt %d/%d", attempt, max)
-			time.Sleep(dur)
-		}
-		return attempt < max, err
-	})
-	if err != nil {
-		t.Logf("terraform destroy error: %v", err)
-	}
 }

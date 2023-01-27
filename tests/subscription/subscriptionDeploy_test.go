@@ -5,40 +5,31 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/azureutils"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/matt-FFFFFF/terratest-terraform-fluent/setuptest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+var billingScope = os.Getenv("AZURE_BILLING_SCOPE")
 
 // TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
 // with valid input variables.
 func TestDeploySubscriptionAliasValid(t *testing.T) {
 	t.Parallel()
+
 	utils.PreCheckDeployTests(t)
 
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-
-	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)
-	if err != nil {
-		t.Fatalf("Cannot generate valid input variables, %s", err)
-	}
-
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
-	terraformOptions.Vars = v
-
-	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
-	_, err = terraform.InitAndPlanE(t, terraformOptions)
 	require.NoError(t, err)
+	test := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, test.Err)
+	defer test.Cleanup()
+	require.NoError(t, test.Err)
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.
@@ -50,13 +41,11 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 		t.Logf("cannot cancel subscription: %v", err)
 	}()
 
-	// defer terraform destroy, but wrap in a try.Do to retry a few times
-	// due to eventual consistency of the subscription aliases API
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
-	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+	defer test.DestroyWithRetry(t, setuptest.DefaultRetry)
+	err = test.ApplyIdempotent(t)
 	assert.NoError(t, err)
 
-	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
+	sid, err := terraform.OutputE(t, test.Options, "subscription_id")
 	assert.NoError(t, err)
 	u, err = uuid.Parse(sid)
 	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
@@ -68,25 +57,17 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	t.Parallel()
 	utils.PreCheckDeployTests(t)
 
-	testDir := "testdata/" + t.Name()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
-
-	billingScope := os.Getenv("AZURE_BILLING_SCOPE")
 	v, err := getValidInputVariables(billingScope)
 	require.NoError(t, err)
 	v["subscription_billing_scope"] = billingScope
 	v["subscription_management_group_id"] = v["subscription_alias_name"]
 	v["subscription_management_group_association_enabled"] = true
-	terraformOptions.Vars = v
 
-	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
-	_, err = terraform.InitAndPlanE(t, terraformOptions)
-	require.NoError(t, err)
+	testDir := filepath.Join("testdata", t.Name())
+	test := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, test.Err)
+	defer test.Cleanup()
+	require.NoError(t, test.Err)
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.
@@ -100,11 +81,11 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
-	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+	defer test.DestroyWithRetry(t, setuptest.DefaultRetry)
+	err = test.ApplyIdempotent(t)
 	assert.NoError(t, err)
 
-	sid, err := terraform.OutputE(t, terraformOptions, "subscription_id")
+	sid, err := terraform.OutputE(t, test.Options, "subscription_id")
 	assert.NoError(t, err)
 
 	u, err = uuid.Parse(sid)
