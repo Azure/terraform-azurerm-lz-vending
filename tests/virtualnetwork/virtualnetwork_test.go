@@ -9,6 +9,8 @@ import (
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/models"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/matt-FFFFFF/terratest-terraform-fluent/check"
+	"github.com/matt-FFFFFF/terratest-terraform-fluent/setuptest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -21,17 +23,12 @@ const (
 // creates two virtual networks in the specified resource groups.
 func TestVirtualNetworkCreateValid(t *testing.T) {
 	t.Parallel()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
-	vars := getMockInputVariables()
-	terraformOptions.Vars = vars
 
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoErrorf(t, err, "failed to init and plan")
+	v := getMockInputVariables()
+	test := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, test.Err)
+	defer test.Cleanup()
+
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -42,10 +39,10 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
-	require.Equalf(t, len(resources), len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", len(resources), len(plan.ResourcePlannedValuesMap))
+	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).IfNotFailNow(t)
 
 	for _, r := range resources {
-		require.Containsf(t, plan.ResourcePlannedValuesMap, r, "plan does not contain expected resource %s", r)
+		check.InPlan(test.Plan).That(r).Exists()
 	}
 
 	// Loop through each virtual network and check the values
