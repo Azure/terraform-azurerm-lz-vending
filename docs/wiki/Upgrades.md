@@ -15,10 +15,9 @@ If you are using the Terraform registry, you can update the version number for t
 For a new `MAJOR` release, you will see breaking changes.
 We will publish guidance in the release notes on GitHub.
 
-## Upgrading from v1.x to v2.x
-
-The v2 release of the module is a major release, therefore has breaking changes.
 See the [release notes](https://github.com/Azure/terraform-azurerm-lz-vending/releases) for more information.
+
+## Upgrading from v1.x to v2.x
 
 v2 of the module makes large-scale changes to the virtual networking capabilities of the module.
 We therefore recommend that you keep any existing instances of the module at v1, and use v2 going forward for new instances.
@@ -26,12 +25,11 @@ If you would like multiple vnets in the same subscription using v1 of the module
 
 ## Upgrading from v2.x to v3.x
 
-The v3 release is a major release, therefore has breaking changes.
+v3 of the module makes changes the the `role_assignments` variable, changing the format of the variable from a list of objects `list(object({...}))` to a map of objects `map(object({...}))`.
+This change fixes [#153](https://github.com/Azure/terraform-azurerm-lz-vending/issues/153).
 
-v3 of the module makes chanegs the the `role_assignments` variable, changing the format of the variable from a list of objects `list(object({...}))` to a map of objects `map(object({...}))`.
-This change is to allow to fix [#153](https://github.com/Azure/terraform-azurerm-lz-vending/issues/153).
-In order to run the `for_each` loop on the role assignments, we need to use either a set or a map.
-Terraform also needs to know all map keys at plan time, they cannot be 'known after apply'.
+By way of explanation, in order to run the `for_each` loop on the role assignments, we need to use either a set or a map.
+If using a map, Terraform needs to know all keys at plan time, they cannot be 'known after apply'.
 Previously we converted the list of objects into a map of objects, using the `uuidv5()` function to generate predictable map keys from the inputs.
 Unfortunately this caused issues when any of the inputs to the `uuidv5()` function were not known at plan time, in this case it was the principal id.
 
