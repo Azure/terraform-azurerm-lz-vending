@@ -81,26 +81,26 @@ module "lz_vending" {
 
   # role assignments
   role_assignment_enabled = true
-  role_assignments = [
+  role_assignments = {
     # using role definition name, created at subscription scope
-    {
+    contrib_user_sub = {
       principal_id   = "00000000-0000-0000-0000-000000000000"
       definition     = "Contributor"
       relative_scope = ""
     },
     # using a custom role definition
-    {
+    custdef_sub_scope = {
       principal_id   = "11111111-1111-1111-1111-111111111111"
       definition     = "/providers/Microsoft.Management/MyMg/providers/Microsoft.Authorization/roleDefinitions/ffffffff-ffff-ffff-ffff-ffffffffffff"
       relative_scope = ""
     },
     # using relative scope (to the created or supplied subscription)
-    {
+    rg_owner = {
       principal_id   = "00000000-0000-0000-0000-000000000000"
       definition     = "Owner"
       relative_scope = "/resourceGroups/MyRg"
     },
-  ]
+  }
 }
 ```
 
@@ -191,7 +191,7 @@ Default: `false`
 
 ### <a name="input_role_assignments"></a> [role\_assignments](#input\_role\_assignments)
 
-Description: Supply a list of objects containing the details of the role assignments to create.
+Description: Supply a map of objects containing the details of the role assignments to create.
 
 Object fields:
 
@@ -202,33 +202,33 @@ Object fields:
 E.g.
 
 ```terraform
-role_assignments = [
+role_assignments = {
   # Example using role definition name:
-  {
+  contributor_user = {
     principal_id   = "00000000-0000-0000-0000-000000000000",
     definition     = "Contributor",
     relative_scope = "",
   },
   # Example using role definition id and RG scope:
-  {
+  myrg_custom_role = {
     principal_id   = "11111111-1111-1111-1111-111111111111",
     definition     = "/providers/Microsoft.Management/managementGroups/mymg/providers/Microsoft.Authorization/roleDefinitions/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
     relative_scope = "/resourceGroups/MyRg",
   }
-]
+}
 ```
 
 Type:
 
 ```hcl
-list(object({
+map(object({
     principal_id   = string,
     definition     = string,
     relative_scope = string,
   }))
 ```
 
-Default: `[]`
+Default: `{}`
 
 ### <a name="input_subscription_alias_enabled"></a> [subscription\_alias\_enabled](#input\_subscription\_alias\_enabled)
 
