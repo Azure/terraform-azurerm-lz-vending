@@ -268,8 +268,8 @@ func TestIntegrationWithYaml(t *testing.T) {
 		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
 		"module.lz_vending[\"%s\"].module.subscription[0].azurerm_subscription.this[0]",
 		"module.lz_vending[\"%s\"].module.subscription[0].azurerm_management_group_subscription_association.this[0]",
-		"module.lz_vending[\"%s\"].module.roleassignment[\"8a6eec3e-78d9-5ff3-89cc-b144ae761a9a\"].azurerm_role_assignment.this",
-		"module.lz_vending[\"%s\"].module.roleassignment[\"7f69efa3-575a-5f8b-a989-c3978b92b58a\"].azurerm_role_assignment.this",
+		"module.lz_vending[\"%s\"].module.roleassignment[\"my_ra_1\"].azurerm_role_assignment.this",
+		"module.lz_vending[\"%s\"].module.roleassignment[\"my_ra_2\"].azurerm_role_assignment.this",
 	}
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources)*3, "expected %d resources to be created, but got %d", len(resources)*3, len(plan.ResourcePlannedValuesMap))
 	lzs := []string{
