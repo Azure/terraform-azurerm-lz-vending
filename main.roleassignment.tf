@@ -7,7 +7,7 @@ module "roleassignment" {
     module.subscription,
     module.virtualnetwork,
   ]
-  for_each                     = local.role_assignments_map
+  for_each                     = var.role_assignments
   role_assignment_principal_id = each.value.principal_id
   role_assignment_definition   = each.value.definition
   role_assignment_scope        = each.value.scope
