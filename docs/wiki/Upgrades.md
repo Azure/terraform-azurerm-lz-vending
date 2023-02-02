@@ -23,3 +23,55 @@ See the [release notes](https://github.com/Azure/terraform-azurerm-lz-vending/re
 v2 of the module makes large-scale changes to the virtual networking capabilities of the module.
 We therefore recommend that you keep any existing instances of the module at v1, and use v2 going forward for new instances.
 If you would like multiple vnets in the same subscription using v1 of the module you can use the pattern [described here](https://github.com/Azure/terraform-azurerm-lz-vending/issues/97#issuecomment-1240712419)
+
+## Upgrading from v2.x to v3.x
+
+The v3 release is a major release, therefore has breaking changes.
+
+v3 of the module makes chanegs the the `role_assignments` variable, changing the format of the variable from a list of objects `list(object({...}))` to a map of objects `map(object({...}))`.
+This change is to allow to fix [#153](https://github.com/Azure/terraform-azurerm-lz-vending/issues/153).
+In order to run the `for_each` loop on the role assignments, we need to use either a set or a map.
+Terraform also needs to know all map keys at plan time, they cannot be 'known after apply'.
+Previously we converted the list of objects into a map of objects, using the `uuidv5()` function to generate predictable map keys from the inputs.
+Unfortunately this caused issues when any of the inputs to the `uuidv5()` function were not known at plan time, in this case it was the principal id.
+
+Rather than revert to a set, where ordering can be an issue, we decided to change the input variable to be a map from the outset.
+This does mean a small change is required, you must specify a map key. This can be anything but do not use a reference to other object.
+
+### v2.x `role_assignments` syntax
+
+```terraform
+module "lz_vending" {
+  source  = "..."
+  version = "..."
+
+  # (other input variables hidden)
+
+  role_assignments = [
+    {
+      principal_id   = "..."
+      definition     = "contributor"
+      relative_scope = ""
+    }
+  ]
+}
+```
+
+### v3.x `role_assignments` syntax
+
+```terraform
+module "lz_vending" {
+  source  = "..."
+  version = "..."
+
+  # (other input variables hidden)
+
+  role_assignments = {
+    contrib_to_group = {
+      principal_id   = "..."
+      definition     = "contributor"
+      relative_scope = ""
+    }
+  }
+}
+```

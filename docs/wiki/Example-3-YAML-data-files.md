@@ -18,10 +18,12 @@ virtual_networks:
       - "10.0.0.0/24"
     resource_group_name: my-rg
 role_assignments:
-  - principal_id: 00000000-0000-0000-0000-000000000000
+  my_assignment_1:
+    principal_id: 00000000-0000-0000-0000-000000000000
     definition: Owner
     relative_scope: ''
-  - principal_id: 11111111-1111-1111-1111-111111111111
+  my_assignment_2:
+    principal_id: 11111111-1111-1111-1111-111111111111
     definition: Reader
     relative_scope: ''
 ```

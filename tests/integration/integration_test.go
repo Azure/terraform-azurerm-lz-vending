@@ -123,8 +123,8 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = false
 	v["role_assignment_enabled"] = true
-	v["role_assignments"] = []interface{}{
-		map[string]interface{}{
+	v["role_assignments"] = map[string]interface{}{
+		"ra": map[string]interface{}{
 			"principal_id":   "00000000-0000-0000-0000-000000000000",
 			"definition":     "Owner",
 			"relative_scope": "",
