@@ -138,7 +138,7 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
 		"module.subscription[0].azurerm_subscription.this[0]",
-		"module.roleassignment[\"7f69efa3-575a-5f8b-a989-c3978b92b58a\"].azurerm_role_assignment.this",
+		"module.roleassignment[\"ra\"].azurerm_role_assignment.this",
 	}
 	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
 	for _, v := range resources {
