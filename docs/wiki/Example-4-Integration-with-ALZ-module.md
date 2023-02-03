@@ -55,7 +55,7 @@ module "alz" {
 
   // Use management group association instead of having to be explicit about MG membership
   strict_subscription_association = false
-  
+
   // Custom Landing Zone created as an example.
   custom_landing_zones = {
     mymg = {
@@ -66,9 +66,10 @@ module "alz" {
         archetype_id   = "default_empty"
         parameters     = {}
         access_control = {}
+      }
     }
   }
-  
+
   // Management resources
   deploy_management_resources = true
   configure_management_resources = {
