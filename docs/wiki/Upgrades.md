@@ -28,6 +28,8 @@ If you would like multiple vnets in the same subscription using v1 of the module
 v3 of the module makes changes the the `role_assignments` variable, changing the format of the variable from a list of objects `list(object({...}))` to a map of objects `map(object({...}))`.
 This change fixes [#153](https://github.com/Azure/terraform-azurerm-lz-vending/issues/153).
 
+> **Due to the map key changing, all role assignments will be deleted and re-created.**
+
 By way of explanation, in order to run the `for_each` loop on the role assignments, we need to use either a set or a map.
 If using a map, Terraform needs to know all keys at plan time, they cannot be 'known after apply'.
 Previously we converted the list of objects into a map of objects, using the `uuidv5()` function to generate predictable map keys from the inputs.
