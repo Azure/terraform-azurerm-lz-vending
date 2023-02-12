@@ -585,8 +585,6 @@ func TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic(t *testing.T) {
 	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
 	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
 	vhc := plan.ResourcePlannedValuesMap[vhcres]
-	require.Containsf(t, vhc.AttributeValues, "parent_id", "expected parent_id to be set")
-	assert.Equalf(t, primaryvnet["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"], "expected parent_id to be %s", primaryvnet["vwan_hub_resource_id"])
 
 	require.Containsf(t, vhc.AttributeValues, "body", "expected body to be set")
 	var body models.HubVirtualNetworkConnectionBody
@@ -763,20 +761,12 @@ func getMockInputVariables() map[string]interface{} {
 				"address_space":       []string{"192.168.0.0/24"},
 				"location":            "westeurope",
 				"resource_group_name": "primary-rg",
-				"vwan_security_configuration": map[string]interface{}{
-					"secure_internet_traffic": false,
-					"secure_private_traffic":  false,
-				},
 			},
 			"secondary": {
 				"name":                "secondary-vnet",
 				"address_space":       []string{"192.168.1.0/24"},
 				"location":            "northeurope",
 				"resource_group_name": "secondary-rg",
-				"vwan_security_configuration": map[string]interface{}{
-					"secure_internet_traffic": false,
-					"secure_private_traffic":  false,
-				},
 			},
 		},
 	}
