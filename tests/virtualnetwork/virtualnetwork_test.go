@@ -507,7 +507,6 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 }
 
 // TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic tests that secure_internet_traffic == true
-
 func TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic(t *testing.T) {
 	t.Parallel()
 	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
