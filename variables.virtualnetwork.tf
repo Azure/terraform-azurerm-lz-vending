@@ -54,7 +54,6 @@ variable "virtual_networks" {
     vwan_security_configuration = object({
       secure_internet_traffic = optional(bool, false)
       secure_private_traffic  = optional(bool, false)
-      next_hop                = optional(string, "")
     })
 
     tags = optional(map(string), {})
