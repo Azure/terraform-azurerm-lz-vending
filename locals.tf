@@ -25,17 +25,4 @@ locals {
   # virtual_networks_merged is a map of virtual networks created, if the module has been enabled.
   # This is used in the outputs.tf file to return the virtual network resource ids.
   virtual_network_resource_ids = try(module.virtualnetwork[0].virtual_network_resource_ids, {})
-
-  # role_assignments_map is a map of role assignments that will be created.
-  # We need this as a for_each loop must have unique keys, these are generated using
-  # the uuidv5 function to ensure predictable output.
-  role_assignments_map = {
-    for ra in var.role_assignments :
-    uuidv5("url", "${ra.principal_id}${ra.definition}${ra.relative_scope}") => {
-      principal_id = ra.principal_id,
-      definition   = ra.definition,
-      scope        = "${local.subscription_resource_id}${ra.relative_scope}",
-    }
-    if var.role_assignment_enabled
-  }
 }

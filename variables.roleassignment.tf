@@ -8,13 +8,13 @@ DESCRIPTION
 }
 
 variable "role_assignments" {
-  type = list(object({
+  type = map(object({
     principal_id   = string,
     definition     = string,
     relative_scope = string,
   }))
   description = <<DESCRIPTION
-Supply a list of objects containing the details of the role assignments to create.
+Supply a map of objects containing the details of the role assignments to create.
 
 Object fields:
 
@@ -25,21 +25,21 @@ Object fields:
 E.g.
 
 ```terraform
-role_assignments = [
+role_assignments = {
   # Example using role definition name:
-  {
+  contributor_user = {
     principal_id   = "00000000-0000-0000-0000-000000000000",
     definition     = "Contributor",
     relative_scope = "",
   },
   # Example using role definition id and RG scope:
-  {
+  myrg_custom_role = {
     principal_id   = "11111111-1111-1111-1111-111111111111",
     definition     = "/providers/Microsoft.Management/managementGroups/mymg/providers/Microsoft.Authorization/roleDefinitions/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
     relative_scope = "/resourceGroups/MyRg",
   }
-]
+}
 ```
 DESCRIPTION
-  default     = []
+  default     = {}
 }

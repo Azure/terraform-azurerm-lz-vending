@@ -80,25 +80,25 @@ module "lz_vending" {
 
   # role assignments
   role_assignment_enabled = true
-  role_assignments = [
+  role_assignments = {
     # using role definition name, created at subscription scope
-    {
+    contrib_user_sub = {
       principal_id   = "00000000-0000-0000-0000-000000000000"
       definition     = "Contributor"
       relative_scope = ""
     },
     # using a custom role definition
-    {
+    custdef_sub_scope = {
       principal_id   = "11111111-1111-1111-1111-111111111111"
       definition     = "/providers/Microsoft.Management/MyMg/providers/Microsoft.Authorization/roleDefinitions/ffffffff-ffff-ffff-ffff-ffffffffffff"
       relative_scope = ""
     },
     # using relative scope (to the created or supplied subscription)
-    {
+    rg_owner = {
       principal_id   = "00000000-0000-0000-0000-000000000000"
       definition     = "Owner"
       relative_scope = "/resourceGroups/MyRg"
     },
-  ]
+  }
 }
 ```
