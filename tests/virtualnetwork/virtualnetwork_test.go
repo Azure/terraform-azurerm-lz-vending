@@ -506,6 +506,160 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 	}
 }
 
+// TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic tests that secure_internet_traffic == true
+func TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic(t *testing.T) {
+	t.Parallel()
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+
+	// Enable vhub connection to primary vnet in test mock input variables
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
+	primaryvnet["vwan_connection_enabled"] = true
+	primaryvnet["vwan_security_configuration"] = map[string]interface{}{
+		"secure_internet_traffic": true,
+	}
+
+	terraformOptions.Vars = vars
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+
+	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	numres := 9
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+
+	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
+	vhc := plan.ResourcePlannedValuesMap[vhcres]
+
+	require.Contains(t, vhc.AttributeValues, "body")
+	var body models.HubVirtualNetworkConnectionBody
+	err = json.Unmarshal([]byte(vhc.AttributeValues["body"].(string)), &body)
+	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
+
+	secured := primaryvnet["vwan_security_configuration"].(map[string]interface{})["secure_internet_traffic"]
+	assert.Equalf(t, secured, body.Properties.EnableInternetSecurity, "expected secure internet traffic toggle to be %s", secured)
+}
+
+// TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic that managed vnets propagate to "noneRouteTable" with labels "none"
+func TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic(t *testing.T) {
+	t.Parallel()
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+
+	// Enable vhub connection to primary vnet in test mock input variables
+	// & add custom routing
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
+	primaryvnet["vwan_connection_enabled"] = true
+	primaryvnet["vwan_security_configuration"] = map[string]interface{}{
+		"secure_private_traffic": true,
+	}
+
+	primaryvnet["vwan_propagated_routetables_labels"] = []string{"none"}
+	primaryvnet["vwan_propagated_routetables_resource_ids"] = []string{
+		primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/noneRouteTable",
+	}
+	primaryvnet["vwan_associated_routetable_resource_id"] = primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/defaultRouteTable"
+
+	terraformOptions.Vars = vars
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+
+	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	numres := 9
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+
+	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
+	vhc := plan.ResourcePlannedValuesMap[vhcres]
+
+	require.Containsf(t, vhc.AttributeValues, "body", "expected body to be set")
+	var body models.HubVirtualNetworkConnectionBody
+	err = json.Unmarshal([]byte(vhc.AttributeValues["body"].(string)), &body)
+	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
+
+	assert.Equalf(t, primaryvnet["vwan_associated_routetable_resource_id"], body.Properties.RoutingConfiguration.AssociatedRouteTable.ID, "expected associated route table to be %s", primaryvnet["vwan_associated_routetable_resource_id"])
+	assert.EqualValuesf(t, primaryvnet["vwan_propagated_routetables_labels"], body.Properties.RoutingConfiguration.PropagatedRouteTables.Labels, "expected propagated route tables to be %v", primaryvnet["vwan_propagated_routetables_labels"])
+
+	assert.Lenf(t, body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs, 1, "expected length of propagated route tables to be 1")
+	for _, rt := range body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs {
+		assert.Containsf(t, primaryvnet["vwan_propagated_routetables_resource_ids"], rt.ID, "expected propagated route tables to contain %s", rt.ID)
+	}
+}
+
+// TestVirtualNetworkCreateValidWithVhubSecureInternetAndPrivateTraffic tests secure_internet_traffic == true
+// and that managed vnets propagate to "noneRouteTable" with labels "none"
+func TestVirtualNetworkCreateValidWithVhubSecureInternetAndPrivateTraffic(t *testing.T) {
+	t.Parallel()
+	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
+	defer cleanup()
+	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
+	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
+	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
+	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+	vars := getMockInputVariables()
+
+	// Enable vhub connection to primary vnet in test mock input variables
+	// & add custom routing
+	primaryvnet := vars["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
+	primaryvnet["vwan_connection_enabled"] = true
+	primaryvnet["vwan_security_configuration"] = map[string]interface{}{
+		"secure_internet_traffic": true,
+		"secure_private_traffic":  true,
+	}
+
+	primaryvnet["vwan_propagated_routetables_labels"] = []string{"none"}
+	primaryvnet["vwan_propagated_routetables_resource_ids"] = []string{
+		primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/noneRouteTable",
+	}
+	primaryvnet["vwan_associated_routetable_resource_id"] = primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/defaultRouteTable"
+
+	terraformOptions.Vars = vars
+	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
+	assert.NoErrorf(t, err, "failed to init and plan")
+
+	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	numres := 9
+	require.Equalf(t, numres, len(plan.ResourcePlannedValuesMap), "expected %d resources to be created, got %d", numres, len(plan.ResourcePlannedValuesMap))
+
+	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, vhcres)
+	vhc := plan.ResourcePlannedValuesMap[vhcres]
+	require.Containsf(t, vhc.AttributeValues, "parent_id", "expected parent_id to be set")
+	assert.Equalf(t, primaryvnet["vwan_hub_resource_id"], vhc.AttributeValues["parent_id"], "expected parent_id to be %s", primaryvnet["vwan_hub_resource_id"])
+
+	require.Containsf(t, vhc.AttributeValues, "body", "expected body to be set")
+	var body models.HubVirtualNetworkConnectionBody
+	err = json.Unmarshal([]byte(vhc.AttributeValues["body"].(string)), &body)
+	require.NoErrorf(t, err, "Could not unmarshal virtual network peering body")
+
+	secured := primaryvnet["vwan_security_configuration"].(map[string]interface{})["secure_internet_traffic"]
+	assert.Equalf(t, secured, body.Properties.EnableInternetSecurity, "expected secure internet traffic toggle to be %s", secured)
+
+	assert.Equalf(t, primaryvnet["vwan_associated_routetable_resource_id"], body.Properties.RoutingConfiguration.AssociatedRouteTable.ID, "expected associated route table to be %s", primaryvnet["vwan_associated_routetable_resource_id"])
+	assert.EqualValuesf(t, primaryvnet["vwan_propagated_routetables_labels"], body.Properties.RoutingConfiguration.PropagatedRouteTables.Labels, "expected propagated route tables to be %v", primaryvnet["vwan_propagated_routetables_labels"])
+
+	assert.Lenf(t, body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs, 1, "expected length of propagated route tables to be 1")
+	for _, rt := range body.Properties.RoutingConfiguration.PropagatedRouteTables.IDs {
+		assert.Containsf(t, primaryvnet["vwan_propagated_routetables_resource_ids"], rt.ID, "expected propagated route tables to contain %s", rt.ID)
+	}
+}
+
 // TestVirtualNetworkCreateInvalidHubNetResId tests the regex of the
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {

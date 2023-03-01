@@ -503,6 +503,10 @@ map(object({
     vwan_hub_resource_id                     = optional(string, "")
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
+    vwan_security_configuration = optional(object({
+      secure_internet_traffic = optional(bool, false)
+      secure_private_traffic  = optional(bool, false)
+    }), {})
 
     tags = optional(map(string), {})
   }))
