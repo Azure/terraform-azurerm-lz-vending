@@ -4,6 +4,7 @@ name: Unit test
 on:
   pull_request_target:
     types: ['opened', 'reopened', 'synchronize', 'labeled']
+  merge_group:
   workflow_dispatch:
     inputs:
       test_filter:
@@ -47,6 +48,10 @@ jobs:
       ||
       (
         github.event_name == 'workflow_dispatch'
+      )
+      ||
+      (
+        github.event_name == 'merge_group'
       )
     strategy:
       fail-fast: false
