@@ -7,8 +7,9 @@ type HubVirtualNetworkConnectionBody struct {
 
 // HubVirtualNetworkConnectionBodyProperties represents the JSON property bag of a hub virtual network connection.
 type HubVirtualNetworkConnectionBodyProperties struct {
-	RemoteVirtualNetwork *HubVirtualNetworkConnectionBodyPropertiesRemoteVirtualNetwork `json:"remoteVirtualNetwork,omitempty"`
-	RoutingConfiguration *HubVirtualNetworkConnectionBodyPropertiesRoutingConfiguration `json:"routingConfiguration,omitempty"`
+	RemoteVirtualNetwork   *HubVirtualNetworkConnectionBodyPropertiesRemoteVirtualNetwork `json:"remoteVirtualNetwork,omitempty"`
+	RoutingConfiguration   *HubVirtualNetworkConnectionBodyPropertiesRoutingConfiguration `json:"routingConfiguration,omitempty"`
+	EnableInternetSecurity bool                                                           `json:"enableInternetSecurity,omitempty"`
 }
 
 // HubVirtualNetworkConnectionBodyPropertiesRemoteVirtualNetwork represents a reference to the remote virtual network.
