@@ -330,7 +330,7 @@ Default: `""`
 
 ### <a name="input_subscription_management_group_association_enabled"></a> [subscription\_management\_group\_association\_enabled](#input\_subscription\_management\_group\_association\_enabled)
 
-Description: Whether to create the `azurerm_management_group_association` resource.
+Description: Whether to create the `azurerm_management_group_subscription_association` resource.
 
 If enabled, the `subscription_management_group_id` must also be supplied.
 
@@ -523,6 +523,11 @@ The following resources are used by this module:
 ## Outputs
 
 The following outputs are exported:
+
+### <a name="output_management_group_subscription_association_id"></a> [management\_group\_subscription\_association\_id](#output\_management\_group\_subscription\_association\_id)
+
+Description: The management\_group\_subscription\_association\_id output is the ID of the management group subscription association.  
+Value will be null if `var.subscription_management_group_association_enabled` is false.
 
 ### <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id)
 

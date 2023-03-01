@@ -100,7 +100,7 @@ variable "subscription_management_group_association_enabled" {
   type        = bool
   default     = false
   description = <<DESCRIPTION
-Whether to create the `azurerm_management_group_association` resource.
+Whether to create the `azurerm_management_group_subscription_association` resource.
 
 If enabled, the `subscription_management_group_id` must also be supplied.
 DESCRIPTION
