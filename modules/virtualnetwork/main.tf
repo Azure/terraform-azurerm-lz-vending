@@ -147,6 +147,7 @@ resource "azapi_resource" "vhubconnection" {
   name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", azapi_resource.vnet[each.key].id)}")
   body = jsonencode({
     properties = {
+      enableInternetSecurity = each.value.vwan_security_configuration.secure_internet_traffic
       remoteVirtualNetwork = {
         id = local.virtual_network_resource_ids[each.key]
       }
@@ -155,8 +156,8 @@ resource "azapi_resource" "vhubconnection" {
           id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
         }
         propagatedRouteTables = {
-          ids    = local.vwan_propagated_routetables_resource_ids[each.key]
-          labels = local.vwan_propagated_routetables_labels[each.key]
+          ids    = each.value.vwan_security_configuration.secure_private_traffic == true ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
+          labels = each.value.vwan_security_configuration.secure_private_traffic == true ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
         }
       }
     }
