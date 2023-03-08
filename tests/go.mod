@@ -10,7 +10,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.0.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.0.0
 	github.com/google/uuid v1.3.0
-	github.com/gruntwork-io/terratest v0.41.12
+	github.com/gruntwork-io/terratest v0.41.15
 	github.com/matryer/try v0.0.0-20161228173917-9ac251b645a2
 	github.com/stretchr/testify v1.8.2
 	golang.org/x/sync v0.1.0

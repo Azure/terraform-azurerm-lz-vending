@@ -395,8 +395,8 @@ github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/ad
 github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFbcEtjT1g+wF4CSlocrBnw=
 github.com/gruntwork-io/go-commons v0.13.5 h1:+DYotbR6LNf/Cm68ESzf+oQQCaeYWb8T5dLDIBgkCVA=
 github.com/gruntwork-io/go-commons v0.13.5/go.mod h1:26eBZ3Ar2HSPWt5vCaQqqOVqRMq8J733bZ8R9vBt+Ws=
-github.com/gruntwork-io/terratest v0.41.12 h1:j+7i+YvdyNatyNJcwn0pgxwYv1uWDH5S+znLssh3KXk=
-github.com/gruntwork-io/terratest v0.41.12/go.mod h1:XHnt/nPqQ8v9LXzUZ3tj5QdM7JkRLaTBeiXP8lBelfk=
+github.com/gruntwork-io/terratest v0.41.15 h1:od3neRQRBuf+Zwz5SSByrf3F90iyqFanV9nFF/86uuM=
+github.com/gruntwork-io/terratest v0.41.15/go.mod h1:a9QNOPa3/nbsLy1ufNGT33X9sMRknun7qsf4bIVEbPo=
 github.com/hashicorp/errwrap v1.0.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
 github.com/hashicorp/errwrap v1.1.0 h1:OxrOeh75EUXMY8TBjag2fzXGZ40LB6IKw45YeGUDY2I=
 github.com/hashicorp/errwrap v1.1.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
