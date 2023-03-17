@@ -10,7 +10,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.0.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.0.0
 	github.com/google/uuid v1.3.0
-	github.com/gruntwork-io/terratest v0.41.15
+	github.com/gruntwork-io/terratest v0.41.16
 	github.com/matryer/try v0.0.0-20161228173917-9ac251b645a2
 	github.com/stretchr/testify v1.8.2
 	golang.org/x/sync v0.1.0
@@ -52,7 +52,7 @@ require (
 	github.com/gruntwork-io/go-commons v0.13.5 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-getter v1.7.0 // indirect
+	github.com/hashicorp/go-getter v1.7.1 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
