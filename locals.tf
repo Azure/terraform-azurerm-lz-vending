@@ -25,4 +25,8 @@ locals {
   # virtual_networks_merged is a map of virtual networks created, if the module has been enabled.
   # This is used in the outputs.tf file to return the virtual network resource ids.
   virtual_network_resource_ids = try(module.virtualnetwork[0].virtual_network_resource_ids, {})
+
+  # resource_group_ids is a map of resource groups created, if the module has been enabled.
+  # This is used in the outputs.tf file to return the resource group ids.
+  resource_group_ids = try(module.virtualnetwork[0].resource_group_ids, {})
 }

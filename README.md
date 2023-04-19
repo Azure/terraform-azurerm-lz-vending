@@ -529,6 +529,10 @@ The following outputs are exported:
 Description: The management\_group\_subscription\_association\_id output is the ID of the management group subscription association.  
 Value will be null if `var.subscription_management_group_association_enabled` is false.
 
+### <a name="output_resource_group_ids"></a> [resource\_group\_ids](#output\_resource\_group\_ids)
+
+Description: A map of resource group ids, keyed by the var.virtual\_networks input map. Only populated if the virtualnetwork submodule is enabled.
+
 ### <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id)
 
 Description: The subscription\_id is the Azure subscription id that resources have been deployed into.
