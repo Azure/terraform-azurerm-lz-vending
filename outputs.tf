@@ -14,7 +14,7 @@ output "virtual_network_resource_ids" {
 }
 
 output "virtual_network_resource_group_ids" {
-  value       = local.resource_group_ids
+  value       = local.virtual_network_resource_group_ids
   description = "A map of resource group ids, keyed by the var.virtual_networks input map. Only populated if the virtualnetwork submodule is enabled."
 }
 
