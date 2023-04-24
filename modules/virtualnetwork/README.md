@@ -219,6 +219,10 @@ The following resources are used by this module:
 
 The following outputs are exported:
 
+### <a name="output_resource_group_ids"></a> [resource\_group\_ids](#output\_resource\_group\_ids)
+
+Description: The created resource group IDs, expressed as a map.
+
 ### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
 
 Description: The created virtual network resource IDs, expressed as a map.

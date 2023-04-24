@@ -537,6 +537,10 @@ Description: The subscription\_id is the Azure subscription id that resources ha
 
 Description: The subscription\_resource\_id is the Azure subscription resource id that resources have been deployed into
 
+### <a name="output_virtual_network_resource_group_ids"></a> [virtual\_network\_resource\_group\_ids](#output\_virtual\_network\_resource\_group\_ids)
+
+Description: A map of resource group ids, keyed by the var.virtual\_networks input map. Only populated if the virtualnetwork submodule is enabled.
+
 ### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
 
 Description: A map of virtual network resource ids, keyed by the var.virtual\_networks input map. Only populated if the virtualnetwork submodule is enabled.

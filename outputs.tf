@@ -8,10 +8,14 @@ output "subscription_resource_id" {
   description = "The subscription_resource_id is the Azure subscription resource id that resources have been deployed into"
 }
 
-
 output "virtual_network_resource_ids" {
   value       = local.virtual_network_resource_ids
   description = "A map of virtual network resource ids, keyed by the var.virtual_networks input map. Only populated if the virtualnetwork submodule is enabled."
+}
+
+output "virtual_network_resource_group_ids" {
+  value       = local.virtual_network_resource_group_ids
+  description = "A map of resource group ids, keyed by the var.virtual_networks input map. Only populated if the virtualnetwork submodule is enabled."
 }
 
 output "management_group_subscription_association_id" {
