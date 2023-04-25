@@ -77,6 +77,9 @@ resource "azapi_update_resource" "vnet" {
       dhcpOptions = {
         dnsServers = each.value.dns_servers
       }
+      ddosProtectionPlan = {
+        id = each.value.ddos_protection_plan_id
+      }
     }
     tags = each.value.tags
   })
