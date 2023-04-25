@@ -143,6 +143,8 @@ map(object({
 
     dns_servers = optional(list(string), [])
 
+    ddos_protection_plan_id = optional(string, "")
+
     hub_network_resource_id         = optional(string, "")
     hub_peering_enabled             = optional(bool, false)
     hub_peering_name_tohub          = optional(string, "")
