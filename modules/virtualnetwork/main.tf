@@ -51,6 +51,7 @@ resource "azapi_resource" "vnet" {
       ddosProtectionPlan = {
         id = each.value.ddos_protection_plan_id
       }
+      enableDdosProtection = each.value.ddos_protection_plan_id != "" ? true : false
     }
   })
   tags = each.value.tags
@@ -80,6 +81,7 @@ resource "azapi_update_resource" "vnet" {
       ddosProtectionPlan = {
         id = each.value.ddos_protection_plan_id
       }
+      enableDdosProtection = each.value.ddos_protection_plan_id != "" ? true : false
     }
     tags = each.value.tags
   })
