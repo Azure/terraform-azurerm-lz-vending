@@ -403,6 +403,11 @@ Description: A map of the virtual networks to create. The map key must be known 
 
 - `dns_servers`: A list of DNS servers to use for the virtual network, e.g. `["192.168.0.1", "10.0.0.1"]`. If empty will use the Azure default DNS. [optional - default empty list]
 
+### DDOS protection plan
+
+- `ddos_protection_enabled`: Whether to enable ddos protection. [optional]
+- `ddos_protection_plan_id`: The resource ID of the protection plan to attach the vnet. [optional - but required if ddos\_protection\_enabled is `true`]
+
 ### Location
 
 - `location`: The location of the virtual network (and resource group if creation is enabled). [optional, will use `var.location` if not specified or empty string]
@@ -465,6 +470,9 @@ map(object({
     location = optional(string, "")
 
     dns_servers = optional(list(string), [])
+
+    ddos_protection_enabled = optional(bool, false)
+    ddos_protection_plan_id = optional(string, "")
 
     hub_network_resource_id         = optional(string, "")
     hub_peering_enabled             = optional(bool, false)

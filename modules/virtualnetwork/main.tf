@@ -79,12 +79,12 @@ resource "azapi_update_resource" "vnet" {
           dnsServers = each.value.dns_servers
         }
       },
-      coalesce(each.value.ddos_protection_enabled ? {
+      each.value.ddos_protection_enabled ? {
         ddosProtectionPlan = {
           id = each.value.ddos_protection_plan_id
         }
         enableDdosProtection = true
-      } : null, {})
+      } : null
     )
     tags = each.value.tags
   })
