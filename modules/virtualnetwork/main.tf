@@ -91,8 +91,8 @@ resource "azapi_update_resource" "vnet" {
         enableDdosProtection = true
       } : null
     )
+    tags = each.value.tags
   })
-  tags = each.value.tags
 }
 
 # azapi_resource.peering_hub_outbound creates one-way peering from the spoke to the supplied hub virtual network.
