@@ -41,17 +41,22 @@ resource "azapi_resource" "vnet" {
   name      = each.value.name
   location  = coalesce(each.value.location, var.location)
   body = jsonencode({
-    properties = {
-      addressSpace = {
-        addressPrefixes = each.value.address_space
-      }
-      dhcpOptions = {
-        dnsServers = each.value.dns_servers
-      }
-      ddosProtectionPlan = {
-        id = each.value.ddos_protection_plan_id
-      }
-    }
+    properties = merge(
+      {
+        addressSpace = {
+          addressPrefixes = each.value.address_space
+        }
+        dhcpOptions = {
+          dnsServers = each.value.dns_servers
+        }
+      },
+      each.value.ddos_protection_enabled ? {
+        ddosProtectionPlan = {
+          id = each.value.ddos_protection_plan_id
+        }
+        enableDdosProtection = true
+      } : null
+    )
   })
   tags = each.value.tags
   lifecycle {
@@ -86,8 +91,8 @@ resource "azapi_update_resource" "vnet" {
         enableDdosProtection = true
       } : null
     )
-    tags = each.value.tags
   })
+  tags = each.value.tags
 }
 
 # azapi_resource.peering_hub_outbound creates one-way peering from the spoke to the supplied hub virtual network.
