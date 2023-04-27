@@ -188,7 +188,7 @@ DESCRIPTION
       for k, v in var.virtual_networks :
       can(regex("^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/ddosProtectionPlans/[\\w-_.]{2,64}$", v.ddos_protection_plan_id)) if v.ddos_protection_enabled
     ])
-    error_message = "Hub network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/ddosProtectionPlans/my-protection_plan."
+    error_message = "Hub network resource id must be an Azure ddos protection plan resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/ddosProtectionPlans/my-protection-plan."
   }
 
   # validate hub network resource id for networks with hub peering enabled
