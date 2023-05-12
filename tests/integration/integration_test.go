@@ -5,13 +5,11 @@ package integration
 
 import (
 	"fmt"
-	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
+	"github.com/Azure/terratest-terraform-fluent/check"
+	"github.com/Azure/terratest-terraform-fluent/setuptest"
 	"github.com/stretchr/testify/require"
 )
 
@@ -23,12 +21,7 @@ const (
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpoke(t *testing.T) {
 	t.Parallel()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
 	primaryvnet["hub_peering_enabled"] = true
@@ -36,11 +29,10 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	primaryvnet["resource_group_lock_enabled"] = true
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = true
-	terraformOptions.Vars = v
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
 
-	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
 		"module.subscription[0].azurerm_subscription.this[0]",
@@ -51,17 +43,13 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
 		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 	}
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
+
+	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
+		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
 	}
-	// check bit field is correct
-	telem := plan.ResourcePlannedValuesMap["azapi_resource.telemetry_root[0]"]
-	require.Contains(t, telem.AttributeValues, "name")
-	telemName := telem.AttributeValues["name"].(string)
-	telemBf := strings.Split(telemName, "_")[2]
-	expectBf := "00000b05"
-	assert.Equalf(t, expectBf, telemBf, "expected bit field to be %s, but got %s", expectBf, telemBf)
+
+	check.InPlan(test.Plan).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000b05").ErrorIsNil(t)
 }
 
 // TestIntegrationVwan tests the resource plan when creating a new subscription,
@@ -69,23 +57,17 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 // RG resource lock is disabled
 func TestIntegrationVwan(t *testing.T) {
 	t.Parallel()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
 	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualHubs/testhub"
 	primaryvnet["vwan_connection_enabled"] = true
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = true
-	terraformOptions.Vars = v
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
 
-	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
 		"module.subscription[0].azurerm_subscription.this[0]",
@@ -94,17 +76,13 @@ func TestIntegrationVwan(t *testing.T) {
 		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
 		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 	}
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
+
+	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
+		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
 	}
-	// check bit field is correct
-	telem := plan.ResourcePlannedValuesMap["azapi_resource.telemetry_root[0]"]
-	require.Contains(t, telem.AttributeValues, "name")
-	telemName := telem.AttributeValues["name"].(string)
-	telemBf := strings.Split(telemName, "_")[2]
-	expectBf := "00000505"
-	assert.Equalf(t, expectBf, telemBf, "expected bit field to be %s, but got %s", expectBf, telemBf)
+
+	check.InPlan(test.Plan).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000505").ErrorIsNil(t)
 }
 
 // TestIntegrationSubscriptionAndRoleAssignmentOnly tests the resource plan when creating a new subscription,
@@ -113,12 +91,7 @@ func TestIntegrationVwan(t *testing.T) {
 // when a dependent resource is disabled through the use of count.
 func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 	t.Parallel()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+
 	v := getMockInputVariables()
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = false
@@ -130,39 +103,29 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 			"relative_scope": "",
 		},
 	}
-	terraformOptions.Vars = v
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
 
-	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
 		"module.subscription[0].azurerm_subscription.this[0]",
 		"module.roleassignment[\"ra\"].azurerm_role_assignment.this",
 	}
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
+
+	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
+		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
 	}
-	// check bit field is correct
-	telem := plan.ResourcePlannedValuesMap["azapi_resource.telemetry_root[0]"]
-	require.Contains(t, telem.AttributeValues, "name")
-	telemName := telem.AttributeValues["name"].(string)
-	telemBf := strings.Split(telemName, "_")[2]
-	expectBf := "00010005"
-	assert.Equalf(t, expectBf, telemBf, "expected bit field to be %s, but got %s", expectBf, telemBf)
+
+	check.InPlan(test.Plan).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00010005").ErrorIsNil(t)
 }
 
 // TestIntegrationHubAndSpokeExistingSubscription tests the resource plan when supplying an existing subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	t.Parallel()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
 
@@ -172,11 +135,10 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
 	v["virtual_network_enabled"] = true
 	delete(v, "subscription_tags")
-	terraformOptions.Vars = v
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
 
-	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
 		"module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
@@ -185,29 +147,20 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
 	}
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
+
+	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
+		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
 	}
-	// check bit field is correct
-	telem := plan.ResourcePlannedValuesMap["azapi_resource.telemetry_root[0]"]
-	require.Contains(t, telem.AttributeValues, "name")
-	telemName := telem.AttributeValues["name"].(string)
-	telemBf := strings.Split(telemName, "_")[2]
-	expectBf := "00000300"
-	assert.Equalf(t, expectBf, telemBf, "expected bit field to be %s, but got %s", expectBf, telemBf)
+
+	check.InPlan(test.Plan).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000300").ErrorIsNil(t)
 }
 
 // TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc tests the resource plan when supplying an existing subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
 	t.Parallel()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
 	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
@@ -218,11 +171,11 @@ func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
 	v["subscription_management_group_association_enabled"] = true
 	v["subscription_management_group_id"] = "Test"
 	delete(v, "subscription_tags")
-	terraformOptions.Vars = v
 
-	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
 		"module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
@@ -232,33 +185,26 @@ func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
 		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
 		"module.subscription[0].azurerm_management_group_subscription_association.this[0]",
 	}
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
+
+	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
+		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
 	}
+
 	// check bit field is correct
-	telem := plan.ResourcePlannedValuesMap["azapi_resource.telemetry_root[0]"]
-	require.Contains(t, telem.AttributeValues, "name")
-	telemName := telem.AttributeValues["name"].(string)
-	telemBf := strings.Split(telemName, "_")[2]
-	expectBf := "00000302"
-	assert.Equalf(t, expectBf, telemBf, "expected bit field to be %s, but got %s", expectBf, telemBf)
+	check.InPlan(test.Plan).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000302").ErrorIsNil(t)
 }
 
 // TestIntegrationWithYaml tests the use of the module with a for_each loop
 // using YAML files as input.
 func TestIntegrationWithYaml(t *testing.T) {
 	t.Parallel()
-	testDir := "testdata/" + t.Name()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	require.NoErrorf(t, err, "failed to generate plan: %v", err)
+	testDir := "testdata/" + t.Name()
+
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(nil).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
 
 	resources := []string{
 		"module.lz_vending[\"%s\"].azapi_resource.telemetry_root[0]",
@@ -271,16 +217,18 @@ func TestIntegrationWithYaml(t *testing.T) {
 		"module.lz_vending[\"%s\"].module.roleassignment[\"my_ra_1\"].azurerm_role_assignment.this",
 		"module.lz_vending[\"%s\"].module.roleassignment[\"my_ra_2\"].azurerm_role_assignment.this",
 	}
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources)*3, "expected %d resources to be created, but got %d", len(resources)*3, len(plan.ResourcePlannedValuesMap))
+
+	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources) * 3).ErrorIsNil(t)
+
 	lzs := []string{
 		"landing_zone_1.yaml",
 		"landing_zone_2.yaml",
 		"landing_zone_3.yaml",
 	}
-	for _, r := range resources {
+	for _, v := range resources {
 		for _, lz := range lzs {
-			res := fmt.Sprintf(r, lz)
-			terraform.AssertPlannedValuesMapKeyExists(t, plan, res)
+			res := fmt.Sprintf(v, lz)
+			check.InPlan(test.Plan).That(res).Exists().ErrorIsNil(t)
 		}
 	}
 }
@@ -289,24 +237,22 @@ func TestIntegrationWithYaml(t *testing.T) {
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationDisableTelemetry(t *testing.T) {
 	t.Parallel()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, "")
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	defer cleanup()
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
+
 	v := getMockInputVariables()
 	v["subscription_alias_enabled"] = true
 	v["disable_telemetry"] = true
-	terraformOptions.Vars = v
 
-	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "Unable to create providers.tf: %v", err)
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	assert.NoError(t, err)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
 	resources := []string{
 		"module.subscription[0].azurerm_subscription.this[0]",
 	}
-	assert.Lenf(t, plan.ResourcePlannedValuesMap, len(resources), "expected %d resources to be created, but got %d", len(resources), len(plan.ResourcePlannedValuesMap))
+
+	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		terraform.AssertPlannedValuesMapKeyExists(t, plan, v)
+		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
 	}
 }
 

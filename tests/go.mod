@@ -9,7 +9,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork v1.1.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.1.1
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.1.0
-	github.com/Azure/terratest-terraform-fluent v0.3.0
+	github.com/Azure/terratest-terraform-fluent v0.4.0
 	github.com/google/uuid v1.3.0
 	github.com/gruntwork-io/terratest v0.41.24
 	github.com/matryer/try v0.0.0-20161228173917-9ac251b645a2

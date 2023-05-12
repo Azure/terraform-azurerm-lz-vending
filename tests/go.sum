@@ -204,6 +204,8 @@ github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscripti
 github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.1.0/go.mod h1:iLq8GwpQhj09gpI4EdELwifR9kHrb/Q0LThq6iQq9yY=
 github.com/Azure/terratest-terraform-fluent v0.3.0 h1:2b+61/FO8JMr6ZOF38PAoPqKUw0kuSC6u1Xvwqv+GYw=
 github.com/Azure/terratest-terraform-fluent v0.3.0/go.mod h1:N1p30pw1mtRBSh4OnMWmqQ9rdaBYI8eK2e/7I3kSj0s=
+github.com/Azure/terratest-terraform-fluent v0.4.0 h1:1TRr2Th8ecbe+dGkSm8/7cV6lH2KCLQEcnV6n5no+gQ=
+github.com/Azure/terratest-terraform-fluent v0.4.0/go.mod h1:IwNTswWOkFwjtLVQIr+Y4CmV17457c3AbxcTp7rDGBY=
 github.com/AzureAD/microsoft-authentication-library-for-go v1.0.0 h1:OBhqkivkhkMqLPymWEppkm7vgPQY2XsHoEkaMQ0AdZY=
 github.com/AzureAD/microsoft-authentication-library-for-go v1.0.0/go.mod h1:kgDmCTgBzIEPFElEF+FK0SdjAor06dRq2Go927dnQ6o=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
