@@ -330,7 +330,7 @@ Default: `""`
 
 ### <a name="input_subscription_management_group_association_enabled"></a> [subscription\_management\_group\_association\_enabled](#input\_subscription\_management\_group\_association\_enabled)
 
-Description: Whether to create the `azurerm_management_group_association` resource.
+Description: Whether to create the `azurerm_management_group_subscription_association` resource.
 
 If enabled, the `subscription_management_group_id` must also be supplied.
 
@@ -503,6 +503,10 @@ map(object({
     vwan_hub_resource_id                     = optional(string, "")
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
+    vwan_security_configuration = optional(object({
+      secure_internet_traffic = optional(bool, false)
+      secure_private_traffic  = optional(bool, false)
+    }), {})
 
     tags = optional(map(string), {})
   }))
@@ -520,6 +524,11 @@ The following resources are used by this module:
 
 The following outputs are exported:
 
+### <a name="output_management_group_subscription_association_id"></a> [management\_group\_subscription\_association\_id](#output\_management\_group\_subscription\_association\_id)
+
+Description: The management\_group\_subscription\_association\_id output is the ID of the management group subscription association.  
+Value will be null if `var.subscription_management_group_association_enabled` is false.
+
 ### <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id)
 
 Description: The subscription\_id is the Azure subscription id that resources have been deployed into.
@@ -527,6 +536,10 @@ Description: The subscription\_id is the Azure subscription id that resources ha
 ### <a name="output_subscription_resource_id"></a> [subscription\_resource\_id](#output\_subscription\_resource\_id)
 
 Description: The subscription\_resource\_id is the Azure subscription resource id that resources have been deployed into
+
+### <a name="output_virtual_network_resource_group_ids"></a> [virtual\_network\_resource\_group\_ids](#output\_virtual\_network\_resource\_group\_ids)
+
+Description: A map of resource group ids, keyed by the var.virtual\_networks input map. Only populated if the virtualnetwork submodule is enabled.
 
 ### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
 

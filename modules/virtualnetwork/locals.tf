@@ -44,6 +44,17 @@ locals {
     ) if v.vwan_connection_enabled
   }
 
+  vwan_propagated_noneroutetables_resource_ids = {
+    for k, v in var.virtual_networks : k => coalescelist(
+      [
+        for i in v.vwan_propagated_routetables_resource_ids : { id = i }
+      ],
+      [
+        { id = "${v.vwan_hub_resource_id}/hubRouteTables/noneRouteTable" }
+      ]
+    ) if v.vwan_connection_enabled
+  }
+
   # vwan_propagated_routetables_labels is a map of the virtual network vwan propagated routetables labels
   # for each virtual network that enabled for vwan connectivity.
   vwan_propagated_routetables_labels = {

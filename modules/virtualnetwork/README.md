@@ -180,6 +180,10 @@ map(object({
     vwan_hub_resource_id                     = optional(string, "")
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
+    vwan_security_configuration = optional(object({
+      secure_internet_traffic = optional(bool, false)
+      secure_private_traffic  = optional(bool, false)
+    }), {})
 
     tags = optional(map(string), {})
   }))
@@ -214,6 +218,10 @@ The following resources are used by this module:
 ## Outputs
 
 The following outputs are exported:
+
+### <a name="output_resource_group_ids"></a> [resource\_group\_ids](#output\_resource\_group\_ids)
+
+Description: The created resource group IDs, expressed as a map.
 
 ### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
 
