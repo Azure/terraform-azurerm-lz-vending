@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
-	"github.com/matt-FFFFFF/terratest-terraform-fluent/check"
-	"github.com/matt-FFFFFF/terratest-terraform-fluent/setuptest"
+	"github.com/Azure/terratest-terraform-fluent/check"
+	"github.com/Azure/terratest-terraform-fluent/setuptest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,12 +27,12 @@ func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
 		"role_definition": "Storage Blob Data Contributor",
 	}
 	testDir := filepath.Join("testdata", t.Name())
-	test := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, test.Err)
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(2).IfNotFail(t)
-	defer test.DestroyWithRetry(t, setuptest.DefaultRetry)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(2).ErrorIsNil(t)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry)
 	err = test.ApplyIdempotent(t)
 	assert.NoError(t, err)
 }
@@ -53,12 +53,12 @@ func TestDeployRoleAssignmentDefinitionId(t *testing.T) {
 	}
 
 	testDir := filepath.Join("testdata/", t.Name())
-	test := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	defer test.Cleanup()
-	require.NoError(t, test.Err)
-	check.InPlan(test.Plan).NumberOfResourcesEquals(2).IfNotFailNow(t)
+	require.NoError(t, err)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(2).ErrorIsNilFatal(t)
 
-	defer test.DestroyWithRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry)
 
 	err = test.ApplyIdempotent(t)
 	assert.NoError(t, err)

@@ -8,9 +8,9 @@ import (
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/models"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
+	"github.com/Azure/terratest-terraform-fluent/check"
+	"github.com/Azure/terratest-terraform-fluent/setuptest"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/matt-FFFFFF/terratest-terraform-fluent/check"
-	"github.com/matt-FFFFFF/terratest-terraform-fluent/setuptest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -25,8 +25,8 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	test := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, test.Err)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
 	defer test.Cleanup()
 
 	resources := []string{
@@ -39,29 +39,19 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).IfNotFailNow(t)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
 		check.InPlan(test.Plan).That(r).Exists()
 	}
 
 	// Loop through each virtual network and check the values
-	vns := vars["virtual_networks"].(map[string]map[string]interface{})
+	vns := v["virtual_networks"].(map[string]map[string]interface{})
 	for k, v := range vns {
-		rg := plan.ResourcePlannedValuesMap[fmt.Sprintf("azapi_resource.rg[\"%s-rg\"]", k)]
-		vnet := plan.ResourcePlannedValuesMap[fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)]
-
-		require.Containsf(t, rg.AttributeValues, "name", "resource group %s does not contain name", k)
-		assert.Equal(t, v["resource_group_name"].(string), rg.AttributeValues["name"])
-
-		require.Containsf(t, vnet.AttributeValues, "name", "virtual network %s does not contain name", k)
-		assert.Equal(t, v["name"].(string), vnet.AttributeValues["name"])
-
-		require.Containsf(t, rg.AttributeValues, "location", "resource group %s does not contain location", k)
-		assert.Equalf(t, v["location"].(string), rg.AttributeValues["location"], "resource group %s location does not match %s", k, v["location"].(string))
-
-		require.Containsf(t, vnet.AttributeValues, "location", "virtual network %s does not contain location", k)
-		assert.Equalf(t, v["location"].(string), vnet.AttributeValues["location"], "virtual network %s location does not match %s", k, v["location"].(string))
+		check.InPlan(test.Plan).That(fmt.Sprintf("azapi_resource.rg[\"%s-rg\"]", k)).Key("name").HasValue(v["resource_group_name"].(string))
+		check.InPlan(test.Plan).That(fmt.Sprintf("azapi_resource.rg[\"%s-rg\"]", k)).Key("location").HasValue(v["location"].(string))
+		check.InPlan(test.Plan).That(fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)).Key("name").HasValue(v["name"].(string))
+		check.InPlan(test.Plan).That(fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)).Key("location").HasValue(v["location"].(string))
 
 		var vnb models.VirtualNetworkBody
 		require.Containsf(t, vnet.AttributeValues, "body", "virtual network %s does not contain body", k)

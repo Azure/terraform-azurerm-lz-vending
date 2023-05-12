@@ -8,9 +8,9 @@ import (
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/azureutils"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
+	"github.com/Azure/terratest-terraform-fluent/setuptest"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/matt-FFFFFF/terratest-terraform-fluent/setuptest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -26,10 +26,9 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 
 	v, err := getValidInputVariables(billingScope)
 	require.NoError(t, err)
-	test := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, test.Err)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
 	defer test.Cleanup()
-	require.NoError(t, test.Err)
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.
@@ -41,7 +40,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 		t.Logf("cannot cancel subscription: %v", err)
 	}()
 
-	defer test.DestroyWithRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry)
 	err = test.ApplyIdempotent(t)
 	assert.NoError(t, err)
 
@@ -64,10 +63,10 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	v["subscription_management_group_association_enabled"] = true
 
 	testDir := filepath.Join("testdata", t.Name())
-	test := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, test.Err)
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
 	defer test.Cleanup()
-	require.NoError(t, test.Err)
+	require.NoError(t, err)
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.
@@ -81,7 +80,7 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
-	defer test.DestroyWithRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry)
 	err = test.ApplyIdempotent(t)
 	assert.NoError(t, err)
 

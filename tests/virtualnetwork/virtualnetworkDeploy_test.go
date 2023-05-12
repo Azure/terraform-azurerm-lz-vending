@@ -47,7 +47,7 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	}
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
+	defer utils.TerraformDestroyRetry(t, terraformOptions, 20*time.Second, 6)
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	assert.NoError(t, err)
 
@@ -93,7 +93,7 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 	}
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
+	defer utils.TerraformDestroyRetry(t, terraformOptions, 20*time.Second, 6)
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	assert.NoError(t, err)
 
@@ -148,7 +148,7 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	}
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
+	defer utils.TerraformDestroyRetry(t, terraformOptions, 20*time.Second, 6)
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	assert.NoError(t, err)
 }
@@ -198,7 +198,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	// due to eventual consistency issues
 	// Vhubs cannot be destroyed whilst the routing service is still provisioning
 	// hence extended delay
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 5*time.Minute, 5)
+	defer utils.TerraformDestroyRetry(t, terraformOptions, 5*time.Minute, 5)
 }
 
 // TestDeployVirtualNetworkSubnetIdempotency tests that we can make changes
@@ -223,7 +223,7 @@ func TestDeployVirtualNetworkSubnetIdempotency(t *testing.T) {
 	require.NoError(t, err)
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 6)
+	defer utils.TerraformDestroyRetry(t, terraformOptions, 20*time.Second, 6)
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	require.NoError(t, err)
 
@@ -284,7 +284,7 @@ func TestDeployVirtualNetworkValidMeshPeering(t *testing.T) {
 	// due to eventual consistency issues
 	// Vhubs cannot be destroyed whilst the routing service is still provisioning
 	// hence extended delay
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 5*time.Second, 6)
+	defer utils.TerraformDestroyRetry(t, terraformOptions, 5*time.Second, 6)
 }
 
 func getValidInputVariables() (map[string]interface{}, error) {

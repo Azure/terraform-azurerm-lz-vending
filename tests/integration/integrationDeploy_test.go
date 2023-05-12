@@ -83,7 +83,7 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency issues
-	defer utils.TerraformDestroyWithRetry(t, terraformOptions, 20*time.Second, 3)
+	defer utils.TerraformDestroyRetry(t, terraformOptions, 20*time.Second, 3)
 	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
 	assert.NoError(t, err)
 

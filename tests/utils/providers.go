@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/matt-FFFFFF/terratest-terraform-fluent/setuptest"
+	"github.com/Azure/terratest-terraform-fluent/setuptest"
 )
 
 // RequiredProvidersData is the data struct for the Terraform required providers block.
