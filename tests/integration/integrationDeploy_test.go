@@ -3,13 +3,13 @@ package integration
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/azureutils"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
+	"github.com/Azure/terratest-terraform-fluent/check"
+	"github.com/Azure/terratest-terraform-fluent/setuptest"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
@@ -18,22 +18,14 @@ import (
 
 func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	t.Parallel()
+
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
-	tmp, cleanup, err := utils.CopyTerraformFolderToTempAndCleanUp(t, moduleDir, testDir)
-	defer cleanup()
-	require.NoErrorf(t, err, "failed to copy module to temp: %v", err)
-	err = utils.GenerateRequiredProvidersFile(utils.NewRequiredProvidersData(), filepath.Clean(tmp+"/terraform.tf"))
-	require.NoErrorf(t, err, "failed to create terraform.tf: %v", err)
-	require.NoErrorf(t, utils.CreateTerraformProvidersFile(tmp), "failed to create terraform providers file")
-
-	terraformOptions := utils.GetDefaultTerraformOptions(t, tmp)
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables")
-	terraformOptions.Vars = v
-
-	plan, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
-	require.NoErrorf(t, err, "failed to init and plan")
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
 
 	// get the random hex name from vars
 	name := v["subscription_alias_name"].(string)
@@ -51,17 +43,18 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 		"module.lz_vending.module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
 		"module.lz_vending.module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 	}
+
 	// Require len(resources)+1 because role assignment address is not determinable here, see below
-	require.Lenf(t, plan.ResourcePlannedValuesMap, len(resources)+1, "expected %d resources to be created, but got %d", len(resources)+1, len(plan.ResourcePlannedValuesMap))
-	for _, r := range resources {
-		require.Contains(t, plan.ResourcePlannedValuesMap, r, "expected resource %s to be planned", r)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources) + 1).ErrorIsNil(t)
+	for _, v := range resources {
+		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
 	}
 
 	// As the map key of the role assignment is a predictable UUID based on the object ID
 	// of the calling identity, we cannot search for the literal value of the role assignment.
 	// Instead, we search for the role assignment prefix in the ResourcePlannedValuesMap.
 	i := 0
-	for k := range plan.ResourcePlannedValuesMap {
+	for k := range test.Plan.ResourceChangesMap {
 		if !strings.Contains(k, "module.lz_vending.module.roleassignment[") {
 			continue
 		}
@@ -83,11 +76,10 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency issues
-	defer utils.TerraformDestroyRetry(t, terraformOptions, 20*time.Second, 3)
-	_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
-	assert.NoError(t, err)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry)
+	test.ApplyIdempotent(t).ErrorIsNil(t)
 
-	id, err := terraform.OutputRequiredE(t, terraformOptions, "subscription_id")
+	id, err := terraform.OutputRequiredE(t, test.Options, "subscription_id")
 	assert.NoErrorf(t, err, "failed to get subscription id output")
 	u, err = uuid.Parse(id)
 	assert.NoErrorf(t, err, "cannot parse subscription id as uuid: %s", id)
