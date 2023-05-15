@@ -41,8 +41,7 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	}()
 
 	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
-	err = test.ApplyIdempotent(t)
-	assert.NoError(t, err)
+	test.ApplyIdempotent(t).ErrorIsNil(t)
 
 	sid, err := terraform.OutputE(t, test.Options, "subscription_id")
 	assert.NoError(t, err)
@@ -81,8 +80,7 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
 	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
-	err = test.ApplyIdempotent(t)
-	assert.NoError(t, err)
+	test.ApplyIdempotent(t).ErrorIsNil(t)
 
 	sid, err := terraform.OutputE(t, test.Options, "subscription_id")
 	assert.NoError(t, err)
@@ -92,12 +90,6 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 
 	err = azureutils.IsSubscriptionInManagementGroup(t, u, v["subscription_management_group_id"].(string))
 	assert.NoErrorf(t, err, "subscription %s is not in management group %s", sid, v["subscription_management_group_id"].(string))
-
-	// removed as azurerm_management_group_subscription_association handles this for us
-	// tid := os.Getenv("AZURE_TENANT_ID")
-	// if err := setSubscriptionManagementGroup(u, tid); err != nil {
-	// 	t.Logf("could not move subscription to management group %s: %s", tid, err)
-	// }
 }
 
 // getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.

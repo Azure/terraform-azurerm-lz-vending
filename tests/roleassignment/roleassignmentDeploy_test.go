@@ -9,7 +9,6 @@ import (
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
 	"github.com/Azure/terratest-terraform-fluent/check"
 	"github.com/Azure/terratest-terraform-fluent/setuptest"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -33,8 +32,7 @@ func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
 
 	check.InPlan(test.Plan).NumberOfResourcesEquals(2).ErrorIsNil(t)
 	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
-	err = test.ApplyIdempotent(t)
-	assert.NoError(t, err)
+	test.ApplyIdempotent(t).ErrorIsNil(t)
 }
 
 // TestDeployRoleAssignmentDefinitionId tests the deployment of a role assignment
@@ -60,6 +58,5 @@ func TestDeployRoleAssignmentDefinitionId(t *testing.T) {
 
 	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
 
-	err = test.ApplyIdempotent(t)
-	assert.NoError(t, err)
+	test.ApplyIdempotent(t).ErrorIsNil(t)
 }
