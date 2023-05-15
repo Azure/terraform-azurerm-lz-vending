@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/azureutils"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
@@ -163,7 +164,11 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	}
 
 	// defer terraform destroy with retry
-	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
+	rty := setuptest.Retry{
+		Max:  3,
+		Wait: 10 * time.Minute,
+	}
+	defer test.DestroyRetry(t, rty) //nolint:errcheck
 	test.ApplyIdempotent(t).ErrorIsNil(t)
 }
 

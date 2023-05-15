@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/azureutils"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
@@ -76,7 +77,11 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency issues
-	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
+	rty := setuptest.Retry{
+		Max:  3,
+		Wait: 10 * time.Minute,
+	}
+	defer test.DestroyRetry(t, rty) //nolint:errcheck
 	test.ApplyIdempotent(t).ErrorIsNil(t)
 
 	id, err := terraform.OutputRequiredE(t, test.Options, "subscription_id")
