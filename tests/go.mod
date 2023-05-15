@@ -1,6 +1,6 @@
 module github.com/Azure/terraform-azurerm-lz-vending/tests
 
-go 1.18
+go 1.20
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.6.0
