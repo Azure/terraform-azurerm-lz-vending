@@ -15,6 +15,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 )
 
+// OidcCredential contains the fields needed to authenticate to Azure using an OIDC token
 type OidcCredential struct {
 	requestToken  string
 	requestUrl    string
@@ -23,6 +24,7 @@ type OidcCredential struct {
 	cred          *azidentity.ClientAssertionCredential
 }
 
+// OidcCredentialOptions contains the fields needed to create an OidcCredential
 type OidcCredentialOptions struct {
 	azcore.ClientOptions
 	TenantID      string
@@ -33,6 +35,7 @@ type OidcCredentialOptions struct {
 	TokenFilePath string
 }
 
+// NewOidcCredential creates a new OidcCredential
 func NewOidcCredential(options *OidcCredentialOptions) (*OidcCredential, error) {
 	w := &OidcCredential{
 		requestToken:  options.RequestToken,
@@ -50,6 +53,7 @@ func NewOidcCredential(options *OidcCredentialOptions) (*OidcCredential, error) 
 	return w, nil
 }
 
+// GetToken gets a new token from the credential
 func (w *OidcCredential) GetToken(ctx context.Context, opts policy.TokenRequestOptions) (azcore.AccessToken, error) {
 	return w.cred.GetToken(ctx, opts)
 }

@@ -32,7 +32,7 @@ func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
 	defer test.Cleanup()
 
 	check.InPlan(test.Plan).NumberOfResourcesEquals(2).ErrorIsNil(t)
-	defer test.DestroyRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
 	err = test.ApplyIdempotent(t)
 	assert.NoError(t, err)
 }
@@ -58,7 +58,7 @@ func TestDeployRoleAssignmentDefinitionId(t *testing.T) {
 	require.NoError(t, err)
 	check.InPlan(test.Plan).NumberOfResourcesEquals(2).ErrorIsNilFatal(t)
 
-	defer test.DestroyRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
 
 	err = test.ApplyIdempotent(t)
 	assert.NoError(t, err)

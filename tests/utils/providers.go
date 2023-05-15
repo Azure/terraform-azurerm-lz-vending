@@ -45,6 +45,7 @@ var AzureRmAndRequiredProviders setuptest.PrepFunc = func(resp setuptest.Respons
 	return generateRequiredProvidersFile(newRequiredProvidersData(), filepath.Clean(resp.TmpDir+"/terraform.tf"))
 }
 
+// RequiredProviders is a setuptest.SetupTestPrepFunc that will create a required providers file in the given temporary directory.
 var RequiredProviders setuptest.PrepFunc = func(resp setuptest.Response) error {
 	return generateRequiredProvidersFile(newRequiredProvidersData(), filepath.Clean(resp.TmpDir+"/terraform.tf"))
 }

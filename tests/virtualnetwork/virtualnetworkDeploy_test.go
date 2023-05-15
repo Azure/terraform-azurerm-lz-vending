@@ -28,7 +28,7 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(8)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(8).ErrorIsNil(t)
 
 	resources := []string{
 		"azapi_resource.vnet[\"primary\"]",
@@ -41,7 +41,7 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	}
 
 	// defer terraform destroy with retry
-	defer test.DestroyRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
 	test.ApplyIdempotent(t).ErrorIsNil(t)
 
 	// check there two outputs for the virtual network resource ids
@@ -67,7 +67,7 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(8)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(8).ErrorIsNil(t)
 
 	resources := []string{
 		"azapi_resource.vnet[\"primary\"]",
@@ -80,7 +80,7 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 	}
 
 	// defer terraform destroy with retry
-	defer test.DestroyRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
 	test.ApplyIdempotent(t).ErrorIsNil(t)
 
 	// check there two outputs for the virtual network resource ids
@@ -109,7 +109,7 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(14)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(14).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
@@ -126,7 +126,7 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	}
 
 	// defer terraform destroy with retry
-	defer test.DestroyRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
 	test.ApplyIdempotent(t).ErrorIsNil(t)
 }
 
@@ -148,7 +148,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(13)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(13).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
@@ -163,7 +163,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	}
 
 	// defer terraform destroy with retry
-	defer test.DestroyRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
 	test.ApplyIdempotent(t).ErrorIsNil(t)
 }
 
@@ -183,7 +183,7 @@ func TestDeployVirtualNetworkSubnetIdempotency(t *testing.T) {
 	defer test.Cleanup()
 
 	// defer terraform destroy with retry
-	defer test.DestroyRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
 	test.ApplyIdempotent(t).ErrorIsNil(t)
 
 	// test an update to vnet address space, then check for subnet still existing
@@ -216,7 +216,7 @@ func TestDeployVirtualNetworkValidMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(10)
+	check.InPlan(test.Plan).NumberOfResourcesEquals(10).ErrorIsNil(t)
 
 	resources := []string{
 		"azapi_resource.vnet[\"primary\"]",
@@ -231,7 +231,7 @@ func TestDeployVirtualNetworkValidMeshPeering(t *testing.T) {
 	}
 
 	// defer terraform destroy with retry
-	defer test.DestroyRetry(t, setuptest.DefaultRetry)
+	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
 	test.ApplyIdempotent(t).ErrorIsNil(t)
 }
 
