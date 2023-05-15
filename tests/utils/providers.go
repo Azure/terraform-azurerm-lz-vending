@@ -45,6 +45,10 @@ var AzureRmAndRequiredProviders setuptest.PrepFunc = func(resp setuptest.Respons
 	return generateRequiredProvidersFile(newRequiredProvidersData(), filepath.Clean(resp.TmpDir+"/terraform.tf"))
 }
 
+var RequiredProviders setuptest.PrepFunc = func(resp setuptest.Response) error {
+	return generateRequiredProvidersFile(newRequiredProvidersData(), filepath.Clean(resp.TmpDir+"/terraform.tf"))
+}
+
 func generateRequiredProviders(data RequiredProvidersData, w io.Writer) error {
 	tmpl := template.Must(template.New("terraformtf").Parse(requiredProvidersContent))
 	return tmpl.Execute(w, data)

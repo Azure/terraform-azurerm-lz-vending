@@ -202,7 +202,7 @@ func TestIntegrationWithYaml(t *testing.T) {
 
 	testDir := "testdata/" + t.Name()
 
-	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(nil).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(nil).InitPlanShowWithPrepFunc(t, utils.RequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 

@@ -85,7 +85,7 @@ func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	defer test.Cleanup()
 
-	assert.ErrorContains(t, err, "A valid billing scope starts with /providers/Microsoft.Billing/billingAccounts/ and is case sensitive.")
+	assert.Contains(t, utils.SanitiseErrorMessage(err), "A valid billing scope starts with /providers/Microsoft.Billing/billingAccounts/ and is case sensitive.")
 }
 
 // TestSubscriptionAliasCreateInvalidWorkload tests the validation function of the subscription_workload variable.
@@ -110,7 +110,7 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	defer test.Cleanup()
 
-	assert.ErrorContains(t, err, "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
+	assert.Contains(t, utils.SanitiseErrorMessage(err), "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
 }
 
 // TestSubscriptionAliasCreateInvalidManagementGroupIdLength tests the validation function of the
@@ -123,7 +123,7 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	defer test.Cleanup()
 
-	assert.ErrorContains(t, err, "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
+	assert.Contains(t, utils.SanitiseErrorMessage(err), "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
 }
 
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.

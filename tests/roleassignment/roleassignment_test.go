@@ -53,19 +53,23 @@ func TestRoleAssignmentInvalidScopes(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	v["role_assignment_scope"] = "/"
-	testTenant, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, err)
-	defer testTenant.Cleanup()
 	errString := "Must begin with a subscription scope, e.g. `/subscriptions/00000000-0000-0000-0000-000000000000`. All letters must be lowercase in the subscription id."
-	assert.Contains(t, err, errString)
 
-	// test management group scope error
-	v["role_assignment_scope"] = "/providers/Microsoft.Management/managementGroups/myMg"
-	testMg, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, err)
-	defer testMg.Cleanup()
-	assert.Contains(t, err, errString)
+	t.Run("tenant", func(t *testing.T) {
+		v := v
+		v["role_assignment_scope"] = "/"
+		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+		defer test.Cleanup()
+		assert.Contains(t, utils.SanitiseErrorMessage(err), errString)
+	})
+
+	t.Run("managementGroup", func(t *testing.T) {
+		v := v
+		v["role_assignment_scope"] = "/providers/Microsoft.Management/managementGroups/myMg"
+		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+		defer test.Cleanup()
+		assert.Contains(t, utils.SanitiseErrorMessage(err), errString)
+	})
 }
 
 func getMockInputVariables() map[string]any {
