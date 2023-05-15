@@ -127,14 +127,14 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
 }
 
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.
-func getMockInputVariables() map[string]interface{} {
-	return map[string]interface{}{
+func getMockInputVariables() map[string]any {
+	return map[string]any{
 		"subscription_alias_enabled": true,
 		"subscription_alias_name":    "test-subscription-alias",
 		"subscription_display_name":  "test-subscription-alias",
 		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/0000000/enrollmentAccounts/000000",
 		"subscription_workload":      "Production",
-		"subscription_tags": map[string]interface{}{
+		"subscription_tags": map[string]any{
 			"test-tag":   "test-value",
 			"test-tag2:": "test-value2",
 		},

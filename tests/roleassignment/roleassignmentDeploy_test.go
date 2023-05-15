@@ -22,7 +22,7 @@ func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
 	name, err := utils.RandomHex(4)
 	require.NoErrorf(t, err, "could not generate random hex")
 
-	v := map[string]interface{}{
+	v := map[string]any{
 		"random_hex":      name,
 		"role_definition": "Storage Blob Data Contributor",
 	}
@@ -47,7 +47,7 @@ func TestDeployRoleAssignmentDefinitionId(t *testing.T) {
 	require.NoErrorf(t, err, "could not generate random hex")
 
 	rd := fmt.Sprintf("/subscriptions/%s/providers/Microsoft.Authorization/roleDefinitions/ba92f5b4-2d11-453d-a403-e96b0029c9fe", os.Getenv("AZURE_SUBSCRIPTION_ID"))
-	v := map[string]interface{}{
+	v := map[string]any{
 		"random_hex":      name,
 		"role_definition": rd,
 	}

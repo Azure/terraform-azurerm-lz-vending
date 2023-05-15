@@ -23,7 +23,7 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 	primaryvnet["hub_peering_enabled"] = true
 	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
 	primaryvnet["resource_group_lock_enabled"] = true
@@ -59,7 +59,7 @@ func TestIntegrationVwan(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualHubs/testhub"
 	primaryvnet["vwan_connection_enabled"] = true
 	v["subscription_alias_enabled"] = true
@@ -96,8 +96,8 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = false
 	v["role_assignment_enabled"] = true
-	v["role_assignments"] = map[string]interface{}{
-		"ra": map[string]interface{}{
+	v["role_assignments"] = map[string]any{
+		"ra": map[string]any{
 			"principal_id":   "00000000-0000-0000-0000-000000000000",
 			"definition":     "Owner",
 			"relative_scope": "",
@@ -127,7 +127,7 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 
 	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
 	primaryvnet["hub_peering_enabled"] = true
@@ -162,7 +162,7 @@ func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	primaryvnet := v["virtual_networks"].(map[string]map[string]interface{})["primary"]
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
 	primaryvnet["hub_peering_enabled"] = true
 	v["subscription_alias_enabled"] = false
@@ -256,21 +256,21 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 	}
 }
 
-func getMockInputVariables() map[string]interface{} {
-	return map[string]interface{}{
+func getMockInputVariables() map[string]any {
+	return map[string]any{
 		"location": "northeurope",
 		// subscription variables
 		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/0000000/enrollmentAccounts/000000",
 		"subscription_display_name":  "test-subscription-alias",
 		"subscription_alias_name":    "test-subscription-alias",
 		"subscription_workload":      "Production",
-		"subscription_tags": map[string]interface{}{
+		"subscription_tags": map[string]any{
 			"test-tag":   "test-value",
 			"test-tag-2": "test-value-2",
 		},
 
 		// virtualnetwork variables
-		"virtual_networks": map[string]map[string]interface{}{
+		"virtual_networks": map[string]map[string]any{
 			"primary": {
 				"name":                        "primary-vnet",
 				"address_space":               []string{"192.168.0.0/24"},

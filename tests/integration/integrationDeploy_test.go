@@ -85,13 +85,13 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	assert.NoErrorf(t, err, "cannot parse subscription id as uuid: %s", id)
 }
 
-func getValidInputVariables() (map[string]interface{}, error) {
+func getValidInputVariables() (map[string]any, error) {
 	r, err := utils.RandomHex(4)
 	if err != nil {
 		return nil, fmt.Errorf("cannot generate random hex, %s", err)
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
-	return map[string]interface{}{
+	return map[string]any{
 		"location":                   "northeurope",
 		"subscription_alias_name":    name,
 		"subscription_display_name":  name,
@@ -99,7 +99,7 @@ func getValidInputVariables() (map[string]interface{}, error) {
 		"subscription_workload":      "DevTest",
 		"subscription_alias_enabled": true,
 		"virtual_network_enabled":    true,
-		"virtual_networks": map[string]map[string]interface{}{
+		"virtual_networks": map[string]map[string]any{
 			"primary": {
 				"name":                            name,
 				"resource_group_name":             name,

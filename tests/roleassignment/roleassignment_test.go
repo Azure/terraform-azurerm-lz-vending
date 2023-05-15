@@ -68,8 +68,8 @@ func TestRoleAssignmentInvalidScopes(t *testing.T) {
 	assert.Contains(t, err, errString)
 }
 
-func getMockInputVariables() map[string]interface{} {
-	return map[string]interface{}{
+func getMockInputVariables() map[string]any {
+	return map[string]any{
 		"role_assignment_principal_id": "00000000-0000-0000-0000-000000000000",
 		"role_assignment_scope":        "/subscriptions/00000000-0000-0000-0000-000000000000",
 		"role_assignment_definition":   "Owner",

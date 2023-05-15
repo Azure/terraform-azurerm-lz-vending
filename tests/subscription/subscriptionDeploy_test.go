@@ -101,13 +101,13 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 }
 
 // getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.
-func getValidInputVariables(billingScope string) (map[string]interface{}, error) {
+func getValidInputVariables(billingScope string) (map[string]any, error) {
 	r, err := utils.RandomHex(4)
 	if err != nil {
 		return nil, fmt.Errorf("cannot generate random hex, %s", err)
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
-	return map[string]interface{}{
+	return map[string]any{
 		"subscription_alias_name":    name,
 		"subscription_display_name":  name,
 		"subscription_billing_scope": billingScope,
