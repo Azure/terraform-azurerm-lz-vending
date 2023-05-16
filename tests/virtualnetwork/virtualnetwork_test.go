@@ -705,8 +705,61 @@ func TestVirtualNetworkCreateInvalidResourceGroupCreation(t *testing.T) {
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 	primaryvnet["resource_group_name"] = "secondary-rg"
 
-	_, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
 	assert.Containsf(t, utils.SanitiseErrorMessage(err), "Resource group names with creation enabled must be unique. Virtual networks deployed into the same resource group must have only one enabled for resource group creation.", "Expected error message not found")
+}
+
+func TestVirtualNetworkDdosProtection(t *testing.T) {
+	t.Parallel()
+
+	// We want 8 resources here
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"azapi_resource.vnet[\"primary\"]",
+		"azapi_resource.vnet[\"secondary\"]",
+		"azapi_update_resource.vnet[\"primary\"]",
+		"azapi_update_resource.vnet[\"secondary\"]",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+	}
+
+	vnetresources := []string{
+		"azapi_resource.vnet[\"primary\"]",
+		"azapi_update_resource.vnet[\"primary\"]",
+	}
+
+	t.Run("Enabled", func(t *testing.T) {
+		v := getMockInputVariables()
+		primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+		primaryvnet["ddos_protection_enabled"] = true
+		primaryvnet["ddos_protection_plan_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/ddosProtectionPlans/test-ddos-plan"
+
+		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+		defer test.Cleanup()
+		require.NoError(t, err)
+
+		check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+		for _, r := range vnetresources {
+			check.InPlan(test.Plan).That(r).Key("body").Query("properties.enableDdosProtection").HasValue(true).ErrorIsNil(t)
+			check.InPlan(test.Plan).That(r).Key("body").Query("properties.ddosProtectionPlan.id").HasValue(primaryvnet["ddos_protection_plan_id"]).ErrorIsNil(t)
+		}
+	})
+
+	t.Run("Disabled", func(t *testing.T) {
+		v := getMockInputVariables()
+
+		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+		defer test.Cleanup()
+		require.NoError(t, err)
+
+		check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+		for _, r := range vnetresources {
+			check.InPlan(test.Plan).That(r).Key("body").Query("properties.enableDdosProtection").HasValue(nil).ErrorIsNil(t)
+			check.InPlan(test.Plan).That(r).Key("body").Query("properties.ddosProtectionPlan.id").HasValue(nil).ErrorIsNil(t)
+		}
+	})
 }
 
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.
