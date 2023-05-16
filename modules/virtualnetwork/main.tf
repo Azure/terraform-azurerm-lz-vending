@@ -41,14 +41,22 @@ resource "azapi_resource" "vnet" {
   name      = each.value.name
   location  = coalesce(each.value.location, var.location)
   body = jsonencode({
-    properties = {
-      addressSpace = {
-        addressPrefixes = each.value.address_space
-      }
-      dhcpOptions = {
-        dnsServers = each.value.dns_servers
-      }
-    }
+    properties = merge(
+      {
+        addressSpace = {
+          addressPrefixes = each.value.address_space
+        }
+        dhcpOptions = {
+          dnsServers = each.value.dns_servers
+        }
+      },
+      each.value.ddos_protection_enabled ? {
+        ddosProtectionPlan = {
+          id = each.value.ddos_protection_plan_id
+        }
+        enableDdosProtection = true
+      } : null
+    )
   })
   tags = each.value.tags
   lifecycle {
@@ -67,14 +75,22 @@ resource "azapi_update_resource" "vnet" {
   resource_id = azapi_resource.vnet[each.key].id
   type        = "Microsoft.Network/virtualNetworks@2021-08-01"
   body = jsonencode({
-    properties = {
-      addressSpace = {
-        addressPrefixes = each.value.address_space
-      }
-      dhcpOptions = {
-        dnsServers = each.value.dns_servers
-      }
-    }
+    properties = merge(
+      {
+        addressSpace = {
+          addressPrefixes = each.value.address_space
+        }
+        dhcpOptions = {
+          dnsServers = each.value.dns_servers
+        }
+      },
+      each.value.ddos_protection_enabled ? {
+        ddosProtectionPlan = {
+          id = each.value.ddos_protection_plan_id
+        }
+        enableDdosProtection = true
+      } : null
+    )
     tags = each.value.tags
   })
 }
