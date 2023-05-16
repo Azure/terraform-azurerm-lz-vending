@@ -88,8 +88,9 @@ func NewManagementGroupSubscriptionsClient() (*armmanagementgroups.ManagementGro
 }
 
 // newDefaultAzureCredential creates a new default AzureCredential using
-// azidentity.NewDefaultAzureCredential.
-func newDefaultAzureCredential() (*azidentity.DefaultAzureCredential, error) {
+// OIDC or azidentity.NewDefaultAzureCredential.
+// OIDC is used if the environment variable USE_OIDC or ARM_USE_OIDC is set to non-empty.
+func newDefaultAzureCredential() (azcore.TokenCredential, error) {
 	// Select the Azure cloud from the AZURE_ENVIRONMENT env var
 	var cloudConfig cloud.Configuration
 	env := os.Getenv("AZURE_ENVIRONMENT")
@@ -104,15 +105,35 @@ func newDefaultAzureCredential() (*azidentity.DefaultAzureCredential, error) {
 		cloudConfig = cloud.AzurePublic
 	}
 
+	useoidc := multiEnvDefault("", "USE_OIDC", "ARM_USE_OIDC")
+	if useoidc != "" {
+		return NewOidcCredential(&OidcCredentialOptions{
+			ClientOptions: azcore.ClientOptions{
+				Cloud: cloudConfig,
+			},
+			TenantID:      multiEnvDefault("", "ARM_TENANT_ID", "AZURE_TENANT_ID"),
+			ClientID:      multiEnvDefault("", "ARM_CLIENT_ID", "AZURE_CLIENT_ID"),
+			RequestToken:  multiEnvDefault("", "ARM_OIDC_REQUEST_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_TOKEN"),
+			RequestUrl:    multiEnvDefault("", "ARM_OIDC_REQUEST_URL", "ACTIONS_ID_TOKEN_REQUEST_URL"),
+			Token:         multiEnvDefault("", "ARM_OIDC_TOKEN"),
+			TokenFilePath: multiEnvDefault("", "ARM_OIDC_TOKEN_FILE_PATH"),
+		})
+	}
+
 	// Get default credentials, this will look for the well-known environment variables,
 	// managed identity credentials, and az cli credentials
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
+	return azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
 		ClientOptions: azcore.ClientOptions{
 			Cloud: cloudConfig,
 		},
 	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create Azure credential: %v", err)
+}
+
+func multiEnvDefault(dv string, envs ...string) string {
+	for _, e := range envs {
+		if v := os.Getenv(e); v != "" {
+			return v
+		}
 	}
-	return cred, nil
+	return dv
 }

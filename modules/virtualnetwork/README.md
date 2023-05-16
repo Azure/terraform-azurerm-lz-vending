@@ -152,23 +152,6 @@ map(object({
     mesh_peering_enabled                 = optional(bool, false)
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
 
-    # Reserved for future capability
-    #
-    # other_peerings = optional(map(object({
-    #   remote_network_resource_id            = string
-    #   name_inbound                          = optional(string, "")
-    #   name_outbound                         = optional(string, "")
-    #   outbound_only                         = optional(bool, false)
-    #   allow_forwarded_traffic_inbound       = optional(bool, true)
-    #   allow_forwarded_traffic_outbound      = optional(bool, true)
-    #   allow_gateway_transit_inbound         = optional(bool, false)
-    #   allow_gateway_transit_outbound        = optional(bool, false)
-    #   allow_virtual_network_access_inbound  = optional(bool, true)
-    #   allow_virtual_network_access_outbound = optional(bool, true)
-    #   use_remote_gateways_inbound           = optional(bool, false)
-    #   use_remote_gateways_outbound          = optional(bool, false)
-    # })), {})
-
     resource_group_creation_enabled = optional(bool, true)
     resource_group_lock_enabled     = optional(bool, true)
     resource_group_lock_name        = optional(string, "")

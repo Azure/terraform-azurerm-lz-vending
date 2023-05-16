@@ -17,7 +17,7 @@ import (
 // it retries a few times as the subscription api is eventually consistent.
 func CancelSubscription(t *testing.T, id *uuid.UUID) error {
 	const (
-		max      = 4
+		max      = 3
 		delaysec = 20
 	)
 
