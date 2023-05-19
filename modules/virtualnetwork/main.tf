@@ -179,3 +179,24 @@ resource "azapi_resource" "vhubconnection" {
     }
   })
 }
+
+# azapi_resource.routingintent creates a default next hop for intent based routing configuration at the vhub
+resource "azapi_resource" "routingintent" {
+  for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_security_configuration.intent_based_routing }
+  type = "Microsoft.Network/virtualHubs/routingIntent@2022-07-01"
+  name = "vhub-ukwest_RoutingIntent"
+  parent_id = each.value.vwan_hub_resource_id
+  body = jsonencode({
+    properties = {
+      routingPolicies = [
+        {
+          destinations = [
+            "Internet"
+          ]
+          name = "PublicTraffic"
+          nextHop = each.value.vwan_security_configuration.intent_based_routing_next_hop
+        }
+      ]
+    }
+  })
+}
