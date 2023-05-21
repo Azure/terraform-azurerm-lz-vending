@@ -1,8 +1,9 @@
-# Virtual networking submodule, disabled by default
-# Will create a vnet, and optionally peerings and a virtual hub connection
+# Virtual hub submodule, disabled by default
+# Will add vhub specific configuration, intent based routing
 module "virtualhub" {
   source = "./modules/virtualhub"
-  count  = var.intent_based_routing_enabled ? 1 : 0
+  count  = var.virtual_hub_enabled ? 1 : 0
 
-  virtual_hubs = var.virtual_hubs
+  subscription_id = local.subscription_id
+  virtual_hubs    = var.virtual_hubs
 }

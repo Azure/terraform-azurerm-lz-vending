@@ -1,13 +1,15 @@
-variable "intent_based_routing_enabled" {
-  description = "Enables and disables the virtual network submodule."
+variable "virtual_hub_enabled" {
+  description = "Enables and disables the virtual hub submodule."
   type        = bool
   default     = false
 }
 
 variable "virtual_hubs" {
   type = map(object({
-    virtual_hub_id                = string
-    intent_based_routing_next_hop_firewall = string
+    vwan_hub_resource_id                  = optional(string, "")
+    vhub_firewall_resource_id             = optional(string, "")
+    intent_based_internet_traffic_enabled = optional(bool, false)
+    intent_based_private_traffic_enabled  = optional(bool, false)
   }))
-  default     = {}
+  default = {}
 }
