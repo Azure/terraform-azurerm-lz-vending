@@ -24,12 +24,12 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(1).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_subscription.this[0]").Key("alias").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_subscription.this[0]").Key("billing_scope_id").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_subscription.this[0]").Key("subscription_name").HasValue(v["subscription_display_name"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_subscription.this[0]").Key("workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_subscription.this[0]").Key("tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("alias").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("billing_scope_id").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("subscription_name").HasValue(v["subscription_display_name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
 }
 
 // TestSubscriptionAliasCreateValidWithManagementGroup tests the
@@ -45,14 +45,14 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(2).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_subscription.this[0]").Key("alias").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_subscription.this[0]").Key("billing_scope_id").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_subscription.this[0]").Key("subscription_name").HasValue(v["subscription_display_name"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_subscription.this[0]").Key("workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(2).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("alias").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("billing_scope_id").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("subscription_name").HasValue(v["subscription_display_name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
 
 	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
-	check.InPlan(test.Plan).That("azurerm_management_group_subscription_association.this[0]").Key("management_group_id").HasValue(mgResId).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_management_group_subscription_association.this[0]").Key("management_group_id").HasValue(mgResId).ErrorIsNil(t)
 }
 
 // TestSubscriptionExistingWithManagementGroup tests the
@@ -70,10 +70,10 @@ func TestSubscriptionExistingWithManagementGroup(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(1).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
 
 	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
-	check.InPlan(test.Plan).That("azurerm_management_group_subscription_association.this[0]").Key("management_group_id").HasValue(mgResId).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_management_group_subscription_association.this[0]").Key("management_group_id").HasValue(mgResId).ErrorIsNil(t)
 }
 
 // TestSubscriptionAliasCreateInvalidBillingScope tests the validation function of the subscription_billing_scope variable.

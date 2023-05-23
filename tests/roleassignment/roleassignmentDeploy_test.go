@@ -30,9 +30,9 @@ func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(2).ErrorIsNil(t)
-	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
-	test.ApplyIdempotent(t).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(2).ErrorIsNil(t)
+	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
 }
 
 // TestDeployRoleAssignmentDefinitionId tests the deployment of a role assignment
@@ -54,9 +54,9 @@ func TestDeployRoleAssignmentDefinitionId(t *testing.T) {
 	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	defer test.Cleanup()
 	require.NoError(t, err)
-	check.InPlan(test.Plan).NumberOfResourcesEquals(2).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(2).ErrorIsNilFatal(t)
 
-	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
+	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
 
-	test.ApplyIdempotent(t).ErrorIsNil(t)
+	test.ApplyIdempotent().ErrorIsNil(t)
 }

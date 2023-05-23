@@ -40,8 +40,8 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 		t.Logf("cannot cancel subscription: %v", err)
 	}()
 
-	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
-	test.ApplyIdempotent(t).ErrorIsNil(t)
+	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
 
 	sid, err := terraform.OutputE(t, test.Options, "subscription_id")
 	assert.NoError(t, err)
@@ -79,8 +79,8 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
-	defer test.DestroyRetry(t, setuptest.DefaultRetry) //nolint:errcheck
-	test.ApplyIdempotent(t).ErrorIsNil(t)
+	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
 
 	sid, err := terraform.OutputE(t, test.Options, "subscription_id")
 	assert.NoError(t, err)

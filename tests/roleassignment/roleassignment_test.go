@@ -23,11 +23,11 @@ func TestRoleAssignmentValidWithRoleName(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(1).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
 
-	check.InPlan(test.Plan).That("azurerm_role_assignment.this").Key("role_definition_name").HasValue(v["role_assignment_definition"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_role_assignment.this").Key("role_definition_id").DoesNotExist().ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_role_assignment.this").Key("principal_id").HasValue(v["role_assignment_principal_id"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_role_assignment.this").Key("role_definition_name").HasValue(v["role_assignment_definition"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_role_assignment.this").Key("role_definition_id").DoesNotExist().ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_role_assignment.this").Key("principal_id").HasValue(v["role_assignment_principal_id"]).ErrorIsNil(t)
 }
 
 // TestRoleAssignmentValidWithRoleDefId tests that the module will accept a role by id
@@ -40,11 +40,11 @@ func TestRoleAssignmentValidWithRoleDefId(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(1).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
 
-	check.InPlan(test.Plan).That("azurerm_role_assignment.this").Key("role_definition_name").DoesNotExist().ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_role_assignment.this").Key("role_definition_id").HasValue(v["role_assignment_definition"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azurerm_role_assignment.this").Key("principal_id").HasValue(v["role_assignment_principal_id"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_role_assignment.this").Key("role_definition_name").DoesNotExist().ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_role_assignment.this").Key("role_definition_id").HasValue(v["role_assignment_definition"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_role_assignment.this").Key("principal_id").HasValue(v["role_assignment_principal_id"]).ErrorIsNil(t)
 }
 
 // TestRoleAssignmentInvalidScopes tests that the module will not accept a tenant
