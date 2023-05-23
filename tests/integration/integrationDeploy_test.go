@@ -12,7 +12,6 @@ import (
 	"github.com/Azure/terratest-terraform-fluent/check"
 	"github.com/Azure/terratest-terraform-fluent/setuptest"
 	"github.com/google/uuid"
-	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -84,9 +83,11 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	defer test.DestroyRetry(rty) //nolint:errcheck
 	test.ApplyIdempotent().ErrorIsNil(t)
 
-	id, err := terraform.OutputRequiredE(t, test.Options, "subscription_id")
+	id, err := test.Output("subscription_id").GetValue()
 	assert.NoErrorf(t, err, "failed to get subscription id output")
-	u, err = uuid.Parse(id)
+	ids, ok := id.(string)
+	assert.Truef(t, ok, "failed to cast subscription id output to string")
+	u, err = uuid.Parse(ids)
 	assert.NoErrorf(t, err, "cannot parse subscription id as uuid: %s", id)
 }
 
