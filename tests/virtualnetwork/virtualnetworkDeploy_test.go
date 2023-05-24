@@ -46,10 +46,8 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	test.ApplyIdempotent().ErrorIsNil(t)
 
 	// check there two outputs for the virtual network resource ids
-	test.Output("virtual_network_resource_ids").Query("#").HasValue(2)
-	// vnri, err := terraform.OutputMapE(t, test.Options, "virtual_network_resource_ids")
-	// require.NoErrorf(t, err, "could not get virtual_network_resource_ids output, %s", err)
-	// assert.Lenf(t, vnri, 2, "expected 2 virtual networks, got %d", len(vnri))
+	test.Output("virtual_network_resource_ids").Query("primary").Exists().ErrorIsNil(t)
+	test.Output("virtual_network_resource_ids").Query("secondary").Exists().ErrorIsNil(t)
 }
 
 // TestDeployVirtualNetworkValidCustomDns tests the deployment of virtual networks
@@ -86,10 +84,7 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 	test.ApplyIdempotent().ErrorIsNil(t)
 
 	// check there two outputs for the virtual network resource ids
-	test.Output("virtual_network_resource_ids").Query("#").HasValue(2)
-	// vnri, err := terraform.OutputMapE(t, test.Options, "virtual_network_resource_ids")
-	// require.NoErrorf(t, err, "could not get virtual_network_resource_ids output, %s", err)
-	// assert.Lenf(t, vnri, 2, "expected 2 virtual networks, got %d", len(vnri))
+	test.Output("virtual_network_resource_ids").Query("#").HasValue(2).ErrorIsNil(t)
 }
 
 // TestDeployVirtualNetworkValidVnetPeering tests the deployment of a virtual network

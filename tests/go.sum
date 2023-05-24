@@ -202,8 +202,8 @@ github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.
 github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.1.1/go.mod h1:c/wcGeGx5FUPbM/JltUYHZcKmigwyVLJlDq+4HdtXaw=
 github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.1.0 h1:pYhaMoTHP/zYIJGDA1sWsfyTDjdglaoYjIFMOEcL+/U=
 github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.1.0/go.mod h1:iLq8GwpQhj09gpI4EdELwifR9kHrb/Q0LThq6iQq9yY=
-github.com/Azure/terratest-terraform-fluent v0.6.0 h1:zRdh2Er3qnaxKYeBzySmdMiXnSkWcbtFoQ3vPD/OKcU=
-github.com/Azure/terratest-terraform-fluent v0.6.0/go.mod h1:hUaSY4LaGCvwqdVpny92cFcIkH9N+7FSWMHKEEa9hP4=
+github.com/Azure/terratest-terraform-fluent v0.6.1 h1:zy0GhONN0BtW2rUglFdxVlT3640tIBG5Ey4T+DoCddE=
+github.com/Azure/terratest-terraform-fluent v0.6.1/go.mod h1:hUaSY4LaGCvwqdVpny92cFcIkH9N+7FSWMHKEEa9hP4=
 github.com/AzureAD/microsoft-authentication-library-for-go v1.0.0 h1:OBhqkivkhkMqLPymWEppkm7vgPQY2XsHoEkaMQ0AdZY=
 github.com/AzureAD/microsoft-authentication-library-for-go v1.0.0/go.mod h1:kgDmCTgBzIEPFElEF+FK0SdjAor06dRq2Go927dnQ6o=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
