@@ -756,8 +756,8 @@ func TestVirtualNetworkDdosProtection(t *testing.T) {
 
 		check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 		for _, r := range vnetresources {
-			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.enableDdosProtection").HasValue(nil).ErrorIsNil(t)
-			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.ddosProtectionPlan.id").HasValue(nil).ErrorIsNil(t)
+			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.enableDdosProtection").DoesNotExist().ErrorIsNil(t)
+			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.ddosProtectionPlan.id").DoesNotExist().ErrorIsNil(t)
 		}
 	})
 }
