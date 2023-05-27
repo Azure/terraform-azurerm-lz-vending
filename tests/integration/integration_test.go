@@ -44,12 +44,12 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 	}
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
 	}
 
-	check.InPlan(test.Plan).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000b05").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000b05").ErrorIsNil(t)
 }
 
 // TestIntegrationVwan tests the resource plan when creating a new subscription,
@@ -77,12 +77,12 @@ func TestIntegrationVwan(t *testing.T) {
 		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 	}
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
 	}
 
-	check.InPlan(test.Plan).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000505").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000505").ErrorIsNil(t)
 }
 
 // TestIntegrationSubscriptionAndRoleAssignmentOnly tests the resource plan when creating a new subscription,
@@ -113,12 +113,12 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 		"module.roleassignment[\"ra\"].azurerm_role_assignment.this",
 	}
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
 	}
 
-	check.InPlan(test.Plan).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00010005").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00010005").ErrorIsNil(t)
 }
 
 // TestIntegrationHubAndSpokeExistingSubscription tests the resource plan when supplying an existing subscription,
@@ -148,12 +148,12 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
 	}
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
 	}
 
-	check.InPlan(test.Plan).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000300").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000300").ErrorIsNil(t)
 }
 
 // TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc tests the resource plan when supplying an existing subscription,
@@ -186,13 +186,13 @@ func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
 		"module.subscription[0].azurerm_management_group_subscription_association.this[0]",
 	}
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
 	}
 
 	// check bit field is correct
-	check.InPlan(test.Plan).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000302").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000302").ErrorIsNil(t)
 }
 
 // TestIntegrationWithYaml tests the use of the module with a for_each loop
@@ -218,7 +218,7 @@ func TestIntegrationWithYaml(t *testing.T) {
 		"module.lz_vending[\"%s\"].module.roleassignment[\"my_ra_2\"].azurerm_role_assignment.this",
 	}
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources) * 3).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources) * 3).ErrorIsNil(t)
 
 	lzs := []string{
 		"landing_zone_1.yaml",
@@ -228,7 +228,7 @@ func TestIntegrationWithYaml(t *testing.T) {
 	for _, v := range resources {
 		for _, lz := range lzs {
 			res := fmt.Sprintf(v, lz)
-			check.InPlan(test.Plan).That(res).Exists().ErrorIsNil(t)
+			check.InPlan(test.PlanStruct).That(res).Exists().ErrorIsNil(t)
 		}
 	}
 }
@@ -250,9 +250,9 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 		"module.subscription[0].azurerm_subscription.this[0]",
 	}
 
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
-		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
 	}
 }
 

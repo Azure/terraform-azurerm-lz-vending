@@ -36,10 +36,10 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 
 	// Loop through each virtual network and check the values
@@ -47,11 +47,11 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	for k, v := range vns {
 		rgres := fmt.Sprintf("azapi_resource.rg[\"%s-rg\"]", k)
 		vnetres := fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)
-		check.InPlan(test.Plan).That(rgres).Key("name").HasValue(v["resource_group_name"]).ErrorIsNil(t)
-		check.InPlan(test.Plan).That(rgres).Key("location").HasValue(v["location"]).ErrorIsNil(t)
-		check.InPlan(test.Plan).That(vnetres).Key("name").HasValue(v["name"]).ErrorIsNil(t)
-		check.InPlan(test.Plan).That(vnetres).Key("location").HasValue(v["location"]).ErrorIsNil(t)
-		check.InPlan(test.Plan).That(vnetres).Key("body").Query("properties.addressSpace.addressPrefixes").HasValue(v["address_space"]).ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(rgres).Key("name").HasValue(v["resource_group_name"]).ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(rgres).Key("location").HasValue(v["location"]).ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(vnetres).Key("name").HasValue(v["name"]).ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(vnetres).Key("location").HasValue(v["location"]).ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(vnetres).Key("body").Query("properties.addressSpace.addressPrefixes").HasValue(v["address_space"]).ErrorIsNil(t)
 	}
 }
 
@@ -70,13 +70,13 @@ func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
 	defer test.Cleanup()
 
 	// want 8 resources, like TestVirtualNetworkCreateValid
-	check.InPlan(test.Plan).NumberOfResourcesEquals(8).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNilFatal(t)
 
 	// Loop through each virtual network and check the values
 	vns := v["virtual_networks"].(map[string]map[string]any)
 	for k, v := range vns {
 		res := fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)
-		check.InPlan(test.Plan).That(res).Key("body").Query("properties.dhcpOptions.dnsServers").HasValue(v["dns_servers"]).ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.dhcpOptions.dnsServers").HasValue(v["dns_servers"]).ErrorIsNil(t)
 	}
 }
 
@@ -100,10 +100,10 @@ func TestVirtualNetworkCreateValidWithTags(t *testing.T) {
 	defer test.Cleanup()
 
 	// We want 8 resources here, same as TestVirtualNetworkCreateValid test
-	check.InPlan(test.Plan).NumberOfResourcesEquals(8).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNilFatal(t)
 
-	check.InPlan(test.Plan).That("azapi_resource.vnet[\"primary\"]").Key("tags").HasValue(primaryvnet["tags"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That("azapi_resource.rg[\"primary-rg\"]").Key("tags").HasValue(primaryvnet["resource_group_tags"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.vnet[\"primary\"]").Key("tags").HasValue(primaryvnet["tags"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.rg[\"primary-rg\"]").Key("tags").HasValue(primaryvnet["resource_group_tags"]).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithMeshPeering tests the creation of a plan that
@@ -124,23 +124,23 @@ func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 
 	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
-	check.InPlan(test.Plan).NumberOfResourcesEquals(10).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(10).ErrorIsNilFatal(t)
 
 	peer1 := "azapi_resource.peering_mesh[\"primary-secondary\"]"
-	check.InPlan(test.Plan).That(peer1).Key("body").Query("properties.allowForwardedTraffic").HasValue(false).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(peer1).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(peer1).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(peer1).Key("body").Query("properties.useRemoteGateways").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.allowForwardedTraffic").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.useRemoteGateways").HasValue(false).ErrorIsNil(t)
 	peer1Remote := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/secondary-rg/providers/Microsoft.Network/virtualNetworks/secondary-vnet"
-	check.InPlan(test.Plan).That(peer1).Key("body").Query("properties.remoteVirtualNetwork.id").HasValue(peer1Remote).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.remoteVirtualNetwork.id").HasValue(peer1Remote).ErrorIsNil(t)
 
 	peer2 := "azapi_resource.peering_mesh[\"secondary-primary\"]"
-	check.InPlan(test.Plan).That(peer2).Key("body").Query("properties.allowForwardedTraffic").HasValue(true).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(peer2).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(peer2).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(peer2).Key("body").Query("properties.useRemoteGateways").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.allowForwardedTraffic").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.useRemoteGateways").HasValue(false).ErrorIsNil(t)
 	peer2Remote := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/primary-rg/providers/Microsoft.Network/virtualNetworks/primary-vnet"
-	check.InPlan(test.Plan).That(peer2).Key("body").Query("properties.remoteVirtualNetwork.id").HasValue(peer2Remote).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.remoteVirtualNetwork.id").HasValue(peer2Remote).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidInvalidMeshPeering tests the creation of a plan that
@@ -167,10 +167,10 @@ func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 }
 
@@ -198,10 +198,10 @@ func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
 		"azapi_update_resource.vnet[\"secondary\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 }
 
@@ -229,10 +229,10 @@ func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
 		"azapi_update_resource.vnet[\"secondary\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 }
 
@@ -266,26 +266,26 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 		"azapi_resource.peering_hub_outbound[\"primary\"]",
 		"azapi_resource.peering_hub_inbound[\"primary\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 
 	// We can only check the body of the outbound peering as the inbound values
 	// are not known until apply
 	outbound := "azapi_resource.peering_hub_outbound[\"primary\"]"
-	terraform.RequirePlannedValuesMapKeyExists(t, test.Plan, outbound)
+	terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, outbound)
 
-	check.InPlan(test.Plan).That(outbound).Key("body").Query("properties.allowForwardedTraffic").HasValue(true).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(outbound).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(outbound).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(outbound).Key("body").Query("properties.useRemoteGateways").HasValue(true).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(outbound).Key("body").Query("properties.remoteVirtualNetwork.id").HasValue(primaryvnet["hub_network_resource_id"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(outbound).Key("body").Query("properties.allowForwardedTraffic").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(outbound).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(outbound).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(outbound).Key("body").Query("properties.useRemoteGateways").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(outbound).Key("body").Query("properties.remoteVirtualNetwork.id").HasValue(primaryvnet["hub_network_resource_id"]).ErrorIsNil(t)
 
 	// More limited checks on the inbound peering
 	inbound := "azapi_resource.peering_hub_inbound[\"primary\"]"
-	check.InPlan(test.Plan).That(inbound).Key("parent_id").HasValue(primaryvnet["hub_network_resource_id"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(inbound).Key("parent_id").HasValue(primaryvnet["hub_network_resource_id"]).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithPeeringCustomNames tests the creation of a plan that
@@ -320,19 +320,19 @@ func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
 		"azapi_resource.peering_hub_outbound[\"primary\"]",
 		"azapi_resource.peering_hub_inbound[\"primary\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 
 	// Check outbound peering name
 	outbound := "azapi_resource.peering_hub_outbound[\"primary\"]"
-	check.InPlan(test.Plan).That(outbound).Key("name").HasValue(primaryvnet["hub_peering_name_tohub"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(outbound).Key("name").HasValue(primaryvnet["hub_peering_name_tohub"]).ErrorIsNil(t)
 
 	// Check inbound peering name
 	inbound := "azapi_resource.peering_hub_inbound[\"primary\"]"
-	check.InPlan(test.Plan).That(inbound).Key("name").HasValue(primaryvnet["hub_peering_name_fromhub"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(inbound).Key("name").HasValue(primaryvnet["hub_peering_name_fromhub"]).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled
@@ -366,16 +366,16 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 		"azapi_resource.peering_hub_outbound[\"primary\"]",
 		"azapi_resource.peering_hub_inbound[\"primary\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 
 	// We can only check the body of the outbound peering as the inbound values
 	// not known until apply
 	res := "azapi_resource.peering_hub_outbound[\"primary\"]"
-	check.InPlan(test.Plan).That(res).Key("body").Query("properties.useRemoteGateways").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.useRemoteGateways").HasValue(false).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithVhub tests the creation of a plan that
@@ -407,20 +407,20 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 
 	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
-	check.InPlan(test.Plan).That(vhcres).Key("parent_id").HasValue(primaryvnet["vwan_hub_resource_id"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("parent_id").HasValue(primaryvnet["vwan_hub_resource_id"]).ErrorIsNil(t)
 
 	drt := primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/defaultRouteTable"
-	check.InPlan(test.Plan).That(vhcres).Key("body").Query("properties.routingConfiguration.associatedRouteTable.id").HasValue(drt).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(vhcres).Key("body").Query("properties.routingConfiguration.propagatedRouteTables.labels").HasValue([]any{"default"}).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(vhcres).Key("body").Query("properties.routingConfiguration.propagatedRouteTables.ids.#").HasValue(1).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(vhcres).Key("body").Query("properties.routingConfiguration.propagatedRouteTables.ids.0.id").HasValue(drt).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").Query("properties.routingConfiguration.associatedRouteTable.id").HasValue(drt).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").Query("properties.routingConfiguration.propagatedRouteTables.labels").HasValue([]any{"default"}).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").Query("properties.routingConfiguration.propagatedRouteTables.ids.#").HasValue(1).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").Query("properties.routingConfiguration.propagatedRouteTables.ids.0.id").HasValue(drt).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithVhubCustomRouting tests the creation of a plan that
@@ -459,18 +459,18 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 
 	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
-	check.InPlan(test.Plan).That(vhcres).Key("parent_id").HasValue(primaryvnet["vwan_hub_resource_id"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("parent_id").HasValue(primaryvnet["vwan_hub_resource_id"]).ErrorIsNil(t)
 
-	check.InPlan(test.Plan).That(vhcres).Key("body").Query("properties.routingConfiguration.associatedRouteTable.id").HasValue(primaryvnet["vwan_associated_routetable_resource_id"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(vhcres).Key("body").Query("properties.routingConfiguration.propagatedRouteTables.labels").HasValue(primaryvnet["vwan_propagated_routetables_labels"]).ErrorIsNil(t)
-	check.InPlan(test.Plan).That(vhcres).Key("body").Query("properties.routingConfiguration.propagatedRouteTables.ids.#.id").HasValue(primaryvnet["vwan_propagated_routetables_resource_ids"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").Query("properties.routingConfiguration.associatedRouteTable.id").HasValue(primaryvnet["vwan_associated_routetable_resource_id"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").Query("properties.routingConfiguration.propagatedRouteTables.labels").HasValue(primaryvnet["vwan_propagated_routetables_labels"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").Query("properties.routingConfiguration.propagatedRouteTables.ids.#.id").HasValue(primaryvnet["vwan_propagated_routetables_resource_ids"]).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic tests that secure_internet_traffic == true
@@ -504,14 +504,14 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic(t *testing.T) {
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 
 	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
-	check.InPlan(test.Plan).That(vhcres).Key("body").Query("properties.enableInternetSecurity").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").Query("properties.enableInternetSecurity").HasValue(true).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic that managed vnets propagate to "noneRouteTable" with labels "none"
@@ -546,30 +546,30 @@ func TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic(t *testing.T) {
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 
 	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
 
-	check.InPlan(test.Plan).That(vhcres).Key("body").
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").
 		Query("properties.routingConfiguration.associatedRouteTable.id").
 		HasValue(primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/defaultRouteTable").
 		ErrorIsNil(t)
 
-	check.InPlan(test.Plan).That(vhcres).Key("body").
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").
 		Query("properties.routingConfiguration.propagatedRouteTables.labels").
 		HasValue([]any{"none"}).
 		ErrorIsNil(t)
 
-	check.InPlan(test.Plan).That(vhcres).Key("body").
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").
 		Query("properties.routingConfiguration.propagatedRouteTables.ids.0.id").
 		HasValue(primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/noneRouteTable").
 		ErrorIsNil(t)
 
-	check.InPlan(test.Plan).That(vhcres).Key("body").
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").
 		Query("properties.routingConfiguration.propagatedRouteTables.ids.#").
 		HasValue(1).
 		ErrorIsNil(t)
@@ -609,31 +609,31 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetAndPrivateTraffic(t *tes
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
 	}
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
-		check.InPlan(test.Plan).That(r).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 
 	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
-	check.InPlan(test.Plan).That(vhcres).Key("body").Query("properties.enableInternetSecurity").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").Query("properties.enableInternetSecurity").HasValue(true).ErrorIsNil(t)
 
-	check.InPlan(test.Plan).That(vhcres).Key("body").
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").
 		Query("properties.routingConfiguration.associatedRouteTable.id").
 		HasValue(primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/defaultRouteTable").
 		ErrorIsNil(t)
 
-	check.InPlan(test.Plan).That(vhcres).Key("body").
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").
 		Query("properties.routingConfiguration.propagatedRouteTables.labels").
 		HasValue([]any{"none"}).
 		ErrorIsNil(t)
 
-	check.InPlan(test.Plan).That(vhcres).Key("body").
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").
 		Query("properties.routingConfiguration.propagatedRouteTables.ids.0.id").
 		HasValue(primaryvnet["vwan_hub_resource_id"].(string) + "/hubRouteTables/noneRouteTable").
 		ErrorIsNil(t)
 
-	check.InPlan(test.Plan).That(vhcres).Key("body").
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").
 		Query("properties.routingConfiguration.propagatedRouteTables.ids.#").
 		HasValue(1).
 		ErrorIsNil(t)
@@ -740,10 +740,10 @@ func TestVirtualNetworkDdosProtection(t *testing.T) {
 		defer test.Cleanup()
 		require.NoError(t, err)
 
-		check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+		check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 		for _, r := range vnetresources {
-			check.InPlan(test.Plan).That(r).Key("body").Query("properties.enableDdosProtection").HasValue(true).ErrorIsNil(t)
-			check.InPlan(test.Plan).That(r).Key("body").Query("properties.ddosProtectionPlan.id").HasValue(primaryvnet["ddos_protection_plan_id"]).ErrorIsNil(t)
+			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.enableDdosProtection").HasValue(true).ErrorIsNil(t)
+			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.ddosProtectionPlan.id").HasValue(primaryvnet["ddos_protection_plan_id"]).ErrorIsNil(t)
 		}
 	})
 
@@ -754,10 +754,10 @@ func TestVirtualNetworkDdosProtection(t *testing.T) {
 		defer test.Cleanup()
 		require.NoError(t, err)
 
-		check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+		check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 		for _, r := range vnetresources {
-			check.InPlan(test.Plan).That(r).Key("body").Query("properties.enableDdosProtection").HasValue(nil).ErrorIsNil(t)
-			check.InPlan(test.Plan).That(r).Key("body").Query("properties.ddosProtectionPlan.id").HasValue(nil).ErrorIsNil(t)
+			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.enableDdosProtection").DoesNotExist().ErrorIsNil(t)
+			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.ddosProtectionPlan.id").DoesNotExist().ErrorIsNil(t)
 		}
 	})
 }

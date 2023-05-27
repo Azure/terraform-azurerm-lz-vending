@@ -12,7 +12,6 @@ import (
 	"github.com/Azure/terratest-terraform-fluent/check"
 	"github.com/Azure/terratest-terraform-fluent/setuptest"
 	"github.com/google/uuid"
-	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -46,16 +45,16 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	}
 
 	// Require len(resources)+1 because role assignment address is not determinable here, see below
-	check.InPlan(test.Plan).NumberOfResourcesEquals(len(resources) + 1).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources) + 1).ErrorIsNil(t)
 	for _, v := range resources {
-		check.InPlan(test.Plan).That(v).Exists().ErrorIsNil(t)
+		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
 	}
 
 	// As the map key of the role assignment is a predictable UUID based on the object ID
 	// of the calling identity, we cannot search for the literal value of the role assignment.
 	// Instead, we search for the role assignment prefix in the ResourcePlannedValuesMap.
 	i := 0
-	for k := range test.Plan.ResourceChangesMap {
+	for k := range test.PlanStruct.ResourceChangesMap {
 		if !strings.Contains(k, "module.lz_vending.module.roleassignment[") {
 			continue
 		}
@@ -81,12 +80,14 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 		Max:  3,
 		Wait: 10 * time.Minute,
 	}
-	defer test.DestroyRetry(t, rty) //nolint:errcheck
-	test.ApplyIdempotent(t).ErrorIsNil(t)
+	defer test.DestroyRetry(rty) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
 
-	id, err := terraform.OutputRequiredE(t, test.Options, "subscription_id")
+	id, err := test.Output("subscription_id").GetValue()
 	assert.NoErrorf(t, err, "failed to get subscription id output")
-	u, err = uuid.Parse(id)
+	ids, ok := id.(string)
+	assert.Truef(t, ok, "failed to cast subscription id output to string")
+	u, err = uuid.Parse(ids)
 	assert.NoErrorf(t, err, "cannot parse subscription id as uuid: %s", id)
 }
 
