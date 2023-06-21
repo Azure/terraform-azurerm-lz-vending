@@ -20,41 +20,8 @@ var billingScope = os.Getenv("AZURE_BILLING_SCOPE")
 
 // TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
 // with valid input variables.
+// We also test RP registration here.
 func TestDeploySubscriptionAliasValid(t *testing.T) {
-	t.Parallel()
-
-	utils.PreCheckDeployTests(t)
-
-	v, err := getValidInputVariables(billingScope)
-	require.NoError(t, err)
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, err)
-	defer test.Cleanup()
-
-	// Defer the cleanup of the subscription alias to the end of the test.
-	// Should be run after the Terraform destroy.
-	// We don't know the sub ID yet, so use zeros for now and then
-	// update it after the apply.
-	u := uuid.MustParse("00000000-0000-0000-0000-000000000000")
-	defer func() {
-		err := azureutils.CancelSubscription(t, &u)
-		t.Logf("cannot cancel subscription: %v", err)
-	}()
-
-	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
-	test.ApplyIdempotent().ErrorIsNil(t)
-
-	sid, err := test.Output("subscription_id").GetValue()
-	assert.NoError(t, err)
-	sids, ok := sid.(string)
-	assert.True(t, ok, "subscription_id is not a string")
-	u, err = uuid.Parse(sids)
-	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
-}
-
-// TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
-// with valid input variables.
-func TestDeploySubscriptionAliasValidWithRPRegistration(t *testing.T) {
 	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
