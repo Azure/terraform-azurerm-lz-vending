@@ -33,6 +33,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
 
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.0.0)
+
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.7.0)
 
 ## Modules
@@ -151,6 +153,14 @@ Type: `string`
 
 Default: `""`
 
+### <a name="input_subscription_register_resource_providers"></a> [subscription\_register\_resource\_providers](#input\_subscription\_register\_resource\_providers)
+
+Description: The list of resource providers to register.
+
+Type: `set(string)`
+
+Default: `[]`
+
 ### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
 
 Description: A map of tags to assign to the newly created subscription.  
@@ -186,6 +196,7 @@ Default: `""`
 
 The following resources are used by this module:
 
+- [azapi_resource_action.resource_provider_registration](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
 - [azurerm_management_group_subscription_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group_subscription_association) (resource)
 - [azurerm_subscription.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription) (resource)
 
