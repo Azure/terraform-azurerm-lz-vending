@@ -8,6 +8,7 @@ import (
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/azureutils"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
+	"github.com/Azure/terratest-terraform-fluent/check"
 	"github.com/Azure/terratest-terraform-fluent/setuptest"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -29,6 +30,43 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
+
+	// Defer the cleanup of the subscription alias to the end of the test.
+	// Should be run after the Terraform destroy.
+	// We don't know the sub ID yet, so use zeros for now and then
+	// update it after the apply.
+	u := uuid.MustParse("00000000-0000-0000-0000-000000000000")
+	defer func() {
+		err := azureutils.CancelSubscription(t, &u)
+		t.Logf("cannot cancel subscription: %v", err)
+	}()
+
+	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
+
+	sid, err := test.Output("subscription_id").GetValue()
+	assert.NoError(t, err)
+	sids, ok := sid.(string)
+	assert.True(t, ok, "subscription_id is not a string")
+	u, err = uuid.Parse(sids)
+	require.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
+}
+
+// TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
+// with valid input variables.
+func TestDeploySubscriptionAliasValidWithRPRegistration(t *testing.T) {
+	t.Parallel()
+
+	utils.PreCheckDeployTests(t)
+
+	v, err := getValidInputVariables(billingScope)
+	v["subscription_register_resource_providers"] = []string{"Microsoft.Compute", "Microsoft.Storage", "Microsoft.Network"}
+	require.NoError(t, err)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(3).ErrorIsNil(t)
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.
