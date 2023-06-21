@@ -9,9 +9,10 @@ module "subscription" {
   subscription_alias_name                           = var.subscription_alias_name
   subscription_billing_scope                        = var.subscription_billing_scope
   subscription_display_name                         = var.subscription_display_name
+  subscription_id                                   = var.subscription_id
   subscription_management_group_association_enabled = var.subscription_management_group_association_enabled
   subscription_management_group_id                  = var.subscription_management_group_id
-  subscription_workload                             = var.subscription_workload
+  subscription_register_resource_providers          = var.subscription_register_resource_providers
   subscription_tags                                 = var.subscription_tags
-  subscription_id                                   = var.subscription_id
+  subscription_workload                             = var.subscription_workload
 }

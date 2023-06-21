@@ -22,3 +22,12 @@ resource "azurerm_management_group_subscription_association" "this" {
   management_group_id = "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}"
   subscription_id     = "/subscriptions/${local.subscription_id}"
 }
+
+# Register resource providers
+resource "azapi_resource_action" "resource_provider_registration" {
+  for_each    = var.subscription_register_resource_providers
+  type        = "Microsoft.Resources/subscriptions@2021-04-01"
+  resource_id = "/subscriptions/${local.subscription_id}"
+  action      = "providers/${each.value}/register"
+  method      = "POST"
+}

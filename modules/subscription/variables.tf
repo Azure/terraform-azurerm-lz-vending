@@ -1,3 +1,11 @@
+variable "subscription_register_resource_providers" {
+  type        = set(string)
+  description = <<DESCRIPTION
+The list of resource providers to register.
+DESCRIPTION
+  default     = []
+}
+
 variable "subscription_alias_enabled" {
   type        = bool
   description = <<DESCRIPTION

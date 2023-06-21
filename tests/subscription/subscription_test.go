@@ -32,6 +32,22 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
 }
 
+func TestSubscriptionRPRegistration(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	v["subscription_register_resource_providers"] = []string{"Microsoft.Storage", "Microsoft.KeyVault"}
+	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
+	v["subscription_alias_enabled"] = false
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(2).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_registration[\"Microsoft.Storage\"]").Exists().ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_registration[\"Microsoft.KeyVault\"]").Exists().ErrorIsNil(t)
+}
+
 // TestSubscriptionAliasCreateValidWithManagementGroup tests the
 // validation functions with valid data, including a destination management group,
 // then creates a plan and compares the input variables to the planned values.
@@ -131,8 +147,8 @@ func getMockInputVariables() map[string]any {
 	return map[string]any{
 		"subscription_alias_enabled": true,
 		"subscription_alias_name":    "test-subscription-alias",
-		"subscription_display_name":  "test-subscription-alias",
 		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/0000000/enrollmentAccounts/000000",
+		"subscription_display_name":  "test-subscription-alias",
 		"subscription_workload":      "Production",
 		"subscription_tags": map[string]any{
 			"test-tag":   "test-value",
