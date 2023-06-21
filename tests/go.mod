@@ -14,7 +14,7 @@ require (
 	github.com/gruntwork-io/terratest v0.43.3
 	github.com/matryer/try v0.0.0-20161228173917-9ac251b645a2
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/sync v0.2.0
+	golang.org/x/sync v0.3.0
 )
 
 require (
