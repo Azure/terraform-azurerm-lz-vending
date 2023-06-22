@@ -357,6 +357,8 @@ The map keys are the resource provider namespace, e.g. `Microsoft.Compute`.
 The map values are a list of provider features to enable.  
 Leave the value empty to not register any resource provider features.
 
+The default values are taken from [Hashicorp's AzureRM provider](https://github.com/hashicorp/terraform-provider-azurerm/blob/main/internal/resourceproviders/required.go).
+
 Type: `map(set(string))`
 
 Default:
