@@ -25,9 +25,17 @@ resource "azurerm_management_group_subscription_association" "this" {
 
 # Register resource providers
 resource "azapi_resource_action" "resource_provider_registration" {
-  for_each    = var.subscription_register_resource_providers
+  for_each    = var.subscription_register_resource_providers_and_features
   type        = "Microsoft.Resources/subscriptions@2021-04-01"
   resource_id = "/subscriptions/${local.subscription_id}"
-  action      = "providers/${each.value}/register"
+  action      = "providers/${each.key}/register"
+  method      = "POST"
+}
+
+resource "azapi_resource_action" "resource_provider_feature_registration" {
+  for_each    = local.resource_provider_feature_map
+  type        = "${each.value.resource_provider_name}/features@2021-07-01"
+  resource_id = "/subscriptions/${local.subscription_id}/providers/Microsoft.Features/providers/${each.value.resource_provider_name}/features/${each.value.feature_name}}"
+  action      = "register"
   method      = "POST"
 }
