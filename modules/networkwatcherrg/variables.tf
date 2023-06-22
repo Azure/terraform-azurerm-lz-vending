@@ -7,7 +7,7 @@ variable "subscription_id" {
   type        = string
   description = "The ID of the subscription to deploy resources into. E.g. `00000000-0000-0000-0000-000000000000`"
   validation {
-    condition     = can(regex("^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_resource_id))
+    condition     = can(regex("^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_id))
     error_message = "Must a subscription id in the format of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
   }
 }
