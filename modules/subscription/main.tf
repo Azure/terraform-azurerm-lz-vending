@@ -35,7 +35,7 @@ resource "azapi_resource_action" "resource_provider_registration" {
 resource "azapi_resource_action" "resource_provider_feature_registration" {
   for_each    = local.resource_provider_feature_map
   type        = "${each.value.resource_provider_name}/features@2021-07-01"
-  resource_id = "/subscriptions/${local.subscription_id}/providers/Microsoft.Features/providers/${each.value.resource_provider_name}/features/${each.value.feature_name}}"
+  resource_id = "/subscriptions/${local.subscription_id}/providers/Microsoft.Features/providers/${each.value.resource_provider_name}/features/${each.value.feature_name}"
   action      = "register"
   method      = "POST"
 }

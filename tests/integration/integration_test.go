@@ -260,10 +260,11 @@ func getMockInputVariables() map[string]any {
 	return map[string]any{
 		"location": "northeurope",
 		// subscription variables
-		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/0000000/enrollmentAccounts/000000",
-		"subscription_display_name":  "test-subscription-alias",
-		"subscription_alias_name":    "test-subscription-alias",
-		"subscription_workload":      "Production",
+		"subscription_billing_scope":                            "/providers/Microsoft.Billing/billingAccounts/0000000/enrollmentAccounts/000000",
+		"subscription_register_resource_providers_and_features": map[string][]any{},
+		"subscription_display_name":                             "test-subscription-alias",
+		"subscription_alias_name":                               "test-subscription-alias",
+		"subscription_workload":                                 "Production",
 		"subscription_tags": map[string]any{
 			"test-tag":   "test-value",
 			"test-tag-2": "test-value-2",
