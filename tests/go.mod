@@ -12,7 +12,6 @@ require (
 	github.com/Azure/terratest-terraform-fluent v0.6.2
 	github.com/google/uuid v1.3.0
 	github.com/gruntwork-io/terratest v0.43.3
-	github.com/matryer/try v0.0.0-20161228173917-9ac251b645a2
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/sync v0.3.0
 )
@@ -30,7 +29,6 @@ require (
 	github.com/aws/aws-sdk-go v1.44.267 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.10.2 // indirect
