@@ -98,7 +98,7 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	assert.NoErrorf(t, err, "subscription %s is not in management group %s", sid, v["subscription_management_group_id"].(string))
 }
 
-func TestDeployExistingSubscriptionWithRpFeatureRegistration(t *testing.T) {
+func TestSubscriptionDeployExistingWithRpFeatureRegistration(t *testing.T) {
 	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
