@@ -13,6 +13,9 @@ module "lz_vending" {
   subscription_alias_name    = each.value.name
   subscription_workload      = each.value.workload
 
+  # Turn off RP registration in this test
+  subscription_register_resource_providers_and_features = {}
+
   # management group association variables
   subscription_management_group_association_enabled = true
   subscription_management_group_id                  = each.value.management_group_id

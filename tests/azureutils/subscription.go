@@ -3,24 +3,20 @@ package azureutils
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
-	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/managementgroups/armmanagementgroups"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription"
+	"github.com/Azure/terratest-terraform-fluent/setuptest"
 	"github.com/google/uuid"
-	"github.com/matryer/try"
+	"github.com/gruntwork-io/terratest/modules/retry"
 	"golang.org/x/sync/errgroup"
 )
 
 // CancelSubscription cancels the supplied Azure subscription.
 // it retries a few times as the subscription api is eventually consistent.
 func CancelSubscription(t *testing.T, id *uuid.UUID) error {
-	const (
-		max      = 3
-		delaysec = 20
-	)
-
 	t.Logf("cancelling subscription %s", id.String())
 
 	sub, err := GetSubscription(*id)
@@ -61,15 +57,20 @@ func CancelSubscription(t *testing.T, id *uuid.UUID) error {
 		return nil
 	}
 
-	ctx = context.TODO()
-	err = try.Do(func(attempt int) (bool, error) {
+	ctx, cancel := context.WithCancel(context.TODO())
+	defer cancel()
+
+	_, err = retry.DoWithRetryE(t, "cancel subscription", setuptest.FastRetry.Max, setuptest.FastRetry.Wait, func() (string, error) {
 		_, err := client.Cancel(ctx, id.String(), nil)
 		if err != nil {
-			t.Logf("subscription id %s cancel failed, attempt %d/%d: %v", id, attempt, max, err)
-			time.Sleep(delaysec * time.Second)
+			if strings.Contains(err.Error(), "Subscription is not in active state") {
+				return "", nil
+			}
+			return "", err
 		}
-		return attempt < max, err
+		return "", nil
 	})
+
 	if err != nil {
 		return fmt.Errorf("cannot cancel subscription %s, %v", id, err)
 	}
@@ -107,12 +108,6 @@ func GetSubscription(id uuid.UUID) (armsubscription.SubscriptionsClientGetRespon
 
 // IsSubscriptionInManagementGroup returns true if the subscription is a management group.
 func IsSubscriptionInManagementGroup(t *testing.T, id uuid.UUID, mg string) error {
-	// constants for retry loop in try.Do
-	const (
-		max      = 8
-		delaysec = 20
-	)
-
 	if exists, err := SubscriptionExists(id); err != nil || !exists {
 		return fmt.Errorf("subscription %s does not exist, or could not successfully check, %s", id, err)
 	}
@@ -126,13 +121,12 @@ func IsSubscriptionInManagementGroup(t *testing.T, id uuid.UUID, mg string) erro
 	cc := "no-cache"
 	mgopts.CacheControl = &cc
 
-	err = try.Do(func(attempt int) (bool, error) {
+	_, err = retry.DoWithRetryE(t, "is subscription in management group", setuptest.FastRetry.Max, setuptest.FastRetry.Wait, func() (string, error) {
 		_, err := client.GetSubscription(context.Background(), mg, id.String(), &mgopts)
 		if err != nil {
-			t.Logf("failed to get subscription %s in management group %s, attempt %d/%d", id.String(), mg, attempt, max)
-			time.Sleep(delaysec * time.Second)
+			return "", err
 		}
-		return attempt < max, err
+		return "", nil
 	})
 	if err != nil {
 		return fmt.Errorf("failed determine if subscription %s in management group %s: %v", id.String(), mg, err)

@@ -1,3 +1,14 @@
+variable "subscription_register_resource_providers_and_features" {
+  type        = map(set(string))
+  description = <<DESCRIPTION
+The map of resource providers to register.
+The map keys are the resource provider namespace, e.g. `Microsoft.Compute`.
+The map values are a list of provider features to enable.
+Leave the value empty to not register any resource provider features.
+DESCRIPTION
+  default     = {}
+}
+
 variable "subscription_alias_enabled" {
   type        = bool
   description = <<DESCRIPTION

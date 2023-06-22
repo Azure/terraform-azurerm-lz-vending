@@ -8,6 +8,7 @@ import (
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/azureutils"
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
+	"github.com/Azure/terratest-terraform-fluent/check"
 	"github.com/Azure/terratest-terraform-fluent/setuptest"
 	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -19,6 +20,7 @@ var billingScope = os.Getenv("AZURE_BILLING_SCOPE")
 
 // TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
 // with valid input variables.
+// We also test RP registration here.
 func TestDeploySubscriptionAliasValid(t *testing.T) {
 	t.Parallel()
 
@@ -29,6 +31,8 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.
@@ -92,6 +96,30 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 
 	err = azureutils.IsSubscriptionInManagementGroup(t, u, v["subscription_management_group_id"].(string))
 	assert.NoErrorf(t, err, "subscription %s is not in management group %s", sid, v["subscription_management_group_id"].(string))
+}
+
+func TestDeploySubscriptionDeployExistingWithRpFeatureRegistration(t *testing.T) {
+	t.Parallel()
+
+	utils.PreCheckDeployTests(t)
+
+	v, err := getValidInputVariables(billingScope)
+	v["subscription_alias_enabled"] = false
+	v["subscription_id"] = os.Getenv("AZURE_SUBSCRIPTION_ID")
+	v["subscription_register_resource_providers_and_features"] = map[string][]any{
+		"Microsoft.PowerBI": {"DailyPrivateLinkServicesForPowerBI"},
+		"Microsoft.Compute": {},
+	}
+
+	require.NoError(t, err)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(3).ErrorIsNil(t)
 }
 
 // getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.
