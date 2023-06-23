@@ -66,6 +66,8 @@ module "lz_vending" {
   subscription_alias_name    = each.value.name
   subscription_workload      = each.value.workload
 
+  network_watcher_resource_group_enabled = true
+
   # management group association variables
   subscription_management_group_association_enabled = true
   subscription_management_group_id                  = each.value.management_group_id

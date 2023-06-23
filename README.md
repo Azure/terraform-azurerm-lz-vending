@@ -55,6 +55,8 @@ module "lz_vending" {
   subscription_alias_name    = "my-subscription-alias"
   subscription_workload      = "Production"
 
+  network_watcher_resource_group_enabled = true
+
   # management group association variables
   subscription_management_group_association_enabled = true
   subscription_management_group_id                  = "Corp"
@@ -121,6 +123,12 @@ The following requirements are needed by this module:
 
 The following Modules are called:
 
+### <a name="module_networkwatcherrg"></a> [networkwatcherrg](#module\_networkwatcherrg)
+
+Source: ./modules/networkwatcherrg
+
+Version:
+
 ### <a name="module_roleassignment"></a> [roleassignment](#module\_roleassignment)
 
 Source: ./modules/roleassignment
@@ -175,6 +183,20 @@ module "lz_vending" {
   disable_telemetry = true
 }
 ```
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_network_watcher_resource_group_enabled"></a> [network\_watcher\_resource\_group\_enabled](#input\_network\_watcher\_resource\_group\_enabled)
+
+Description: Create `NetworkWatcherRG` in the subscription.
+
+Although this resource group is created automatically by Azure,  
+it is not managed by Terraform and therefore can impede the subscription cancellation process.
+
+Enabling this variable will create the resource group in the subscription and allow Terraform to manage it,  
+which includes destroying the resource (and all resources within it).
 
 Type: `bool`
 
