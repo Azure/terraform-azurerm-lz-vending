@@ -18,7 +18,7 @@ variable "tags" {
   default     = {}
 }
 
-variable "networkwatcher_rg_name" {
+variable "network_watcher_rg_name" {
   type        = string
   description = "The name of the resource group in which to create the network watcher. This only needs changing for parallel testing purposes."
   default     = "NetworkWatcherRG"
