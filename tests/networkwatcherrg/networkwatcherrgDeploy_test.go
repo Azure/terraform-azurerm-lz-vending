@@ -2,8 +2,8 @@ package networkwatcherrg
 
 import (
 	"context"
+	"fmt"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/azureutils"
@@ -21,23 +21,28 @@ func TestDeployNetworkWatcherRg(t *testing.T) {
 
 	utils.PreCheckDeployTests(t)
 
+	v, err := getValidInputVariables()
+	require.NoError(t, err)
+
 	// delete the resource group if it already exists
 	ctx, cancel := context.WithCancel(context.TODO())
 	defer cancel()
 
+	sid, err := uuid.Parse(os.Getenv("AZURE_SUBSCRIPTION_ID"))
+	require.NoError(t, err)
+
 	t.Logf("Getting resource groups in subscription %s", os.Getenv("AZURE_SUBSCRIPTION_ID"))
-	rgs, err := azureutils.ListResourceGroup(ctx, uuid.MustParse(os.Getenv("AZURE_SUBSCRIPTION_ID")))
+	rgs, err := azureutils.ListResourceGroup(ctx, sid)
 	require.NoError(t, err)
 
 	for _, rg := range rgs {
-		if strings.ToLower(*rg.Name) == "networkwatcherrg" {
+		if *rg.Name == v["network_watcher_rg_name"].(string) {
 			t.Logf("Deleting resource group %s", *rg.Name)
 			err := azureutils.DeleteResourceGroup(ctx, *rg.Name, uuid.MustParse(os.Getenv("AZURE_SUBSCRIPTION_ID")))
 			require.NoError(t, err)
 		}
 	}
 
-	v := getValidInputVariables()
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
@@ -48,9 +53,15 @@ func TestDeployNetworkWatcherRg(t *testing.T) {
 }
 
 // getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.
-func getValidInputVariables() map[string]any {
-	return map[string]any{
-		"location":        "eastus",
-		"subscription_id": os.Getenv("AZURE_SUBSCRIPTION_ID"),
+func getValidInputVariables() (map[string]any, error) {
+	r, err := utils.RandomHex(4)
+	if err != nil {
+		return nil, fmt.Errorf("cannot generate random hex, %s", err)
 	}
+	name := fmt.Sprintf("testdeploy-%s", r)
+	return map[string]any{
+		"location":                "eastus",
+		"subscription_id":         os.Getenv("AZURE_SUBSCRIPTION_ID"),
+		"network_watcher_rg_name": name,
+	}, nil
 }
