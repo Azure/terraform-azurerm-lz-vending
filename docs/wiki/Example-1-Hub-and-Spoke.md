@@ -27,6 +27,8 @@ module "lz_vending" {
   subscription_alias_name    = "mysub"
   subscription_workload      = "DevTest"
 
+  network_watcher_resource_group_enabled = true
+
   # virtual network variables
   virtual_network_enabled = true
   virtual_networks = {

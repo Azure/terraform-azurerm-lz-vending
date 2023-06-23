@@ -34,6 +34,8 @@ module "lz_vending" {
   subscription_alias_name    = "mylz"
   subscription_workload      = Production
 
+  network_watcher_resource_group_enabled = true
+
   # virtual network variables
   virtual_network_enabled = true
   virtual_networks = {
