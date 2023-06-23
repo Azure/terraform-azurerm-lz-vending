@@ -20,6 +20,6 @@ variable "tags" {
 
 variable "network_watcher_rg_name" {
   type        = string
-  description = "The name of the resource group in which to create the network watcher. This only needs changing for parallel testing purposes."
+  description = "The name of the resource group to create. This only needs changing for parallel testing purposes."
   default     = "NetworkWatcherRG"
 }
