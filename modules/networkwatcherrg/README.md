@@ -76,6 +76,14 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_network_watcher_rg_name"></a> [network\_watcher\_rg\_name](#input\_network\_watcher\_rg\_name)
+
+Description: The name of the resource group in which to create the network watcher. This only needs changing for parallel testing purposes.
+
+Type: `string`
+
+Default: `"NetworkWatcherRG"`
+
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: A mapping of tags to assign to the resource.
