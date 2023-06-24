@@ -43,7 +43,7 @@ resource "azapi_resource" "umi_federated_credentials" {
   for_each  = local.federated_credentials_map
   name      = each.value.name
   parent_id = azapi_resource.umi.id
-  locks     = [azapi_resource.umi.id]
+  locks     = [azapi_resource.umi.id] # Concurrent Federated Identity Credentials writes under the same managed identity are not supported
   body = jsonencode({
     properties = {
       audiences = [each.value.audience]
