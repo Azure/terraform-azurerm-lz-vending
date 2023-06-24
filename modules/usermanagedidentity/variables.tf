@@ -9,6 +9,21 @@ variable "location" {
 
 }
 
+variable "tags" {
+  description = "The tags to apply to the user managed identity"
+  type        = map(string)
+  default     = {}
+}
+
+variable "subscription_id" {
+  description = "The subscription id"
+  type        = string
+  validation {
+    condition     = can(regex("^^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_id))
+    error_message = "Must be a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
+  }
+}
+
 variable "resource_group_creation_enabled" {
   description = "Whether to create the supplied resource group"
   type        = bool
@@ -20,22 +35,34 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "resource_group_tags" {
+  description = "The tags to apply to the resource group, if we create it."
+  type        = map(string)
+  default     = {}
+}
+
 variable "resource_group_lock_enabled" {
   description = "Whether to enable resource group lock"
   type        = bool
   default     = true
 }
 
+variable "resource_group_lock_name" {
+  description = "The name of the resource group lock, if blank will be set to `lock-<resource_group_name>`"
+  type        = string
+  default     = ""
+}
+
 # allow the caller to easily configure federated credentials for GitHub Actions
 variable "federated_credentials_github" {
-  type = set(object({
+  type = map(object({
     name         = optional(string, "")
     organization = string
     repository   = string
     entity       = string
     value        = optional(string, "")
   }))
-  default = []
+  default = {}
 
   validation {
     condition = alltrue([
@@ -55,14 +82,14 @@ variable "federated_credentials_github" {
 
 # allow the caller to easily configure federated credentials for Terraform Cloud
 variable "federated_credentials_terraform_cloud" {
-  type = set(object({
+  type = map(object({
     name         = optional(string, "")
     organization = string
     project      = string
     workspace    = string
     run_phase    = string
   }))
-  default = []
+  default = {}
 
   validation {
     condition = alltrue([
@@ -74,11 +101,11 @@ variable "federated_credentials_terraform_cloud" {
 
 # allow the caller to configure federated credentials by supplying the values verbatim
 variable "federated_credentials_advanced" {
-  type = set(object({
+  type = map(object({
     name               = string
     subject_identifier = string
     audience           = optional(string, "api://AzureADTokenExchange")
     issuer_url         = string
   }))
-  default = []
+  default = {}
 }

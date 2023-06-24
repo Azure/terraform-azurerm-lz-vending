@@ -20,5 +20,6 @@ locals {
     for i in local.resource_provider_feature_set : "${i.resource_provider_name}/${i.feature_name}" => {
       resource_provider_name = i.resource_provider_name
       feature_name           = i.feature_name
-  } }
+    }
+  }
 }
