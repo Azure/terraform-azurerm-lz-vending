@@ -17,6 +17,11 @@ resource "azapi_resource" "rg_lock" {
       level = "CanNotDelete"
     }
   })
+  depends_on = [
+    azapi_resource.rg,
+    azapi_resource.umi,
+    azapi_resource.umi_federated_credentials
+  ]
 }
 
 resource "azapi_resource" "umi" {
