@@ -18,6 +18,10 @@ This is currently split logically into the following capabilities:
   - vWAN connectivity
   - Mesh peering (peering between spokes)
 - Role assignments
+- Resource provider (and feature) registration
+- NetworkWatcherRG creation
+- User assigned managed identity creation
+  - Federated credential configuration for GitHub Actions, Terraform Cloud, and other providers.
 
 > When creating virtual network peerings, be aware of the [limit of peerings per virtual network](https://learn.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits?toc=%2Fazure%2Fvirtual-network%2Ftoc.json#azure-resource-manager-virtual-networking-limits).
 
