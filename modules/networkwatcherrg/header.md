@@ -1,8 +1,10 @@
-# ALZ landing zone virtual network submodule
+# ALZ landing zone network watcher resource group submodule
 
 ## Overview
 
 Creates a NetworkWatcherRG resource group in the specified location and subscription.
+
+This can make subscription cancellation more likely to succeed as Terraform can delete the resource group before attempting to cancel the subscription.
 
 ## Notes
 

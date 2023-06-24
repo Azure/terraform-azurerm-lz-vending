@@ -14,7 +14,7 @@ See [README.md](https://github.com/Azure/terraform-azurerm-lz-vending#readme) in
 ```terraform
 module "subscription" {
   source  = "Azure/lz-vending/azurerm/modules/subscription"
-  version = "~> 0.1.0"
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   subscription_alias_billing_scope       = "/providers/Microsoft.Billing/billingAccounts/1234567/enrollmentAccounts/123456"
   subscription_alias_display_name        = "my-subscription-display-name"

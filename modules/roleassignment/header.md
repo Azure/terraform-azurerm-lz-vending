@@ -14,7 +14,7 @@ See [README.md](https://github.com/Azure/terraform-azurerm-lz-vending#readme) in
 ```terraform
 module "roleassignment" {
   source          = "Azure/lz-vending/azurerm/modules/roleassignment"
-  version         = "~> 0.1.0"
+  version         = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
   role_definition = "Owner"
   scope           = "/subscriptions/00000000-0000-0000-0000-000000000000"
   principal_id    = "00000000-0000-0000-0000-000000000000"
