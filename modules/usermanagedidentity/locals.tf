@@ -89,3 +89,7 @@ locals {
     )) : v.key => v
   }
 }
+
+locals {
+  umi_output = jsondecode(azapi_resource.umi.output)
+}
