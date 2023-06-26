@@ -14,6 +14,8 @@ jobs:
   checkversion:
     env:
       SEMVER_REGEX: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
+      MODULE_VERSION_FILE: locals.version.tf.json
+      MODULE_JSON_QUERY: .locals.module_version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -28,7 +30,7 @@ jobs:
         name: Get latest release version
 
       - run: |
-          VER=$(jq -r '.locals.module_version' < locals.version.tf.json)
+          VER=$(jq -r '${{ env.MODULE_JSON_QUERY }}' < ${{ env.MODULE_VERSION_FILE }})
           if $(echo $VER | grep -P -qv $SEMVER_REGEX); then
             echo "Module version $VER is not a valid semantic version"
             exit 1
