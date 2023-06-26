@@ -5,6 +5,9 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - '**.tf'
+      - '**.tf.json'
   workflow_dispatch:
 
 permissions:
