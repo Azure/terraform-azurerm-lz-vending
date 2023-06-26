@@ -59,3 +59,4 @@ jobs:
             echo "Module version ${{ env.MODULE_VERSION }} is less than latest release ${{ env.LATEST_RELEASE }}"
             exit 1
           fi
+        name: Check module version is greater than latest release
