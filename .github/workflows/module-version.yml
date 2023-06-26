@@ -1,13 +1,13 @@
 ---
-name: module version check
+name: module version
 
 on:
   pull_request:
     branches:
       - main
-    # paths:
-    #   - '**.tf'
-    #   - '**.tf.json'
+    paths:
+      - '**.tf'
+      - '**.tf.json'
   workflow_dispatch:
 
 permissions:
