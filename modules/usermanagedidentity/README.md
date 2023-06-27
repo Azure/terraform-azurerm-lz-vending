@@ -82,7 +82,7 @@ The following input variables are required:
 
 ### <a name="input_location"></a> [location](#input\_location)
 
-Description: The location of the user managed identity
+Description: The name of the user-assigned managed identity
 
 Type: `string`
 
@@ -94,13 +94,13 @@ Type: `string`
 
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
-Description: The name of the resource group in which to create the user managed identity
+Description: The name of the resource group in which to create the user-assigned managed identity
 
 Type: `string`
 
 ### <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id)
 
-Description: The subscription id
+Description: The id of the target subscription. Must be a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase.
 
 Type: `string`
 
@@ -110,7 +110,16 @@ The following input variables are optional (have default values):
 
 ### <a name="input_federated_credentials_advanced"></a> [federated\_credentials\_advanced](#input\_federated\_credentials\_advanced)
 
-Description: allow the caller to configure federated credentials by supplying the values verbatim
+Description: Configure federated identity credentials, using OpenID Connect, for use scenarios outside GitHub Actions and Terraform Cloud.
+
+The may key is arbitrary and only used for the `for_each` in the resource declaration.
+
+The map value is an object with the following attributes:
+
+- `name` - the name of the federated credential resource, the last segment of the Azure resource id.
+- `subject_identifier` - The subject of the token.
+- `issuer_url` - the URL of the token issuer, should begin with `https://`
+- `audience` - (optional) the token audience, defaults to `api://AzureADTokenExchange`.
 
 Type:
 
@@ -127,7 +136,17 @@ Default: `{}`
 
 ### <a name="input_federated_credentials_github"></a> [federated\_credentials\_github](#input\_federated\_credentials\_github)
 
-Description: allow the caller to easily configure federated credentials for GitHub Actions
+Description: Configure federated identity credentials, using OpenID Connect, for use in GitHub actions.
+
+The may key is arbitrary and only used for the `for_each` in the resource declaration.
+
+The map value is an object with the following attributes:
+
+- `name` - the name of the federated credential resource, the last segment of the Azure resource id.
+- `organization` - the name of the GitHub organization, e.g. `Azure` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
+- `repository` - the name of the GitHub respository, e.g. `terraform-azurerm-lz-vending` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
+- `entity` - one of 'environment', 'pull\_request', 'tag', or 'branch'
+- `value` - identifies the `entity` type, e.g. `main` when using entity is `branch`. Should be blank when `entity` is `pull_request`.
 
 Type:
 
@@ -145,7 +164,17 @@ Default: `{}`
 
 ### <a name="input_federated_credentials_terraform_cloud"></a> [federated\_credentials\_terraform\_cloud](#input\_federated\_credentials\_terraform\_cloud)
 
-Description: allow the caller to easily configure federated credentials for Terraform Cloud
+Description: Configure federated identity credentials, using OpenID Connect, for use in Terraform Cloud.
+
+The may key is arbitrary and only used for the `for_each` in the resource declaration.
+
+The map value is an object with the following attributes:
+
+- `name` - the name of the federated credential resource, the last segment of the Azure resource id.
+- `organization` - the name of the Terraform Cloud organization.
+- `project` - the name of the Terraform Cloud project.
+- `workspace` - the name of the Terraform Cloud workspace.
+- `run_phase` - one of `plan`, or `apply`.
 
 Type:
 
@@ -163,7 +192,7 @@ Default: `{}`
 
 ### <a name="input_resource_group_creation_enabled"></a> [resource\_group\_creation\_enabled](#input\_resource\_group\_creation\_enabled)
 
-Description: Whether to create the supplied resource group
+Description: Whether to create the supplied resource group for the user-assigned managed identity
 
 Type: `bool`
 
@@ -171,7 +200,7 @@ Default: `true`
 
 ### <a name="input_resource_group_lock_enabled"></a> [resource\_group\_lock\_enabled](#input\_resource\_group\_lock\_enabled)
 
-Description: Whether to enable resource group lock
+Description: Whether to enable resource group lock for the user-assigned managed identity resource group
 
 Type: `bool`
 
@@ -179,7 +208,7 @@ Default: `true`
 
 ### <a name="input_resource_group_lock_name"></a> [resource\_group\_lock\_name](#input\_resource\_group\_lock\_name)
 
-Description: The name of the resource group lock, if blank will be set to `lock-<resource_group_name>`
+Description: The name of the resource group lock for the user-assigned managed identity resource group, if blank will be set to `lock-<resource_group_name>`
 
 Type: `string`
 
@@ -187,7 +216,7 @@ Default: `""`
 
 ### <a name="input_resource_group_tags"></a> [resource\_group\_tags](#input\_resource\_group\_tags)
 
-Description: The tags to apply to the resource group, if we create it.
+Description: The tags to apply to the user-assigned managed identity resource group, if we create it.
 
 Type: `map(string)`
 
@@ -195,7 +224,7 @@ Default: `{}`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
-Description: The tags to apply to the user managed identity
+Description: The tags to apply to the user-assigned managed identity
 
 Type: `map(string)`
 
