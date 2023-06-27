@@ -6,7 +6,7 @@ module "roleassignment" {
   depends_on = [
     module.subscription,
     module.virtualnetwork,
-    module.resourcegroups,
+    module.resourcegroup,
     module.usermanagedidentity
   ]
   for_each                     = { for k, v in local.role_assignments_map : k => v if var.role_assignment_enabled }

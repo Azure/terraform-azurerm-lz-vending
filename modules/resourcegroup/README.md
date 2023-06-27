@@ -1,11 +1,11 @@
 <!-- BEGIN_TF_DOCS -->
-# ALZ landing zone network watcher resource group submodule
+# ALZ landing zone resource group submodule
 
 ## Overview
 
-Creates the supplied resource groups in the specified location and subscription.
+Creates the supplied resource group in the specified location and subscription.
 
-Useful in a subscription vending scenario to pre-create the `NetworkWatcherRG` so we may delete it prior to subscription cancellation.
+Useful in a subscription vending scenario to pre-create the `NetworkWatcherRG` so we may delete it prior to subscription cancellation. Also useful for pre-creating resource groups for the purposes of RBAC delegation.
 
 ## Notes
 
@@ -16,12 +16,13 @@ See [README.md](https://github.com/Azure/terraform-azurerm-lz-vending#readme) in
 See documentation for optional parameters.
 
 ```terraform
-module "networkwatcherrg" {
-  source  = "Azure/lz-vending/azurerm/modules/networkwatcherrg"
+module "resourcegroups" {
+  source  = "Azure/lz-vending/azurerm/modules/resourcegroups"
   version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   subscription_id = "00000000-0000-0000-0000-000000000000"
   location        = "eastus"
+  name            = "rg-test"
 }
 ```
 
@@ -45,6 +46,18 @@ No modules.
 
 The following input variables are required:
 
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The Azure region to deploy resources into. E.g. `eastus`
+
+Type: `string`
+
+### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+
+Description: The name of the resource group E.g. `rg-test`
+
+Type: `string`
+
 ### <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id)
 
 Description: The ID of the subscription to deploy resources into. E.g. `00000000-0000-0000-0000-000000000000`
@@ -55,23 +68,11 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
-### <a name="input_resource_groups_to_create"></a> [resource\_groups\_to\_create](#input\_resource\_groups\_to\_create)
+### <a name="input_tags"></a> [tags](#input\_tags)
 
-Description: A map of the resource groups to create. THe value is an object with the following attributes:
+Description: Map of tags to be applied to the resource group
 
-- `name` - the name of the resource group
-- `location` - the location of the resource group
-- `tags` - (optional) a map of type string
-
-Type:
-
-```hcl
-map(object({
-    name     = string
-    location = string
-    tags     = optional(map(string), {})
-  }))
-```
+Type: `map(string)`
 
 Default: `{}`
 
