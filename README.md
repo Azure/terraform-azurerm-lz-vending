@@ -269,7 +269,7 @@ Object fields:
 
 - `principal_id`: The directory/object id of the principal to assign the role to.
 - `definition`: The role definition to assign. Either use the name or the role definition resource id.
-- `relative_scope`: Scope relative to the created subscription. Leave blank for subscription scope.
+- `relative_scope`: (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
 
 E.g.
 
@@ -296,7 +296,7 @@ Type:
 map(object({
     principal_id   = string,
     definition     = string,
-    relative_scope = string,
+    relative_scope = optional(string, ""),
   }))
 ```
 
@@ -552,10 +552,10 @@ The may key is arbitrary and only used for the `for_each` in the resource declar
 
 The map value is an object with the following attributes:
 
-- `name` - the name of the federated credential resource, the last segment of the Azure resource id.
-- `subject_identifier` - The subject of the token.
-- `issuer_url` - the URL of the token issuer, should begin with `https://`
-- `audience` - (optional) the token audience, defaults to `api://AzureADTokenExchange`.
+- `name`: The name of the federated credential resource, the last segment of the Azure resource id.
+- `subject_identifier`: The subject of the token.
+- `issuer_url`: The URL of the token issuer, should begin with `https://`
+- `audience`: (optional) The token audience, defaults to `api://AzureADTokenExchange`.
 
 Type:
 
@@ -661,7 +661,9 @@ Default: `{}`
 ### <a name="input_umi_role_assignments"></a> [umi\_role\_assignments](#input\_umi\_role\_assignments)
 
 Description: Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.  
-This will be merged with the other role assignments specified in `var.role_assignments`
+This will be merged with the other role assignments specified in `var.role_assignments`.
+
+The role assignments can be used resource groups created by the `var.resource_groups_to_create` map.
 
 Requires both `var.umi_enabled` and `var.role_assignment_enabled` to be `true`.
 
