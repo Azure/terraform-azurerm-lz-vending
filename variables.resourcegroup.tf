@@ -18,7 +18,7 @@ variable "resource_group_creation_enabled" {
   default     = false
 }
 
-variable "resource_groups_to_create" {
+variable "resource_groups" {
   type = map(object({
     name     = string
     location = string

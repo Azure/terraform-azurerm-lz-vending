@@ -20,7 +20,7 @@ This is currently split logically into the following capabilities:
   - Mesh peering (peering between spokes)
 - Role assignments
 - Resource provider (and feature) registration
-- NetworkWatcherRG creation
+- Resource group creation
 - User assigned managed identity creation
   - Federated credential configuration for GitHub Actions, Terraform Cloud, and other providers.
 
@@ -82,6 +82,14 @@ module "lz_vending" {
       hub_peering_enabled     = true
       hub_network_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network2"
       mesh_peering_enabled    = true
+    }
+  }
+
+  resource_group_creation_enabled = true
+  resource_groups = {
+    myrg = {
+      name     = "MyRg"
+      location = "westeurope"
     }
   }
 
@@ -232,7 +240,7 @@ Type: `bool`
 
 Default: `false`
 
-### <a name="input_resource_groups_to_create"></a> [resource\_groups\_to\_create](#input\_resource\_groups\_to\_create)
+### <a name="input_resource_groups"></a> [resource\_groups](#input\_resource\_groups)
 
 Description: A map of the resource groups to create. THe value is an object with the following attributes:
 

@@ -8,7 +8,7 @@ module "resourcegroup" {
         location = var.location
       },
     } : {},
-    var.resource_group_creation_enabled ? var.resource_groups_to_create : {}
+    var.resource_group_creation_enabled ? var.resource_groups : {}
   )
   subscription_id     = local.subscription_id
   location            = each.value.location
