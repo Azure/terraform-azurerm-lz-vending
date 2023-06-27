@@ -127,9 +127,9 @@ The following requirements are needed by this module:
 
 The following Modules are called:
 
-### <a name="module_resourcegroups"></a> [resourcegroups](#module\_resourcegroups)
+### <a name="module_resourcegroup"></a> [resourcegroup](#module\_resourcegroup)
 
-Source: ./modules/resourcegroups
+Source: ./modules/resourcegroup
 
 Version:
 
