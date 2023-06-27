@@ -85,6 +85,16 @@ module "lz_vending" {
     }
   }
 
+  umi_enabled        = true
+  umi_name           = "umi"
+  umi_resource_group = "rg-identity"
+  umi_role_assignments = {
+    myrg-contrib = {
+      definition     = "Contributor"
+      relative_scope = "/resourceGroups/MyRg"
+    }
+  }
+
   resource_group_creation_enabled = true
   resource_groups = {
     myrg = {
