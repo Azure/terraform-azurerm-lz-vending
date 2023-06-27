@@ -29,4 +29,17 @@ locals {
   # resource_group_ids is a map of resource groups created, if the module has been enabled.
   # This is used in the outputs.tf file to return the resource group ids.
   virtual_network_resource_group_ids = try(module.virtualnetwork[0].resource_group_ids, {})
+
+  # role_assignments_to_create is a merged map of the supplied role assignments in var.role_assignments,
+  # and the role assignments for the umi.
+  role_assignments_map = merge(
+    var.role_assignments,
+    {
+      for k, v in var.umi_role_assignments : "umi-${k}" => {
+        principal_id   = module.usermanagedidentity.principal_id
+        definition     = v.definition
+        relative_scope = v.relative_scope
+      }
+    }
+  )
 }

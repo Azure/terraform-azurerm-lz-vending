@@ -3,7 +3,7 @@
 module "virtualnetwork" {
   source           = "./modules/virtualnetwork"
   count            = var.virtual_network_enabled ? 1 : 0
-  depends_on       = [module.networkwatcherrg]
+  depends_on       = [module.resourcegroups]
   subscription_id  = local.subscription_id
   virtual_networks = var.virtual_networks
   location         = var.location

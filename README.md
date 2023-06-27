@@ -127,9 +127,9 @@ The following requirements are needed by this module:
 
 The following Modules are called:
 
-### <a name="module_networkwatcherrg"></a> [networkwatcherrg](#module\_networkwatcherrg)
+### <a name="module_resourcegroups"></a> [resourcegroups](#module\_resourcegroups)
 
-Source: ./modules/networkwatcherrg
+Source: ./modules/resourcegroups
 
 Version:
 
@@ -223,6 +223,34 @@ which includes destroying the resource (and all resources within it).
 Type: `bool`
 
 Default: `false`
+
+### <a name="input_resource_group_creation_enabled"></a> [resource\_group\_creation\_enabled](#input\_resource\_group\_creation\_enabled)
+
+Description: Whether to create additional resource groups in the target subscription. Requires `var.resource_groups_to_create`.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_resource_groups_to_create"></a> [resource\_groups\_to\_create](#input\_resource\_groups\_to\_create)
+
+Description: A map of the resource groups to create. THe value is an object with the following attributes:
+
+- `name` - the name of the resource group
+- `location` - the location of the resource group
+- `tags` - (optional) a map of type string
+
+Type:
+
+```hcl
+map(object({
+    name     = string
+    location = string
+    tags     = optional(map(string), {})
+  }))
+```
+
+Default: `{}`
 
 ### <a name="input_role_assignment_enabled"></a> [role\_assignment\_enabled](#input\_role\_assignment\_enabled)
 
@@ -627,6 +655,29 @@ Default: `""`
 Description: The tags to apply to the user-assigned managed identity resource group, if we create it.
 
 Type: `map(string)`
+
+Default: `{}`
+
+### <a name="input_umi_role_assignments"></a> [umi\_role\_assignments](#input\_umi\_role\_assignments)
+
+Description: Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.  
+This will be merged with the other role assignments specified in `var.role_assignments`
+
+Requires both `var.umi_enabled` and `var.role_assignment_enabled` to be `true`.
+
+Object fields:
+
+- `definition`: The role definition to assign. Either use the name or the role definition resource id.
+- `relative_scope`: Scope relative to the created subscription. Leave blank for subscription scope.
+
+Type:
+
+```hcl
+map(object({
+    definition     = string
+    relative_scope = string
+  }))
+```
 
 Default: `{}`
 

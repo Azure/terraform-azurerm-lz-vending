@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# ALZ landing zone resource group submodule
+# ALZ landing zone network watcher resource group submodule
 
 ## Overview
 
@@ -45,12 +45,6 @@ No modules.
 
 The following input variables are required:
 
-### <a name="input_location"></a> [location](#input\_location)
-
-Description: The Azure region to deploy resources into.
-
-Type: `string`
-
 ### <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id)
 
 Description: The ID of the subscription to deploy resources into. E.g. `00000000-0000-0000-0000-000000000000`
@@ -61,19 +55,23 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
-### <a name="input_network_watcher_rg_name"></a> [network\_watcher\_rg\_name](#input\_network\_watcher\_rg\_name)
+### <a name="input_resource_groups_to_create"></a> [resource\_groups\_to\_create](#input\_resource\_groups\_to\_create)
 
-Description: The name of the resource group to create. This only needs changing for parallel testing purposes.
+Description: A map of the resource groups to create. THe value is an object with the following attributes:
 
-Type: `string`
+- `name` - the name of the resource group
+- `location` - the location of the resource group
+- `tags` - (optional) a map of type string
 
-Default: `"NetworkWatcherRG"`
+Type:
 
-### <a name="input_tags"></a> [tags](#input\_tags)
-
-Description: A mapping of tags to assign to the resource.
-
-Type: `map(string)`
+```hcl
+map(object({
+    name     = string
+    location = string
+    tags     = optional(map(string), {})
+  }))
+```
 
 Default: `{}`
 
@@ -81,7 +79,7 @@ Default: `{}`
 
 The following resources are used by this module:
 
-- [azapi_resource.network_watcher_rg](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.rg](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 
 ## Outputs
 

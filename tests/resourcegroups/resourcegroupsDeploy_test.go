@@ -1,4 +1,4 @@
-package networkwatcherrg
+package resourcegroups
 
 import (
 	"context"
@@ -60,8 +60,12 @@ func getValidInputVariables() (map[string]any, error) {
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
 	return map[string]any{
-		"location":                "eastus",
-		"subscription_id":         os.Getenv("AZURE_SUBSCRIPTION_ID"),
-		"network_watcher_rg_name": name,
+		"subscription_id": os.Getenv("AZURE_SUBSCRIPTION_ID"),
+		"resource_groups_to_create": map[string]any{
+			"NetworkWatcherRG": map[string]any{
+				"location": "eastus",
+				"name":     name,
+			},
+		},
 	}, nil
 }

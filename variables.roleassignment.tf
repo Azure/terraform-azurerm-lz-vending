@@ -11,7 +11,7 @@ variable "role_assignments" {
   type = map(object({
     principal_id   = string,
     definition     = string,
-    relative_scope = string,
+    relative_scope = optional(string, ""),
   }))
   description = <<DESCRIPTION
 Supply a map of objects containing the details of the role assignments to create.
@@ -20,7 +20,7 @@ Object fields:
 
 - `principal_id`: The directory/object id of the principal to assign the role to.
 - `definition`: The role definition to assign. Either use the name or the role definition resource id.
-- `relative_scope`: Scope relative to the created subscription. Leave blank for subscription scope.
+- `relative_scope`: (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
 
 E.g.
 

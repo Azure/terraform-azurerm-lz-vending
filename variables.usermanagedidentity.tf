@@ -110,10 +110,10 @@ The may key is arbitrary and only used for the `for_each` in the resource declar
 
 The map value is an object with the following attributes:
 
-- `name` - the name of the federated credential resource, the last segment of the Azure resource id.
-- `subject_identifier` - The subject of the token.
-- `issuer_url` - the URL of the token issuer, should begin with `https://`
-- `audience` - (optional) the token audience, defaults to `api://AzureADTokenExchange`.
+- `name`: The name of the federated credential resource, the last segment of the Azure resource id.
+- `subject_identifier`: The subject of the token.
+- `issuer_url`: The URL of the token issuer, should begin with `https://`
+- `audience`: (optional) The token audience, defaults to `api://AzureADTokenExchange`.
 DESCRIPTION
 }
 
@@ -125,7 +125,9 @@ variable "umi_role_assignments" {
   default     = {}
   description = <<DESCRIPTION
 Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.
-This will be merged with the other role assignments specified in `var.role_assignments`
+This will be merged with the other role assignments specified in `var.role_assignments`.
+
+The role assignments can be used resource groups created by the `var.resource_groups_to_create` map.
 
 Requires both `var.umi_enabled` and `var.role_assignment_enabled` to be `true`.
 

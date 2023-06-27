@@ -21,4 +21,9 @@ A map of the resource groups to create. THe value is an object with the followin
 - `location` - the location of the resource group
 - `tags` - (optional) a map of type string
 DESCRIPTION
+
+  validation {
+    condition     = length([for _, v in var.resource_groups_to_create : v.name]) == length(distinct([for _, v in var.resource_groups_to_create : v.name]))
+    error_message = "Resource group names must be unique."
+  }
 }

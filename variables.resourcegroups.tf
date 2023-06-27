@@ -31,4 +31,5 @@ A map of the resource groups to create. THe value is an object with the followin
 - `location` - the location of the resource group
 - `tags` - (optional) a map of type string
 DESCRIPTION
+  default     = {}
 }
