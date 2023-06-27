@@ -116,3 +116,22 @@ The map value is an object with the following attributes:
 - `audience` - (optional) the token audience, defaults to `api://AzureADTokenExchange`.
 DESCRIPTION
 }
+
+variable "umi_role_assignments" {
+  type = map(object({
+    definition     = string
+    relative_scope = string
+  }))
+  default     = {}
+  description = <<DESCRIPTION
+Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.
+This will be merged with the other role assignments specified in `var.role_assignments`
+
+Requires both `var.umi_enabled` and `var.role_assignment_enabled` to be `true`.
+
+Object fields:
+
+- `definition`: The role definition to assign. Either use the name or the role definition resource id.
+- `relative_scope`: Scope relative to the created subscription. Leave blank for subscription scope.
+DESCRIPTION
+}

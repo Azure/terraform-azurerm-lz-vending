@@ -1,11 +1,11 @@
 <!-- BEGIN_TF_DOCS -->
-# ALZ landing zone network watcher resource group submodule
+# ALZ landing zone resource group submodule
 
 ## Overview
 
-Creates a NetworkWatcherRG resource group in the specified location and subscription.
+Creates the supplied resource groups in the specified location and subscription.
 
-This can make subscription cancellation more likely to succeed as Terraform can delete the resource group before attempting to cancel the subscription.
+Useful in a subscription vending scenario to pre-create the `NetworkWatcherRG` so we may delete it prior to subscription cancellation.
 
 ## Notes
 

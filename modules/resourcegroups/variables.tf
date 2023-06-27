@@ -1,8 +1,3 @@
-variable "location" {
-  type        = string
-  description = "The Azure region to deploy resources into."
-}
-
 variable "subscription_id" {
   type        = string
   description = "The ID of the subscription to deploy resources into. E.g. `00000000-0000-0000-0000-000000000000`"
@@ -12,14 +7,18 @@ variable "subscription_id" {
   }
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "A mapping of tags to assign to the resource."
+variable "resource_groups_to_create" {
+  type = map(object({
+    name     = string
+    location = string
+    tags     = optional(map(string), {})
+  }))
   default     = {}
-}
+  description = <<DESCRIPTION
+A map of the resource groups to create. THe value is an object with the following attributes:
 
-variable "network_watcher_rg_name" {
-  type        = string
-  description = "The name of the resource group to create. This only needs changing for parallel testing purposes."
-  default     = "NetworkWatcherRG"
+- `name` - the name of the resource group
+- `location` - the location of the resource group
+- `tags` - (optional) a map of type string
+DESCRIPTION
 }
