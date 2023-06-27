@@ -29,7 +29,7 @@ resource "azapi_resource" "umi" {
   name      = var.name
   parent_id = var.resource_group_creation_enabled ? azapi_resource.rg[0].id : "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
   body      = jsonencode({})
-  location  = "westus"
+  location  = var.location
   tags      = var.tags
   response_export_values = [
     "properties.principalId",
