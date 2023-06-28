@@ -31,7 +31,7 @@ output "umi_client_id" {
 The client id of the user managed identity.
 Value will be null if `var.umi_enabled` is false.
 DESCRIPTION
-  value       = one(module.usermanagedidentity).client_id
+  value       = one(module.usermanagedidentity) != null ? module.usermanagedidentity.client_id : null
 }
 
 output "umi_tenant_id" {
@@ -39,7 +39,7 @@ output "umi_tenant_id" {
 The tenant id of the user managed identity.
 Value will be null if `var.umi_enabled` is false.
 DESCRIPTION
-  value       = one(module.usermanagedidentity).tenant_id
+  value       = one(module.usermanagedidentity) != null ? module.usermanagedidentity.tenant_id : null
 }
 
 output "umi_principal_id" {
@@ -47,7 +47,7 @@ output "umi_principal_id" {
 The principal id of the user managed identity, sometimes known as the object id.
 Value will be null if `var.umi_enabled` is false.
 DESCRIPTION
-  value       = one(module.usermanagedidentity).principal_id
+  value       = one(module.usermanagedidentity) != null ? module.usermanagedidentity.principal_id : null
 }
 
 output "umi_id" {
@@ -55,5 +55,5 @@ output "umi_id" {
 The Azure resource id of the user managed identity.
 Value will be null if `var.umi_enabled` is false.
 DESCRIPTION
-  value       = one(module.usermanagedidentity).umi_id
+  value       = one(module.usermanagedidentity) != null ? module.usermanagedidentity.umi_id : null
 }
