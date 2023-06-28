@@ -130,7 +130,7 @@ variable "federated_credentials_advanced" {
   type = map(object({
     name               = string
     subject_identifier = string
-    audience           = optional(string, "api://AzureADTokenExchange")
+    audiences          = optional(set(string), ["api://AzureADTokenExchange"])
     issuer_url         = string
   }))
   default     = {}
@@ -144,6 +144,6 @@ The map value is an object with the following attributes:
 - `name` - the name of the federated credential resource, the last segment of the Azure resource id.
 - `subject_identifier` - The subject of the token.
 - `issuer_url` - the URL of the token issuer, should begin with `https://`
-- `audience` - (optional) the token audience, defaults to `api://AzureADTokenExchange`.
+- `audiences` - (optional) a set of strings containing the token audiences, defaults to `["api://AzureADTokenExchange"]`.
 DESCRIPTION
 }

@@ -91,6 +91,36 @@ func TestUserManagedIdentityWithTFCloud(t *testing.T) {
 	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credentials["tfc-tfc2"]`).Key("body").Query("properties.subject").HasValue("organization:my-organization:project:my-repository:workspace:my-workspace:run_phase:apply").ErrorIsNil(t)
 }
 
+func TestUserManagedIdentityWithAdvancedFederatedCredentials(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	v["federated_credentials_advanced"] = map[string]any{
+		"adv1": map[string]any{
+			"name":               "myadvancedcred1",
+			"subject_identifier": "field:value",
+			"issuer_url":         "https://test",
+		},
+		"adv2": map[string]any{
+			"name":               "myadvancedcred2",
+			"subject_identifier": "field:value",
+			"issuer_url":         "https://test",
+		},
+	}
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(5).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.umi").Key("name").HasValue(v["name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.umi").Key("location").HasValue(v["location"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.rg[0]").Key("name").HasValue(v["resource_group_name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.rg_lock[0]").Key("name").HasValue("lock-" + v["resource_group_name"].(string)).ErrorIsNil(t)
+
+	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credentials["adv-adv1"]`).Key("body").Query("properties.subject").HasValue("organization:my-organization:project:my-repository:workspace:my-workspace:run_phase:plan").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credentials["adv-adv2"]`).Key("body").Query("properties.subject").HasValue("organization:my-organization:project:my-repository:workspace:my-workspace:run_phase:apply").ErrorIsNil(t)
+}
+
 func getMockInputVariables() map[string]any {
 	return map[string]any{
 		"name":                "test",
