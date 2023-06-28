@@ -119,7 +119,7 @@ The map value is an object with the following attributes:
 - `name` - the name of the federated credential resource, the last segment of the Azure resource id.
 - `subject_identifier` - The subject of the token.
 - `issuer_url` - the URL of the token issuer, should begin with `https://`
-- `audience` - (optional) the token audience, defaults to `api://AzureADTokenExchange`.
+- `audiences` - (optional) a set of strings containing the token audiences, defaults to `["api://AzureADTokenExchange"]`.
 
 Type:
 
@@ -127,7 +127,7 @@ Type:
 map(object({
     name               = string
     subject_identifier = string
-    audience           = optional(string, "api://AzureADTokenExchange")
+    audiences          = optional(set(string), ["api://AzureADTokenExchange"])
     issuer_url         = string
   }))
 ```
@@ -237,7 +237,12 @@ The following resources are used by this module:
 - [azapi_resource.rg](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.rg_lock](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.umi](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.umi_federated_credentials](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.umi_federated_credential_advanced](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.umi_federated_credential_github_branch](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.umi_federated_credential_github_environment](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.umi_federated_credential_github_pull_request](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.umi_federated_credential_github_tag](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.umi_federated_credential_terraform_cloud](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 
 ## Outputs
 
