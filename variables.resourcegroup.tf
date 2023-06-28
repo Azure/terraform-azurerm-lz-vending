@@ -30,6 +30,8 @@ A map of the resource groups to create. THe value is an object with the followin
 - `name` - the name of the resource group
 - `location` - the location of the resource group
 - `tags` - (optional) a map of type string
+
+> The map key `NetworkWatcherRG` is reserved, do not use it here.
 DESCRIPTION
   default     = {}
 }

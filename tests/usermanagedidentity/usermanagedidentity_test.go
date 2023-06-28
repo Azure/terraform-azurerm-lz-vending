@@ -121,6 +121,39 @@ func TestUserManagedIdentityWithAdvancedFederatedCredentials(t *testing.T) {
 	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credential_advanced["adv2"]`).Key("body").Query("properties.subject").HasValue("field:value").ErrorIsNil(t)
 }
 
+func TestUserManagedIdentityWithInvalidTFCloudValues(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	v["federated_credentials_terraform_cloud"] = map[string]any{
+		"tfc1": map[string]any{
+			"organization": "my-organization",
+			"project":      "my-repository",
+			"workspace":    "my-workspace",
+			"run_phase":    "check",
+		},
+	}
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.ErrorContains(t, err, "Field 'run_phase' value must be 'plan' or 'apply'.")
+	defer test.Cleanup()
+}
+
+func TestUserManagedIdentityWithInvaledGHValues(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	v["federated_credentials_github"] = map[string]any{
+		"gh1": map[string]any{
+			"organization": "my-organization",
+			"repository":   "my-repository",
+			"entity":       "branch",
+		},
+	}
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.ErrorContains(t, err, "Field 'value' must be specified for all entities except 'pull_request'.")
+	defer test.Cleanup()
+}
+
 func getMockInputVariables() map[string]any {
 	return map[string]any{
 		"name":                "test",

@@ -10,8 +10,8 @@ resource "azapi_resource" "rg" {
 resource "azapi_resource" "rg_lock" {
   count     = var.resource_group_lock_enabled && var.resource_group_creation_enabled ? 1 : 0
   type      = "Microsoft.Authorization/locks@2020-05-01"
-  parent_id = azapi_resource.rg[0].id
-  name      = coalesce(var.resource_group_lock_name, "lock-${azapi_resource.rg[0].name}")
+  parent_id = one(azapi_resource.rg).id
+  name      = coalesce(var.resource_group_lock_name, "lock-${one(azapi_resource.rg).name}")
   body = jsonencode({
     properties = {
       level = "CanNotDelete"
@@ -32,7 +32,7 @@ resource "azapi_resource" "rg_lock" {
 resource "azapi_resource" "umi" {
   type      = "Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31"
   name      = var.name
-  parent_id = var.resource_group_creation_enabled ? azapi_resource.rg[0].id : "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
+  parent_id = var.resource_group_creation_enabled ? one(azapi_resource.rg).id : "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
   body      = jsonencode({})
   location  = var.location
   tags      = var.tags

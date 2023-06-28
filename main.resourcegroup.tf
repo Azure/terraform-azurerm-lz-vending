@@ -1,17 +1,19 @@
 # Resource groups module
 module "resourcegroup" {
-  source = "./modules/resourcegroup"
-  for_each = merge(
-    var.network_watcher_resource_group_enabled && var.resource_group_creation_enabled ? {
-      NetworkWatcherRG = {
-        name     = "NetworkWatcherRG"
-        location = var.location
-      },
-    } : {},
-    var.resource_group_creation_enabled ? var.resource_groups : {}
-  )
+  source              = "./modules/resourcegroup"
+  for_each            = var.resource_group_creation_enabled ? var.resource_groups : {}
   subscription_id     = local.subscription_id
   location            = each.value.location
   resource_group_name = each.value.name
   tags                = each.value.tags
+}
+
+# Resource groups module for network watcher
+module "resourcegroup_networkwatcherrg" {
+  source              = "./modules/resourcegroup"
+  count               = var.network_watcher_resource_group_enabled ? 1 : 0
+  subscription_id     = local.subscription_id
+  location            = var.location
+  resource_group_name = "NetworkWatcherRG"
+  tags                = {}
 }

@@ -1,5 +1,9 @@
 variable "umi_enabled" {
-  description = "Whether to enable the creation of a user-assigned managed identity."
+  description = <<DESCRIPTION
+Whether to enable the creation of a user-assigned managed identity.
+
+Requires `umi_name` to be non-empty.
+DESCRIPTION
   type        = bool
   default     = false
 }
@@ -7,6 +11,7 @@ variable "umi_enabled" {
 variable "umi_name" {
   description = "The name of the user-assigned managed identity"
   type        = string
+  default     = ""
 }
 
 variable "umi_tags" {
@@ -24,6 +29,7 @@ variable "umi_resource_group_creation_enabled" {
 variable "umi_resource_group_name" {
   description = "The name of the resource group in which to create the user-assigned managed identity"
   type        = string
+  default     = ""
 }
 
 variable "umi_resource_group_tags" {
