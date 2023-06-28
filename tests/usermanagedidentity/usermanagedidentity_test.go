@@ -55,8 +55,8 @@ func TestUserManagedIdentityWithGitHub(t *testing.T) {
 	check.InPlan(test.PlanStruct).That("azapi_resource.rg[0]").Key("name").HasValue(v["resource_group_name"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.rg_lock[0]").Key("name").HasValue("lock-" + v["resource_group_name"].(string)).ErrorIsNil(t)
 
-	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credentials["ghbch-gh1"]`).Key("body").Query("properties.subject").HasValue("repo:my-organization/my-repository:ref:refs/heads/my-branch").ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credentials["ghpr-gh2"]`).Key("body").Query("properties.subject").HasValue("repo:my-organization2/my-repository2:pull_request").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credential_github_branch["gh1"]`).Key("body").Query("properties.subject").HasValue("repo:my-organization/my-repository:ref:refs/heads/my-branch").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credential_github_pull_request["gh2"]`).Key("body").Query("properties.subject").HasValue("repo:my-organization2/my-repository2:pull_request").ErrorIsNil(t)
 }
 
 func TestUserManagedIdentityWithTFCloud(t *testing.T) {
@@ -87,8 +87,8 @@ func TestUserManagedIdentityWithTFCloud(t *testing.T) {
 	check.InPlan(test.PlanStruct).That("azapi_resource.rg[0]").Key("name").HasValue(v["resource_group_name"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.rg_lock[0]").Key("name").HasValue("lock-" + v["resource_group_name"].(string)).ErrorIsNil(t)
 
-	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credentials["tfc-tfc1"]`).Key("body").Query("properties.subject").HasValue("organization:my-organization:project:my-repository:workspace:my-workspace:run_phase:plan").ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credentials["tfc-tfc2"]`).Key("body").Query("properties.subject").HasValue("organization:my-organization:project:my-repository:workspace:my-workspace:run_phase:apply").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credential_terraform_cloud["tfc1"]`).Key("body").Query("properties.subject").HasValue("organization:my-organization:project:my-repository:workspace:my-workspace:run_phase:plan").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credential_terraform_cloud["tfc2"]`).Key("body").Query("properties.subject").HasValue("organization:my-organization:project:my-repository:workspace:my-workspace:run_phase:apply").ErrorIsNil(t)
 }
 
 func TestUserManagedIdentityWithAdvancedFederatedCredentials(t *testing.T) {
@@ -117,8 +117,8 @@ func TestUserManagedIdentityWithAdvancedFederatedCredentials(t *testing.T) {
 	check.InPlan(test.PlanStruct).That("azapi_resource.rg[0]").Key("name").HasValue(v["resource_group_name"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.rg_lock[0]").Key("name").HasValue("lock-" + v["resource_group_name"].(string)).ErrorIsNil(t)
 
-	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credentials["adv-adv1"]`).Key("body").Query("properties.subject").HasValue("organization:my-organization:project:my-repository:workspace:my-workspace:run_phase:plan").ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credentials["adv-adv2"]`).Key("body").Query("properties.subject").HasValue("organization:my-organization:project:my-repository:workspace:my-workspace:run_phase:apply").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credential_advanced["adv1"]`).Key("body").Query("properties.subject").HasValue("field:value").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(`azapi_resource.umi_federated_credential_advanced["adv2"]`).Key("body").Query("properties.subject").HasValue("field:value").ErrorIsNil(t)
 }
 
 func getMockInputVariables() map[string]any {
