@@ -8,7 +8,7 @@ module "usermanagedidentity" {
   resource_group_creation_enabled = var.umi_resource_group_creation_enabled
   resource_group_name             = var.umi_resource_group_name
   resource_group_lock_enabled     = var.umi_resource_group_lock_enabled
-  resource_group_lock_name        = var.umi_resource_group_lock_enabled
+  resource_group_lock_name        = var.umi_resource_group_lock_name
   resource_group_tags             = var.umi_resource_group_tags
 
   subscription_id = local.subscription_id
