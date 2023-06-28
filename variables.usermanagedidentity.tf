@@ -2,7 +2,7 @@ variable "umi_enabled" {
   description = <<DESCRIPTION
 Whether to enable the creation of a user-assigned managed identity.
 
-Requires `umi_name` to be non-empty.
+Requires `umi_name` and `umi_resosurce_group_name` to be non-empty.
 DESCRIPTION
   type        = bool
   default     = false

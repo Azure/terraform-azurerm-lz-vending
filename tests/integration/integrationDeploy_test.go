@@ -91,6 +91,25 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	assert.NoErrorf(t, err, "cannot parse subscription id as uuid: %s", id)
 }
 
+func TestDeployIntegrationResourceGroupsUmiAndRoleAssignments(t *testing.T) {
+	t.Parallel()
+
+	utils.PreCheckDeployTests(t)
+	testDir := "testdata/" + t.Name()
+	r, err := utils.RandomHex(4)
+	require.NoError(t, err)
+	v := map[string]any{
+		"random_hex":      r,
+		"subscription_id": os.Getenv("AZURE_SUBSCRIPTION_ID"),
+	}
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShow(t)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	defer test.DestroyRetry(setuptest.FastRetry) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
+}
+
 func getValidInputVariables() (map[string]any, error) {
 	r, err := utils.RandomHex(4)
 	if err != nil {

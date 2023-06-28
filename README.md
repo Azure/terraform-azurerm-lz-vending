@@ -151,7 +151,19 @@ Source: ./modules/resourcegroup
 
 Version:
 
+### <a name="module_resourcegroup_networkwatcherrg"></a> [resourcegroup\_networkwatcherrg](#module\_resourcegroup\_networkwatcherrg)
+
+Source: ./modules/resourcegroup
+
+Version:
+
 ### <a name="module_roleassignment"></a> [roleassignment](#module\_roleassignment)
+
+Source: ./modules/roleassignment
+
+Version:
+
+### <a name="module_roleassignment_umi"></a> [roleassignment\_umi](#module\_roleassignment\_umi)
 
 Source: ./modules/roleassignment
 
@@ -184,18 +196,6 @@ The following input variables are required:
 
 Description: The default location of resources created by this module.  
 Virtual networks will be created in this location unless overridden by the `location` attribute.
-
-Type: `string`
-
-### <a name="input_umi_name"></a> [umi\_name](#input\_umi\_name)
-
-Description: The name of the user-assigned managed identity
-
-Type: `string`
-
-### <a name="input_umi_resource_group_name"></a> [umi\_resource\_group\_name](#input\_umi\_resource\_group\_name)
-
-Description: The name of the resource group in which to create the user-assigned managed identity
 
 Type: `string`
 
@@ -257,6 +257,8 @@ Description: A map of the resource groups to create. THe value is an object with
 - `name` - the name of the resource group
 - `location` - the location of the resource group
 - `tags` - (optional) a map of type string
+
+> Do not include the `NetworkWatcherRG` resource group in this map if you have enabled `var.network_watcher_resource_group_enabled`.
 
 Type:
 
@@ -558,6 +560,8 @@ Default: `""`
 
 Description: Whether to enable the creation of a user-assigned managed identity.
 
+Requires `umi_name` and `umi_resosurce_group_name` to be non-empty.
+
 Type: `bool`
 
 Default: `false`
@@ -644,6 +648,14 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_umi_name"></a> [umi\_name](#input\_umi\_name)
+
+Description: The name of the user-assigned managed identity
+
+Type: `string`
+
+Default: `""`
+
 ### <a name="input_umi_resource_group_creation_enabled"></a> [umi\_resource\_group\_creation\_enabled](#input\_umi\_resource\_group\_creation\_enabled)
 
 Description: Whether to create the supplied resource group for the user-assigned managed identity
@@ -663,6 +675,14 @@ Default: `true`
 ### <a name="input_umi_resource_group_lock_name"></a> [umi\_resource\_group\_lock\_name](#input\_umi\_resource\_group\_lock\_name)
 
 Description: The name of the resource group lock for the user-assigned managed identity resource group, if blank will be set to `lock-<resource_group_name>`
+
+Type: `string`
+
+Default: `""`
+
+### <a name="input_umi_resource_group_name"></a> [umi\_resource\_group\_name](#input\_umi\_resource\_group\_name)
+
+Description: The name of the resource group in which to create the user-assigned managed identity
 
 Type: `string`
 
@@ -855,6 +875,26 @@ Description: The subscription\_id is the Azure subscription id that resources ha
 ### <a name="output_subscription_resource_id"></a> [subscription\_resource\_id](#output\_subscription\_resource\_id)
 
 Description: The subscription\_resource\_id is the Azure subscription resource id that resources have been deployed into
+
+### <a name="output_umi_client_id"></a> [umi\_client\_id](#output\_umi\_client\_id)
+
+Description: The client id of the user managed identity.  
+Value will be null if `var.umi_enabled` is false.
+
+### <a name="output_umi_id"></a> [umi\_id](#output\_umi\_id)
+
+Description: The Azure resource id of the user managed identity.  
+Value will be null if `var.umi_enabled` is false.
+
+### <a name="output_umi_principal_id"></a> [umi\_principal\_id](#output\_umi\_principal\_id)
+
+Description: The principal id of the user managed identity, sometimes known as the object id.  
+Value will be null if `var.umi_enabled` is false.
+
+### <a name="output_umi_tenant_id"></a> [umi\_tenant\_id](#output\_umi\_tenant\_id)
+
+Description: The tenant id of the user managed identity.  
+Value will be null if `var.umi_enabled` is false.
 
 ### <a name="output_virtual_network_resource_group_ids"></a> [virtual\_network\_resource\_group\_ids](#output\_virtual\_network\_resource\_group\_ids)
 
