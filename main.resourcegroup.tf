@@ -19,6 +19,6 @@ module "resourcegroup_networkwatcherrg" {
 }
 
 moved {
-  from = module.networkwatcherrg.azapi_resource.network_watcher_rg
-  to   = module.resourcegroup_networkwatcherrg.azapi_resource.rg
+  from = module.networkwatcherrg[0].azapi_resource.network_watcher_rg
+  to   = module.resourcegroup_networkwatcherrg[0].azapi_resource.rg
 }
