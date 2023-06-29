@@ -112,7 +112,7 @@ The following types are permitted:
 
 The following scopes are permitted:
 
-* networkwatcherrg - pertaining to the networkwatcherrg sub-module
+* resourcegroup - pertaining to the resourcegroup sub-module
 * roleassignment - pertaining to the roleassignment sub-module
 * root - pertaining to the root module
 * subscription - pertaining to the subscription sub-module

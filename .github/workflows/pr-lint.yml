@@ -36,7 +36,7 @@ jobs:
             test
           # Configure which scopes are allowed.
           scopes: |
-            networkwatcherrg
+            resourcegroup
             roleassignment
             root
             subscription

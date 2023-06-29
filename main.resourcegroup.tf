@@ -17,3 +17,8 @@ module "resourcegroup_networkwatcherrg" {
   resource_group_name = "NetworkWatcherRG"
   tags                = {}
 }
+
+moved {
+  from = module.networkwatcherrg.azapi_resource.network_watcher_rg
+  to   = module.resourcegroup_networkwatcherrg.azapi_resource.rg
+}
