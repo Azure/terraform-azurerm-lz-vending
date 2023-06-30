@@ -531,6 +531,15 @@ Default:
 }
 ```
 
+### <a name="input_subscription_register_resource_providers_enabled"></a> [subscription\_register\_resource\_providers\_enabled](#input\_subscription\_register\_resource\_providers\_enabled)
+
+Description: Whether to register resource providers for the subscription.  
+Use `var.subscription_register_resource_providers_and_features` to customize registration.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
 
 Description: A map of tags to assign to the newly created subscription.  
@@ -561,15 +570,6 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 Type: `string`
 
 Default: `""`
-
-### <a name="input_subscrption_register_resource_providers_enabled"></a> [subscrption\_register\_resource\_providers\_enabled](#input\_subscrption\_register\_resource\_providers\_enabled)
-
-Description: Whether to register resource providers for the subscription.  
-Use `var.subscription_register_resource_providers_and_features` to customize registration.
-
-Type: `bool`
-
-Default: `false`
 
 ### <a name="input_umi_enabled"></a> [umi\_enabled](#input\_umi\_enabled)
 

@@ -1,4 +1,4 @@
-variable "subscrption_register_resource_providers_enabled" {
+variable "subscription_register_resource_providers_enabled" {
   type        = bool
   description = <<DESCRIPTION
 Whether to register resource providers for the subscription.

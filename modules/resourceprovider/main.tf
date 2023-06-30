@@ -9,7 +9,7 @@ resource "azapi_resource_action" "resource_provider_registration" {
 resource "azapi_resource_action" "resource_provider_feature_registration" {
   for_each    = var.features
   type        = "${var.resource_provider}/features@2021-07-01"
-  resource_id = "/subscriptions/${var.subscription_id}/providers/Microsoft.Features/providers/${each.value.resource_provider_name}/features/${each.value.feature_name}"
+  resource_id = "/subscriptions/${var.subscription_id}/providers/Microsoft.Features/providers/${var.resource_provider}/features/${each.value}"
   action      = "register"
   method      = "POST"
 }

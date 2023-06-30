@@ -5,14 +5,16 @@ provider "azurerm" {
 }
 
 module "lz_vending" {
-  source                          = "../../"
-  subscription_id                 = var.subscription_id
-  location                        = "westeurope"
-  umi_enabled                     = true
-  umi_name                        = "umi-${var.random_hex}"
-  umi_resource_group_name         = "rg-umi-${var.random_hex}"
-  disable_telemetry               = true
-  resource_group_creation_enabled = true
+  source                                          = "../../"
+  subscription_id                                 = var.subscription_id
+  location                                        = "westeurope"
+  umi_enabled                                     = true
+  umi_name                                        = "umi-${var.random_hex}"
+  umi_resource_group_name                         = "rg-umi-${var.random_hex}"
+  disable_telemetry                               = true
+  resource_group_creation_enabled                 = true
+  subscrption_register_resource_providers_enabled = true
+
   resource_groups = {
     rg1 = {
       name     = "rg-${var.random_hex}"

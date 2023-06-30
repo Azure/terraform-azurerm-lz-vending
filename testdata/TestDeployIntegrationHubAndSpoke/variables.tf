@@ -32,3 +32,7 @@ variable "location" {
 variable "role_assignment_enabled" {
   type = bool
 }
+
+variable "subscription_register_resource_providers_enabled" {
+  type = bool
+}
