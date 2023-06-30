@@ -36,9 +36,11 @@ jobs:
             test
           # Configure which scopes are allowed.
           scopes: |
+            resourcegroup
             roleassignment
             root
             subscription
+            usermanagedideneity
             virtualnetwork
           # Configure that a scope must always be provided.
           requireScope: false

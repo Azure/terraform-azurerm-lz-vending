@@ -1,4 +1,4 @@
-package networkwatcherrg
+package resourcegroup
 
 import (
 	"testing"
@@ -10,11 +10,10 @@ import (
 )
 
 const (
-	moduleDir = "../../modules/networkwatcherrg"
+	moduleDir = "../../modules/resourcegroup"
 )
 
-// TestSubscriptionAliasCreateValid tests the validation functions with valid data,
-// then creates a plan and compares the input variables to the planned values.
+// TestNetworkWatcherRg tests creation of a NetworkwatcherRG resource group.
 func TestNetworkWatcherRg(t *testing.T) {
 	t.Parallel()
 
@@ -24,13 +23,14 @@ func TestNetworkWatcherRg(t *testing.T) {
 	defer test.Cleanup()
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azapi_resource.network_watcher_rg").Key("name").HasValue("NetworkWatcherRG").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(`azapi_resource.rg`).Key("name").HasValue("NetworkWatcherRG").ErrorIsNil(t)
 }
 
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.
 func getMockInputVariables() map[string]any {
 	return map[string]any{
-		"location":        "eastus",
-		"subscription_id": "00000000-0000-0000-0000-000000000000",
+		"location":            "eastus",
+		"resource_group_name": "NetworkWatcherRG",
+		"subscription_id":     "00000000-0000-0000-0000-000000000000",
 	}
 }

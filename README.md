@@ -19,6 +19,10 @@ This is currently split logically into the following capabilities:
   - vWAN connectivity
   - Mesh peering (peering between spokes)
 - Role assignments
+- Resource provider (and feature) registration
+- Resource group creation
+- User assigned managed identity creation
+  - Federated credential configuration for GitHub Actions, Terraform Cloud, and other providers.
 
 > When creating virtual network peerings, be aware of the [limit of peerings per virtual network](https://learn.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits?toc=%2Fazure%2Fvirtual-network%2Ftoc.json#azure-resource-manager-virtual-networking-limits).
 
@@ -81,6 +85,24 @@ module "lz_vending" {
     }
   }
 
+  umi_enabled        = true
+  umi_name           = "umi"
+  umi_resource_group = "rg-identity"
+  umi_role_assignments = {
+    myrg-contrib = {
+      definition     = "Contributor"
+      relative_scope = "/resourceGroups/MyRg"
+    }
+  }
+
+  resource_group_creation_enabled = true
+  resource_groups = {
+    myrg = {
+      name     = "MyRg"
+      location = "westeurope"
+    }
+  }
+
   # role assignments
   role_assignment_enabled = true
   role_assignments = {
@@ -115,7 +137,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.0.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.4.0)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.7.0)
 
@@ -123,9 +145,21 @@ The following requirements are needed by this module:
 
 The following Modules are called:
 
-### <a name="module_networkwatcherrg"></a> [networkwatcherrg](#module\_networkwatcherrg)
+### <a name="module_resourcegroup"></a> [resourcegroup](#module\_resourcegroup)
 
-Source: ./modules/networkwatcherrg
+Source: ./modules/resourcegroup
+
+Version:
+
+### <a name="module_resourcegroup_networkwatcherrg"></a> [resourcegroup\_networkwatcherrg](#module\_resourcegroup\_networkwatcherrg)
+
+Source: ./modules/resourcegroup
+
+Version:
+
+### <a name="module_resourceproviders"></a> [resourceproviders](#module\_resourceproviders)
+
+Source: ./modules/resourceprovider
 
 Version:
 
@@ -135,9 +169,21 @@ Source: ./modules/roleassignment
 
 Version:
 
+### <a name="module_roleassignment_umi"></a> [roleassignment\_umi](#module\_roleassignment\_umi)
+
+Source: ./modules/roleassignment
+
+Version:
+
 ### <a name="module_subscription"></a> [subscription](#module\_subscription)
 
 Source: ./modules/subscription
+
+Version:
+
+### <a name="module_usermanagedidentity"></a> [usermanagedidentity](#module\_usermanagedidentity)
+
+Source: ./modules/usermanagedidentity
 
 Version:
 
@@ -202,6 +248,36 @@ Type: `bool`
 
 Default: `false`
 
+### <a name="input_resource_group_creation_enabled"></a> [resource\_group\_creation\_enabled](#input\_resource\_group\_creation\_enabled)
+
+Description: Whether to create additional resource groups in the target subscription. Requires `var.resource_groups_to_create`.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_resource_groups"></a> [resource\_groups](#input\_resource\_groups)
+
+Description: A map of the resource groups to create. THe value is an object with the following attributes:
+
+- `name` - the name of the resource group
+- `location` - the location of the resource group
+- `tags` - (optional) a map of type string
+
+> Do not include the `NetworkWatcherRG` resource group in this map if you have enabled `var.network_watcher_resource_group_enabled`.
+
+Type:
+
+```hcl
+map(object({
+    name     = string
+    location = string
+    tags     = optional(map(string), {})
+  }))
+```
+
+Default: `{}`
+
 ### <a name="input_role_assignment_enabled"></a> [role\_assignment\_enabled](#input\_role\_assignment\_enabled)
 
 Description: Whether to create role assignments.  
@@ -219,7 +295,7 @@ Object fields:
 
 - `principal_id`: The directory/object id of the principal to assign the role to.
 - `definition`: The role definition to assign. Either use the name or the role definition resource id.
-- `relative_scope`: Scope relative to the created subscription. Leave blank for subscription scope.
+- `relative_scope`: (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
 
 E.g.
 
@@ -246,7 +322,7 @@ Type:
 map(object({
     principal_id   = string,
     definition     = string,
-    relative_scope = string,
+    relative_scope = optional(string, ""),
   }))
 ```
 
@@ -455,6 +531,15 @@ Default:
 }
 ```
 
+### <a name="input_subscription_register_resource_providers_enabled"></a> [subscription\_register\_resource\_providers\_enabled](#input\_subscription\_register\_resource\_providers\_enabled)
+
+Description: Whether to register resource providers for the subscription.  
+Use `var.subscription_register_resource_providers_and_features` to customize registration.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
 
 Description: A map of tags to assign to the newly created subscription.  
@@ -485,6 +570,179 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 Type: `string`
 
 Default: `""`
+
+### <a name="input_umi_enabled"></a> [umi\_enabled](#input\_umi\_enabled)
+
+Description: Whether to enable the creation of a user-assigned managed identity.
+
+Requires `umi_name` and `umi_resosurce_group_name` to be non-empty.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_umi_federated_credentials_advanced"></a> [umi\_federated\_credentials\_advanced](#input\_umi\_federated\_credentials\_advanced)
+
+Description: Configure federated identity credentials, using OpenID Connect, for use scenarios outside GitHub Actions and Terraform Cloud.
+
+The may key is arbitrary and only used for the `for_each` in the resource declaration.
+
+The map value is an object with the following attributes:
+
+- `name`: The name of the federated credential resource, the last segment of the Azure resource id.
+- `subject_identifier`: The subject of the token.
+- `issuer_url`: The URL of the token issuer, should begin with `https://`
+- `audience`: (optional) The token audience, defaults to `api://AzureADTokenExchange`.
+
+Type:
+
+```hcl
+map(object({
+    name               = string
+    subject_identifier = string
+    issuer_url         = string
+    audience           = optional(string, "api://AzureADTokenExchange")
+  }))
+```
+
+Default: `{}`
+
+### <a name="input_umi_federated_credentials_github"></a> [umi\_federated\_credentials\_github](#input\_umi\_federated\_credentials\_github)
+
+Description: Configure federated identity credentials, using OpenID Connect, for use in GitHub actions.
+
+The may key is arbitrary and only used for the `for_each` in the resource declaration.
+
+The map value is an object with the following attributes:
+
+- `name` - the name of the federated credential resource, the last segment of the Azure resource id.
+- `organization` - the name of the GitHub organization, e.g. `Azure` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
+- `repository` - the name of the GitHub respository, e.g. `terraform-azurerm-lz-vending` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
+- `entity` - one of 'environment', 'pull\_request', 'tag', or 'branch'
+- `value` - identifies the `entity` type, e.g. `main` when using entity is `branch`. Should be blank when `entity` is `pull_request`.
+
+Type:
+
+```hcl
+map(object({
+    name         = optional(string, "")
+    organization = string
+    repository   = string
+    entity       = string
+    value        = optional(string, "")
+  }))
+```
+
+Default: `{}`
+
+### <a name="input_umi_federated_credentials_terraform_cloud"></a> [umi\_federated\_credentials\_terraform\_cloud](#input\_umi\_federated\_credentials\_terraform\_cloud)
+
+Description: Configure federated identity credentials, using OpenID Connect, for use in Terraform Cloud.
+
+The may key is arbitrary and only used for the `for_each` in the resource declaration.
+
+The map value is an object with the following attributes:
+
+- `name` - the name of the federated credential resource, the last segment of the Azure resource id.
+- `organization` - the name of the Terraform Cloud organization.
+- `project` - the name of the Terraform Cloud project.
+- `workspace` - the name of the Terraform Cloud workspace.
+- `run_phase` - one of `plan`, or `apply`.
+
+Type:
+
+```hcl
+map(object({
+    name         = optional(string, "")
+    organization = string
+    project      = string
+    workspace    = string
+    run_phase    = string
+  }))
+```
+
+Default: `{}`
+
+### <a name="input_umi_name"></a> [umi\_name](#input\_umi\_name)
+
+Description: The name of the user-assigned managed identity
+
+Type: `string`
+
+Default: `""`
+
+### <a name="input_umi_resource_group_creation_enabled"></a> [umi\_resource\_group\_creation\_enabled](#input\_umi\_resource\_group\_creation\_enabled)
+
+Description: Whether to create the supplied resource group for the user-assigned managed identity
+
+Type: `bool`
+
+Default: `true`
+
+### <a name="input_umi_resource_group_lock_enabled"></a> [umi\_resource\_group\_lock\_enabled](#input\_umi\_resource\_group\_lock\_enabled)
+
+Description: Whether to enable resource group lock for the user-assigned managed identity resource group
+
+Type: `bool`
+
+Default: `true`
+
+### <a name="input_umi_resource_group_lock_name"></a> [umi\_resource\_group\_lock\_name](#input\_umi\_resource\_group\_lock\_name)
+
+Description: The name of the resource group lock for the user-assigned managed identity resource group, if blank will be set to `lock-<resource_group_name>`
+
+Type: `string`
+
+Default: `""`
+
+### <a name="input_umi_resource_group_name"></a> [umi\_resource\_group\_name](#input\_umi\_resource\_group\_name)
+
+Description: The name of the resource group in which to create the user-assigned managed identity
+
+Type: `string`
+
+Default: `""`
+
+### <a name="input_umi_resource_group_tags"></a> [umi\_resource\_group\_tags](#input\_umi\_resource\_group\_tags)
+
+Description: The tags to apply to the user-assigned managed identity resource group, if we create it.
+
+Type: `map(string)`
+
+Default: `{}`
+
+### <a name="input_umi_role_assignments"></a> [umi\_role\_assignments](#input\_umi\_role\_assignments)
+
+Description: Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.  
+This will be merged with the other role assignments specified in `var.role_assignments`.
+
+The role assignments can be used resource groups created by the `var.resource_groups_to_create` map.
+
+Requires both `var.umi_enabled` and `var.role_assignment_enabled` to be `true`.
+
+Object fields:
+
+- `definition`: The role definition to assign. Either use the name or the role definition resource id.
+- `relative_scope`: Scope relative to the created subscription. Leave blank for subscription scope.
+
+Type:
+
+```hcl
+map(object({
+    definition     = string
+    relative_scope = string
+  }))
+```
+
+Default: `{}`
+
+### <a name="input_umi_tags"></a> [umi\_tags](#input\_umi\_tags)
+
+Description: The tags to apply to the user-assigned managed identity
+
+Type: `map(string)`
+
+Default: `{}`
 
 ### <a name="input_virtual_network_enabled"></a> [virtual\_network\_enabled](#input\_virtual\_network\_enabled)
 
@@ -632,6 +890,26 @@ Description: The subscription\_id is the Azure subscription id that resources ha
 ### <a name="output_subscription_resource_id"></a> [subscription\_resource\_id](#output\_subscription\_resource\_id)
 
 Description: The subscription\_resource\_id is the Azure subscription resource id that resources have been deployed into
+
+### <a name="output_umi_client_id"></a> [umi\_client\_id](#output\_umi\_client\_id)
+
+Description: The client id of the user managed identity.  
+Value will be null if `var.umi_enabled` is false.
+
+### <a name="output_umi_id"></a> [umi\_id](#output\_umi\_id)
+
+Description: The Azure resource id of the user managed identity.  
+Value will be null if `var.umi_enabled` is false.
+
+### <a name="output_umi_principal_id"></a> [umi\_principal\_id](#output\_umi\_principal\_id)
+
+Description: The principal id of the user managed identity, sometimes known as the object id.  
+Value will be null if `var.umi_enabled` is false.
+
+### <a name="output_umi_tenant_id"></a> [umi\_tenant\_id](#output\_umi\_tenant\_id)
+
+Description: The tenant id of the user managed identity.  
+Value will be null if `var.umi_enabled` is false.
 
 ### <a name="output_virtual_network_resource_group_ids"></a> [virtual\_network\_resource\_group\_ids](#output\_virtual\_network\_resource\_group\_ids)
 

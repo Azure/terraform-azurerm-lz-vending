@@ -44,8 +44,6 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 		"module.lz_vending.module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 	}
 
-	// Require len(resources)+1 because role assignment address is not determinable here, see below
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources) + 1).ErrorIsNil(t)
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
 	}
@@ -91,6 +89,25 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 	assert.NoErrorf(t, err, "cannot parse subscription id as uuid: %s", id)
 }
 
+func TestDeployIntegrationResourceGroupsRpRegUmiAndRoleAssignments(t *testing.T) {
+	t.Parallel()
+
+	utils.PreCheckDeployTests(t)
+	testDir := "testdata/" + t.Name()
+	r, err := utils.RandomHex(4)
+	require.NoError(t, err)
+	v := map[string]any{
+		"random_hex":      r,
+		"subscription_id": os.Getenv("AZURE_SUBSCRIPTION_ID"),
+	}
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShow(t)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	defer test.DestroyRetry(setuptest.FastRetry) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
+}
+
 func getValidInputVariables() (map[string]any, error) {
 	r, err := utils.RandomHex(4)
 	if err != nil {
@@ -98,13 +115,14 @@ func getValidInputVariables() (map[string]any, error) {
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
 	return map[string]any{
-		"location":                   "northeurope",
-		"subscription_alias_name":    name,
-		"subscription_display_name":  name,
-		"subscription_billing_scope": os.Getenv("AZURE_BILLING_SCOPE"),
-		"subscription_workload":      "DevTest",
-		"subscription_alias_enabled": true,
-		"virtual_network_enabled":    true,
+		"location":                                         "northeurope",
+		"subscription_alias_name":                          name,
+		"subscription_display_name":                        name,
+		"subscription_billing_scope":                       os.Getenv("AZURE_BILLING_SCOPE"),
+		"subscription_workload":                            "DevTest",
+		"subscription_alias_enabled":                       true,
+		"subscription_register_resource_providers_enabled": true,
+		"virtual_network_enabled":                          true,
 		"virtual_networks": map[string]map[string]any{
 			"primary": {
 				"name":                            name,

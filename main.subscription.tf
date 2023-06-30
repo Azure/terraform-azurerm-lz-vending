@@ -5,14 +5,13 @@ module "subscription" {
   source = "./modules/subscription"
   count  = var.subscription_alias_enabled || var.subscription_management_group_association_enabled ? 1 : 0
 
-  subscription_alias_enabled                            = var.subscription_alias_enabled
-  subscription_alias_name                               = var.subscription_alias_name
-  subscription_billing_scope                            = var.subscription_billing_scope
-  subscription_display_name                             = var.subscription_display_name
-  subscription_id                                       = var.subscription_id
-  subscription_management_group_association_enabled     = var.subscription_management_group_association_enabled
-  subscription_management_group_id                      = var.subscription_management_group_id
-  subscription_register_resource_providers_and_features = var.subscription_register_resource_providers_and_features
-  subscription_tags                                     = var.subscription_tags
-  subscription_workload                                 = var.subscription_workload
+  subscription_alias_enabled                        = var.subscription_alias_enabled
+  subscription_alias_name                           = var.subscription_alias_name
+  subscription_billing_scope                        = var.subscription_billing_scope
+  subscription_display_name                         = var.subscription_display_name
+  subscription_id                                   = var.subscription_id
+  subscription_management_group_association_enabled = var.subscription_management_group_association_enabled
+  subscription_management_group_id                  = var.subscription_management_group_id
+  subscription_tags                                 = var.subscription_tags
+  subscription_workload                             = var.subscription_workload
 }

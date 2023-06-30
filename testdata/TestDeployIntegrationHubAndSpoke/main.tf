@@ -29,11 +29,12 @@ module "lz_vending" {
   location = var.location
 
   # subscription variables
-  subscription_alias_enabled = var.subscription_alias_enabled
-  subscription_billing_scope = var.subscription_billing_scope
-  subscription_display_name  = var.subscription_display_name
-  subscription_alias_name    = var.subscription_alias_name
-  subscription_workload      = var.subscription_workload
+  subscription_alias_enabled                       = var.subscription_alias_enabled
+  subscription_billing_scope                       = var.subscription_billing_scope
+  subscription_display_name                        = var.subscription_display_name
+  subscription_alias_name                          = var.subscription_alias_name
+  subscription_workload                            = var.subscription_workload
+  subscription_register_resource_providers_enabled = var.subscription_register_resource_providers_enabled
 
   # virtual network variables
   virtual_network_enabled = var.virtual_network_enabled

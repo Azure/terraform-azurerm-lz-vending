@@ -1,7 +1,7 @@
 # Developer Requirements
 
 * [Terraform (Core)](https://www.terraform.io/downloads.html) - version 1.x or above
-* [Go](https://golang.org/doc/install) version 1.18.x (to run the tests)
+* [Go](https://golang.org/doc/install) version 1.20.x (to run the tests)
 
 ## On Windows
 
@@ -87,7 +87,7 @@ We have adopted [conventional commit](https://www.conventionalcommits.org/) nami
 E.g.:
 
 ```text
-feat(roleassignment)!: Add `relative_scope` value.
+feat(roleassignment)!: add `relative_scope` value.
 ^    ^              ^ ^
 |    |              | |__ Subject
 |    |_____ Scope   |____ Breaking change flag
@@ -112,9 +112,11 @@ The following types are permitted:
 
 The following scopes are permitted:
 
+* resourcegroup - pertaining to the resourcegroup sub-module
 * roleassignment - pertaining to the roleassignment sub-module
 * root - pertaining to the root module
 * subscription - pertaining to the subscription sub-module
+* usermanagedidentity - pertaining to the user-assigned managed identity sub-module
 * virtualnetwork - pertaining to the virtual network sub-module
 
 ### Breaking Changes

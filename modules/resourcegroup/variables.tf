@@ -1,8 +1,3 @@
-variable "location" {
-  type        = string
-  description = "The Azure region to deploy resources into."
-}
-
 variable "subscription_id" {
   type        = string
   description = "The ID of the subscription to deploy resources into. E.g. `00000000-0000-0000-0000-000000000000`"
@@ -12,14 +7,18 @@ variable "subscription_id" {
   }
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "A mapping of tags to assign to the resource."
-  default     = {}
+variable "location" {
+  type        = string
+  description = "The Azure region to deploy resources into. E.g. `eastus`"
 }
 
-variable "network_watcher_rg_name" {
+variable "resource_group_name" {
   type        = string
-  description = "The name of the resource group to create. This only needs changing for parallel testing purposes."
-  default     = "NetworkWatcherRG"
+  description = "The name of the resource group E.g. `rg-test`"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Map of tags to be applied to the resource group"
+  default     = {}
 }

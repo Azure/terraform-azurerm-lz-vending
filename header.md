@@ -18,6 +18,10 @@ This is currently split logically into the following capabilities:
   - vWAN connectivity
   - Mesh peering (peering between spokes)
 - Role assignments
+- Resource provider (and feature) registration
+- Resource group creation
+- User assigned managed identity creation
+  - Federated credential configuration for GitHub Actions, Terraform Cloud, and other providers.
 
 > When creating virtual network peerings, be aware of the [limit of peerings per virtual network](https://learn.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits?toc=%2Fazure%2Fvirtual-network%2Ftoc.json#azure-resource-manager-virtual-networking-limits).
 
@@ -77,6 +81,24 @@ module "lz_vending" {
       hub_peering_enabled     = true
       hub_network_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-hub-network-rg/providers/Microsoft.Network/virtualNetworks/my-hub-network2"
       mesh_peering_enabled    = true
+    }
+  }
+
+  umi_enabled        = true
+  umi_name           = "umi"
+  umi_resource_group = "rg-identity"
+  umi_role_assignments = {
+    myrg-contrib = {
+      definition     = "Contributor"
+      relative_scope = "/resourceGroups/MyRg"
+    }
+  }
+
+  resource_group_creation_enabled = true
+  resource_groups = {
+    myrg = {
+      name     = "MyRg"
+      location = "westeurope"
     }
   }
 

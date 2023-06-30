@@ -1,4 +1,4 @@
-package networkwatcherrg
+package resourcegroup
 
 import (
 	"context"
@@ -36,7 +36,7 @@ func TestDeployNetworkWatcherRg(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, rg := range rgs {
-		if *rg.Name == v["network_watcher_rg_name"].(string) {
+		if *rg.Name == v["resource_group_name"].(string) {
 			t.Logf("Deleting resource group %s", *rg.Name)
 			err := azureutils.DeleteResourceGroup(ctx, *rg.Name, uuid.MustParse(os.Getenv("AZURE_SUBSCRIPTION_ID")))
 			require.NoError(t, err)
@@ -60,8 +60,8 @@ func getValidInputVariables() (map[string]any, error) {
 	}
 	name := fmt.Sprintf("testdeploy-%s", r)
 	return map[string]any{
-		"location":                "eastus",
-		"subscription_id":         os.Getenv("AZURE_SUBSCRIPTION_ID"),
-		"network_watcher_rg_name": name,
+		"subscription_id":     os.Getenv("AZURE_SUBSCRIPTION_ID"),
+		"location":            "eastus",
+		"resource_group_name": name,
 	}, nil
 }
