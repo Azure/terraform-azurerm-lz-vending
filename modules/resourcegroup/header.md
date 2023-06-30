@@ -1,4 +1,4 @@
-# ALZ landing zone resource group submodule
+# Landing zone resource group submodule
 
 ## Overview
 

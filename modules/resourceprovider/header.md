@@ -1,4 +1,4 @@
-# ALZ landing zone resource provider submodule
+# Landing zone resource provider submodule
 
 ## Overview
 

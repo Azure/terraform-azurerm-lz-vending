@@ -1,4 +1,4 @@
-# ALZ landing zone subscription submodule
+# Landing zone subscription submodule
 
 ## Overview
 

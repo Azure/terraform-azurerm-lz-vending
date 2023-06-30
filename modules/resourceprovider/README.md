@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# ALZ landing zone resource provider submodule
+# Landing zone resource provider submodule
 
 ## Overview
 

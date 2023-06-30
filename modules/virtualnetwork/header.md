@@ -1,4 +1,4 @@
-# ALZ landing zone virtual network submodule
+# Landing zone virtual network submodule
 
 ## Overview
 

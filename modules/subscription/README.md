@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# ALZ landing zone subscription submodule
+# Landing zone subscription submodule
 
 ## Overview
 

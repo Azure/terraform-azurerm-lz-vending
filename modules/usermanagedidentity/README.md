@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# ALZ landing zone user managed identity submodule
+# Landing zone user managed identity submodule
 
 ## Overview
 

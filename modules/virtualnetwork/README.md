@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# ALZ landing zone virtual network submodule
+# Landing zone virtual network submodule
 
 ## Overview
 

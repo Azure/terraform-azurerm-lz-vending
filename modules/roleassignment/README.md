@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# ALZ landing zone role assignment submodule
+# Landing zone role assignment submodule
 
 ## Overview
 
