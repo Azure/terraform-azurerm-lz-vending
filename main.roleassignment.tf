@@ -3,10 +3,11 @@
 module "roleassignment" {
   source = "./modules/roleassignment"
   depends_on = [
-    module.subscription,
-    module.virtualnetwork,
+    module.resourcegroup_networkwatcherrg,
     module.resourcegroup,
-    module.usermanagedidentity
+    module.subscription,
+    module.usermanagedidentity,
+    module.virtualnetwork,
   ]
   for_each                     = { for k, v in var.role_assignments : k => v if var.role_assignment_enabled }
   role_assignment_principal_id = each.value.principal_id
@@ -19,10 +20,11 @@ module "roleassignment" {
 module "roleassignment_umi" {
   source = "./modules/roleassignment"
   depends_on = [
-    module.subscription,
-    module.virtualnetwork,
+    module.resourcegroup_networkwatcherrg,
     module.resourcegroup,
-    module.usermanagedidentity
+    module.subscription,
+    module.usermanagedidentity,
+    module.virtualnetwork,
   ]
   for_each                     = { for k, v in var.umi_role_assignments : k => v if var.umi_enabled }
   role_assignment_principal_id = one(module.usermanagedidentity).principal_id

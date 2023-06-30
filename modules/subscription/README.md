@@ -153,17 +153,6 @@ Type: `string`
 
 Default: `""`
 
-### <a name="input_subscription_register_resource_providers_and_features"></a> [subscription\_register\_resource\_providers\_and\_features](#input\_subscription\_register\_resource\_providers\_and\_features)
-
-Description: The map of resource providers to register.  
-The map keys are the resource provider namespace, e.g. `Microsoft.Compute`.  
-The map values are a list of provider features to enable.  
-Leave the value empty to not register any resource provider features.
-
-Type: `map(set(string))`
-
-Default: `{}`
-
 ### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
 
 Description: A map of tags to assign to the newly created subscription.  
@@ -199,8 +188,6 @@ Default: `""`
 
 The following resources are used by this module:
 
-- [azapi_resource_action.resource_provider_feature_registration](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
-- [azapi_resource_action.resource_provider_registration](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
 - [azurerm_management_group_subscription_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group_subscription_association) (resource)
 - [azurerm_subscription.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription) (resource)
 

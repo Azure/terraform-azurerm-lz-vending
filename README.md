@@ -157,6 +157,12 @@ Source: ./modules/resourcegroup
 
 Version:
 
+### <a name="module_resourceproviders"></a> [resourceproviders](#module\_resourceproviders)
+
+Source: ./modules/resourceprovider
+
+Version:
+
 ### <a name="module_roleassignment"></a> [roleassignment](#module\_roleassignment)
 
 Source: ./modules/roleassignment
@@ -555,6 +561,15 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 Type: `string`
 
 Default: `""`
+
+### <a name="input_subscrption_register_resource_providers_enabled"></a> [subscrption\_register\_resource\_providers\_enabled](#input\_subscrption\_register\_resource\_providers\_enabled)
+
+Description: Whether to register resource providers for the subscription.  
+Use `var.subscription_register_resource_providers_and_features` to customize registration.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_umi_enabled"></a> [umi\_enabled](#input\_umi\_enabled)
 

@@ -18,6 +18,9 @@ module "resourcegroup_networkwatcherrg" {
   tags                = {}
 }
 
+
+# v3.3.0 introuced networkwatcherrg support,
+# this was then moved into a more general resourcegroups module in later versions
 moved {
   from = module.networkwatcherrg[0].azapi_resource.network_watcher_rg
   to   = module.resourcegroup_networkwatcherrg[0].azapi_resource.rg
