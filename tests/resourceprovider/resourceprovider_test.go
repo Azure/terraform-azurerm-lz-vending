@@ -29,9 +29,9 @@ func TestSubscriptionRPRegistration(t *testing.T) {
 	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_feature_registration[\"feature2\"]").Exists().ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_feature_registration[\"feature1\"]").Exists().ErrorIsNil(t)
 
-	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_registration").Key("action").HasValue("providers/My.Rp/register")
-	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_registration").Key("resource_id").HasValue("/subscriptions/00000000-0000-0000-0000-000000000000")
+	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_registration").Key("action").HasValue("providers/My.Rp/register").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_registration").Key("resource_id").HasValue("/subscriptions/00000000-0000-0000-0000-000000000000").ErrorIsNil(t)
 
-	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_feature_registration[\"feature2\"]").Key("action").HasValue("register")
-	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_feature_registration[\"feature2\"]").Key("resource_id").HasValue("/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Features/providers/My.Rp/features/feature2")
+	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_feature_registration[\"feature2\"]").Key("action").HasValue("register").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource_action.resource_provider_feature_registration[\"feature2\"]").Key("resource_id").HasValue("/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Features/providers/My.Rp/features/feature2").ErrorIsNil(t)
 }
