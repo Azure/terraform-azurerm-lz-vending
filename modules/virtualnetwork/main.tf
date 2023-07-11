@@ -167,7 +167,7 @@ resource "azapi_resource" "vhubconnection" {
       remoteVirtualNetwork = {
         id = local.virtual_network_resource_ids[each.key]
       }
-      routingConfiguration = merge(
+      routingConfiguration = each.value.vwan_routing_intent_enabled ? merge(
         {
           associatedRouteTable = {
             id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
@@ -176,15 +176,7 @@ resource "azapi_resource" "vhubconnection" {
             ids    = each.value.vwan_security_configuration.secure_private_traffic ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
             labels = each.value.vwan_security_configuration.secure_private_traffic ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
           }
-        },
-        # merge in vnetRoutes if static_routes_config_enabled is true
-        each.value.vwan_security_configuration.static_routes_config_enabled ? {
-          vnetRoutes = {
-            staticRoutesConfig = {
-              vnetLocalRouteOverrideCriteria = each.value.vwan_security_configuration.static_routes_local_route_override_criteria
-            }
-          }
-        } : null
+        } : {}
       )
     }
   })
