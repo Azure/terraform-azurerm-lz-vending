@@ -54,7 +54,7 @@ variable "virtual_networks" {
     vwan_security_configuration = optional(object({
       secure_internet_traffic                     = optional(bool, false)
       secure_private_traffic                      = optional(bool, false)
-      each.value.vwan_routing_intent_enabled               = optional(bool, false)
+      vwan_routing_intent_enabled                 = optional(bool, false)
     }), {})
 
     tags = optional(map(string), {})
