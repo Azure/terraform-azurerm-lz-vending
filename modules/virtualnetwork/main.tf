@@ -167,7 +167,7 @@ resource "azapi_resource" "vhubconnection" {
       remoteVirtualNetwork = {
         id = local.virtual_network_resource_ids[each.key]
       }
-      routingConfiguration = each.value.vwan_routing_intent_enabled ? null : {
+      routingConfiguration = each.value.vwan_security_configuration.vwan_routing_intent_enabled ? null : {
           associatedRouteTable = {
             id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
           }
