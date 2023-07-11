@@ -176,8 +176,7 @@ resource "azapi_resource" "vhubconnection" {
             ids    = each.value.vwan_security_configuration.secure_private_traffic ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
             labels = each.value.vwan_security_configuration.secure_private_traffic ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
           }
-        } : {}
-      )
+        }) : {}
     }
   })
 }
