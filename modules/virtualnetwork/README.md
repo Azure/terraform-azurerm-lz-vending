@@ -132,6 +132,10 @@ only one of the virtual networks should have `resource_group_creation_enabled` s
 - `vwan_hub_resource_id`: The resource ID of the hub to connect to. [optional - but required if vwan\_connection\_enabled is `true`]
 - `vwan_propagated_routetables_labels`: A list of labels of route tables to propagate to the virtual network. [optional - leave empty to use `["default"]`]
 - `vwan_propagated_routetables_resource_ids`: A list of resource IDs of route tables to propagate to the virtual network. [optional - leave empty to use `defaultRouteTable` on hub]
+- `vwan_security_configuration`: A map of security configuration values for VWAN hub connection - see below. [optional - default empty]
+  - `secure_internet_traffic`: Whether to forward internet-bound traffic to the destination specified in the routing policy. Not compatible with `vwan_routing_intent_enabled`. [optional - default `false`]
+  - `secure_private_traffic`: Whether to all internal traffic to the destination specified in the routing policy. Not compatible with `vwan_routing_intent_enabled`. [optional - default `false`]
+  - `routing_intent_enabled`: Enable to use with a Virtual WAN hub with routing intent enabled. Not compatible with `secure_internet_traffic` or `secure_private_traffic`. [optional - default `false`]
 
 ### Tags
 
@@ -175,6 +179,7 @@ map(object({
     vwan_security_configuration = optional(object({
       secure_internet_traffic = optional(bool, false)
       secure_private_traffic  = optional(bool, false)
+      routing_intent_enabled  = optional(bool, false)
     }), {})
 
     tags = optional(map(string), {})

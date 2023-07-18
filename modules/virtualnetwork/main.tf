@@ -167,15 +167,15 @@ resource "azapi_resource" "vhubconnection" {
       remoteVirtualNetwork = {
         id = local.virtual_network_resource_ids[each.key]
       }
-      routingConfiguration = each.value.vwan_security_configuration.vwan_routing_intent_enabled ? null : {
-          associatedRouteTable = {
-            id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
-          }
-          propagatedRouteTables = {
-            ids    = each.value.vwan_security_configuration.secure_private_traffic ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
-            labels = each.value.vwan_security_configuration.secure_private_traffic ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
-          }
+      routingConfiguration = each.value.vwan_security_configuration.routing_intent_enabled ? null : {
+        associatedRouteTable = {
+          id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
         }
+        propagatedRouteTables = {
+          ids    = each.value.vwan_security_configuration.secure_private_traffic ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
+          labels = each.value.vwan_security_configuration.secure_private_traffic ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
+        }
+      }
     }
   })
 }
