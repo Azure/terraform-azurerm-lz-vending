@@ -652,7 +652,7 @@ func TestVirtualNetworkCreateValidWithVhubRoutingIntentEnabled(t *testing.T) {
 	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
 	primaryvnet["vwan_connection_enabled"] = true
 	primaryvnet["vwan_security_configuration"] = map[string]any{
-		"routing_intent_enabled": true,
+		"hub_routing_intent_enabled": true,
 	}
 
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
