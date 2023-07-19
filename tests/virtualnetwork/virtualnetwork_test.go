@@ -639,6 +639,49 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetAndPrivateTraffic(t *tes
 		ErrorIsNil(t)
 }
 
+// TestVirtualNetworkCreateValidWithVhubRoutingIntentEnabled tests that routingConfiguration is null when
+// routing intent is enabled
+func TestVirtualNetworkCreateValidWithVhubRoutingIntentEnabled(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable vhub connection to primary vnet in test mock input variables
+	// & add custom routing
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
+	primaryvnet["vwan_connection_enabled"] = true
+	primaryvnet["vwan_security_configuration"] = map[string]any{
+		"hub_routing_intent_enabled": true,
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// The additional resource is the vhub connection
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"azapi_resource.vnet[\"primary\"]",
+		"azapi_resource.vnet[\"secondary\"]",
+		"azapi_update_resource.vnet[\"primary\"]",
+		"azapi_update_resource.vnet[\"secondary\"]",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.vhubconnection[\"primary\"]",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vhcres := "azapi_resource.vhubconnection[\"primary\"]"
+	check.InPlan(test.PlanStruct).That(vhcres).Key("body").Query("properties.routingConfiguration").DoesNotExist().ErrorIsNil(t)
+}
+
 // TestVirtualNetworkCreateInvalidHubNetResId tests the regex of the
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {

@@ -84,7 +84,8 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 	test.ApplyIdempotent().ErrorIsNil(t)
 
 	// check there two outputs for the virtual network resource ids
-	test.Output("virtual_network_resource_ids").Query("#").HasValue(2).ErrorIsNil(t)
+	test.Output("virtual_network_resource_ids").Query("primary").Exists().ErrorIsNil(t)
+	test.Output("virtual_network_resource_ids").Query("secondary").Exists().ErrorIsNil(t)
 }
 
 // TestDeployVirtualNetworkValidVnetPeering tests the deployment of a virtual network

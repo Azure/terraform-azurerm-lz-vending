@@ -158,7 +158,7 @@ resource "azapi_resource" "peering_mesh" {
 # azapi_resource.vhubconnection creates a virtual wan hub connection between the spoke and the supplied vwan hub.
 resource "azapi_resource" "vhubconnection" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_connection_enabled }
-  type      = "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2021-08-01"
+  type      = "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2022-07-01"
   parent_id = each.value.vwan_hub_resource_id
   name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", azapi_resource.vnet[each.key].id)}")
   body = jsonencode({
@@ -167,13 +167,13 @@ resource "azapi_resource" "vhubconnection" {
       remoteVirtualNetwork = {
         id = local.virtual_network_resource_ids[each.key]
       }
-      routingConfiguration = {
+      routingConfiguration = each.value.vwan_security_configuration.hub_routing_intent_enabled ? null : {
         associatedRouteTable = {
           id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
         }
         propagatedRouteTables = {
-          ids    = each.value.vwan_security_configuration.secure_private_traffic == true ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
-          labels = each.value.vwan_security_configuration.secure_private_traffic == true ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
+          ids    = each.value.vwan_security_configuration.secure_private_traffic ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
+          labels = each.value.vwan_security_configuration.secure_private_traffic ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
         }
       }
     }
