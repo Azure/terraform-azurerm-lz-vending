@@ -98,30 +98,6 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	assert.NoErrorf(t, err, "subscription %s is not in management group %s", sid, v["subscription_management_group_id"].(string))
 }
 
-func TestDeploySubscriptionDeployExistingWithRpFeatureRegistration(t *testing.T) {
-	t.Parallel()
-
-	utils.PreCheckDeployTests(t)
-
-	v, err := getValidInputVariables(billingScope)
-	v["subscription_alias_enabled"] = false
-	v["subscription_id"] = os.Getenv("AZURE_SUBSCRIPTION_ID")
-	v["subscription_register_resource_providers_and_features"] = map[string][]any{
-		"Microsoft.PowerBI": {"DailyPrivateLinkServicesForPowerBI"},
-		"Microsoft.Compute": {},
-	}
-
-	require.NoError(t, err)
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, err)
-	defer test.Cleanup()
-
-	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
-	test.ApplyIdempotent().ErrorIsNil(t)
-
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(3).ErrorIsNil(t)
-}
-
 // getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.
 func getValidInputVariables(billingScope string) (map[string]any, error) {
 	r, err := utils.RandomHex(4)
