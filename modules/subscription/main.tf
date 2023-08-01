@@ -19,8 +19,8 @@ resource "azurerm_management_group_subscription_association" "this" {
 resource "azapi_resource" "sub" {
   count = var.subscription_alias_enabled && var.subscription_use_azapi ? 1 : 0
 
-  type = "Microsoft.Subscription/aliases@2021-10-01"
-  name = var.subscription_alias_name
+  type      = "Microsoft.Subscription/aliases@2021-10-01"
+  name      = var.subscription_alias_name
   parent_id = "/"
 
   body = jsonencode({
