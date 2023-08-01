@@ -126,6 +126,8 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
 	assert.Contains(t, utils.SanitiseErrorMessage(err), "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
 }
 
+// TestSubscriptionAliasCreateWithAzAPI tests the creation of a subscription
+// using the azapi_resource resource type.
 func TestSubscriptionAliasCreateWithAzAPI(t *testing.T) {
 	t.Parallel()
 
@@ -144,6 +146,8 @@ func TestSubscriptionAliasCreateWithAzAPI(t *testing.T) {
 
 }
 
+// TestSubscriptionAliasCreateWithAzAPIAndManagementGroup tests the creation of a subscription
+// using the azapi_resource resource type and management group association.
 func TestSubscriptionAliasCreateWithAzAPIAndManagementGroup(t *testing.T) {
 	t.Parallel()
 
