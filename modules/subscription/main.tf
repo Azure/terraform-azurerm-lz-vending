@@ -1,6 +1,6 @@
 # The azurerm_subscription resource represents the subscription alias that is being created.
 resource "azurerm_subscription" "this" {
-  count             = var.subscription_alias_enabled && !(var.subscription_use_azpi) ? 1 : 0
+  count             = var.subscription_alias_enabled && !(var.subscription_use_azapi) ? 1 : 0
   subscription_name = var.subscription_display_name
   alias             = var.subscription_alias_name
   billing_scope_id  = var.subscription_billing_scope
@@ -17,10 +17,11 @@ resource "azurerm_management_group_subscription_association" "this" {
 }
 
 resource "azapi_resource" "sub" {
-  count = var.subscription_alias_enabled && var.subscription_use_azpi ? 1 : 0
+  count = var.subscription_alias_enabled && var.subscription_use_azapi ? 1 : 0
 
   type = "Microsoft.Subscription/aliases@2021-10-01"
   name = var.subscription_alias_name
+  parent_id = "/"
 
   body = jsonencode({
     properties = {
