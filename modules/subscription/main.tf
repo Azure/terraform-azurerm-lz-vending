@@ -10,7 +10,7 @@ resource "azurerm_subscription" "this" {
 
 # Optionally make use of AzAPI to create the subscription to allow creation without access
 # to the default management group.
-resource "azapi_resource" "sub" {
+resource "azapi_resource" "this" {
   count = var.subscription_alias_enabled && var.subscription_use_azapi ? 1 : 0
 
   type      = "Microsoft.Subscription/aliases@2021-10-01"
