@@ -171,6 +171,32 @@ Type: `map(string)`
 
 Default: `{}`
 
+### <a name="input_subscription_use_azapi"></a> [subscription\_use\_azapi](#input\_subscription\_use\_azapi)
+
+Description: Whether to create a new subscription using the azapi provider.
+
+If enabled, the following must also be supplied:
+
+- `subscription_alias_name`
+- `subscription_display_name`
+- `subscription_billing_scope`
+- `subscription_workload`
+
+Optionally, supply the following to enable the placement of the subscription into a management group:
+
+- `subscription_management_group_id`
+- `subscription_management_group_association_enabled`
+
+If disabled, supply the `subscription_id` variable to use an existing subscription instead.
+
+> **Note**: When the subscription is destroyed, this module will try to remove the NetworkWatcherRG resource group using `az cli`.
+> This requires the `az cli` tool be installed and authenticated.
+> If the command fails for any reason, the provider will attempt to cancel the subscription anyway.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_subscription_workload"></a> [subscription\_workload](#input\_subscription\_workload)
 
 Description: The billing scope for the new subscription alias.
@@ -188,6 +214,7 @@ Default: `""`
 
 The following resources are used by this module:
 
+- [azapi_resource.subscription](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_management_group_subscription_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group_subscription_association) (resource)
 - [azurerm_subscription.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription) (resource)
 
