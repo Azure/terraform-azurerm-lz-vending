@@ -24,7 +24,7 @@ resource "azapi_resource" "subscription" {
       billingScope   = var.subscription_billing_scope
       subscriptionId = null
       additionalProperties = {
-        managementGroupId = var.subscription_management_group_id
+        managementGroupId = var.subscription_management_group_association_enabled ? var.subscription_management_group_id : null
         tags              = var.subscription_tags
       }
     }
