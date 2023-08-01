@@ -6,6 +6,7 @@ module "subscription" {
   count  = var.subscription_alias_enabled || var.subscription_management_group_association_enabled ? 1 : 0
 
   subscription_alias_enabled                        = var.subscription_alias_enabled
+  subscription_use_azapi                            = var.subscription_use_azapi
   subscription_alias_name                           = var.subscription_alias_name
   subscription_billing_scope                        = var.subscription_billing_scope
   subscription_display_name                         = var.subscription_display_name
