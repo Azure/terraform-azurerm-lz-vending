@@ -52,9 +52,9 @@ variable "virtual_networks" {
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
     vwan_security_configuration = optional(object({
-      secure_internet_traffic    = optional(bool, false)
-      secure_private_traffic     = optional(bool, false)
-      routing_intent_enabled = optional(bool, false)
+      secure_internet_traffic = optional(bool, false)
+      secure_private_traffic  = optional(bool, false)
+      routing_intent_enabled  = optional(bool, false)
     }), {})
 
     tags = optional(map(string), {})
