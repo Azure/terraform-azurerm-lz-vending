@@ -560,7 +560,8 @@ Default: `{}`
 
 ### <a name="input_subscription_use_azapi"></a> [subscription\_use\_azapi](#input\_subscription\_use\_azapi)
 
-Description: Whether to create a new subscription using the azapi provider.
+Description: Whether to create a new subscription using the azapi provider. This may be required if the principal running   
+terraform does not have the required permissions to create a subscription under the default management group.
 
 If enabled, the following must also be supplied:
 
