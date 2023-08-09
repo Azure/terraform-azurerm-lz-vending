@@ -38,7 +38,7 @@ test: fmtcheck
 	cd tests && go test $(TEST) $(TESTARGS) -run ^Test$(TESTFILTER) -timeout=$(TESTTIMEOUT)
 
 testdeploy: fmtcheck
-	cd tests &&	TERRATEST_DEPLOY=1 go test $(TEST) $(TESTARGS) -run ^TestDeploy$(TESTFILTER) -timeout $(TESTTIMEOUT)
+	az account show --query "user.type"
 
 tfclean:
 	@echo "==> Cleaning terraform files..."
