@@ -98,7 +98,7 @@ resource "azapi_update_resource" "vnet" {
 # azapi_resource.peering_hub_outbound creates one-way peering from the spoke to the supplied hub virtual network.
 # They are not created if the hub virtual network is an empty string.
 resource "azapi_resource" "peering_hub_outbound" {
-  for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled && v.direction != "fromhub" }
+  for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled && v.hub_peering_direction != "fromhub" }
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
   parent_id = local.hub_peering_map[each.key]["outbound"].this_resource_id
   name      = local.hub_peering_map[each.key]["outbound"].name
@@ -118,7 +118,7 @@ resource "azapi_resource" "peering_hub_outbound" {
 # azapi_resource.peering_hub_inbound creates one-way peering from the supplied hub network to the spoke.
 # They are not created if the hub virtual network is an empty string.
 resource "azapi_resource" "peering_hub_inbound" {
-  for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled && v.direction != "tohub" }
+  for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled && v.hub_peering_direction != "tohub" }
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
   parent_id = local.hub_peering_map[each.key]["inbound"].this_resource_id
   name      = local.hub_peering_map[each.key]["inbound"].name
