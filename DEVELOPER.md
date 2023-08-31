@@ -16,7 +16,7 @@ For *Git Bash for Windows*, at the step of "Adjusting your PATH environment", pl
 
 Or, use [Windows Subsystem for Linux](https://docs.microsoft.com/windows/wsl/install)
 
-### Setup on WSL
+### Setup on WSL with Ubuntu 22.04
 
 #### Install Go and Make
 
