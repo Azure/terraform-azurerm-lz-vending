@@ -24,11 +24,12 @@ Or, use [Windows Subsystem for Linux](https://docs.microsoft.com/windows/wsl/ins
 2. Run `rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.0.linux-amd64.tar.gz`
 3. Run `sudo nano ~/.profile`
 4. Add the following lines at the end of the file:
-```
+```bash
 export PATH=$PATH:/usr/local/go/bin
 export GOPATH=$HOME/go/bin
 export PATH=$PATH:$GOPATH/bin
 ```
+5. Type <kbd>Ctrl</kbd> + <kbd>x</kbd> to save, then enter <kbd>y</kbd> and hit <kbd>enter</kbd>
 5. Run `source ~/.profile`
 6. Run `sudo apt-get update apt-get install make`
 
