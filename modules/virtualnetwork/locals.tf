@@ -31,7 +31,6 @@ locals {
         this_resource_id   = v.hub_network_resource_id
         remote_resource_id = azapi_resource.vnet[k].id
       }
-      direction = contains(local.valid_peering_directions, coalesce(v.hub_peering_direction, "both")) ? coalesce(v.hub_peering_direction, "both") : "both"
     } if v.hub_peering_enabled
   }
 
