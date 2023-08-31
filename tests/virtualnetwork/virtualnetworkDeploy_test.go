@@ -151,7 +151,7 @@ func TestDeployVirtualNetworkValidUniDirectionalVnetPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(14).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(12).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
