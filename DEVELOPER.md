@@ -31,7 +31,7 @@ export PATH=$PATH:$GOPATH/bin
 ```
 5. Type <kbd>Ctrl</kbd> + <kbd>x</kbd> to save, then enter <kbd>y</kbd> and hit <kbd>enter</kbd>
 5. Run `source ~/.profile`
-6. Run `sudo apt-get update apt-get install make`
+6. Run `sudo apt-get update && apt-get install make`
 
 #### Install Terraform
 
