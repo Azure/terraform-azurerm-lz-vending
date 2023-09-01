@@ -1,4 +1,4 @@
-# HINT: make sure to run `terraform init` in this directory before running this test
+# HINT: make sure to run `terraform init` in this directory before running `terraform test`
 
 # Default variable values (can be overridden inside the `run` block)
 variables {
