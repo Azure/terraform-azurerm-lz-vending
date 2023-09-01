@@ -21,4 +21,19 @@ run "basic_valid" {
     condition     = azurerm_subscription.this[0].alias == var.subscription_alias_name
     error_message = "Subscription alias name is not correct"
   }
+
+  assert {
+    condition     = azurerm_subscription.this[0].billing_scope_id == var.subscription_billing_scope
+    error_message = "Subscription billing scope not correct"
+  }
+
+  assert {
+    condition     = azurerm_subscription.this[0].subscription_name == var.subscription_display_name
+    error_message = "Subscription name is not correct"
+  }
+
+  assert {
+    condition     = azurerm_subscription.this[0].workload == var.subscription_workload
+    error_message = "Subscription workload is not correct"
+  }
 }
