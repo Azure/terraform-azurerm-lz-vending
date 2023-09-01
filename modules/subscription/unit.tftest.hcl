@@ -14,6 +14,8 @@ provider "azurerm" {
   features {}
 }
 
+
+# Example of basic test checking resource values against input variables
 run "basic_valid" {
   command = plan
 
@@ -36,4 +38,18 @@ run "basic_valid" {
     condition     = azurerm_subscription.this[0].workload == var.subscription_workload
     error_message = "Subscription workload is not correct"
   }
+}
+
+# Example of chekiang failure on variable validation
+run "expect_failure_invalid_billing_scope" {
+  command = plan
+
+  # Create an invalid billing account scope
+  variables {
+    subscription_billing_scope = "/providrs/Microft.Billing/billingAccouts/0000000/enrollmencounts/000000"
+  }
+
+  expect_failures = [
+    var.subscription_billing_scope,
+  ]
 }
