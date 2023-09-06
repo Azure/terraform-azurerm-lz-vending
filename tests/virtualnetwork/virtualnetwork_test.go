@@ -354,8 +354,8 @@ func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
-	// The additional two are the inbound & outbound peering
+	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// The additional one is the outbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
