@@ -13,5 +13,6 @@ module "subscription" {
   subscription_management_group_association_enabled = var.subscription_management_group_association_enabled
   subscription_management_group_id                  = var.subscription_management_group_id
   subscription_tags                                 = var.subscription_tags
+  subscription_use_azapi                            = var.subscription_use_azapi
   subscription_workload                             = var.subscription_workload
 }

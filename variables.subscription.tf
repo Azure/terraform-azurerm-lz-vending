@@ -148,3 +148,24 @@ subscription_tags = {
 DESCRIPTION
   default     = {}
 }
+
+variable "subscription_use_azapi" {
+  type        = bool
+  default     = false
+  description = <<DESCRIPTION
+Whether to create a new subscription using the azapi provider. This may be required if the principal running
+terraform does not have the required permissions to create a subscription under the default management group.
+If enabled, the following must also be supplied:
+- `subscription_alias_name`
+- `subscription_display_name`
+- `subscription_billing_scope`
+- `subscription_workload`
+Optionally, supply the following to enable the placement of the subscription into a management group:
+- `subscription_management_group_id`
+- `subscription_management_group_association_enabled`
+If disabled, supply the `subscription_id` variable to use an existing subscription instead.
+> **Note**: When the subscription is destroyed, this module will try to remove the NetworkWatcherRG resource group using `az cli`.
+> This requires the `az cli` tool be installed and authenticated.
+> If the command fails for any reason, the provider will attempt to cancel the subscription anyway.
+DESCRIPTION
+}
