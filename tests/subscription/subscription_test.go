@@ -86,7 +86,7 @@ func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
 	v["subscription_management_group_id"] = "testdeploy"
 	v["subscription_management_group_association_enabled"] = true
 	v["subscription_use_azapi"] = true
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureCliAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 
