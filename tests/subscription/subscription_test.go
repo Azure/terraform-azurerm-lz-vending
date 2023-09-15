@@ -90,7 +90,7 @@ func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(2).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("name").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.billingScope").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
