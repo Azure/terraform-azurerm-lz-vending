@@ -135,7 +135,7 @@ func TestDeployVirtualNetworkValidUniDirectionalVnetPeering(t *testing.T) {
 	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
-	testDir := "testdata/" + t.Name()
+	testDir := ""
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
