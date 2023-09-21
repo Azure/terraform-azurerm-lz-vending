@@ -98,19 +98,19 @@ resource "azapi_update_resource" "vnet" {
 # azapi_resource.peering_hub_outbound creates one-way peering from the spoke to the supplied hub virtual network.
 # They are not created if the hub virtual network is an empty string.
 resource "azapi_resource" "peering_hub_outbound" {
-  for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled }
+  for_each  = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_fromhub }
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
-  parent_id = local.hub_peering_map[each.key]["outbound"].this_resource_id
-  name      = local.hub_peering_map[each.key]["outbound"].name
+  parent_id = each.value["outbound"].this_resource_id
+  name      = each.value["outbound"].name
   body = jsonencode({
     properties = {
       remoteVirtualNetwork = {
-        id = local.hub_peering_map[each.key]["outbound"].remote_resource_id
+        id = each.value["outbound"].remote_resource_id
       }
       allowVirtualNetworkAccess = true
       allowForwardedTraffic     = true
       allowGatewayTransit       = false
-      useRemoteGateways         = each.value.hub_peering_use_remote_gateways
+      useRemoteGateways         = each.value.use_remote_gateways
     }
   })
 }
@@ -118,19 +118,19 @@ resource "azapi_resource" "peering_hub_outbound" {
 # azapi_resource.peering_hub_inbound creates one-way peering from the supplied hub network to the spoke.
 # They are not created if the hub virtual network is an empty string.
 resource "azapi_resource" "peering_hub_inbound" {
-  for_each  = { for k, v in var.virtual_networks : k => v if v.hub_peering_enabled }
+  for_each  = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_tohub }
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
-  parent_id = local.hub_peering_map[each.key]["inbound"].this_resource_id
-  name      = local.hub_peering_map[each.key]["inbound"].name
+  parent_id = each.value["inbound"].this_resource_id
+  name      = each.value["inbound"].name
   body = jsonencode({
     properties = {
       remoteVirtualNetwork = {
-        id = local.hub_peering_map[each.key]["inbound"].remote_resource_id
+        id = each.value["inbound"].remote_resource_id
       }
       allowVirtualNetworkAccess = true
       allowForwardedTraffic     = true
       allowGatewayTransit       = true
-      useRemoteGateways         = false
+      useRemoteGateways         = each.value.use_remote_gateways
     }
   })
 }

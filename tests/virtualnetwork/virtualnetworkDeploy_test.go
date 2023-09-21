@@ -129,6 +129,47 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	test.ApplyIdempotent().ErrorIsNil(t)
 }
 
+// TestDeployVirtualNetworkValidUniDirectionalVnetPeering tests the deployment of a virtual network
+// with unidirectional peering to a hub virtual network.
+func TestDeployVirtualNetworkValidUniDirectionalVnetPeering(t *testing.T) {
+	t.Parallel()
+
+	utils.PreCheckDeployTests(t)
+	testDir := ""
+	v, err := getValidInputVariables()
+	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	primaryvnet["hub_peering_enabled"] = true
+	primaryvnet["hub_peering_direction"] = "fromhub"
+	secondaryvnet["hub_peering_enabled"] = true
+	secondaryvnet["hub_peering_direction"] = "tohub"
+	primaryvnet["hub_peering_use_remote_gateways"] = false
+	secondaryvnet["hub_peering_use_remote_gateways"] = false
+
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(12).ErrorIsNil(t)
+
+	resources := []string{
+		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
+		"module.virtualnetwork_test.azapi_resource.vnet[\"secondary\"]",
+		"module.virtualnetwork_test.azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.virtualnetwork_test.azapi_resource.peering_hub_outbound[\"secondary\"]",
+		"module.virtualnetwork_test.azapi_update_resource.vnet[\"primary\"]",
+		"module.virtualnetwork_test.azapi_update_resource.vnet[\"secondary\"]",
+	}
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	// defer terraform destroy with retry
+	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
+}
+
 // TestDeployVirtualNetworkValidVhubConnection tests the deployment of a virtual network
 // with a virtual WAN connection.
 func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
