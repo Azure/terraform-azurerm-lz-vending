@@ -17,6 +17,7 @@ import (
 )
 
 var billingScope = os.Getenv("AZURE_BILLING_SCOPE")
+var tenantId = os.Getenv("AZURE_TENANT_ID")
 
 // TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
 // with valid input variables.
@@ -166,6 +167,9 @@ func TestDeploySubscriptionAliasManagementGroupValidAzApi(t *testing.T) {
 		t.Logf("cannot cancel subscription: %v", err)
 	}()
 
+	if err := azureutils.SetSubscriptionManagementGroup(u, tenantId); err != nil {
+		t.Logf("cannot move subscription to tenant root group: %v", err)
+	}
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
 	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
