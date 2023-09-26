@@ -25,14 +25,14 @@ resource "azapi_resource" "subscription" {
 
   body = jsonencode({
     properties = {
-      displayName    = var.subscription_display_name
-      workload       = var.subscription_workload
-      billingScope   = var.subscription_billing_scope
-      subscriptionId = null
+      displayName  = var.subscription_display_name
+      workload     = var.subscription_workload
+      billingScope = var.subscription_billing_scope
       additionalProperties = {
         managementGroupId = var.subscription_management_group_association_enabled ? "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}" : null
         tags              = var.subscription_tags
       }
     }
   })
+  response_export_values = ["properties.subscriptionId"]
 }

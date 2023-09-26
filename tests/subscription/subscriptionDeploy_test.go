@@ -167,9 +167,6 @@ func TestDeploySubscriptionAliasManagementGroupValidAzApi(t *testing.T) {
 		t.Logf("cannot cancel subscription: %v", err)
 	}()
 
-	if err := azureutils.SetSubscriptionManagementGroup(u, tenantId); err != nil {
-		t.Logf("cannot move subscription to tenant root group: %v", err)
-	}
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
 	// due to eventual consistency of the subscription aliases API
 	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
@@ -183,6 +180,10 @@ func TestDeploySubscriptionAliasManagementGroupValidAzApi(t *testing.T) {
 
 	err = azureutils.IsSubscriptionInManagementGroup(t, u, v["subscription_management_group_id"].(string))
 	assert.NoErrorf(t, err, "subscription %s is not in management group %s", sid, v["subscription_management_group_id"].(string))
+
+	if err := azureutils.SetSubscriptionManagementGroup(u, tenantId); err != nil {
+		t.Logf("cannot move subscription to tenant root group: %v", err)
+	}
 }
 
 // getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.
