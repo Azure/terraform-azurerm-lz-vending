@@ -335,6 +335,84 @@ func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
 	check.InPlan(test.PlanStruct).That(inbound).Key("name").HasValue(primaryvnet["hub_peering_name_fromhub"]).ErrorIsNil(t)
 }
 
+// TestVirtualNetworkCreateValidWithOnlyToHubPeering tests the creation of a plan that
+// creates a virtual network with unidirectional peering to a hub, with custom names for peers.
+func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable hub network peering to primary vnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
+	primaryvnet["hub_peering_enabled"] = true
+	primaryvnet["hub_peering_direction"] = "tohub"
+	primaryvnet["hub_peering_name_tohub"] = "test-tohub"
+	primaryvnet["hub_peering_name_fromhub"] = "test-fromhub"
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// The additional one is the outbound peering
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"azapi_resource.vnet[\"primary\"]",
+		"azapi_resource.vnet[\"secondary\"]",
+		"azapi_update_resource.vnet[\"primary\"]",
+		"azapi_update_resource.vnet[\"secondary\"]",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.peering_hub_outbound[\"primary\"]",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+}
+
+// TestVirtualNetworkCreateValidWithOnlyFromHubPeering tests the creation of a plan that
+// creates a virtual network with unidirectional peering from a hub, with custom names for peers.
+func TestVirtualNetworkCreateValidWithOnlyFromHubPeering(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable hub network peering to primary vnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
+	primaryvnet["hub_peering_enabled"] = true
+	primaryvnet["hub_peering_direction"] = "fromhub"
+	primaryvnet["hub_peering_name_tohub"] = "test-tohub"
+	primaryvnet["hub_peering_name_fromhub"] = "test-fromhub"
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"azapi_resource.vnet[\"primary\"]",
+		"azapi_resource.vnet[\"secondary\"]",
+		"azapi_update_resource.vnet[\"primary\"]",
+		"azapi_update_resource.vnet[\"secondary\"]",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.peering_hub_inbound[\"primary\"]",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+}
+
 // TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled
 // tests the creation of a plan that configured the outbound peering
 // with useRemoteGateways disabled.

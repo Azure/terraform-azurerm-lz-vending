@@ -187,8 +187,8 @@ cloud.google.com/go/workflows v1.6.0/go.mod h1:6t9F5h/unJz41YqfBmqSASJSXccBLtD1V
 cloud.google.com/go/workflows v1.7.0/go.mod h1:JhSrZuVZWuiDfKEFxU0/F1PQjmpnpcoISEXH2bcHC3M=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/Azure/azure-sdk-for-go v51.0.0+incompatible h1:p7blnyJSjJqf5jflHbSGhIhEpXIgIFmYZNg5uwqweso=
-github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.1 h1:/iHxaJhsFr0+xVFfbMr5vxz848jyiWuIEDhYq3y5odY=
-github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.1/go.mod h1:bjGvMhVMb+EEm3VRNQawDMUyMMjo+S5ewNjflkep/0Q=
+github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.2 h1:t5+QXLCK9SVi0PPdaY0PrFvYUo24KwA0QwxnaHRSVd4=
+github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.2/go.mod h1:bjGvMhVMb+EEm3VRNQawDMUyMMjo+S5ewNjflkep/0Q=
 github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.3.1 h1:LNHhpdK7hzUcx/k1LIcuh5k7k1LGIWLQfCjaneSj7Fc=
 github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.3.1/go.mod h1:uE9zaUfEQT/nbQjVi2IblCG9iaLtZsuYZ8ne+PuQ02M=
 github.com/Azure/azure-sdk-for-go/sdk/internal v1.3.0 h1:sXr+ck84g/ZlZUOZiNELInmMgOsuGwdjjVkEIde0OtY=
@@ -393,8 +393,8 @@ github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/ad
 github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFbcEtjT1g+wF4CSlocrBnw=
 github.com/gruntwork-io/go-commons v0.16.2 h1:EmkS8344ggtQopFq6YJ5Nh3ohBF03AB7cxrgDiJ7C3Q=
 github.com/gruntwork-io/go-commons v0.16.2/go.mod h1:/nnLMhO4HpItt43K+8ACM66g67iMy3oo2nnwq59n3wg=
-github.com/gruntwork-io/terratest v0.43.13 h1:/d0UeDj/FJM66VRP/3JA4mTw0z7BOm9ntHYfrTjIpY8=
-github.com/gruntwork-io/terratest v0.43.13/go.mod h1:Tw+6/fcJFiBPpsx9NNSkLG5oHKIeaqiJHVLpQ+ORIfQ=
+github.com/gruntwork-io/terratest v0.44.0 h1:3k7lglJFAtw77p2HnR5vaZBCBnlHmu3DuLjVyuCZXJ0=
+github.com/gruntwork-io/terratest v0.44.0/go.mod h1:EAEuzSjvxAzQoJCEQ06bJPTmdC9HikzgvhmxnAYuExM=
 github.com/hashicorp/errwrap v1.0.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
 github.com/hashicorp/errwrap v1.1.0 h1:OxrOeh75EUXMY8TBjag2fzXGZ40LB6IKw45YeGUDY2I=
 github.com/hashicorp/errwrap v1.1.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=

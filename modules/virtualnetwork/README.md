@@ -158,6 +158,7 @@ map(object({
 
     hub_network_resource_id         = optional(string, "")
     hub_peering_enabled             = optional(bool, false)
+    hub_peering_direction           = optional(string, "both")
     hub_peering_name_tohub          = optional(string, "")
     hub_peering_name_fromhub        = optional(string, "")
     hub_peering_use_remote_gateways = optional(bool, true)

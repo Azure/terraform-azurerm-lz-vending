@@ -10,6 +10,14 @@ locals {
     for k, v in var.virtual_networks : k => "${local.subscription_resource_id}/resourceGroups/${v.resource_group_name}/providers/Microsoft.Network/virtualNetworks/${v.name}"
   }
 
+  # peering direction constansts
+  peering_direction_both    = "both"
+  peering_direction_tohub   = "tohub"
+  peering_direction_fromhub = "fromhub"
+
+  # allowed values for peering direction
+  valid_peering_directions = [local.peering_direction_tohub, local.peering_direction_fromhub, local.peering_direction_both]
+
   # virtual_networks_hub_peering_map is a map of the virtual network hub peerings
 
   # hub_peering_map is a map of the virtual network hub peerings for those networks
@@ -28,6 +36,8 @@ locals {
         this_resource_id   = v.hub_network_resource_id
         remote_resource_id = azapi_resource.vnet[k].id
       }
+      peering_direction   = contains(local.valid_peering_directions, coalesce(lower(v.hub_peering_direction), local.peering_direction_both)) ? coalesce(lower(v.hub_peering_direction), local.peering_direction_both) : local.peering_direction_both
+      use_remote_gateways = v.hub_peering_use_remote_gateways
     } if v.hub_peering_enabled
   }
 
