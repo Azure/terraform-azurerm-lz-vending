@@ -26,6 +26,10 @@ variable "subscription_alias_enabled" {
   type = bool
 }
 
+variable "subscription_use_azapi" {
+  type = bool
+}
+
 resource "azapi_resource" "mg" {
   type      = "Microsoft.Management/managementGroups@2021-04-01"
   parent_id = "/"
@@ -41,6 +45,7 @@ module "subscription_test" {
   subscription_billing_scope                        = var.subscription_billing_scope
   subscription_management_group_association_enabled = var.subscription_management_group_association_enabled
   subscription_alias_enabled                        = var.subscription_alias_enabled
+  subscription_use_azapi                            = var.subscription_use_azapi
 }
 
 output "subscription_id" {

@@ -155,3 +155,11 @@ subscription_tags = {
 DESCRIPTION
   default     = {}
 }
+
+variable "subscription_use_azapi" {
+  type        = bool
+  default     = false
+  description = <<DESCRIPTION
+Whether to use the azapi_resource resource to create the subscription alias. This includes the subscription alias in the management group.
+DESCRIPTION
+}

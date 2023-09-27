@@ -32,6 +32,26 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
 }
 
+// TestSubscriptionAliasCreateValid tests the validation functions with valid data,
+// then creates a plan and compares the input variables to the planned values.
+// This test uses the azapi provider.
+func TestSubscriptionAliasCreateValidAzApi(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	v["subscription_use_azapi"] = true
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("name").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.billingScope").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.displayName").HasValue(v["subscription_display_name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.additionalProperties.tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
+}
+
 // TestSubscriptionAliasCreateValidWithManagementGroup tests the
 // validation functions with valid data, including a destination management group,
 // then creates a plan and compares the input variables to the planned values.
@@ -53,6 +73,31 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 
 	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
 	check.InPlan(test.PlanStruct).That("azurerm_management_group_subscription_association.this[0]").Key("management_group_id").HasValue(mgResId).ErrorIsNil(t)
+}
+
+// TestSubscriptionAliasCreateValidWithManagementGroupAzApi tests the
+// validation functions with valid data, including a destination management group,
+// then creates a plan and compares the input variables to the planned values.
+// This test uses the azapi provider.
+func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	v["subscription_management_group_id"] = "testdeploy"
+	v["subscription_management_group_association_enabled"] = true
+	v["subscription_use_azapi"] = true
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("name").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.billingScope").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.additionalProperties.tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
+
+	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.additionalProperties.managementGroupId").HasValue(mgResId).ErrorIsNil(t)
 }
 
 // TestSubscriptionExistingWithManagementGroup tests the
@@ -133,6 +178,7 @@ func getMockInputVariables() map[string]any {
 		"subscription_alias_name":    "test-subscription-alias",
 		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/0000000/enrollmentAccounts/000000",
 		"subscription_display_name":  "test-subscription-alias",
+		"subscription_use_azapi":     false,
 		"subscription_workload":      "Production",
 		"subscription_tags": map[string]any{
 			"test-tag":   "test-value",
