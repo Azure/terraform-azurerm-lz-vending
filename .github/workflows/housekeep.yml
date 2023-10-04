@@ -85,11 +85,14 @@ jobs:
         continue-on-error: true
         with:
           inlineScript: |
-            echo "==> removing locks"
-            az lock list | jq '.[].id' | xargs az lock delete --ids
+            if [ ! $(az lock list | jq 'length') -eq 0 ]; then
+              echo "==> removing locks"
+              az lock list | jq '.[].id' | xargs az lock delete --ids
+            fi
+            
             echo "==> Deleting the following resource groups:"
             az group list | jq -r '.[] | select(.name | test("^testdeploy-")) | .name'
-            az group list | jq -r '.[] | select(.name | test("^testdeploy-")) | .name' | xargs -n1 -I% az group delete --yes --name %
+            az group list | jq -r '.[] | select(.name | test("^testdeploy-")) | .name' | xargs -I% -P5 az group delete --yes --name %
             echo "==> Done deleting resource groups"
 
       - name: Azure logout
