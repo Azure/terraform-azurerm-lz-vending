@@ -1,6 +1,7 @@
 module github.com/Azure/terraform-azurerm-lz-vending/tests
 
 go 1.21
+
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.8.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.3.1
@@ -10,7 +11,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.1.0
 	github.com/Azure/terratest-terraform-fluent v0.6.2
 	github.com/google/uuid v1.3.1
-	github.com/gruntwork-io/terratest v0.45.0
+	github.com/gruntwork-io/terratest v0.46.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/sync v0.4.0
 )
