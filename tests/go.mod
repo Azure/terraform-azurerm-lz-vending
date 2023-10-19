@@ -11,7 +11,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.1.0
 	github.com/Azure/terratest-terraform-fluent v0.6.2
 	github.com/google/uuid v1.3.1
-	github.com/gruntwork-io/terratest v0.46.0
+	github.com/gruntwork-io/terratest v0.46.1
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/sync v0.4.0
 )
@@ -89,7 +89,7 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
-	golang.org/x/net v0.15.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/term v0.13.0 // indirect
