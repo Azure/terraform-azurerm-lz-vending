@@ -120,5 +120,6 @@ only one of the virtual networks should have `resource_group_creation_enabled` s
 
 - `tags`: A map of tags to apply to the virtual network. [optional - default empty]
 DESCRIPTION
+  nullable    = false
   default     = {}
 }

@@ -72,6 +72,7 @@ The map value is an object with the following attributes:
 - `entity` - one of 'environment', 'pull_request', 'tag', or 'branch'
 - `value` - identifies the `entity` type, e.g. `main` when using entity is `branch`. Should be blank when `entity` is `pull_request`.
 DESCRIPTION
+  nullable    = false
   default     = {}
 }
 
@@ -84,6 +85,7 @@ variable "umi_federated_credentials_terraform_cloud" {
     workspace    = string
     run_phase    = string
   }))
+  nullable    = false
   default     = {}
   description = <<DESCRIPTION
 Configure federated identity credentials, using OpenID Connect, for use in Terraform Cloud.
@@ -108,6 +110,7 @@ variable "umi_federated_credentials_advanced" {
     issuer_url         = string
     audience           = optional(string, "api://AzureADTokenExchange")
   }))
+  nullable    = false
   default     = {}
   description = <<DESCRIPTION
 Configure federated identity credentials, using OpenID Connect, for use scenarios outside GitHub Actions and Terraform Cloud.
@@ -128,6 +131,7 @@ variable "umi_role_assignments" {
     definition     = string
     relative_scope = string
   }))
+  nullable    = false
   default     = {}
   description = <<DESCRIPTION
 Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.

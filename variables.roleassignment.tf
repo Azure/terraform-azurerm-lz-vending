@@ -41,5 +41,6 @@ role_assignments = {
 }
 ```
 DESCRIPTION
+  nullable    = false
   default     = {}
 }
