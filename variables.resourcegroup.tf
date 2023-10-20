@@ -33,5 +33,6 @@ A map of the resource groups to create. THe value is an object with the followin
 
 > Do not include the `NetworkWatcherRG` resource group in this map if you have enabled `var.network_watcher_resource_group_enabled`.
 DESCRIPTION
+  nullable    = false
   default     = {}
 }

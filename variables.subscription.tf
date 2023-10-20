@@ -26,6 +26,7 @@ DESCRIPTION
 
 variable "subscription_alias_name" {
   type        = string
+  nullable    = false
   default     = ""
   description = <<DESCRIPTION
 The name of the subscription alias.
@@ -40,6 +41,7 @@ DESCRIPTION
 
 variable "subscription_display_name" {
   type        = string
+  nullable    = false
   default     = ""
   description = <<DESCRIPTION
 The display name of the subscription alias.
@@ -54,6 +56,7 @@ DESCRIPTION
 
 variable "subscription_billing_scope" {
   type        = string
+  nullable    = false
   default     = ""
   description = <<DESCRIPTION
 The billing scope for the new subscription alias.
@@ -73,6 +76,7 @@ DESCRIPTION
 
 variable "subscription_workload" {
   type        = string
+  nullable    = false
   default     = ""
   description = <<DESCRIPTION
 The billing scope for the new subscription alias.
@@ -86,6 +90,7 @@ DESCRIPTION
 
 variable "subscription_management_group_id" {
   type        = string
+  nullable    = false
   default     = ""
   description = <<DESCRIPTION
   The destination management group ID for the new subscription.
@@ -108,6 +113,7 @@ DESCRIPTION
 
 variable "subscription_id" {
   type        = string
+  nullable    = false
   default     = ""
   description = <<DESCRIPTION
 An existing subscription id.
@@ -146,6 +152,7 @@ subscription_tags = {
 }
 ```
 DESCRIPTION
+  nullable    = false
   default     = {}
 }
 

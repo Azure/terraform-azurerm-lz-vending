@@ -17,6 +17,7 @@ Leave the value empty to not register any resource provider features.
 
 The default values are taken from [Hashicorp's AzureRM provider](https://github.com/hashicorp/terraform-provider-azurerm/blob/main/internal/resourceproviders/required.go).
 DESCRIPTION
+  nullable    = false
   default = {
     "Microsoft.ApiManagement"           = [],
     "Microsoft.AppPlatform"             = [],
