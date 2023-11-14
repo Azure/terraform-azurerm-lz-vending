@@ -11,7 +11,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/subscription/armsubscription v1.1.0
 	github.com/Azure/terratest-terraform-fluent v0.6.2
 	github.com/google/uuid v1.4.0
-	github.com/gruntwork-io/terratest v0.46.6
+	github.com/gruntwork-io/terratest v0.46.7
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/sync v0.5.0
 )
