@@ -72,10 +72,61 @@ func TestRoleAssignmentInvalidScopes(t *testing.T) {
 	})
 }
 
+// TestRoleAssignmentValidCondition tests that the module will accept a valid
+// condition for the role assignment.
+func TestRoleAssignmentValidCondition(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	t.Run("Condition", func(t *testing.T) {
+		v := v
+		v["role_assignment_condition"] = "(!(ActionMatches{'Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read'} AND NOT SubOperationMatches{'Blob.List'}))"
+		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+		require.NoError(t, err)
+		defer test.Cleanup()
+	})
+}
+
+// TestRoleAssignmentValidConditionVersion tests that the module will not accept a different condition version than 1.0 and 2.0
+// for the role assignment.
+func TestRoleAssignmentValidConditionVersion(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	errString := "Must be version 1.0 or 2.0."
+
+	t.Run("1.0", func(t *testing.T) {
+		v := v
+		v["role_assignment_condition_version"] = "1.0"
+		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+		require.NoError(t, err)
+		defer test.Cleanup()
+	})
+
+	t.Run("2.0", func(t *testing.T) {
+		v := v
+		v["role_assignment_condition_version"] = "2.0"
+		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+		require.NoError(t, err)
+		defer test.Cleanup()
+	})
+
+	t.Run("empty", func(t *testing.T) {
+		v := v
+		v["role_assignment_condition_version"] = ""
+		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+		defer test.Cleanup()
+		assert.Contains(t, utils.SanitiseErrorMessage(err), errString)
+	})
+}
+
 func getMockInputVariables() map[string]any {
 	return map[string]any{
-		"role_assignment_principal_id": "00000000-0000-0000-0000-000000000000",
-		"role_assignment_scope":        "/subscriptions/00000000-0000-0000-0000-000000000000",
-		"role_assignment_definition":   "Owner",
+		"role_assignment_principal_id":      "00000000-0000-0000-0000-000000000000",
+		"role_assignment_scope":             "/subscriptions/00000000-0000-0000-0000-000000000000",
+		"role_assignment_definition":        "Owner",
+		"role_assignment_condition":         "()",
+		"role_assignment_condition_version": "2.0",
 	}
 }

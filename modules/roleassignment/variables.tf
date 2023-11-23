@@ -32,3 +32,21 @@ Either the role definition resource id, e.g. `/subscriptions/00000000-0000-0000-
 Or, the role definition name, e.g. `Contributor`.
 DESCRIPTION
 }
+
+variable "role_assignment_condition" {
+  type        = string
+  description = <<DESCRIPTION
+(Optional) The condition that limits the resources that the role can be assigned to.
+DESCRIPTION
+}
+
+variable "role_assignment_condition_version" {
+  type        = string
+  description = <<DESCRIPTION
+The version of the condition. Possible values are 1.0 or 2.0. Defaults to 2.0.
+DESCRIPTION
+  validation {
+    condition     = contains(["1.0", "2.0"], var.role_assignment_condition_version)
+    error_message = "Must be version 1.0 or 2.0."
+  }
+}
