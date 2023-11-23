@@ -305,11 +305,11 @@ E.g.
 role_assignments = {
   # Example using role definition name:
   contributor_user = {
-    principal_id   = "00000000-0000-0000-0000-000000000000",
-    definition     = "Contributor",
-    relative_scope = "",
-    condition      = "()"
-    condition_version = "2.0"
+    principal_id      = "00000000-0000-0000-0000-000000000000",
+    definition        = "Contributor",
+    relative_scope    = "",
+    condition         = "(!(ActionMatches{'Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read'} AND NOT SubOperationMatches{'Blob.List'})",
+    condition_version = "2.0",
   },
   # Example using role definition id and RG scope:
   myrg_custom_role = {
@@ -324,11 +324,11 @@ Type:
 
 ```hcl
 map(object({
-    principal_id   = string,
-    definition     = string,
-    relative_scope = optional(string, ""),
-    condition      = optional(string, ""),
-    condition_version = optional(string, ""),
+    principal_id      = string,
+    definition        = string,
+    relative_scope    = optional(string, ""),
+    condition         = optional(string, "()"),
+    condition_version = optional(string, "2.0"),
   }))
 ```
 
@@ -751,8 +751,6 @@ Object fields:
 
 - `definition`: The role definition to assign. Either use the name or the role definition resource id.
 - `relative_scope`: Scope relative to the created subscription. Leave blank for subscription scope.
-- `condition`: (optional) A condition to apply to the role assignment. See https://learn.microsoft.com/en-us/azure/role-based-access-control/conditions-custom-security-attributes for more details.
-- `condition_version`: (optional) The version of the condition syntax. See https://learn.microsoft.com/en-us/azure/role-based-access-control/conditions-custom-security-attributes for more details.
 
 Type:
 
@@ -760,8 +758,6 @@ Type:
 map(object({
     definition     = string
     relative_scope = string
-    condition      = string
-    condition_version = string
   }))
 ```
 

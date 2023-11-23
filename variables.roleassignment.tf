@@ -32,18 +32,10 @@ E.g.
 role_assignments = {
   # Example using role definition name:
   contributor_user = {
-    principal_id   = "00000000-0000-0000-0000-000000000000",
-    definition     = "Contributor",
-    relative_scope = "",
-    condition      = "(
-      (
-        !(ActionMatches{'Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read'} AND NOT SubOperationMatches{'Blob.List'})
-      )
-      OR 
-      (
-        @Principal[Microsoft.Directory/CustomSecurityAttributes/Id:Engineering_Project] StringEquals @Resource[Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags:Project<$key_case_sensitive$>]
-      )
-    )",
+    principal_id      = "00000000-0000-0000-0000-000000000000",
+    definition        = "Contributor",
+    relative_scope    = "",
+    condition         = "(!(ActionMatches{'Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read'} AND NOT SubOperationMatches{'Blob.List'})",
     condition_version = "2.0",
   },
   # Example using role definition id and RG scope:

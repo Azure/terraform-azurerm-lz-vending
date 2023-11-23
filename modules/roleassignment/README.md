@@ -42,6 +42,18 @@ No modules.
 
 The following input variables are required:
 
+### <a name="input_role_assignment_condition"></a> [role\_assignment\_condition](#input\_role\_assignment\_condition)
+
+Description: (Optional) The condition that limits the resources that the role can be assigned to.
+
+Type: `string`
+
+### <a name="input_role_assignment_condition_version"></a> [role\_assignment\_condition\_version](#input\_role\_assignment\_condition\_version)
+
+Description: The version of the condition. Possible values are 1.0 or 2.0. Defaults to 2.0.
+
+Type: `string`
+
 ### <a name="input_role_assignment_definition"></a> [role\_assignment\_definition](#input\_role\_assignment\_definition)
 
 Description: Either the role definition resource id, e.g. `/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c`.  
