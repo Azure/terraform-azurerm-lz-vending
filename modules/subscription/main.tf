@@ -64,5 +64,4 @@ resource "azapi_resource_action" "subscription_rename" {
   body = jsonencode({
     subscriptionName = var.subscription_display_name
   })
-  response_export_values = ["*"]
 }
