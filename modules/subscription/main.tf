@@ -35,4 +35,34 @@ resource "azapi_resource" "subscription" {
     }
   })
   response_export_values = ["properties.subscriptionId"]
+  lifecycle {
+    ignore_changes = [
+      body
+    ]
+  }
+}
+
+resource "azapi_update_resource" "subscription_tags" {
+  count = var.subscription_alias_enabled && var.subscription_use_azapi ? 1 : 0
+
+  type        = "Microsoft.Resources/tags@2022-09-01"
+  resource_id = "/subscriptions/${jsondecode(azapi_resource.subscription[0].output).properties.subscriptionId}/providers/Microsoft.Resources/tags/default"
+  body = jsonencode({
+    properties = {
+      tags = var.subscription_tags
+    }
+  })
+}
+
+resource "azapi_resource_action" "subscription_rename" {
+  count = var.subscription_alias_enabled && var.subscription_use_azapi ? 1 : 0
+
+  type        = "Microsoft.Resources/subscriptions@2021-10-01"
+  resource_id = "/subscriptions/${jsondecode(azapi_resource.subscription[0].output).properties.subscriptionId}"
+  method      = "POST"
+  action      = "providers/Microsoft.Subscription/rename"
+  body = jsonencode({
+    subscriptionName = var.subscription_display_name
+  })
+  response_export_values = ["*"]
 }
