@@ -82,6 +82,7 @@ func TestRoleAssignmentValidCondition(t *testing.T) {
 	t.Run("Condition", func(t *testing.T) {
 		v := v
 		v["role_assignment_condition"] = "(!(ActionMatches{'Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read'} AND NOT SubOperationMatches{'Blob.List'}))"
+		v["role_assignment_condition_version"] = "2.0"
 		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 		require.NoError(t, err)
 		defer test.Cleanup()
@@ -94,7 +95,7 @@ func TestRoleAssignmentValidConditionVersion(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	errString := "Must be version 1.0 or 2.0."
+	errString := "expected condition_version to be one of [\"1.0\" \"2.0\"], got"
 
 	t.Run("1.0", func(t *testing.T) {
 		v := v
@@ -126,7 +127,7 @@ func getMockInputVariables() map[string]any {
 		"role_assignment_principal_id":      "00000000-0000-0000-0000-000000000000",
 		"role_assignment_scope":             "/subscriptions/00000000-0000-0000-0000-000000000000",
 		"role_assignment_definition":        "Owner",
-		"role_assignment_condition":         "()",
-		"role_assignment_condition_version": "2.0",
+		"role_assignment_condition":         "",
+		"role_assignment_condition_version": "",
 	}
 }

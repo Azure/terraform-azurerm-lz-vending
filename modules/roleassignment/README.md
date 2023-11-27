@@ -50,7 +50,7 @@ Type: `string`
 
 ### <a name="input_role_assignment_condition_version"></a> [role\_assignment\_condition\_version](#input\_role\_assignment\_condition\_version)
 
-Description: The version of the condition. Possible values are 1.0 or 2.0. Defaults to 2.0.
+Description: The version of the condition. Possible values are `empty`, 1.0 or 2.0. If empty, null will be set in role\_assignment\_condition and role\_assignment\_condition\_version.
 
 Type: `string`
 

@@ -12,8 +12,8 @@ variable "role_assignments" {
     principal_id      = string,
     definition        = string,
     relative_scope    = optional(string, ""),
-    condition         = optional(string, "()"),
-    condition_version = optional(string, "2.0"),
+    condition         = optional(string, ""),
+    condition_version = optional(string, ""),
   }))
   description = <<DESCRIPTION
 Supply a map of objects containing the details of the role assignments to create.

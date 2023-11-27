@@ -327,8 +327,8 @@ map(object({
     principal_id      = string,
     definition        = string,
     relative_scope    = optional(string, ""),
-    condition         = optional(string, "()"),
-    condition_version = optional(string, "2.0"),
+    condition         = optional(string, ""),
+    condition_version = optional(string, ""),
   }))
 ```
 
