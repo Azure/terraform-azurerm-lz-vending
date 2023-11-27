@@ -43,7 +43,7 @@ DESCRIPTION
 variable "role_assignment_condition_version" {
   type        = string
   description = <<DESCRIPTION
-The version of the condition. Possible values are `empty`, 1.0 or 2.0. If empty, null will be set in role_assignment_condition and role_assignment_condition_version.
+The version of the condition. Possible values are `""`, 1.0 or 2.0. If `""`, null will be set in role_assignment_condition and role_assignment_condition_version.
 DESCRIPTION
   validation {
     condition     = contains(["", "1.0", "2.0"], var.role_assignment_condition_version)
