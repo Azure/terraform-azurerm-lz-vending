@@ -90,7 +90,19 @@ func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
+	resources := []string{
+		"azapi_resource.subscription[0]",
+		"azapi_resource_action.subscription_rename[0]",
+		"azapi_update_resource.subscription_tags[0]",
+		"azurerm_management_group_subscription_association.this[0]",
+	}
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+
+	for _, res := range resources {
+		check.InPlan(test.PlanStruct).That(res).Exists().ErrorIsNil(t)
+	}
+
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("name").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.billingScope").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
@@ -116,6 +128,38 @@ func TestSubscriptionExistingWithManagementGroup(t *testing.T) {
 	defer test.Cleanup()
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
+
+	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
+	check.InPlan(test.PlanStruct).That("azurerm_management_group_subscription_association.this[0]").Key("management_group_id").HasValue(mgResId).ErrorIsNil(t)
+}
+
+// TestSubscriptionExistingWithManagementGroup tests the
+// validation functions with an existing subscription id, including a destination management group,
+// then creates a plan and compares the input variables to the planned values.
+func TestSubscriptionExistingWithManagementGroupAndUpdateExisting(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	v["subscription_management_group_id"] = "testdeploy"
+	v["subscription_management_group_association_enabled"] = true
+	v["subscription_alias_enabled"] = false
+	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
+	v["subscription_update_existing"] = true
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	resources := []string{
+		"azapi_resource_action.subscription_rename[0]",
+		"azapi_update_resource.subscription_tags[0]",
+		"azurerm_management_group_subscription_association.this[0]",
+	}
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+
+	for _, res := range resources {
+		check.InPlan(test.PlanStruct).That(res).Exists().ErrorIsNil(t)
+	}
 
 	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
 	check.InPlan(test.PlanStruct).That("azurerm_management_group_subscription_association.this[0]").Key("management_group_id").HasValue(mgResId).ErrorIsNil(t)
