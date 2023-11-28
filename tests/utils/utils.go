@@ -34,8 +34,7 @@ func GetLogger() *logger.Logger {
 func PreCheckDeployTests(t *testing.T) {
 	// Skip if we haven't set the `TERRATEST_DEPLOY` variable.
 	if value := os.Getenv("TERRATEST_DEPLOY"); value == "" {
-		t.Log("`TERRATEST_DEPLOY` must be set to `true` for deployment tests! - Skipping...")
-		t.Skip()
+		t.Skip("`TERRATEST_DEPLOY` must be set to `true` for deployment tests! - Skipping...")
 	}
 	// These variables cause a failure if not set.
 	variables := []string{
