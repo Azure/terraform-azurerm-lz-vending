@@ -138,7 +138,7 @@ func TestUserManagedIdentityWithInvalidTFCloudValues(t *testing.T) {
 	defer test.Cleanup()
 }
 
-func TestUserManagedIdentityWithInvaledGHValues(t *testing.T) {
+func TestUserManagedIdentityWithInvalidGHValues(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
