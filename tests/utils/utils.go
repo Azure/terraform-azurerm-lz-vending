@@ -42,7 +42,8 @@ func PreCheckDeployTests(t *testing.T) {
 	for _, variable := range variables {
 		value := os.Getenv(variable)
 		if value == "" {
-			t.Skipf("`%s` must be set for deployment tests!", variable)
+			t.Logf("`%s` must be set for deployment tests!", variable)
+			t.FailNow()
 		}
 	}
 }

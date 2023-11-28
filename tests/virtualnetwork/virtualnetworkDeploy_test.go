@@ -29,7 +29,7 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
 		"azapi_resource.vnet[\"primary\"]",
@@ -67,7 +67,7 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
 		"azapi_resource.vnet[\"primary\"]",
@@ -108,7 +108,7 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(14).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(12).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
@@ -135,7 +135,7 @@ func TestDeployVirtualNetworkValidUniDirectionalVnetPeering(t *testing.T) {
 	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
-	testDir := ""
+	testDir := "testdata/" + t.Name()
 	v, err := getValidInputVariables()
 	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -151,7 +151,7 @@ func TestDeployVirtualNetworkValidUniDirectionalVnetPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(12).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(10).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
@@ -188,7 +188,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(13).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(11).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
@@ -260,7 +260,7 @@ func TestDeployVirtualNetworkValidMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(10).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNil(t)
 
 	resources := []string{
 		"azapi_resource.vnet[\"primary\"]",
@@ -291,16 +291,18 @@ func getValidInputVariables() (map[string]any, error) {
 		"subscription_id": os.Getenv("AZURE_SUBSCRIPTION_ID"),
 		"virtual_networks": map[string]map[string]any{
 			"primary": {
-				"name":                name,
-				"address_space":       []string{"192.168.0.0/24"},
-				"location":            "westeurope",
-				"resource_group_name": name,
+				"name":                        name,
+				"address_space":               []string{"192.168.0.0/24"},
+				"location":                    "westeurope",
+				"resource_group_name":         name,
+				"resource_group_lock_enabled": false,
 			},
 			"secondary": {
-				"name":                name2,
-				"address_space":       []string{"192.168.1.0/24"},
-				"location":            "northeurope",
-				"resource_group_name": name2,
+				"name":                        name2,
+				"address_space":               []string{"192.168.1.0/24"},
+				"location":                    "northeurope",
+				"resource_group_name":         name2,
+				"resource_group_lock_enabled": false,
 			},
 		},
 	}, nil

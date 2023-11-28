@@ -71,7 +71,7 @@ func TestDeploySubscriptionAliasValidAzApi(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(3).ErrorIsNil(t)
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.
@@ -80,7 +80,9 @@ func TestDeploySubscriptionAliasValidAzApi(t *testing.T) {
 	u := uuid.MustParse("00000000-0000-0000-0000-000000000000")
 	defer func() {
 		err := azureutils.CancelSubscription(t, &u)
-		t.Logf("cannot cancel subscription: %v", err)
+		if err != nil {
+			t.Logf("cannot cancel subscription: %v", err)
+		}
 	}()
 
 	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
@@ -119,7 +121,9 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	u := uuid.MustParse("00000000-0000-0000-0000-000000000000")
 	defer func() {
 		err := azureutils.CancelSubscription(t, &u)
-		t.Logf("cannot cancel subscription: %v", err)
+		if err != nil {
+			t.Logf("cannot cancel subscription: %v", err)
+		}
 	}()
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
@@ -163,7 +167,9 @@ func TestDeploySubscriptionAliasManagementGroupValidAzApi(t *testing.T) {
 	u := uuid.MustParse("00000000-0000-0000-0000-000000000000")
 	defer func() {
 		err := azureutils.CancelSubscription(t, &u)
-		t.Logf("cannot cancel subscription: %v", err)
+		if err != nil {
+			t.Logf("cannot cancel subscription: %v", err)
+		}
 	}()
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
