@@ -47,9 +47,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        azapi_version: ['latest', '1.4.0']
-        azurerm_version: ['latest', '3.7.0']
-        terraform_version: ['latest', '1.3.0']
+        azapi_version: ['latest']
+        azurerm_version: ['latest']
+        terraform_version: ['latest']
     steps:
       - name: Show env
         run: env | sort
