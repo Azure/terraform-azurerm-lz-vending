@@ -296,8 +296,8 @@ Object fields:
 - `principal_id`: The directory/object id of the principal to assign the role to.
 - `definition`: The role definition to assign. Either use the name or the role definition resource id.
 - `relative_scope`: (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
-- `condition`: (optional) A condition to apply to the role assignment. See https://learn.microsoft.com/en-us/azure/role-based-access-control/conditions-custom-security-attributes for more details.
-- `condition_version`: (optional) The version of the condition syntax. See https://learn.microsoft.com/en-us/azure/role-based-access-control/conditions-custom-security-attributes for more details.
+- `condition`: (optional) A condition to apply to the role assignment. See [Conditions Custom Security Attributes](https://learn.microsoft.com/en-us/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
+- `condition_version`: (optional) The version of the condition syntax. See [Conditions Custom Security Attributes](https://learn.microsoft.com/en-us/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 
 E.g.
 

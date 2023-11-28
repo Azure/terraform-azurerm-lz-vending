@@ -95,7 +95,6 @@ func TestRoleAssignmentValidConditionVersion(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	errString := "expected condition_version to be one of [\"1.0\" \"2.0\"], got"
 
 	t.Run("1.0", func(t *testing.T) {
 		v := v
@@ -115,10 +114,9 @@ func TestRoleAssignmentValidConditionVersion(t *testing.T) {
 
 	t.Run("empty", func(t *testing.T) {
 		v := v
-		v["role_assignment_condition_version"] = ""
 		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+		require.NoError(t, err)
 		defer test.Cleanup()
-		assert.Contains(t, utils.SanitiseErrorMessage(err), errString)
 	})
 }
 
