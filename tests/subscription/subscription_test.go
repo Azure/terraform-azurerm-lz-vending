@@ -44,7 +44,18 @@ func TestSubscriptionAliasCreateValidAzApi(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
+	resources := []string{
+		"azapi_resource.subscription[0]",
+		"azapi_resource_action.subscription_rename[0]",
+		"azapi_update_resource.subscription_tags[0]",
+	}
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+
+	for _, res := range resources {
+		check.InPlan(test.PlanStruct).That(res).Exists().ErrorIsNil(t)
+	}
+
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("name").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.billingScope").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.displayName").HasValue(v["subscription_display_name"]).ErrorIsNil(t)
