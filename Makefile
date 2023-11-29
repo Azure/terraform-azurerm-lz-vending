@@ -1,6 +1,7 @@
 TESTTIMEOUT=60m
 TESTFILTER=
 TEST?=$$(go list ./... |grep -v 'vendor'|grep -v 'utils')
+TESTARGS='-v'
 
 default:
 	@echo "==> Type make <thing> to run tasks"

@@ -163,3 +163,13 @@ variable "subscription_use_azapi" {
 Whether to use the azapi_resource resource to create the subscription alias. This includes the subscription alias in the management group.
 DESCRIPTION
 }
+
+variable "subscription_update_existing" {
+  type        = bool
+  default     = false
+  description = <<DESCRIPTION
+Whether to update an existing subscription with the supplied tags and display name.
+If enabled, the following must also be supplied:
+- `subscription_id`
+DESCRIPTION
+}
