@@ -564,6 +564,16 @@ Type: `map(string)`
 
 Default: `{}`
 
+### <a name="input_subscription_update_existing"></a> [subscription\_update\_existing](#input\_subscription\_update\_existing)
+
+Description: Whether to update an existing subscription with the supplied tags and display name.  
+If enabled, the following must also be supplied:
+- `subscription_id`
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_subscription_use_azapi"></a> [subscription\_use\_azapi](#input\_subscription\_use\_azapi)
 
 Description: Whether to create a new subscription using the azapi provider. This may be required if the principal running  

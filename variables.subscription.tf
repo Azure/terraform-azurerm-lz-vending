@@ -176,3 +176,13 @@ If disabled, supply the `subscription_id` variable to use an existing subscripti
 > If the command fails for any reason, the provider will attempt to cancel the subscription anyway.
 DESCRIPTION
 }
+
+variable "subscription_update_existing" {
+  type        = bool
+  default     = false
+  description = <<DESCRIPTION
+Whether to update an existing subscription with the supplied tags and display name.
+If enabled, the following must also be supplied:
+- `subscription_id`
+DESCRIPTION
+}

@@ -17,7 +17,6 @@ import (
 )
 
 var billingScope = os.Getenv("AZURE_BILLING_SCOPE")
-var tenantId = os.Getenv("AZURE_TENANT_ID")
 
 // TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
 // with valid input variables.
@@ -72,7 +71,7 @@ func TestDeploySubscriptionAliasValidAzApi(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(3).ErrorIsNil(t)
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.
@@ -81,7 +80,9 @@ func TestDeploySubscriptionAliasValidAzApi(t *testing.T) {
 	u := uuid.MustParse("00000000-0000-0000-0000-000000000000")
 	defer func() {
 		err := azureutils.CancelSubscription(t, &u)
-		t.Logf("cannot cancel subscription: %v", err)
+		if err != nil {
+			t.Logf("cannot cancel subscription: %v", err)
+		}
 	}()
 
 	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
@@ -120,7 +121,9 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	u := uuid.MustParse("00000000-0000-0000-0000-000000000000")
 	defer func() {
 		err := azureutils.CancelSubscription(t, &u)
-		t.Logf("cannot cancel subscription: %v", err)
+		if err != nil {
+			t.Logf("cannot cancel subscription: %v", err)
+		}
 	}()
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
@@ -164,7 +167,9 @@ func TestDeploySubscriptionAliasManagementGroupValidAzApi(t *testing.T) {
 	u := uuid.MustParse("00000000-0000-0000-0000-000000000000")
 	defer func() {
 		err := azureutils.CancelSubscription(t, &u)
-		t.Logf("cannot cancel subscription: %v", err)
+		if err != nil {
+			t.Logf("cannot cancel subscription: %v", err)
+		}
 	}()
 
 	// defer terraform destroy, but wrap in a try.Do to retry a few times
@@ -180,10 +185,6 @@ func TestDeploySubscriptionAliasManagementGroupValidAzApi(t *testing.T) {
 
 	err = azureutils.IsSubscriptionInManagementGroup(t, u, v["subscription_management_group_id"].(string))
 	assert.NoErrorf(t, err, "subscription %s is not in management group %s", sid, v["subscription_management_group_id"].(string))
-
-	if err := azureutils.SetSubscriptionManagementGroup(u, tenantId); err != nil {
-		t.Logf("cannot move subscription to tenant root group: %v", err)
-	}
 }
 
 // getValidInputVariables returns a set of valid input variables that can be used and modified for testing scenarios.

@@ -171,6 +171,16 @@ Type: `map(string)`
 
 Default: `{}`
 
+### <a name="input_subscription_update_existing"></a> [subscription\_update\_existing](#input\_subscription\_update\_existing)
+
+Description: Whether to update an existing subscription with the supplied tags and display name.  
+If enabled, the following must also be supplied:
+- `subscription_id`
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_subscription_use_azapi"></a> [subscription\_use\_azapi](#input\_subscription\_use\_azapi)
 
 Description: Whether to use the azapi\_resource resource to create the subscription alias. This includes the subscription alias in the management group.
@@ -197,6 +207,8 @@ Default: `""`
 The following resources are used by this module:
 
 - [azapi_resource.subscription](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource_action.subscription_rename](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
+- [azapi_update_resource.subscription_tags](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/update_resource) (resource)
 - [azurerm_management_group_subscription_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group_subscription_association) (resource)
 - [azurerm_subscription.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription) (resource)
 
