@@ -9,10 +9,12 @@ module "roleassignment" {
     module.usermanagedidentity,
     module.virtualnetwork,
   ]
-  for_each                     = { for k, v in var.role_assignments : k => v if var.role_assignment_enabled }
-  role_assignment_principal_id = each.value.principal_id
-  role_assignment_definition   = each.value.definition
-  role_assignment_scope        = "${local.subscription_resource_id}${each.value.relative_scope}"
+  for_each                          = { for k, v in var.role_assignments : k => v if var.role_assignment_enabled }
+  role_assignment_principal_id      = each.value.principal_id
+  role_assignment_definition        = each.value.definition
+  role_assignment_scope             = "${local.subscription_resource_id}${each.value.relative_scope}"
+  role_assignment_condition         = each.value.condition
+  role_assignment_condition_version = each.value.condition_version
 }
 
 # The roleassignments_umi module creates role assignments from the data
@@ -26,8 +28,10 @@ module "roleassignment_umi" {
     module.usermanagedidentity,
     module.virtualnetwork,
   ]
-  for_each                     = { for k, v in var.umi_role_assignments : k => v if var.umi_enabled }
-  role_assignment_principal_id = one(module.usermanagedidentity).principal_id
-  role_assignment_definition   = each.value.definition
-  role_assignment_scope        = "${local.subscription_resource_id}${each.value.relative_scope}"
+  for_each                          = { for k, v in var.umi_role_assignments : k => v if var.umi_enabled }
+  role_assignment_principal_id      = one(module.usermanagedidentity).principal_id
+  role_assignment_definition        = each.value.definition
+  role_assignment_scope             = "${local.subscription_resource_id}${each.value.relative_scope}"
+  role_assignment_condition         = each.value.condition
+  role_assignment_condition_version = each.value.condition_version
 }
