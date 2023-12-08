@@ -11,7 +11,7 @@ resource "azurerm_subscription" "this" {
 # This resource ensures that we can manage the management group for the subscription
 # throughout its lifecycle.
 resource "azurerm_management_group_subscription_association" "this" {
-  count               = var.subscription_management_group_association_enabled ? 1 : 0
+  count               = var.subscription_management_group_association_enabled && !var.subscription_use_azapi ? 1 : 0
   management_group_id = "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}"
   subscription_id     = "/subscriptions/${local.subscription_id}"
 }
@@ -37,9 +37,33 @@ resource "azapi_resource" "subscription" {
   response_export_values = ["properties.subscriptionId"]
   lifecycle {
     ignore_changes = [
-      body
+      body,
+      name
     ]
   }
+}
+
+resource "time_sleep" "wait_for_subscription_before_subscription_operations" {
+  count = var.subscription_alias_enabled && var.subscription_use_azapi ? 1 : 0
+
+  create_duration  = var.wait_for_subscription_before_subscription_operations.create
+  destroy_duration = var.wait_for_subscription_before_subscription_operations.destroy
+
+  depends_on = [
+    azapi_resource.subscription
+  ]
+}
+
+resource "azapi_resource_action" "subscription_association" {
+  count = var.subscription_management_group_association_enabled && var.subscription_use_azapi ? 1 : 0
+
+  type        = "Microsoft.Management/managementGroups/subscriptions@2021-04-01"
+  resource_id = "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}/subscriptions/${jsondecode(azapi_resource.subscription[0].output).properties.subscriptionId}"
+  method      = "PUT"
+
+  depends_on = [
+    time_sleep.wait_for_subscription_before_subscription_operations
+  ]
 }
 
 resource "azapi_update_resource" "subscription_tags" {
@@ -52,6 +76,10 @@ resource "azapi_update_resource" "subscription_tags" {
       tags = var.subscription_tags
     }
   })
+
+  depends_on = [
+    time_sleep.wait_for_subscription_before_subscription_operations
+  ]
 }
 
 resource "azapi_resource_action" "subscription_rename" {
@@ -64,4 +92,9 @@ resource "azapi_resource_action" "subscription_rename" {
   body = jsonencode({
     subscriptionName = var.subscription_display_name
   })
+
+  depends_on = [
+    time_sleep.wait_for_subscription_before_subscription_operations
+  ]
 }
+
