@@ -141,6 +141,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.7.0)
 
+- <a name="requirement_time"></a> [time](#requirement\_time) (>= 0.9.1)
+
 ## Modules
 
 The following Modules are called:
@@ -908,6 +910,21 @@ map(object({
 
     tags = optional(map(string), {})
   }))
+```
+
+Default: `{}`
+
+### <a name="input_wait_for_subscription_before_subscription_operations"></a> [wait\_for\_subscription\_before\_subscription\_operations](#input\_wait\_for\_subscription\_before\_subscription\_operations)
+
+Description: The duration to wait after vending a subscription before performing subscription operations.
+
+Type:
+
+```hcl
+object({
+    create  = optional(string, "30s")
+    destroy = optional(string, "0s")
+  })
 ```
 
 Default: `{}`

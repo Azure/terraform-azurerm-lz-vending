@@ -173,3 +173,14 @@ If enabled, the following must also be supplied:
 - `subscription_id`
 DESCRIPTION
 }
+
+variable "wait_for_subscription_before_subscription_operations" {
+  type = object({
+    create  = optional(string, "30s")
+    destroy = optional(string, "0s")
+  })
+  default     = {}
+  description = <<DESCRIPTION
+The duration to wait after vending a subscription before performing subscription operations.
+DESCRIPTION
+}
