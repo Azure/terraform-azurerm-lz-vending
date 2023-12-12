@@ -640,7 +640,7 @@ map(object({
     name               = string
     subject_identifier = string
     issuer_url         = string
-    audience           = optional(string, "api://AzureADTokenExchange")
+    audiences          = optional(set(string), ["api://AzureADTokenExchange"])
   }))
 ```
 
