@@ -251,5 +251,4 @@ Description: The subscription\_resource\_id output is the Azure resource id for 
 Value will be null if `var.subscription_id` is blank and `var.subscription_alias_enabled` is false.
 
 <!-- markdownlint-enable -->
-
 <!-- END_TF_DOCS -->
