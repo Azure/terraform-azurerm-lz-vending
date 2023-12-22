@@ -265,5 +265,4 @@ Description: The tenant id of the user managed identity
 Description: The resource id of the user managed identity
 
 <!-- markdownlint-enable -->
-
 <!-- END_TF_DOCS -->

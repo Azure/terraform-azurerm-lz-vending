@@ -77,5 +77,4 @@ The following resources are used by this module:
 No outputs.
 
 <!-- markdownlint-enable -->
-
 <!-- END_TF_DOCS -->

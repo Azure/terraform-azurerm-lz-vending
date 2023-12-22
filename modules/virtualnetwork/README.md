@@ -226,5 +226,4 @@ Description: The created resource group IDs, expressed as a map.
 Description: The created virtual network resource IDs, expressed as a map.
 
 <!-- markdownlint-enable -->
-
 <!-- END_TF_DOCS -->
