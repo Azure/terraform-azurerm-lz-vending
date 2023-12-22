@@ -51,7 +51,7 @@ tfclean:
 tools:
 	go install mvdan.cc/gofumpt@latest
 	go install github.com/katbyte/terrafmt@latest
-	go install github.com/terraform-docs/terraform-docs@latest
+	go install github.com/terraform-docs/terraform-docs@v0.17.0
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH || $$GOPATH)/bin v1.52.2
 
 # Makefile targets are files, but we aren't using it like this,
