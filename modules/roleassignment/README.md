@@ -101,5 +101,4 @@ Description: The Azure resource id of the created role assignment.
 Description: The Azure name (uuid) of the created role assignment.
 
 <!-- markdownlint-enable -->
-
 <!-- END_TF_DOCS -->
