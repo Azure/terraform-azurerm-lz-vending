@@ -229,7 +229,9 @@ The following resources are used by this module:
 - [azapi_update_resource.subscription_tags](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/update_resource) (resource)
 - [azurerm_management_group_subscription_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group_subscription_association) (resource)
 - [azurerm_subscription.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription) (resource)
+- [terraform_data.replacement](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) (resource)
 - [time_sleep.wait_for_subscription_before_subscription_operations](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) (resource)
+- [azapi_resource_list.subscription_management_group_association](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/resource_list) (data source)
 
 ## Outputs
 

@@ -11,6 +11,7 @@
   - [Example 3 - YAML data files](Example-3-YAML-data-files)
   - [Example 4 - Integration with ALZ module](Example-4-Integration-with-ALZ-module)
   - [Example 5 - Use with existing subscriptions](Example-5-Use-with-existing-subscriptions)
+  - [Example 6 - About `subscription_use_azapi`](Example-6-Subscription-Use-AzApi)
 
 ---
 

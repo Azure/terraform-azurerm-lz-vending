@@ -8,5 +8,6 @@ Here are some example configurations that demonstrate the module usage and integ
 | [YAML data files](Example-3-YAML-data-files) | Example of how to create a landing zone using YAML input files |
 | [Integration with ALZ module](Example-4-Integration-with-ALZ-module) | Example of how to integrate this module with the [ALZ Terraform module][alz_tf_module] |
 | [Use with existing subscriptions](Example-5-Use-with-existing-subscriptions) | Example of how to use this module with existing landing zone subscriptions |
+| [About `subscription_use_azapi`](Example-6-Subscription-Use-AzApi) | Example of how to use the `subscription_use_azapi` variable |
 
 [alz_tf_module]: https://aka.ms/alz/tf

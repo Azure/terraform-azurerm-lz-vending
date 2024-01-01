@@ -43,6 +43,12 @@ resource "azapi_resource" "subscription" {
   }
 }
 
+resource "terraform_data" "replacement" {
+  count = var.subscription_management_group_association_enabled && var.subscription_use_azapi ? 1 : 0
+
+  input = local.desired_subscription_management_group_association_exists
+}
+
 resource "time_sleep" "wait_for_subscription_before_subscription_operations" {
   count = var.subscription_alias_enabled && var.subscription_use_azapi ? 1 : 0
 
@@ -60,6 +66,10 @@ resource "azapi_resource_action" "subscription_association" {
   type        = "Microsoft.Management/managementGroups/subscriptions@2021-04-01"
   resource_id = "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}/subscriptions/${jsondecode(azapi_resource.subscription[0].output).properties.subscriptionId}"
   method      = "PUT"
+
+  lifecycle {
+    replace_triggered_by = [terraform_data.replacement]
+  }
 
   depends_on = [
     time_sleep.wait_for_subscription_before_subscription_operations

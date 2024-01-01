@@ -45,6 +45,7 @@ func TestSubscriptionAliasCreateValidAzApi(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
+		"terraform_data.replacement",
 		"azapi_resource.subscription[0]",
 		"azapi_resource_action.subscription_rename[0]",
 		"azapi_update_resource.subscription_tags[0]",
@@ -103,6 +104,7 @@ func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
+		"terraform_data.replacement",
 		"azapi_resource.subscription[0]",
 		"azapi_resource_action.subscription_rename[0]",
 		"azapi_update_resource.subscription_tags[0]",
