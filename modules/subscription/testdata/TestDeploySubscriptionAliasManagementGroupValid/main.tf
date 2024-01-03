@@ -30,10 +30,14 @@ variable "subscription_use_azapi" {
   type = bool
 }
 
+resource "random_id" "id" {
+  byte_length = 4
+}
+
 resource "azapi_resource" "mg" {
   type      = "Microsoft.Management/managementGroups@2021-04-01"
   parent_id = "/"
-  name      = var.subscription_management_group_id
+  name      = "${var.subscription_management_group_id}-${random_id.id.hex}"
 }
 
 module "subscription_test" {
