@@ -1,6 +1,7 @@
 package subscription
 
 import (
+	"os"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
@@ -45,7 +46,6 @@ func TestSubscriptionAliasCreateValidAzApi(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
-		"terraform_data.replacement",
 		"azapi_resource.subscription[0]",
 		"azapi_resource_action.subscription_rename[0]",
 		"azapi_update_resource.subscription_tags[0]",
@@ -96,7 +96,7 @@ func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	v["subscription_management_group_id"] = "testdeploy"
+	v["subscription_management_group_id"] = os.Getenv("ARM_TENANT_ID")
 	v["subscription_management_group_association_enabled"] = true
 	v["subscription_use_azapi"] = true
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
@@ -104,7 +104,7 @@ func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
-		"terraform_data.replacement",
+		"terraform_data.replacement[0]",
 		"azapi_resource.subscription[0]",
 		"azapi_resource_action.subscription_rename[0]",
 		"azapi_update_resource.subscription_tags[0]",
