@@ -155,7 +155,7 @@ func TestDeploySubscriptionAliasManagementGroupValidAzApi(t *testing.T) {
 	v["subscription_management_group_association_enabled"] = true
 	v["subscription_use_azapi"] = true
 
-	testDir := filepath.Join("testdata", "TestDeploySubscriptionAliasManagementGroupValid")
+	testDir := filepath.Join("testdata", t.Name())
 	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
