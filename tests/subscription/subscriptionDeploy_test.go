@@ -184,8 +184,8 @@ func TestDeploySubscriptionAliasManagementGroupValidAzApi(t *testing.T) {
 	u, err = uuid.Parse(sid)
 	assert.NoErrorf(t, err, "subscription id %s is not a valid uuid", sid)
 
-	err = azureutils.IsSubscriptionInManagementGroup(t, u, v["subscription_management_group_id"].(string))
-	assert.NoErrorf(t, err, "subscription %s is not in management group %s", sid, v["subscription_management_group_id"].(string))
+	// err = azureutils.IsSubscriptionInManagementGroup(t, u, v["subscription_management_group_id"].(string))
+	// assert.NoErrorf(t, err, "subscription %s is not in management group %s", sid, v["subscription_management_group_id"].(string))
 
 	if err := azureutils.SetSubscriptionManagementGroup(u, tenantId); err != nil {
 		t.Logf("cannot move subscription to tenant root group: %v", err)

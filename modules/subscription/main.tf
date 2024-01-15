@@ -17,7 +17,7 @@ resource "azurerm_management_group_subscription_association" "this" {
 }
 
 resource "azapi_resource" "subscription" {
-  count = var.subscription_alias_enabled && var.subscription_use_azapi ? 1 : 0
+  count = (var.subscription_alias_enabled && var.subscription_use_azapi) ? 1 : 0
 
   type      = "Microsoft.Subscription/aliases@2021-10-01"
   name      = var.subscription_alias_name
@@ -44,13 +44,13 @@ resource "azapi_resource" "subscription" {
 }
 
 resource "terraform_data" "replacement" {
-  count = var.subscription_management_group_association_enabled && var.subscription_use_azapi ? 1 : 0
+  count = (var.subscription_management_group_association_enabled && var.subscription_use_azapi) ? 1 : 0
 
-  input = local.desired_subscription_management_group_association_exists
+  input = local.is_subscription_associated_to_management_group
 }
 
 resource "time_sleep" "wait_for_subscription_before_subscription_operations" {
-  count = var.subscription_alias_enabled && var.subscription_use_azapi ? 1 : 0
+  count = (var.subscription_alias_enabled && var.subscription_use_azapi) ? 1 : 0
 
   create_duration  = var.wait_for_subscription_before_subscription_operations.create
   destroy_duration = var.wait_for_subscription_before_subscription_operations.destroy
@@ -61,10 +61,10 @@ resource "time_sleep" "wait_for_subscription_before_subscription_operations" {
 }
 
 resource "azapi_resource_action" "subscription_association" {
-  count = var.subscription_management_group_association_enabled && var.subscription_use_azapi ? 1 : 0
+  count = (var.subscription_management_group_association_enabled && var.subscription_use_azapi) ? 1 : 0
 
   type        = "Microsoft.Management/managementGroups/subscriptions@2021-04-01"
-  resource_id = "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}/subscriptions/${jsondecode(azapi_resource.subscription[0].output).properties.subscriptionId}"
+  resource_id = "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}/subscriptions/${local.subscription_id}"
   method      = "PUT"
 
   lifecycle {
@@ -102,6 +102,20 @@ resource "azapi_resource_action" "subscription_rename" {
   body = jsonencode({
     subscriptionName = var.subscription_display_name
   })
+
+  depends_on = [
+    time_sleep.wait_for_subscription_before_subscription_operations
+  ]
+}
+
+resource "azapi_resource_action" "subscription_cancel" {
+  count = (var.subscription_alias_enabled && var.subscription_use_azapi) ? 1 : 0
+
+  type        = "Microsoft.Resources/subscriptions@2021-10-01"
+  resource_id = "/subscriptions/${local.subscription_id}"
+  method      = "POST"
+  action      = "providers/Microsoft.Subscription/cancel"
+  when        = "destroy"
 
   depends_on = [
     time_sleep.wait_for_subscription_before_subscription_operations

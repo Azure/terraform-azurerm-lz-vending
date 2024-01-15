@@ -7,6 +7,8 @@ locals {
 }
 
 locals {
+  # Check if subscription is vended.
+  is_subscription_vended = (var.subscription_management_group_association_enabled && var.subscription_use_azapi) ? contains(jsondecode(data.azapi_resource_list.subscriptions[0].output).value[*].subscriptionId, local.subscription_id) : true
   # Check for drift between subscription and target management group.
-  desired_subscription_management_group_association_exists = var.subscription_management_group_association_enabled && var.subscription_use_azapi ? contains(jsondecode(data.azapi_resource_list.subscription_management_group_association[0].output).value[*].id, "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}/subscriptions/${jsondecode(azapi_resource.subscription[0].output).properties.subscriptionId}") : false
+  is_subscription_associated_to_management_group = (var.subscription_management_group_association_enabled && var.subscription_use_azapi) && local.is_subscription_vended ? contains(jsondecode(data.azapi_resource_list.subscription_management_group_association[0].output).value[*].id, "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}/subscriptions/${local.subscription_id}") : true
 }

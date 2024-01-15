@@ -49,6 +49,7 @@ func TestSubscriptionAliasCreateValidAzApi(t *testing.T) {
 		"azapi_resource.subscription[0]",
 		"azapi_resource_action.subscription_rename[0]",
 		"azapi_update_resource.subscription_tags[0]",
+		"azapi_resource_action.subscription_cancel[0]",
 		"time_sleep.wait_for_subscription_before_subscription_operations[0]",
 	}
 
@@ -108,6 +109,7 @@ func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
 		"azapi_resource.subscription[0]",
 		"azapi_resource_action.subscription_rename[0]",
 		"azapi_update_resource.subscription_tags[0]",
+		"azapi_resource_action.subscription_cancel[0]",
 		"azapi_resource_action.subscription_association[0]",
 		"time_sleep.wait_for_subscription_before_subscription_operations[0]",
 	}
