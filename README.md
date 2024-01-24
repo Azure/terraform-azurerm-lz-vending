@@ -139,10 +139,6 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.4.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.7.0)
-
-- <a name="requirement_time"></a> [time](#requirement\_time) (>= 0.9.1)
-
 ## Modules
 
 The following Modules are called:
