@@ -128,8 +128,10 @@ DESCRIPTION
 
 variable "umi_role_assignments" {
   type = map(object({
-    definition     = string
-    relative_scope = string
+    definition        = string
+    relative_scope    = optional(string, "")
+    condition         = optional(string, "")
+    condition_version = optional(string, "")
   }))
   nullable    = false
   default     = {}
