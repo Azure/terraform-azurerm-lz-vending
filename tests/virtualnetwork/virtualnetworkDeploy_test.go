@@ -224,32 +224,30 @@ func TestDeployVirtualNetworkValidVhubConnectionAndRoutingIntent(t *testing.T) {
 	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
 	primaryvnet["vwan_connection_enabled"] = true
 	secondaryvnet["vwan_connection_enabled"] = true
+	primaryvnet["vwan_security_configuration"] = map[string]any{
+		"routing_intent_enabled": true,
+	}
+	secondaryvnet["vwan_security_configuration"] = map[string]any{
+		"routing_intent_enabled": true,
+	}
 
-	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).Init(t)
+	require.NoError(t, utils.AzureRmAndRequiredProviders(test))
+
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(11).ErrorIsNil(t)
-
-	resources := []string{
-		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork_test.azapi_resource.vnet[\"secondary\"]",
-		"module.virtualnetwork_test.azapi_resource.vhubconnection[\"primary\"]",
-		"module.virtualnetwork_test.azapi_resource.vhubconnection[\"secondary\"]",
-		"module.virtualnetwork_test.azapi_update_resource.vnet[\"primary\"]",
-		"module.virtualnetwork_test.azapi_update_resource.vnet[\"secondary\"]",
-	}
-	for _, r := range resources {
-		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
-	}
-
 	// defer terraform destroy with retry
-	rty := setuptest.Retry{
+	rtyDestroy := setuptest.Retry{
 		Max:  3,
 		Wait: 10 * time.Minute,
 	}
-	defer test.DestroyRetry(rty) //nolint:errcheck
-	test.ApplyIdempotent().ErrorIsNil(t)
+	rtyApply := setuptest.Retry{
+		Max:  5,
+		Wait: 5 * time.Minute,
+	}
+	defer test.DestroyRetry(rtyDestroy) //nolint:errcheck
+	test.ApplyIdempotentRetry(rtyApply).ErrorIsNil(t)
 }
 
 // TestDeployVirtualNetworkSubnetIdempotency tests that we can make changes

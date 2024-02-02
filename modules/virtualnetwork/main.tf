@@ -162,21 +162,24 @@ resource "azapi_resource" "vhubconnection" {
   parent_id = each.value.vwan_hub_resource_id
   name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", azapi_resource.vnet[each.key].id)}")
   body = jsonencode({
-    properties = {
+    properties = merge({
       enableInternetSecurity = each.value.vwan_security_configuration.secure_internet_traffic
       remoteVirtualNetwork = {
         id = local.virtual_network_resource_ids[each.key]
       }
-      routingConfiguration = each.value.vwan_security_configuration.routing_intent_enabled ? null : {
-        associatedRouteTable = {
-          id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
+      },
+      # Only supply routingConfiguration if routing_intent_enabled is set to false
+      each.value.vwan_security_configuration.routing_intent_enabled ? {} : {
+        routingConfiguration = {
+          associatedRouteTable = {
+            id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
+          }
+          propagatedRouteTables = {
+            ids    = each.value.vwan_security_configuration.secure_private_traffic ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
+            labels = each.value.vwan_security_configuration.secure_private_traffic ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
+          }
         }
-        propagatedRouteTables = {
-          ids    = each.value.vwan_security_configuration.secure_private_traffic ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
-          labels = each.value.vwan_security_configuration.secure_private_traffic ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
-        }
-      }
-    }
+    })
   })
-  ignore_body_changes = each.value.vwan_security_configuration.routing_intent_enabled ? ["properties.routingConfiguration.associatedRouteTable"] : []
+  ignore_body_changes = each.value.vwan_security_configuration.routing_intent_enabled ? ["properties.routingConfiguration"] : []
 }
