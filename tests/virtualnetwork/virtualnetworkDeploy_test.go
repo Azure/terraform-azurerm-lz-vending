@@ -211,6 +211,47 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	test.ApplyIdempotent().ErrorIsNil(t)
 }
 
+// TestDeployVirtualNetworkValidVhubConnectionAndRoutingIntent tests the deployment of a virtual network
+// with a virtual WAN connection and routing intent.
+func TestDeployVirtualNetworkValidVhubConnectionAndRoutingIntent(t *testing.T) {
+	t.Parallel()
+
+	utils.PreCheckDeployTests(t)
+	testDir := "testdata/" + t.Name()
+	v, err := getValidInputVariables()
+	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	primaryvnet["vwan_connection_enabled"] = true
+	secondaryvnet["vwan_connection_enabled"] = true
+
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(11).ErrorIsNil(t)
+
+	resources := []string{
+		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
+		"module.virtualnetwork_test.azapi_resource.vnet[\"secondary\"]",
+		"module.virtualnetwork_test.azapi_resource.vhubconnection[\"primary\"]",
+		"module.virtualnetwork_test.azapi_resource.vhubconnection[\"secondary\"]",
+		"module.virtualnetwork_test.azapi_update_resource.vnet[\"primary\"]",
+		"module.virtualnetwork_test.azapi_update_resource.vnet[\"secondary\"]",
+	}
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	// defer terraform destroy with retry
+	rty := setuptest.Retry{
+		Max:  3,
+		Wait: 10 * time.Minute,
+	}
+	defer test.DestroyRetry(rty) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
+}
+
 // TestDeployVirtualNetworkSubnetIdempotency tests that we can make changes
 // to the subnet configuration outside the module and that subsequent runs of terraform apply
 // are idempotent. See main.tf file in the testdata directory for more details.
