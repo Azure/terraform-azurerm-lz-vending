@@ -211,6 +211,45 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	test.ApplyIdempotent().ErrorIsNil(t)
 }
 
+// TestDeployVirtualNetworkValidVhubConnectionAndRoutingIntent tests the deployment of a virtual network
+// with a virtual WAN connection and routing intent.
+func TestDeployVirtualNetworkValidVhubConnectionAndRoutingIntent(t *testing.T) {
+	t.Parallel()
+
+	utils.PreCheckDeployTests(t)
+	testDir := "testdata/" + t.Name()
+	v, err := getValidInputVariables()
+	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	primaryvnet["vwan_connection_enabled"] = true
+	secondaryvnet["vwan_connection_enabled"] = true
+	primaryvnet["vwan_security_configuration"] = map[string]any{
+		"routing_intent_enabled": true,
+	}
+	secondaryvnet["vwan_security_configuration"] = map[string]any{
+		"routing_intent_enabled": true,
+	}
+
+	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).Init(t)
+	require.NoError(t, utils.AzureRmAndRequiredProviders(test))
+
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// defer terraform destroy with retry
+	rtyDestroy := setuptest.Retry{
+		Max:  3,
+		Wait: 10 * time.Minute,
+	}
+	rtyApply := setuptest.Retry{
+		Max:  5,
+		Wait: 5 * time.Minute,
+	}
+	defer test.DestroyRetry(rtyDestroy) //nolint:errcheck
+	test.ApplyIdempotentRetry(rtyApply).ErrorIsNil(t)
+}
+
 // TestDeployVirtualNetworkSubnetIdempotency tests that we can make changes
 // to the subnet configuration outside the module and that subsequent runs of terraform apply
 // are idempotent. See main.tf file in the testdata directory for more details.

@@ -18,7 +18,7 @@ module "roleassignment" {
 }
 
 # The roleassignments_umi module creates role assignments from the data
-# supplied in the var.uni_role_assignments variable
+# supplied in the var.umi_role_assignments variable
 module "roleassignment_umi" {
   source = "./modules/roleassignment"
   depends_on = [
