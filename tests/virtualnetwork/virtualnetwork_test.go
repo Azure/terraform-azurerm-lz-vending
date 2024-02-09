@@ -354,8 +354,8 @@ func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
-	// The additional one is the outbound peering
+	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -365,6 +365,7 @@ func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
 		"azapi_update_resource.vnet[\"secondary\"]",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.peering_hub_inbound[\"primary\"]",
 		"azapi_resource.peering_hub_outbound[\"primary\"]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -372,6 +373,12 @@ func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
 	for _, r := range resources {
 		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
+
+	// We can only check the body of the outbound peering as the inbound values
+	// not known until apply
+	res := "azapi_resource.peering_hub_outbound[\"primary\"]"
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.allowForwardedTraffic").HasValue(true).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithOnlyFromHubPeering tests the creation of a plan that
@@ -405,12 +412,19 @@ func TestVirtualNetworkCreateValidWithOnlyFromHubPeering(t *testing.T) {
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.peering_hub_inbound[\"primary\"]",
+		"azapi_resource.peering_hub_outbound[\"primary\"]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
 	for _, r := range resources {
 		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
+
+	// We can only check the body of the outbound peering as the inbound values
+	// not known until apply
+	res := "azapi_resource.peering_hub_outbound[\"primary\"]"
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.allowForwardedTraffic").HasValue(false).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled

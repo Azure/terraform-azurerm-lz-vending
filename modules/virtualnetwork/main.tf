@@ -98,7 +98,7 @@ resource "azapi_update_resource" "vnet" {
 # azapi_resource.peering_hub_outbound creates one-way peering from the spoke to the supplied hub virtual network.
 # They are not created if the hub virtual network is an empty string.
 resource "azapi_resource" "peering_hub_outbound" {
-  for_each  = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_fromhub }
+  for_each  = { for k, v in local.hub_peering_map : k => v }
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
   parent_id = each.value["outbound"].this_resource_id
   name      = each.value["outbound"].name
@@ -107,8 +107,8 @@ resource "azapi_resource" "peering_hub_outbound" {
       remoteVirtualNetwork = {
         id = each.value["outbound"].remote_resource_id
       }
-      allowVirtualNetworkAccess = true
-      allowForwardedTraffic     = true
+      allowVirtualNetworkAccess = each.value["peering_direction"] != local.peering_direction_fromhub ? true : false
+      allowForwardedTraffic     = each.value["peering_direction"] != local.peering_direction_fromhub ? true : false
       allowGatewayTransit       = false
       useRemoteGateways         = each.value.use_remote_gateways
     }
@@ -118,7 +118,7 @@ resource "azapi_resource" "peering_hub_outbound" {
 # azapi_resource.peering_hub_inbound creates one-way peering from the supplied hub network to the spoke.
 # They are not created if the hub virtual network is an empty string.
 resource "azapi_resource" "peering_hub_inbound" {
-  for_each  = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_tohub }
+  for_each  = { for k, v in local.hub_peering_map : k => v }
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
   parent_id = each.value["inbound"].this_resource_id
   name      = each.value["inbound"].name
@@ -127,9 +127,9 @@ resource "azapi_resource" "peering_hub_inbound" {
       remoteVirtualNetwork = {
         id = each.value["inbound"].remote_resource_id
       }
-      allowVirtualNetworkAccess = true
-      allowForwardedTraffic     = true
-      allowGatewayTransit       = true
+      allowVirtualNetworkAccess = each.value["peering_direction"] != local.peering_direction_tohub ? true : false
+      allowForwardedTraffic     = each.value["peering_direction"] != local.peering_direction_tohub ? true : false
+      allowGatewayTransit       = each.value["peering_direction"] != local.peering_direction_tohub ? true : false
       useRemoteGateways         = each.value.use_remote_gateways
     }
   })
