@@ -156,11 +156,15 @@ DESCRIPTION
   default     = {}
   validation {
     error_message = "Tag values must contain neither `<>%&\\?/` nor control characters, and must be between 0-256 characters."
-    condition     = can(regex("^[^<>%&\\?/[:cntrl:]]{0,256}$", join("", values(var.subscription_tags))))
+    condition = alltrue(
+      [for _, v in var.subscription_tags : can(regex("^[^<>%&\\?/[:cntrl:]]{0,256}$", v))]
+    )
   }
   validation {
     error_message = "Tag name must contain neither `<>%&\\?/` nor control characters, and must be between 0-512 characters."
-    condition     = can(regex("^[^<>%&\\?/[:cntrl:]]{0,512}$", join("", keys(var.subscription_tags))))
+    condition = alltrue(
+      [for k, _ in var.subscription_tags : can(regex("^[^<>%&\\?/[:cntrl:]]{0,512}$", k))]
+    )
   }
 }
 
