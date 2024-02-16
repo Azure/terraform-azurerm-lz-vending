@@ -130,7 +130,7 @@ resource "azapi_resource" "peering_hub_inbound" {
       allowVirtualNetworkAccess = true
       allowForwardedTraffic     = true
       allowGatewayTransit       = true
-      useRemoteGateways         = each.value.use_remote_gateways
+      useRemoteGateways         = false
     }
   })
 }
