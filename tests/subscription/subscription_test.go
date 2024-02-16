@@ -232,6 +232,33 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
 	assert.Contains(t, utils.SanitiseErrorMessage(err), "The management group ID must be between 1 and 90 characters in length and formed of the following characters: a-z, A-Z, 0-9, -, _, (, ), and a period (.).")
 }
 
+func TestSubscriptionInvalidTagValue(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	v["subscription_tags"] = map[string]any{
+		"illegal-value": "illegal-<-value",
+	}
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	assert.Contains(t, utils.SanitiseErrorMessage(err), "Tag values must contain neither `<>%&\\?/` nor control characters, and must be between 0-256 characters.")
+}
+
+func TestSubscriptionInvalidTagName(t *testing.T) {
+	t.Parallel()
+	var tagname string
+	for i := 0; i < 513; i++ {
+		tagname += "a"
+	}
+	v := getMockInputVariables()
+	v["subscription_tags"] = map[string]any{
+		tagname: "illegal-name",
+	}
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	assert.Contains(t, utils.SanitiseErrorMessage(err), "Tag name must contain neither `<>%&\\?/` nor control characters, and must be between 0-512 characters.")
+}
+
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.
 func getMockInputVariables() map[string]any {
 	return map[string]any{
