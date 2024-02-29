@@ -14,6 +14,7 @@ The module is designed to be instantiated many times, once for each desired land
 This is currently split logically into the following capabilities:
 
 - Subscription creation and management group placement
+  - Microsoft Defender for Cloud (DFC) security contact
 - Networking - deploy multiple vnets with:
   - Hub & spoke connectivity (peering to a hub network)
   - vWAN connectivity
@@ -64,6 +65,12 @@ module "lz_vending" {
   # management group association variables
   subscription_management_group_association_enabled = true
   subscription_management_group_id                  = "Corp"
+
+  # defender for cloud variables
+  subscription_dfc_contact_enabled = true
+  subscription_dfc_contact = {
+    emails = "john@microsoft.com;jane@microsoft.com"
+  }
 
   # virtual network variables
   virtual_network_enabled = true
@@ -479,6 +486,44 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 Type: `string`
 
 Default: `""`
+
+### <a name="input_subscription_dfc_contact"></a> [subscription\_dfc\_contact](#input\_subscription\_dfc\_contact)
+
+Description: Microsoft Defender for Cloud (DFC) contact and notification configurations
+
+### Security Contact Information
+
+- `emails`: List of email addresses which will get notifications from Microsoft Defender for Cloud. [optional - default empty]
+- `phone`: The security contact's phone number. [optional - default empty]  
+Multiple emails can be provided in a ; separated list. Example: "john@microsoft.com;jane@microsoft.com"
+
+### Notifications
+
+- `alert_notifications`: Defines the minimal alert severity which will be sent as email notifications. [optional - allowed values are: `Off`, `High`, `Medium` or `Low` - default `Off`]
+- `notifications_by_role`: Defines whether to send email notifications from Microsoft Defender for Cloud to persons with specific RBAC roles on the subscription. [optional - allowed values are: `AccountAdmin`, `ServiceAdmin`, `Owner` and `Contributor` - default empty]"
+> **Note**: Either an email address or at least one role must be set to receive notification alerts.
+
+Type:
+
+```hcl
+object({
+    emails                = optional(string, "")
+    phone                 = optional(string, "")
+    alert_notifications   = optional(string, "Off")
+    notifications_by_role = optional(list(string), [])
+  })
+```
+
+Default: `{}`
+
+### <a name="input_subscription_dfc_contact_enabled"></a> [subscription\_dfc\_contact\_enabled](#input\_subscription\_dfc\_contact\_enabled)
+
+Description: Whether to enable Microsoft Defender for Cloud (DFC) contact settings on the subscription. [optional - default `false`]  
+If enabled, provide settings in var.subscription\_dfc\_contact
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_subscription_display_name"></a> [subscription\_display\_name](#input\_subscription\_display\_name)
 

@@ -121,3 +121,28 @@ resource "azapi_resource_action" "subscription_cancel" {
     time_sleep.wait_for_subscription_before_subscription_operations
   ]
 }
+
+resource "azapi_resource" "subscription_dfc_contact" {
+  count     = var.subscription_dfc_contact_enabled ? 1 : 0
+  parent_id = "/subscriptions/${local.subscription_id}"
+  type      = "Microsoft.Security/securityContacts@2020-01-01-preview"
+  name      = "default" //  The only valid name for security contact is 'default'
+
+  body = jsonencode({
+    properties = {
+      emails = var.subscription_dfc_contact.emails
+      phone  = var.subscription_dfc_contact.phone
+
+      alertNotifications = {
+        state           = var.subscription_dfc_contact.alert_notifications == "Off" ? var.subscription_dfc_contact.alert_notifications : "On"
+        minimalSeverity = var.subscription_dfc_contact.alert_notifications == "Off" ? "Low" : var.subscription_dfc_contact.alert_notifications
+      }
+
+      // Either an email address or at least one role must be set to receive notification alerts.
+      notificationsByRole = {
+        state = var.subscription_dfc_contact.emails == "" || length(var.subscription_dfc_contact.notifications_by_role) > 0 ? "On" : "Off"
+        roles = var.subscription_dfc_contact.emails == "" && length(var.subscription_dfc_contact.notifications_by_role) == 0 ? ["Owner"] : var.subscription_dfc_contact.notifications_by_role
+      }
+    }
+  })
+}

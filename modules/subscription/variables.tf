@@ -196,3 +196,61 @@ variable "wait_for_subscription_before_subscription_operations" {
 The duration to wait after vending a subscription before performing subscription operations.
 DESCRIPTION
 }
+
+variable "subscription_dfc_contact_enabled" {
+  type        = bool
+  default     = false
+  description = <<DESCRIPTION
+Whether to enable Microsoft Defender for Cloud (DFC) contact settings on the subscription. [optional - default `false`]
+If enabled, provide settings in var.subscription_dfc_contact
+DESCRIPTION
+}
+
+variable "subscription_dfc_contact" {
+  type = object({
+    emails                = optional(string, "")
+    phone                 = optional(string, "")
+    alert_notifications   = optional(string, "Off")
+    notifications_by_role = optional(list(string), [])
+  })
+  default     = {}
+  description = <<DESCRIPTION
+Microsoft Defender for Cloud (DFC) contact and notification configurations
+
+### Security Contact Information
+
+- `emails`: List of email addresses which will get notifications from Microsoft Defender for Cloud. [optional - default empty]
+- `phone`: The security contact's phone number. [optional - default empty]
+Multiple emails can be provided in a ; separated list. Example: "john@microsoft.com;jane@microsoft.com"
+
+### Notifications
+
+- `alert_notifications`: Defines the minimal alert severity which will be sent as email notifications. [optional - allowed values are: `Off`, `High`, `Medium` or `Low` - default `Off`]
+- `notifications_by_role`: Defines whether to send email notifications from Microsoft Defender for Cloud to persons with specific RBAC roles on the subscription. [optional - allowed values are: `AccountAdmin`, `ServiceAdmin`, `Owner` and `Contributor` - default empty]"
+> **Note**: Either an email address or at least one role must be set to receive notification alerts.
+DESCRIPTION
+
+  # validate email addresses
+  validation {
+    condition     = (var.subscription_dfc_contact.emails == "" || can(regex("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(;[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$", var.subscription_dfc_contact.emails)))
+    error_message = "Invalid email address(es) provided. Multiple emails must be separated with a `;`"
+  }
+
+  # validate phone number
+  validation {
+    condition     = (var.subscription_dfc_contact.phone == "" || can(regex("^[\\+0-9-]+$", var.subscription_dfc_contact.phone)))
+    error_message = "Invalid phone number provided. Valid characters are 0-9, '-', and '+'. An example for a valid phone number is: +1-555-555-5555"
+  }
+
+  # validate alert notifications
+  validation {
+    condition     = contains(["Off", "High", "Medium", "Low"], var.subscription_dfc_contact.alert_notifications)
+    error_message = "Invalid alert_notifications_state. Valid options are Off, High, Medium, Low."
+  }
+
+  # validate notifications by role
+  validation {
+    condition     = alltrue([for role in var.subscription_dfc_contact.notifications_by_role : contains(["Owner", "AccountAdmin", "Contributor", "ServiceAdmin"], role)])
+    error_message = "Invalid notifications_by_role. The supported RBAC roles are: AccountAdmin, ServiceAdmin, Owner, Contributor."
+  }
+}
