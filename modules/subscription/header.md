@@ -26,10 +26,10 @@ module "subscription" {
   subscription_alias_management_group_id = "mymg"
   subscription_dfc_contact_enabled       = true
   subscription_dfc_contact = {
+    notifications_by_role = ["Owner", "Contributor"]
     emails                = "john@microsoft.com;jane@microsoft.com"
     phone                 = "+1-555-555-5555"
     alert_notifications   = "Medium"
-    notifications_by_role = ["Owner", "Contributor"]
   }
 }
 ```
