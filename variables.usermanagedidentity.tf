@@ -139,7 +139,7 @@ variable "umi_role_assignments" {
 Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.
 This will be merged with the other role assignments specified in `var.role_assignments`.
 
-The role assignments can be used resource groups created by the `var.resource_groups_to_create` map.
+The role assignments can be used resource groups created by the `var.resource_groups` map.
 
 Requires both `var.umi_enabled` and `var.role_assignment_enabled` to be `true`.
 

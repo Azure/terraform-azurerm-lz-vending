@@ -14,7 +14,7 @@ DESCRIPTION
 
 variable "resource_group_creation_enabled" {
   type        = bool
-  description = "Whether to create additional resource groups in the target subscription. Requires `var.resource_groups_to_create`."
+  description = "Whether to create additional resource groups in the target subscription. Requires `var.resource_groups`."
   default     = false
 }
 
@@ -25,7 +25,7 @@ variable "resource_groups" {
     tags     = optional(map(string), {})
   }))
   description = <<DESCRIPTION
-A map of the resource groups to create. THe value is an object with the following attributes:
+A map of the resource groups to create. The value is an object with the following attributes:
 
 - `name` - the name of the resource group
 - `location` - the location of the resource group

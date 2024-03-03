@@ -248,7 +248,7 @@ Default: `false`
 
 ### <a name="input_resource_group_creation_enabled"></a> [resource\_group\_creation\_enabled](#input\_resource\_group\_creation\_enabled)
 
-Description: Whether to create additional resource groups in the target subscription. Requires `var.resource_groups_to_create`.
+Description: Whether to create additional resource groups in the target subscription. Requires `var.resource_groups`.
 
 Type: `bool`
 
@@ -256,7 +256,7 @@ Default: `false`
 
 ### <a name="input_resource_groups"></a> [resource\_groups](#input\_resource\_groups)
 
-Description: A map of the resource groups to create. THe value is an object with the following attributes:
+Description: A map of the resource groups to create. The value is an object with the following attributes:
 
 - `name` - the name of the resource group
 - `location` - the location of the resource group
@@ -751,7 +751,7 @@ Default: `{}`
 Description: Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.  
 This will be merged with the other role assignments specified in `var.role_assignments`.
 
-The role assignments can be used resource groups created by the `var.resource_groups_to_create` map.
+The role assignments can be used resource groups created by the `var.resource_groups` map.
 
 Requires both `var.umi_enabled` and `var.role_assignment_enabled` to be `true`.
 
