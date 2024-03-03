@@ -135,13 +135,12 @@ resource "azapi_resource" "subscription_dfc_contact" {
 
       alertNotifications = {
         state           = var.subscription_dfc_contact.alert_notifications == "Off" ? var.subscription_dfc_contact.alert_notifications : "On"
-        minimalSeverity = var.subscription_dfc_contact.alert_notifications == "Off" ? "Low" : var.subscription_dfc_contact.alert_notifications
+        minimalSeverity = var.subscription_dfc_contact.alert_notifications == "Off" ? "" : var.subscription_dfc_contact.alert_notifications
       }
 
-      // Either an email address or at least one role must be set to receive notification alerts.
       notificationsByRole = {
-        state = var.subscription_dfc_contact.emails == "" || length(var.subscription_dfc_contact.notifications_by_role) > 0 ? "On" : "Off"
-        roles = var.subscription_dfc_contact.emails == "" && length(var.subscription_dfc_contact.notifications_by_role) == 0 ? ["Owner"] : var.subscription_dfc_contact.notifications_by_role
+        state = length(var.subscription_dfc_contact.notifications_by_role) > 0 ? "On" : "Off"
+        roles = var.subscription_dfc_contact.notifications_by_role
       }
     }
   })

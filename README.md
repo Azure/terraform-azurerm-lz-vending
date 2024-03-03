@@ -491,26 +491,25 @@ Default: `""`
 
 Description: Microsoft Defender for Cloud (DFC) contact and notification configurations
 
-### Security Contact Information
+### Security Contact Information - Determines who'll get email notifications from Defender for Cloud
 
-- `emails`: List of email addresses which will get notifications from Microsoft Defender for Cloud. [optional - default empty]
-- `phone`: The security contact's phone number. [optional - default empty]  
-Multiple emails can be provided in a ; separated list. Example: "john@microsoft.com;jane@microsoft.com"
+- `notifications_by_role`: All users with these specific RBAC roles on the subscription will get email notifications.  [optional - allowed values are: `AccountAdmin`, `ServiceAdmin`, `Owner` and `Contributor` - default empty]"
+- `emails`: List of additional email addresses which will get notifications. Multiple emails can be provided in a ; separated list. Example: "john@microsoft.com;jane@microsoft.com". [optional - default empty]
+- `phone`: The security contact's phone number. [optional - default empty]
+> **Note**: At least one role or email address must be provided to enable alert notification.
 
-### Notifications
+### Alert Notifications
 
-- `alert_notifications`: Defines the minimal alert severity which will be sent as email notifications. [optional - allowed values are: `Off`, `High`, `Medium` or `Low` - default `Off`]
-- `notifications_by_role`: Defines whether to send email notifications from Microsoft Defender for Cloud to persons with specific RBAC roles on the subscription. [optional - allowed values are: `AccountAdmin`, `ServiceAdmin`, `Owner` and `Contributor` - default empty]"
-> **Note**: Either an email address or at least one role must be set to receive notification alerts.
+- `alert_notifications`: Enables email notifications and defines the minimal alert severity. [optional - allowed values are: `Off`, `High`, `Medium` or `Low` - default `Off`]
 
 Type:
 
 ```hcl
 object({
+    notifications_by_role = optional(list(string), [])
     emails                = optional(string, "")
     phone                 = optional(string, "")
     alert_notifications   = optional(string, "Off")
-    notifications_by_role = optional(list(string), [])
   })
 ```
 
