@@ -12,7 +12,7 @@ require (
 	github.com/Azure/terratest-terraform-fluent v0.8.0
 	github.com/google/uuid v1.6.0
 	github.com/gruntwork-io/terratest v0.46.11
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	golang.org/x/sync v0.6.0
 )
 
