@@ -144,4 +144,8 @@ resource "azapi_resource" "subscription_dfc_contact" {
       }
     }
   })
+
+  depends_on = [
+    time_sleep.wait_for_subscription_before_subscription_operations
+  ]
 }
