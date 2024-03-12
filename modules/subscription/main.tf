@@ -144,6 +144,10 @@ resource "azapi_resource" "subscription_dfc_contact" {
       }
     }
   })
+  schema_validation_enabled = false
+  lifecycle {
+    ignore_changes = [location]
+  }
 
   depends_on = [
     time_sleep.wait_for_subscription_before_subscription_operations
