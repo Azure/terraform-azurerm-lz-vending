@@ -259,6 +259,37 @@ func TestSubscriptionInvalidTagName(t *testing.T) {
 	assert.Contains(t, utils.SanitiseErrorMessage(err), "Tag name must contain neither `<>%&\\?/` nor control characters, and must be between 0-512 characters.")
 }
 
+// TestSubscriptionAliasCreateValidWithDfcContact tests the
+// validation functions with valid data, including a Defender for Cloud contact,
+// then creates a plan and compares the input variables to the planned values.
+func TestSubscriptionAliasCreateValidWithDfcContact(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	v["subscription_dfc_contact_enabled"] = true
+	v["subscription_dfc_contact"] = map[string]any{
+		"emails":                "test@contoso.com",
+		"phone":                 "+555-555-5555",
+		"alert_notifications":   "High",
+		"notifications_by_role": []string{"Owner"},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(2).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("alias").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("billing_scope_id").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("subscription_name").HasValue(v["subscription_display_name"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
+
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription_dfc_contact[0]").Key("body").Query("properties.emails").HasValue(v["subscription_dfc_contact"].(map[string]any)["emails"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription_dfc_contact[0]").Key("body").Query("properties.phone").HasValue(v["subscription_dfc_contact"].(map[string]any)["phone"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription_dfc_contact[0]").Key("body").Query("properties.alertNotifications.minimalSeverity").HasValue(v["subscription_dfc_contact"].(map[string]any)["alert_notifications"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription_dfc_contact[0]").Key("body").Query("properties.notificationsByRole.roles.0").HasValue(v["subscription_dfc_contact"].(map[string]any)["notifications_by_role"].([]string)[0]).ErrorIsNil(t)
+}
+
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.
 func getMockInputVariables() map[string]any {
 	return map[string]any{
