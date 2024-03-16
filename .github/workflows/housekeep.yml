@@ -21,7 +21,7 @@ jobs:
           allow-no-subscriptions: true
 
       - name: Azure cancel subscriptions
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         continue-on-error: true
         with:
           inlineScript: |
@@ -31,7 +31,7 @@ jobs:
             az account subscription list | jq -r '.[] | select(.state == "Enabled") | select(.displayName | test("^testdeploy.*")) | .subscriptionId' | xargs -n1 -I% az account subscription cancel --yes --id %
             echo "==> Done cancelling subscriptions"
       - name: Azure logout
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         if: always()
         with:
           inlineScript: |
@@ -51,7 +51,7 @@ jobs:
           allow-no-subscriptions: true
 
       - name: Azure delete subscription aliases
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         continue-on-error: true
         with:
           inlineScript: |
@@ -61,7 +61,7 @@ jobs:
             az rest --method GET --uri '/providers/Microsoft.Subscription/aliases/?api-version=2021-10-01' | jq -r '.value[] | select(.name | test("^testdeploy")) | .name' | xargs -n1 -I% az rest --method DELETE --uri '/providers/Microsoft.Subscription/aliases/%?api-version=2021-10-01'
             echo "==> Done deleting subscription aliases"
       - name: Azure logout
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         if: always()
         with:
           inlineScript: |
@@ -81,7 +81,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_EXISTING_SUBSCRIPTION_ID }}
 
       - name: Azure delete resourcegroups
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         continue-on-error: true
         with:
           inlineScript: |
@@ -96,7 +96,7 @@ jobs:
             echo "==> Done deleting resource groups"
 
       - name: Azure logout
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         if: always()
         with:
           inlineScript: |

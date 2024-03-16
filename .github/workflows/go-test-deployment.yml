@@ -108,7 +108,7 @@ jobs:
 
       # This only works on Linux based runners
       - name: Azure logout
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         if: always()
         with:
           inlineScript: |
