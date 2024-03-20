@@ -113,9 +113,9 @@ Default: `""`
 
 ### <a name="input_subscription_budgets"></a> [subscription\_budgets](#input\_subscription\_budgets)
 
-Description: The budgets for a given subscription.
+Description: The budgets to create for the subscription using the AzApi provider.
 
-Each budget can have up to five notifications, each notification should have at least one notification contact.
+time\_period\_start and time\_period\_end must be UTC in RFC3339 format, e.g. 2018-05-13T07:44:12Z.
 
 Example value:
 
@@ -146,9 +146,28 @@ subscription_budgets = {
 }
 ```
 
-Type: `map(object)`
+Type:
 
-Default: `""`
+```hcl
+map(object({
+    amount            = number
+    time_grain        = optional(string, "Monthly")
+    time_period_start = string
+    time_period_end   = string
+    notifications = map(object({
+      enabled       = bool
+      operator      = string # EqualTo, GreaterThan, GreaterThanOrEqualTo
+      threshold     = number # 0-1000 percent
+      thresholdType = string # Actual, Forecasted
+      contactEmails = optional(list(string), [])
+      contactRoles  = optional(list(string), [])
+      contactGroups = optional(list(string), [])
+      locale        = optional(string, "en-us")
+    }))
+  }))
+```
+
+Default: `{}`
 
 ### <a name="input_subscription_display_name"></a> [subscription\_display\_name](#input\_subscription\_display\_name)
 
@@ -263,6 +282,7 @@ Default: `{}`
 The following resources are used by this module:
 
 - [azapi_resource.subscription](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.subscription_budget](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource_action.subscription_association](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
 - [azapi_resource_action.subscription_cancel](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
 - [azapi_resource_action.subscription_rename](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)

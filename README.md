@@ -391,6 +391,62 @@ Type: `string`
 
 Default: `""`
 
+### <a name="input_subscription_budgets"></a> [subscription\_budgets](#input\_subscription\_budgets)
+
+Description: The budgets to create for the subscription using the AzApi provider.
+
+Example value:
+
+```terraform
+subscription_budgets = {
+  budget1 = {
+    amount            = 150
+    time_grain        = "Monthly"
+    time_period_start = "2024-01-01T00:00:00Z"
+    time_period_end   = "2027-12-31T23:59:59Z"
+    notifications = {
+      eightypercent = {
+        enabled       = true
+        operator      = "GreaterThan"
+        threshold     = "80"
+        thresholdType = "Actual"
+        contactEmails = ["john@contoso.com"]
+      }
+      budgetexceeded = {
+        enabled       = true
+        operator      = "GreaterThan"
+        threshold     = "120"
+        thresholdType = "Forecasted"
+        contactGroups = ["Owner"]
+      }
+    }
+  }
+}
+```
+
+Type:
+
+```hcl
+map(object({
+    amount            = number
+    time_grain        = optional(string, "Monthly")
+    time_period_start = string
+    time_period_end   = string
+    notifications = map(object({
+      enabled       = bool
+      operator      = string # EqualTo, GreaterThan, GreaterThanOrEqualTo
+      threshold     = number # 0-1000 percent
+      thresholdType = string # Actual, Forecasted
+      contactEmails = optional(list(string), [])
+      contactRoles  = optional(list(string), [])
+      contactGroups = optional(list(string), [])
+      locale        = optional(string, "en-us")
+    }))
+  }))
+```
+
+Default: `{}`
+
 ### <a name="input_subscription_display_name"></a> [subscription\_display\_name](#input\_subscription\_display\_name)
 
 Description: The display name of the subscription alias.
