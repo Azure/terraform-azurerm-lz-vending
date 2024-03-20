@@ -196,3 +196,81 @@ variable "wait_for_subscription_before_subscription_operations" {
 The duration to wait after vending a subscription before performing subscription operations.
 DESCRIPTION
 }
+
+variable "subscription_budgets" {
+  type = map(object({
+    amount            = number
+    time_grain        = optional(string, "Monthly")
+    time_period_start = string
+    time_period_end   = string
+    notifications = map(object({
+      enabled       = bool
+      operator      = string # EqualTo, GreaterThan, GreaterThanOrEqualTo
+      threshold     = number # 0-1000 percent
+      thresholdType = string # Actual, Forecasted
+      contactEmails = optional(list(string), [])
+      contactRoles  = optional(list(string), [])
+      contactGroups = optional(list(string), [])
+      locale        = optional(string, "en-us")
+    }))
+  }))
+  validation {
+    condition = alltrue(
+      [for _, v in var.subscription_budgets : contains(["Annually", "BillingAnnual", "BillingMonth", "BillingQuarter", "Monthly", "Quarterly"], v.time_grain)]
+    )
+    error_message = "Time period must be one of Annually, BillingAnnual, BillingMonth, BillingQuarter, Monthly, or Quarterly. BillingMonth, BillingQuarter, and BillingAnnual are only supported by WD customers."
+  }
+  validation {
+    condition = alltrue(
+      [for _, v in var.subscription_budgets : length(keys(v.notifications)) <= 5]
+    )
+    error_message = "Maximum number of notifications per budget is 5."
+  }
+  validation {
+    condition = alltrue(
+      [for _, v in var.subscription_budgets : timecmp(v.time_period_start, timestamp()) == 1]
+    )
+    error_message = "Start date should be in the future."
+  }
+  validation {
+    condition = alltrue(
+      [for _, v in var.subscription_budgets : timecmp(v.time_period_start, v.time_period_end) == -1]
+    )
+    error_message = "Start date should be earlier than end date."
+  }
+  default     = {}
+  description = <<DESCRIPTION
+The budgets to create for the subscription using the AzApi provider.
+
+time_period_start and time_period_end must be UTC in RFC3339 format, e.g. 2018-05-13T07:44:12Z.
+
+Example value:
+
+```terraform
+subscription_budgets = {
+  budget1 = {
+    amount            = 150
+    time_grain        = "Monthly"
+    time_period_start = "2024-01-01T00:00:00Z"
+    time_period_end   = "2027-12-31T23:59:59Z"
+    notifications = {
+      eightypercent = {
+        enabled       = true
+        operator      = "GreaterThan"
+        threshold     = "80"
+        thresholdType = "Actual"
+        contactEmails = ["john@contoso.com"]
+      }
+      budgetexceeded = {
+        enabled       = true
+        operator      = "GreaterThan"
+        threshold     = "120"
+        thresholdType = "Forecasted"
+        contactGroups = ["Owner"]
+      }
+    }
+  }
+}
+```
+DESCRIPTION
+}

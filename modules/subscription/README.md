@@ -111,6 +111,45 @@ Type: `string`
 
 Default: `""`
 
+### <a name="input_subscription_budgets"></a> [subscription\_budgets](#input\_subscription\_budgets)
+
+Description: The budgets for a given subscription.
+
+Each budget can have up to five notifications, each notification should have at least one notification contact.
+
+Example value:
+
+```terraform
+subscription_budgets = {
+  budget1 = {
+    amount            = 150
+    time_grain        = "Monthly"
+    time_period_start = "2024-01-01T00:00:00Z"
+    time_period_end   = "2027-12-31T23:59:59Z"
+    notifications = {
+      eightypercent = {
+        enabled       = true
+        operator      = "GreaterThan"
+        threshold     = "80"
+        thresholdType = "Actual"
+        contactEmails = ["john@contoso.com"]
+      }
+      budgetexceeded = {
+        enabled       = true
+        operator      = "GreaterThan"
+        threshold     = "120"
+        thresholdType = "Forecasted"
+        contactGroups = ["Owner"]
+      }
+    }
+  }
+}
+```
+
+Type: `map(object)`
+
+Default: `""`
+
 ### <a name="input_subscription_display_name"></a> [subscription\_display\_name](#input\_subscription\_display\_name)
 
 Description: The display name of the subscription alias.
