@@ -111,6 +111,64 @@ Type: `string`
 
 Default: `""`
 
+### <a name="input_subscription_budgets"></a> [subscription\_budgets](#input\_subscription\_budgets)
+
+Description: The budgets to create for the subscription using the AzApi provider.
+
+time\_period\_start and time\_period\_end must be UTC in RFC3339 format, e.g. 2018-05-13T07:44:12Z.
+
+Example value:
+
+```terraform
+subscription_budgets = {
+  budget1 = {
+    amount            = 150
+    time_grain        = "Monthly"
+    time_period_start = "2024-01-01T00:00:00Z"
+    time_period_end   = "2027-12-31T23:59:59Z"
+    notifications = {
+      eightypercent = {
+        enabled        = true
+        operator       = "GreaterThan"
+        threshold      = "80"
+        threshold_type = "Actual"
+        contact_emails = ["john@contoso.com"]
+      }
+      budgetexceeded = {
+        enabled        = true
+        operator       = "GreaterThan"
+        threshold      = "120"
+        threshold_type = "Forecasted"
+        contact_groups = ["Owner"]
+      }
+    }
+  }
+}
+```
+
+Type:
+
+```hcl
+map(object({
+    amount            = number
+    time_grain        = optional(string, "Monthly")
+    time_period_start = string
+    time_period_end   = string
+    notifications = map(object({
+      enabled        = bool
+      operator       = string # EqualTo, GreaterThan, GreaterThanOrEqualTo
+      threshold      = number # 0-1000 percent
+      threshold_type = string # Actual, Forecasted
+      contact_emails = optional(list(string), [])
+      contact_roles  = optional(list(string), [])
+      contact_groups = optional(list(string), [])
+      locale         = optional(string, "en-us")
+    }))
+  }))
+```
+
+Default: `{}`
+
 ### <a name="input_subscription_display_name"></a> [subscription\_display\_name](#input\_subscription\_display\_name)
 
 Description: The display name of the subscription alias.
@@ -224,6 +282,7 @@ Default: `{}`
 The following resources are used by this module:
 
 - [azapi_resource.subscription](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.subscription_budget](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource_action.subscription_association](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
 - [azapi_resource_action.subscription_cancel](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
 - [azapi_resource_action.subscription_rename](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
