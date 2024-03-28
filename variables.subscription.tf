@@ -205,14 +205,14 @@ variable "subscription_budgets" {
     time_period_start = string
     time_period_end   = string
     notifications = map(object({
-      enabled       = bool
-      operator      = string # EqualTo, GreaterThan, GreaterThanOrEqualTo
-      threshold     = number # 0-1000 percent
-      thresholdType = string # Actual, Forecasted
-      contactEmails = optional(list(string), [])
-      contactRoles  = optional(list(string), [])
-      contactGroups = optional(list(string), [])
-      locale        = optional(string, "en-us")
+      enabled        = bool
+      operator       = string # EqualTo, GreaterThan, GreaterThanOrEqualTo
+      threshold      = number # 0-1000 percent
+      threshold_type = string # Actual, Forecasted
+      contact_emails = optional(list(string), [])
+      contact_roles  = optional(list(string), [])
+      contact_groups = optional(list(string), [])
+      locale         = optional(string, "en-us")
     }))
   }))
   default     = {}
@@ -233,15 +233,15 @@ subscription_budgets = {
         enabled       = true
         operator      = "GreaterThan"
         threshold     = "80"
-        thresholdType = "Actual"
-        contactEmails = ["john@contoso.com"]
+        threshold_type = "Actual"
+        contact_emails = ["john@contoso.com"]
       }
       budgetexceeded = {
         enabled       = true
         operator      = "GreaterThan"
         threshold     = "120"
-        thresholdType = "Forecasted"
-        contactGroups = ["Owner"]
+        threshold_type = "Forecasted"
+        contact_groups = ["Owner"]
       }
     }
   }

@@ -123,7 +123,7 @@ resource "azapi_resource_action" "subscription_cancel" {
 }
 
 resource "azapi_resource" "subscription_budget" {
-  for_each = var.subscription_budgets
+  for_each = local.transformed_budgets
 
   type      = "Microsoft.Consumption/budgets@2021-10-01"
   name      = each.key
