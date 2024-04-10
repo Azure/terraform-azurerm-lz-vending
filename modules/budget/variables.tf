@@ -17,9 +17,8 @@ variable "budget_time_grain" {
   description = "The time grain of the budget."
   type        = string
   validation {
-    condition = contains(["Annually", "BillingAnnual", "BillingMonth", "BillingQuarter", "Monthly", "Quarterly"], var.budget_time_grain)
-
-    error_message = "Time period must be one of Annually, BillingAnnual, BillingMonth, BillingQuarter, Monthly, or Quarterly. BillingMonth, BillingQuarter, and BillingAnnual are only supported by WD customers."
+    condition     = contains(["Annually", "BillingAnnual", "BillingMonth", "BillingQuarter", "Monthly", "Quarterly"], var.budget_time_grain)
+    error_message = "Time period must be one of Annually, BillingAnnual, BillingMonth, BillingQuarter, Monthly, or Quarterly."
   }
 }
 
