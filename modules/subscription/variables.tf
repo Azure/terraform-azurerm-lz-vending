@@ -200,19 +200,19 @@ DESCRIPTION
 variable "subscription_budgets" {
   type = map(object({
     amount            = number
-    time_grain        = optional(string, "Monthly")
+    time_grain        = string
     time_period_start = string
     time_period_end   = string
-    notifications = map(object({
+    notifications = optional(map(object({
       enabled        = bool
-      operator       = string # EqualTo, GreaterThan, GreaterThanOrEqualTo
-      threshold      = number # 0-1000 percent
-      threshold_type = string # Actual, Forecasted
+      operator       = string
+      threshold      = number
+      threshold_type = optional(string, "Actual")
       contact_emails = optional(list(string), [])
       contact_roles  = optional(list(string), [])
       contact_groups = optional(list(string), [])
       locale         = optional(string, "en-us")
-    }))
+    })), {})
   }))
   validation {
     condition = alltrue(
@@ -228,19 +228,105 @@ variable "subscription_budgets" {
   }
   validation {
     condition = alltrue(
-      [for _, v in var.subscription_budgets : timecmp(v.time_period_start, timestamp()) == 1]
+      [
+        for _, v in var.subscription_budgets :
+        can(regex("^[0-9]{4}-[0-9]{2}-01T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", v.time_period_start))
+      ]
     )
-    error_message = "Start date should be in the future."
+    error_message = "Start date should be in the format yyyy-MM-01THH:mm:ssZ."
   }
   validation {
     condition = alltrue(
-      [for _, v in var.subscription_budgets : timecmp(v.time_period_start, v.time_period_end) == -1]
+      [
+        for _, v in var.subscription_budgets :
+        timecmp(v.time_period_start, v.time_period_end) == -1 && can(regex("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", v.time_period_end))
+      ]
     )
-    error_message = "Start date should be earlier than end date."
+    error_message = "Start date should be earlier than end date and in the format yyyy-MM-ddTHH:mm:ssZ."
+  }
+  validation {
+    condition = alltrue(flatten(
+      [
+        for _, v in var.subscription_budgets :
+        [
+          for _, n in v.notifications :
+          contains(["GreaterThan", "GreaterThanOrEqualTo"], n.operator)
+        ]
+
+      ]
+    ))
+    error_message = "Operator must be one of GreaterThan or GreaterThanOrEqualTo."
+  }
+  validation {
+    condition = alltrue(flatten(
+      [
+        for _, v in var.subscription_budgets :
+        [
+          for _, n in v.notifications :
+          contains(["Actual", "Forecasted"], n.threshold_type)
+        ]
+
+      ]
+    ))
+    error_message = "Threshold type must be one of Actual or Forecasted."
+  }
+  validation {
+    condition = alltrue(flatten(
+      [
+        for _, v in var.subscription_budgets :
+        [
+          for _, n in v.notifications :
+          n.threshold >= 0 && n.threshold <= 1000
+        ]
+
+      ]
+    ))
+    error_message = "Threshold must be between 0 and 1000."
+  }
+  validation {
+    condition = alltrue(flatten(
+      [
+        for _, v in var.subscription_budgets :
+        [
+          for _, n in v.notifications :
+          can(regex("^[a-z]{2}-[a-z]{2}$", n.locale))
+        ]
+
+      ]
+    ))
+    error_message = "Locale must be in the format xx-xx."
+  }
+  validation {
+    condition = alltrue(flatten(
+      [
+        for _, v in var.subscription_budgets :
+        [
+          for _, n in v.notifications :
+          length(n.contact_emails) > 0 || length(n.contact_roles) > 0 || length(n.contact_groups) > 0
+        ]
+
+      ]
+    ))
+    error_message = "At least one of contact_emails, contact_roles, or contact_groups must be supplied."
   }
   default     = {}
   description = <<DESCRIPTION
-The budgets to create for the subscription using the AzApi provider.
+Map of budgets to create for the subscription.
+
+- `amount` - The total amount of cost to track with the budget.
+- `time_grain` - The time grain for the budget. Must be one of Annually, BillingAnnual, BillingMonth, BillingQuarter, Monthly, or Quarterly.
+- `time_period_start` - The start date for the budget.
+- `time_period_end` - The end date for the budget.
+- `notifications` - The notifications to create for the budget.
+  - `enabled` - Whether the notification is enabled.
+  - `operator` - The operator for the notification. Must be one of GreaterThan or GreaterThanOrEqualTo.
+  - `threshold` - The threshold for the notification. Must be between 0 and 1000.
+  - `threshold_type` - The threshold type for the notification. Must be one of Actual or Forecasted.
+  - `contact_emails` - The contact emails for the notification.
+  - `contact_roles` - The contact roles for the notification.
+  - `contact_groups` - The contact groups for the notification.
+  - `locale` - The locale for the notification. Must be in the format xx-xx.
+
 
 time_period_start and time_period_end must be UTC in RFC3339 format, e.g. 2018-05-13T07:44:12Z.
 
@@ -257,14 +343,14 @@ subscription_budgets = {
       eightypercent = {
         enabled        = true
         operator       = "GreaterThan"
-        threshold      = "80"
+        threshold      = 80
         threshold_type = "Actual"
         contact_emails = ["john@contoso.com"]
       }
       budgetexceeded = {
         enabled        = true
         operator       = "GreaterThan"
-        threshold      = "120"
+        threshold      = 120
         threshold_type = "Forecasted"
         contact_groups = ["Owner"]
       }

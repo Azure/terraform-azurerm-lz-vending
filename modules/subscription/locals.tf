@@ -16,23 +16,25 @@ locals {
 locals {
   # Transform subscription budgets to be able to use them with the API.
   transformed_budgets = {
-    for key, value in var.subscription_budgets :
+    for key, budget in var.subscription_budgets :
     key => {
-      amount            = value.amount
-      time_grain        = value.time_grain
-      time_period_start = value.time_period_start
-      time_period_end   = value.time_period_end
+      amount    = budget.amount
+      timeGrain = budget.time_grain
+      timePeriod = {
+        endDate   = budget.time_period_end
+        startDate = budget.time_period_start
+      }
       notifications = {
-        for n_key, n_value in value.notifications :
-        n_key => {
-          enabled       = lookup(n_value, "enabled", false)
-          operator      = lookup(n_value, "operator", "GreaterThan")
-          threshold     = lookup(n_value, "threshold", 1000)
-          thresholdType = lookup(n_value, "threshold_type", "Forecasted")
-          contactEmails = lookup(n_value, "contact_emails", [])
-          contactRoles  = lookup(n_value, "contact_roles", [])
-          contactGroups = lookup(n_value, "contact_groups", [])
-          locale        = lookup(n_value, "locale", "en-us")
+        for key, notification in budget.notifications :
+        key => {
+          enabled       = notification.enabled
+          operator      = notification.operator
+          threshold     = notification.threshold
+          thresholdType = notification.threshold_type
+          contactEmails = notification.contact_emails
+          contactRoles  = notification.contact_roles
+          contactGroups = notification.contact_groups
+          locale        = notification.locale
         }
       }
     }

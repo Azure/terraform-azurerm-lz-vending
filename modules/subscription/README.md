@@ -113,7 +113,21 @@ Default: `""`
 
 ### <a name="input_subscription_budgets"></a> [subscription\_budgets](#input\_subscription\_budgets)
 
-Description: The budgets to create for the subscription using the AzApi provider.
+Description: Map of budgets to create for the subscription.
+
+- `amount` - The total amount of cost to track with the budget.
+- `time_grain` - The time grain for the budget. Must be one of Annually, BillingAnnual, BillingMonth, BillingQuarter, Monthly, or Quarterly.
+- `time_period_start` - The start date for the budget.
+- `time_period_end` - The end date for the budget.
+- `notifications` - The notifications to create for the budget.
+  - `enabled` - Whether the notification is enabled.
+  - `operator` - The operator for the notification. Must be one of GreaterThan or GreaterThanOrEqualTo.
+  - `threshold` - The threshold for the notification. Must be between 0 and 1000.
+  - `threshold_type` - The threshold type for the notification. Must be one of Actual or Forecasted.
+  - `contact_emails` - The contact emails for the notification.
+  - `contact_roles` - The contact roles for the notification.
+  - `contact_groups` - The contact groups for the notification.
+  - `locale` - The locale for the notification. Must be in the format xx-xx.
 
 time\_period\_start and time\_period\_end must be UTC in RFC3339 format, e.g. 2018-05-13T07:44:12Z.
 
@@ -130,14 +144,14 @@ subscription_budgets = {
       eightypercent = {
         enabled        = true
         operator       = "GreaterThan"
-        threshold      = "80"
+        threshold      = 80
         threshold_type = "Actual"
         contact_emails = ["john@contoso.com"]
       }
       budgetexceeded = {
         enabled        = true
         operator       = "GreaterThan"
-        threshold      = "120"
+        threshold      = 120
         threshold_type = "Forecasted"
         contact_groups = ["Owner"]
       }
@@ -151,19 +165,19 @@ Type:
 ```hcl
 map(object({
     amount            = number
-    time_grain        = optional(string, "Monthly")
+    time_grain        = string
     time_period_start = string
     time_period_end   = string
-    notifications = map(object({
+    notifications = optional(map(object({
       enabled        = bool
-      operator       = string # EqualTo, GreaterThan, GreaterThanOrEqualTo
-      threshold      = number # 0-1000 percent
-      threshold_type = string # Actual, Forecasted
+      operator       = string
+      threshold      = number
+      threshold_type = optional(string, "Actual")
       contact_emails = optional(list(string), [])
       contact_roles  = optional(list(string), [])
       contact_groups = optional(list(string), [])
       locale         = optional(string, "en-us")
-    }))
+    })), {})
   }))
 ```
 

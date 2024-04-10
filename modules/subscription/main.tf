@@ -133,11 +133,8 @@ resource "azapi_resource" "subscription_budget" {
       amount        = each.value.amount
       category      = "Cost"
       notifications = each.value.notifications
-      timeGrain     = each.value.time_grain
-      timePeriod = {
-        endDate   = each.value.time_period_end
-        startDate = each.value.time_period_start
-      }
+      timeGrain     = each.value.timeGrain
+      timePeriod    = each.value.timePeriod
     }
   })
 
