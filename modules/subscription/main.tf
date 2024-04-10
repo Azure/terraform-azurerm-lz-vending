@@ -121,4 +121,3 @@ resource "azapi_resource_action" "subscription_cancel" {
     time_sleep.wait_for_subscription_before_subscription_operations
   ]
 }
-
