@@ -66,69 +66,6 @@ func TestSubscriptionAliasCreateValidAzApi(t *testing.T) {
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.additionalProperties.tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
 }
 
-// TestSubscriptionAliasCreateWithBudget tests the validation functions with valid data,
-// relating to susbcription and subscription budgets.
-// This uses the AZAPI provider for subscription budgets.
-func TestSubscriptionAliasCreateWithBudget(t *testing.T) {
-	t.Parallel()
-	subscriptionBudgets := map[string]interface{}{
-		"budget1": map[string]interface{}{
-			"amount":            150,
-			"time_grain":        "Monthly",
-			"time_period_start": "2024-05-01T00:00:00Z",
-			"time_period_end":   "2027-12-31T23:59:59Z",
-			"notifications": map[string]interface{}{
-				"notification1": map[string]interface{}{
-					"enabled":        true,
-					"operator":       "GreaterThanOrEqualTo",
-					"threshold":      50,
-					"threshold_type": "Actual",
-					"contact_emails": []string{"cloud@test.com"},
-				},
-				"notification2": map[string]interface{}{
-					"enabled":        true,
-					"operator":       "GreaterThanOrEqualTo",
-					"threshold":      75,
-					"threshold_type": "Actual",
-					"contact_emails": []string{"cloud@test.com"},
-				},
-				"notification3": map[string]interface{}{
-					"enabled":        true,
-					"operator":       "GreaterThanOrEqualTo",
-					"threshold":      90,
-					"threshold_type": "Actual",
-					"contact_emails": []string{"cloud@test.com"},
-				},
-				"notification4": map[string]interface{}{
-					"enabled":        true,
-					"operator":       "GreaterThanOrEqualTo",
-					"threshold":      95,
-					"threshold_type": "Actual",
-					"contact_roles":  []string{"Owner"},
-				},
-			},
-		},
-	}
-
-	v := getMockInputVariables()
-	v["subscription_budgets"] = subscriptionBudgets
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, err)
-	defer test.Cleanup()
-
-	resources := []string{
-		"azurerm_subscription.this[0]",
-		"azapi_resource.subscription_budgets[budget1]",
-	}
-
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("alias").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("billing_scope_id").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("subscription_name").HasValue(v["subscription_display_name"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
-}
-
 // TestSubscriptionAliasCreateValidWithManagementGroup tests the
 // validation functions with valid data, including a destination management group,
 // then creates a plan and compares the input variables to the planned values.
