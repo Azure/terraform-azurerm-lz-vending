@@ -121,24 +121,3 @@ resource "azapi_resource_action" "subscription_cancel" {
     time_sleep.wait_for_subscription_before_subscription_operations
   ]
 }
-
-resource "azapi_resource" "subscription_budget" {
-  for_each = local.transformed_budgets
-
-  type      = "Microsoft.Consumption/budgets@2021-10-01"
-  name      = each.key
-  parent_id = "/subscriptions/${local.subscription_id}"
-  body = jsonencode({
-    properties = {
-      amount        = each.value.amount
-      category      = "Cost"
-      notifications = each.value.notifications
-      timeGrain     = each.value.timeGrain
-      timePeriod    = each.value.timePeriod
-    }
-  })
-
-  depends_on = [
-    time_sleep.wait_for_subscription_before_subscription_operations
-  ]
-}

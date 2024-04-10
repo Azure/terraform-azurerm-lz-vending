@@ -12,31 +12,3 @@ locals {
   # Check for drift between subscription and target management group.
   is_subscription_associated_to_management_group = (var.subscription_management_group_association_enabled && var.subscription_use_azapi) && local.is_subscription_vended ? contains(jsondecode(data.azapi_resource_list.subscription_management_group_association[0].output).value[*].id, "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}/subscriptions/${local.subscription_id}") : true
 }
-
-locals {
-  # Transform subscription budgets to be able to use them with the API.
-  transformed_budgets = {
-    for key, budget in var.subscription_budgets :
-    key => {
-      amount    = budget.amount
-      timeGrain = budget.time_grain
-      timePeriod = {
-        endDate   = budget.time_period_end
-        startDate = budget.time_period_start
-      }
-      notifications = {
-        for key, notification in budget.notifications :
-        key => {
-          enabled       = notification.enabled
-          operator      = notification.operator
-          threshold     = notification.threshold
-          thresholdType = notification.threshold_type
-          contactEmails = notification.contact_emails
-          contactRoles  = notification.contact_roles
-          contactGroups = notification.contact_groups
-          locale        = notification.locale
-        }
-      }
-    }
-  }
-}
