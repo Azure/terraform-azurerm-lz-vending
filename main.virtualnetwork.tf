@@ -9,5 +9,6 @@ module "virtualnetwork" {
 
   depends_on = [
     module.resourcegroup_networkwatcherrg,
+    module.resourcegroup
   ]
 }
