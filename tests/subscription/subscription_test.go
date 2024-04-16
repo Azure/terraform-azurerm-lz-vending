@@ -237,11 +237,11 @@ func TestSubscriptionInvalidTagValue(t *testing.T) {
 
 	v := getMockInputVariables()
 	v["subscription_tags"] = map[string]any{
-		"illegal-value": "illegal-<-value",
+		"illegal-value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mattis velit quis nisl dictum, nec aliquet velit bibendum. Sed et ante nec arcu convallis rutrum. Nulla sed velit ac quam finibus volutpat! Duis malesuada leo nec eros laoreet, vel consectetur enim eleifend. Sed at fermentum libero. Proin sodales lectus quis est volutpat, id suscipit purus eleifend. Vivamus dignissim nulla nec dui sollicitudin, quis pharetra ipsum posuere. Pellentesque eget magna sit amet metus fermentum hendrerit ut non velit. Donec accumsan eros nec nibh porttitor, non interdum elit laoreet. Nam gravida elit ac turpis tristique, a facilisis orci suscipit. Sed eget luctus velit. Integer quis nulla nec ante tempus congue vitae id sem. Nam eget felis non risus fringilla tempor. Integer aliquam facilisis aliquam&.",
 	}
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	defer test.Cleanup()
-	assert.Contains(t, utils.SanitiseErrorMessage(err), "Tag values must contain neither `<>%&\\?/` nor control characters, and must be between 0-256 characters.")
+	assert.Contains(t, utils.SanitiseErrorMessage(err), "Tag values must be between 0-256 characters.")
 }
 
 func TestSubscriptionInvalidTagName(t *testing.T) {
