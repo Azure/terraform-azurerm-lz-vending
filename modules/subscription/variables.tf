@@ -155,9 +155,9 @@ subscription_tags = {
 DESCRIPTION
   default     = {}
   validation {
-    error_message = "Tag values must contain neither `<>%&\\?/` nor control characters, and must be between 0-256 characters."
+    error_message = "Tag values must be between 0-256 characters."
     condition = alltrue(
-      [for _, v in var.subscription_tags : can(regex("^[^<>%&\\?/[:cntrl:]]{0,256}$", v))]
+      [for _, v in var.subscription_tags : can(regex("^.{0,256}$", v))]
     )
   }
   validation {
