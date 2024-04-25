@@ -23,17 +23,20 @@ resource "azapi_resource" "subscription" {
   name      = var.subscription_alias_name
   parent_id = "/"
 
-  body = jsonencode({
+  body = {
     properties = {
       displayName  = var.subscription_display_name
       workload     = var.subscription_workload
       billingScope = var.subscription_billing_scope
-      additionalProperties = {
-        managementGroupId = var.subscription_management_group_association_enabled ? "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}" : null
-        tags              = var.subscription_tags
-      }
+      additionalProperties = merge({
+        tags = var.subscription_tags
+        },
+        var.subscription_management_group_association_enabled ? {
+          managementGroupId = "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}"
+        } : null
+      )
     }
-  })
+  }
   response_export_values = ["properties.subscriptionId"]
   lifecycle {
     ignore_changes = [
@@ -81,11 +84,11 @@ resource "azapi_update_resource" "subscription_tags" {
 
   type        = "Microsoft.Resources/tags@2022-09-01"
   resource_id = "/subscriptions/${local.subscription_id}/providers/Microsoft.Resources/tags/default"
-  body = jsonencode({
+  body = {
     properties = {
       tags = var.subscription_tags
     }
-  })
+  }
 
   depends_on = [
     time_sleep.wait_for_subscription_before_subscription_operations
@@ -99,9 +102,9 @@ resource "azapi_resource_action" "subscription_rename" {
   resource_id = "/subscriptions/${local.subscription_id}"
   method      = "POST"
   action      = "providers/Microsoft.Subscription/rename"
-  body = jsonencode({
+  body = {
     subscriptionName = var.subscription_display_name
-  })
+  }
 
   depends_on = [
     time_sleep.wait_for_subscription_before_subscription_operations
