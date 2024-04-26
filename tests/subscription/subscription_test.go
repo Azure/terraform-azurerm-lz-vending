@@ -97,7 +97,7 @@ func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	v["subscription_management_group_id"] = os.Getenv("ARM_TENANT_ID")
+	v["subscription_management_group_id"] = os.Getenv("AZURE_TENANT_ID")
 	v["subscription_management_group_association_enabled"] = true
 	v["subscription_use_azapi"] = true
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
