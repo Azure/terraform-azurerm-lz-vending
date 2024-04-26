@@ -28,13 +28,10 @@ resource "azapi_resource" "subscription" {
       displayName  = var.subscription_display_name
       workload     = var.subscription_workload
       billingScope = var.subscription_billing_scope
-      additionalProperties = merge({
-        tags = var.subscription_tags
-        },
-        var.subscription_management_group_association_enabled ? {
-          managementGroupId = "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}"
-        } : null
-      )
+      additionalProperties = {
+        tags              = var.subscription_tags
+        managementGroupId = var.subscription_management_group_association_enabled ? "/providers/Microsoft.Management/managementGroups/${var.subscription_management_group_id}" : null
+      },
     }
   }
   response_export_values = ["properties.subscriptionId"]
