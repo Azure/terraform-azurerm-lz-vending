@@ -45,9 +45,9 @@ variable "budget_notifications" {
     operator       = string
     threshold      = number
     threshold_type = optional(string, "Actual")
-    contact_emails = optional(list(string), [])
-    contact_roles  = optional(list(string), [])
-    contact_groups = optional(list(string), [])
+    contact_emails = optional(list(string), null)
+    contact_roles  = optional(list(string), null)
+    contact_groups = optional(list(string), null)
     locale         = optional(string, "en-us")
   }))
   default = {}
@@ -83,7 +83,7 @@ variable "budget_notifications" {
   }
   validation {
     condition = alltrue([
-      for notification in var.budget_notifications : length(notification.contact_emails) > 0 || length(notification.contact_roles) > 0 || length(notification.contact_groups) > 0
+      for notification in var.budget_notifications : can(coalescelist(notification.contact_emails, notification.contact_roles, notification.contact_groups))
     ])
     error_message = "At least one of contact_emails, contact_roles, or contact_groups must be supplied."
   }
