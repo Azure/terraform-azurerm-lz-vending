@@ -36,7 +36,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.11.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 1.13)
 
 ## Modules
 
@@ -100,9 +100,9 @@ map(object({
     operator       = string
     threshold      = number
     threshold_type = optional(string, "Actual")
-    contact_emails = optional(list(string), [])
-    contact_roles  = optional(list(string), [])
-    contact_groups = optional(list(string), [])
+    contact_emails = optional(list(string), null)
+    contact_roles  = optional(list(string), null)
+    contact_groups = optional(list(string), null)
     locale         = optional(string, "en-us")
   }))
 ```
