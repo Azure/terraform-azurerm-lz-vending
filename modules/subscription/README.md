@@ -116,7 +116,7 @@ Default: `""`
 Description: The display name of the subscription alias.
 
 The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.  
-The maximum length is 63 characters.
+The maximum length is 64 characters.
 
 You may also supply an empty string if you do not want to create a new subscription alias.  
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
