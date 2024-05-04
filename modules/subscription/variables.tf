@@ -38,8 +38,8 @@ You may also supply an empty string if you do not want to create a new subscript
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 DESCRIPTION
   validation {
-    condition     = can(regex("^$|^[a-zA-Z0-9-_]{1,63}$", var.subscription_alias_name))
-    error_message = "Valid characters are a-z, A-Z, 0-9, -, _."
+    condition     = length(var.subscription_alias_name) <= 64 && !can(regex("[<>;|]", var.subscription_alias_name))
+    error_message = "Subscription Alias must either \"\", or be less or equal to 64 characters in length and cannot contain the characters `<`, `>`, `;`, or `|`"
   }
 }
 
@@ -50,14 +50,14 @@ variable "subscription_display_name" {
 The display name of the subscription alias.
 
 The string must be comprised of a-z, A-Z, 0-9, -, _ and space.
-The maximum length is 63 characters.
+The maximum length is 64 characters.
 
 You may also supply an empty string if you do not want to create a new subscription alias.
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 DESCRIPTION
   validation {
-    condition     = can(regex("^$|^[a-zA-Z0-9-_ ]{1,63}$", var.subscription_display_name))
-    error_message = "Valid characters are a-z, A-Z, 0-9, -, _, and space."
+    condition     = length(var.subscription_display_name) > 0 && length(var.subscription_display_name) <= 64 && !can(regex("[<>;|]", var.subscription_display_name))
+    error_message = "Subscription Name must be between 1 and 64 characters in length and cannot contain the characters `<`, `>`, `;`, or `|`"
   }
 }
 
