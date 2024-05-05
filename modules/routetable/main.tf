@@ -5,7 +5,7 @@ resource "azapi_resource" "route_table" {
   parent_id = "${local.subscription_resource_id}/resourceGroups/${each.value.resource_group_name}"
   name      = each.value.name
   location  = each.value.location
-  body = {
+  body = jsonencode({
     properties = {
       disableBgpRoutePropagation = try(each.value.disable_bgp_route_propagation, false)
       routes = each.value.routes != null ? [
@@ -19,7 +19,7 @@ resource "azapi_resource" "route_table" {
         }
       ] : null
     }
-  }
+  })
   schema_validation_enabled = true
   response_export_values    = ["*"]
   tags                      = each.value.tags
