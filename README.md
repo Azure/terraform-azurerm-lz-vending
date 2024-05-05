@@ -221,7 +221,7 @@ The following input variables are optional (have default values):
 
 ### <a name="input_aad_groups"></a> [aad\_groups](#input\_aad\_groups)
 
-Description: A map defining the configuration for an Entra ID (Azure Active Directory) group.
+Description: A map defining the configuration for Entra ID (AAD) groups.
 
 - `name` - The display name of the group.
 
