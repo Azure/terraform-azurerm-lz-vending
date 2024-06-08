@@ -5,7 +5,7 @@
 Creates a subscription alias
 Optionally:
 
-- Associates the resulting subscription to a management group 
+- Associates the resulting subscription to a management group
 - Creates the Microsoft Defender for Cloud (DFC) security contact and enables notifications
 
 ## Notes
