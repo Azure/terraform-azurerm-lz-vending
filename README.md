@@ -493,7 +493,7 @@ Description: Microsoft Defender for Cloud (DFC) contact and notification configu
 
 ### Security Contact Information - Determines who'll get email notifications from Defender for Cloud
 
-- `notifications_by_role`: All users with these specific RBAC roles on the subscription will get email notifications. [optional - allowed values are: `AccountAdmin`, `ServiceAdmin`, `Owner` and `Contributor` - default empty]"
+- `notifications_by_role`: All users with these specific RBAC roles on the subscription will get email notifications. [optional - allowed values are: `AccountAdmin`, `ServiceAdmin`, `Owner` and `Contributor` - default empty]
 - `emails`: List of additional email addresses which will get notifications. Multiple emails can be provided in a ; separated list. Example: "john@microsoft.com;jane@microsoft.com". [optional - default empty]
 - `phone`: The security contact's phone number. [optional - default empty]
 > **Note**: At least one role or email address must be provided to enable alert notification.
