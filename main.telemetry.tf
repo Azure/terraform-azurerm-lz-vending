@@ -1,4 +1,4 @@
-data "azurerm_client_config" "telemetry" {
+data "azapi_client_config" "telemetry" {
   count = var.disable_telemetry ? 0 : 1
 }
 
