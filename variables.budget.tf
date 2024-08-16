@@ -69,7 +69,7 @@ subscription_budgets = {
         operator       = "GreaterThan"
         threshold      = 120
         threshold_type = "Forecasted"
-        contact_groups = ["Owner"]
+        contact_roles  = ["Owner"]
       }
     }
   }
