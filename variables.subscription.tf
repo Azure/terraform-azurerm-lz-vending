@@ -157,8 +157,8 @@ DESCRIPTION
 }
 
 variable "subscription_tags_ignored" {
-  type = list(string)
-  default =  []
+  type        = list(string)
+  default     = []
   description = <<DESCRIPTION
 A list of tags to ignore changes on when updating the subscription.
 
