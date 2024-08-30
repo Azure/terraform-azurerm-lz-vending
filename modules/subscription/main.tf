@@ -6,6 +6,10 @@ resource "azurerm_subscription" "this" {
   billing_scope_id  = var.subscription_billing_scope
   workload          = var.subscription_workload
   tags              = var.subscription_tags
+
+  lifecycle {
+    ignore_changes = var.subscription_tags_ignored
+  }
 }
 
 # This resource ensures that we can manage the management group for the subscription

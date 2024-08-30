@@ -156,6 +156,24 @@ DESCRIPTION
   default     = {}
 }
 
+variable "subscription_tags_ignored" {
+  type = list(string)
+  default =  []
+  description = <<DESCRIPTION
+A list of tags to ignore changes on when updating the subscription.
+
+Example value:
+
+```terraform
+subscription_tags_ignored = [
+  tags["mytag",
+  tags["mytag2"],
+  tags["mytag3"]
+]
+```
+DESCRIPTION
+}
+
 variable "subscription_use_azapi" {
   type        = bool
   default     = false
