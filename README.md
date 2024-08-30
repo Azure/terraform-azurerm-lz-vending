@@ -652,6 +652,24 @@ Type: `map(string)`
 
 Default: `{}`
 
+### <a name="input_subscription_tags_ignored"></a> [subscription\_tags_ignored](#input\_subscription\_tags_ignored)
+
+Drescription: A list of tags to ignore changes on when updating the subscription.
+
+Example value:
+
+```terraform
+subscription_tags_ignored = [
+  tags["mytag"],
+  tags["mytag2"],
+  tags["mytag3"]
+]
+```
+
+Type: `list(string)`
+
+Default: `[]`
+
 ### <a name="input_subscription_update_existing"></a> [subscription\_update\_existing](#input\_subscription\_update\_existing)
 
 Description: Whether to update an existing subscription with the supplied tags and display name.  
