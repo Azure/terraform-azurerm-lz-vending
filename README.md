@@ -336,6 +336,14 @@ Type: `bool`
 
 Default: `false`
 
+### <a name="input_network_watcher_resource_group_tags"></a> [network\_watcher\_resource\_group\_tags](#input\_network\_watcher\_resource\_group\_tags)
+
+Description: n/a
+
+Type: `map(string)`
+
+Default: `{}`
+
 ### <a name="input_resource_group_creation_enabled"></a> [resource\_group\_creation\_enabled](#input\_resource\_group\_creation\_enabled)
 
 Description: Whether to create additional resource groups in the target subscription. Requires `var.resource_groups`.
@@ -619,7 +627,6 @@ Default:
   "Microsoft.Sql": [],
   "Microsoft.Storage": [],
   "Microsoft.StreamAnalytics": [],
-  "Microsoft.TimeSeriesInsights": [],
   "Microsoft.Web": [],
   "microsoft.insights": []
 }
