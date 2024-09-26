@@ -15,7 +15,7 @@ module "resourcegroup_networkwatcherrg" {
   subscription_id     = local.subscription_id
   location            = var.location
   resource_group_name = "NetworkWatcherRG"
-  tags                = {}
+  tags                = var.network_watcher_resource_group_tags
 }
 
 
