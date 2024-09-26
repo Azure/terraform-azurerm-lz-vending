@@ -11,6 +11,7 @@ which includes destroying the resource (and all resources within it).
 DESCRIPTION
   default     = false
 }
+
 variable "network_watcher_resource_group_tags" {
   type        = map(string)
   description = "Tags for `NetworkWatcherRG` in the subscription."
