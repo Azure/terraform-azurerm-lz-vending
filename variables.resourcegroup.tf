@@ -12,6 +12,12 @@ DESCRIPTION
   default     = false
 }
 
+variable "network_watcher_resource_group_tags" {
+  type        = map(string)
+  description = "Tags for `NetworkWatcherRG` in the subscription."
+  default = {}
+}
+
 variable "resource_group_creation_enabled" {
   type        = bool
   description = "Whether to create additional resource groups in the target subscription. Requires `var.resource_groups`."
