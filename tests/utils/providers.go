@@ -71,8 +71,8 @@ func generateRequiredProvidersFile(data RequiredProvidersData, path string) erro
 // If the environment variables are not set or the value is "latest", it will use the default values.
 func newRequiredProvidersData() RequiredProvidersData {
 	var rpd RequiredProvidersData
-	azapiver := ">= 1.4.0"
-	azurermver := ">= 3.7.0"
+	azapiver := "~> 1.4"
+	azurermver := "~> 3.7"
 
 	if val := os.Getenv("AZAPI_VERSION"); val != "" && val != "latest" {
 		azapiver = "= " + val

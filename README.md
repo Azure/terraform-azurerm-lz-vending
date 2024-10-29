@@ -8,7 +8,7 @@
 ## Overview
 
 The landing zone Terraform module is designed to accelerate deployment of individual landing zones within an Azure tenant.
-We use the [AzureRM](https://registry.terraform.io/providers/hashicorp/azurerm/latest) and [AzAPI](https://registry.terraform.io/providers/azure/azapi/latest) providers to create the subscription and deploy the resources in a single `terrafom apply` step.
+We use the [AzureRM](https://registry.terraform.io/providers/hashicorp/azurerm/latest) and [AzAPI](https://registry.terraform.io/providers/azure/azapi/latest) providers to create the subscription and deploy the resources in a single `terraform apply` step.
 
 The module is designed to be instantiated many times, once for each desired landing zone.
 
@@ -136,9 +136,9 @@ module "lz_vending" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.3)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.4.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 1.4)
 
 ## Modules
 
@@ -619,7 +619,6 @@ Default:
   "Microsoft.Sql": [],
   "Microsoft.Storage": [],
   "Microsoft.StreamAnalytics": [],
-  "Microsoft.TimeSeriesInsights": [],
   "Microsoft.Web": [],
   "microsoft.insights": []
 }
