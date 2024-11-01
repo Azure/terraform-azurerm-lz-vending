@@ -2,7 +2,11 @@
 
 ## Overview
 
-Creates a subscription alias, and optionally manages management group association for the resulting subscription.
+Creates a subscription alias
+Optionally:
+
+- Associates the resulting subscription to a management group
+- Creates the Microsoft Defender for Cloud (DFC) security contact and enables notifications
 
 ## Notes
 
@@ -20,5 +24,12 @@ module "subscription" {
   subscription_alias_name                = "my-subscription-alias"
   subscription_alias_workload            = "Production"
   subscription_alias_management_group_id = "mymg"
+  subscription_dfc_contact_enabled       = true
+  subscription_dfc_contact = {
+    notifications_by_role = ["Owner", "Contributor"]
+    emails                = "john@microsoft.com;jane@microsoft.com"
+    phone                 = "+1-555-555-5555"
+    alert_notifications   = "Medium"
+  }
 }
 ```

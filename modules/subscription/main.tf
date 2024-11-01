@@ -121,3 +121,35 @@ resource "azapi_resource_action" "subscription_cancel" {
     time_sleep.wait_for_subscription_before_subscription_operations
   ]
 }
+
+resource "azapi_resource" "subscription_dfc_contact" {
+  count     = var.subscription_dfc_contact_enabled ? 1 : 0
+  parent_id = "/subscriptions/${local.subscription_id}"
+  type      = "Microsoft.Security/securityContacts@2020-01-01-preview"
+  name      = "default" //  The only valid name for security contact is 'default'
+
+  body = jsonencode({
+    properties = {
+      emails = var.subscription_dfc_contact.emails
+      phone  = var.subscription_dfc_contact.phone
+
+      alertNotifications = {
+        state           = var.subscription_dfc_contact.alert_notifications == "Off" ? var.subscription_dfc_contact.alert_notifications : "On"
+        minimalSeverity = var.subscription_dfc_contact.alert_notifications == "Off" ? "" : var.subscription_dfc_contact.alert_notifications
+      }
+
+      notificationsByRole = {
+        state = length(var.subscription_dfc_contact.notifications_by_role) > 0 ? "On" : "Off"
+        roles = var.subscription_dfc_contact.notifications_by_role
+      }
+    }
+  })
+  schema_validation_enabled = false
+  lifecycle {
+    ignore_changes = [location]
+  }
+
+  depends_on = [
+    time_sleep.wait_for_subscription_before_subscription_operations
+  ]
+}

@@ -3,7 +3,11 @@
 
 ## Overview
 
-Creates a subscription alias, and optionally manages management group association for the resulting subscription.
+Creates a subscription alias
+Optionally:
+
+- Associates the resulting subscription to a management group
+- Creates the Microsoft Defender for Cloud (DFC) security contact and enables notifications
 
 ## Notes
 
@@ -21,6 +25,13 @@ module "subscription" {
   subscription_alias_name                = "my-subscription-alias"
   subscription_alias_workload            = "Production"
   subscription_alias_management_group_id = "mymg"
+  subscription_dfc_contact_enabled       = true
+  subscription_dfc_contact = {
+    notifications_by_role = ["Owner", "Contributor"]
+    emails                = "john@microsoft.com;jane@microsoft.com"
+    phone                 = "+1-555-555-5555"
+    alert_notifications   = "Medium"
+  }
 }
 ```
 
@@ -110,6 +121,43 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 Type: `string`
 
 Default: `""`
+
+### <a name="input_subscription_dfc_contact"></a> [subscription\_dfc\_contact](#input\_subscription\_dfc\_contact)
+
+Description: Microsoft Defender for Cloud (DFC) contact and notification configurations
+
+### Security Contact Information - Determines who'll get email notifications from Defender for Cloud
+
+- `notifications_by_role`: All users with these specific RBAC roles on the subscription will get email notifications. [optional - allowed values are: `AccountAdmin`, `ServiceAdmin`, `Owner` and `Contributor` - default empty]
+- `emails`: List of additional email addresses which will get notifications. Multiple emails can be provided in a ; separated list. Example: "john@microsoft.com;jane@microsoft.com". [optional - default empty]
+- `phone`: The security contact's phone number. [optional - default empty]
+> **Note**: At least one role or email address must be provided to enable alert notification.
+
+### Alert Notifications
+
+- `alert_notifications`: Enables email notifications and defines the minimal alert severity. [optional - allowed values are: `Off`, `High`, `Medium` or `Low` - default `Off`]
+
+Type:
+
+```hcl
+object({
+    notifications_by_role = optional(list(string), [])
+    emails                = optional(string, "")
+    phone                 = optional(string, "")
+    alert_notifications   = optional(string, "Off")
+  })
+```
+
+Default: `{}`
+
+### <a name="input_subscription_dfc_contact_enabled"></a> [subscription\_dfc\_contact\_enabled](#input\_subscription\_dfc\_contact\_enabled)
+
+Description: Whether to enable Microsoft Defender for Cloud (DFC) contact settings on the subscription. [optional - default `false`]  
+If enabled, provide settings in var.subscription\_dfc\_contact
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_subscription_display_name"></a> [subscription\_display\_name](#input\_subscription\_display\_name)
 
@@ -224,6 +272,7 @@ Default: `{}`
 The following resources are used by this module:
 
 - [azapi_resource.subscription](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.subscription_dfc_contact](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource_action.subscription_association](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
 - [azapi_resource_action.subscription_cancel](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
 - [azapi_resource_action.subscription_rename](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
