@@ -33,7 +33,7 @@ resource "azapi_resource" "umi" {
   type      = "Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31"
   name      = var.name
   parent_id = var.resource_group_creation_enabled ? one(azapi_resource.rg).id : "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
-  body      = jsonencode({})
+  body      = {}
   location  = var.location
   tags      = var.tags
   response_export_values = [

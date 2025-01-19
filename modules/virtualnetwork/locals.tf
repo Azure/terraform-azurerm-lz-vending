@@ -110,15 +110,15 @@ locals {
     merge(
       {
         addressSpace = {
-          addressPrefixes = each.value.address_space
+          addressPrefixes = v.address_space
         }
         dhcpOptions = {
-          dnsServers = each.value.dns_servers
+          dnsServers = v.dns_servers
         }
       },
-      each.value.ddos_protection_enabled ? {
+      v.ddos_protection_enabled ? {
         ddosProtectionPlan = {
-          id = each.value.ddos_protection_plan_id
+          id = v.ddos_protection_plan_id
         }
         enableDdosProtection = true
       } : null
@@ -130,20 +130,20 @@ locals {
   vhubconnection_body_properties = {
     for k, v in var.virtual_networks : k =>
     merge({
-      enableInternetSecurity = each.value.vwan_security_configuration.secure_internet_traffic
+      enableInternetSecurity = v.vwan_security_configuration.secure_internet_traffic
       remoteVirtualNetwork = {
-        id = local.virtual_network_resource_ids[each.key]
+        id = local.virtual_network_resource_ids[k]
       }
       },
       # Only supply routingConfiguration if routing_intent_enabled is set to false
-      each.value.vwan_security_configuration.routing_intent_enabled ? {} : {
+      v.vwan_security_configuration.routing_intent_enabled ? {} : {
         routingConfiguration = {
           associatedRouteTable = {
-            id = each.value.vwan_associated_routetable_resource_id != "" ? each.value.vwan_associated_routetable_resource_id : "${each.value.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
+            id = v.vwan_associated_routetable_resource_id != "" ? v.vwan_associated_routetable_resource_id : "${v.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
           }
           propagatedRouteTables = {
-            ids    = each.value.vwan_security_configuration.secure_private_traffic ? local.vwan_propagated_noneroutetables_resource_ids[each.key] : local.vwan_propagated_routetables_resource_ids[each.key]
-            labels = each.value.vwan_security_configuration.secure_private_traffic ? ["none"] : local.vwan_propagated_routetables_labels[each.key]
+            ids    = v.vwan_security_configuration.secure_private_traffic ? local.vwan_propagated_noneroutetables_resource_ids[k] : local.vwan_propagated_routetables_resource_ids[k]
+            labels = v.vwan_security_configuration.secure_private_traffic ? ["none"] : local.vwan_propagated_routetables_labels[k]
           }
         }
     }) if v.vwan_connection_enabled

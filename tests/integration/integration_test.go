@@ -41,7 +41,6 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 		"module.virtualnetwork[0].azapi_resource.rg_lock[\"primary-rg\"]",
 		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
 		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
@@ -74,7 +73,6 @@ func TestIntegrationVwan(t *testing.T) {
 		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"primary\"]",
 		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
 		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
@@ -144,7 +142,6 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 		"module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
 		"module.virtualnetwork[0].azapi_resource.peering_hub_outbound[\"primary\"]",
 		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
 	}
 
@@ -181,7 +178,6 @@ func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
 		"module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
 		"module.virtualnetwork[0].azapi_resource.peering_hub_outbound[\"primary\"]",
 		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
 		"module.subscription[0].azurerm_management_group_subscription_association.this[0]",
 	}
@@ -208,7 +204,6 @@ func TestIntegrationWithYaml(t *testing.T) {
 
 	resources := []string{
 		"module.lz_vending[\"%s\"].azapi_resource.telemetry_root[0]",
-		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_update_resource.vnet[\"primary\"]",
 		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
 		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_resource.rg_lock[\"primary-rg\"]",
 		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",

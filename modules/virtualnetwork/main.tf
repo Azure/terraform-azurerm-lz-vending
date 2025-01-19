@@ -23,11 +23,11 @@ resource "azapi_resource" "rg_lock" {
   }
   depends_on = [
     azapi_resource.vnet,
-    azapi_update_resource.vnet,
     azapi_resource.peering_hub_outbound,
     azapi_resource.peering_hub_inbound,
     azapi_resource.peering_mesh,
     azapi_resource.vhubconnection,
+    azapi_resource.vhubconnection_routing_intent,
   ]
 }
 
@@ -56,7 +56,7 @@ resource "azapi_resource" "peering_hub_outbound" {
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-08-01"
   parent_id = each.value["outbound"].this_resource_id
   name      = each.value["outbound"].name
-  body = jsonencode({
+  body = {
     properties = {
       remoteVirtualNetwork = {
         id = each.value["outbound"].remote_resource_id
@@ -66,7 +66,7 @@ resource "azapi_resource" "peering_hub_outbound" {
       allowGatewayTransit       = false
       useRemoteGateways         = each.value.use_remote_gateways
     }
-  })
+  }
 }
 
 # azapi_resource.peering_hub_inbound creates one-way peering from the supplied hub network to the spoke.
@@ -116,7 +116,7 @@ resource "azapi_resource" "vhubconnection" {
   parent_id = each.value.vwan_hub_resource_id
   name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", azapi_resource.vnet[each.key].id)}")
   body = {
-    properties = local.vhubconnection_body_properties
+    properties = local.vhubconnection_body_properties[each.key]
   }
 }
 
@@ -129,7 +129,7 @@ resource "azapi_resource" "vhubconnection_routing_intent" {
   parent_id = each.value.vwan_hub_resource_id
   name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", azapi_resource.vnet[each.key].id)}")
   body = {
-    properties = local.vhubconnection_body_properties
+    properties = local.vhubconnection_body_properties[each.key]
   }
 
   lifecycle {
