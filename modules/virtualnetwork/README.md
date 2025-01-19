@@ -217,7 +217,7 @@ The following resources are used by this module:
 
 The following outputs are exported:
 
-### <a name="output_resource_group_ids"></a> [resource\_group\_ids](#output\_resource\_group\_ids)
+### <a name="output_resource_group_resource_ids"></a> [resource\_group\_resource\_ids](#output\_resource\_group\_resource\_ids)
 
 Description: The created resource group IDs, expressed as a map.
 

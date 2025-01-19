@@ -45,9 +45,9 @@ module "routetable" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.5.0)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.8)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.11.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
 
 ## Modules
 
@@ -57,6 +57,25 @@ No modules.
 ## Required Inputs
 
 The following input variables are required:
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The location of the route table.
+
+Type: `string`
+
+### <a name="input_name"></a> [name](#input\_name)
+
+Description: The name of the route table to create.
+
+Type: `string`
+
+### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+
+Description: The name of the resource group to create the virtual network in.  
+The resource group must exist, this module will not create it.
+
+Type: `string`
 
 ### <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id)
 
@@ -68,36 +87,41 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
-### <a name="input_route_tables"></a> [route\_tables](#input\_route\_tables)
+### <a name="input_bgp_route_propagation_enabled"></a> [bgp\_route\_propagation\_enabled](#input\_bgp\_route\_propagation\_enabled)
 
-Description: A map defining route tables and their associated routes to be created.
-  - `name` (required): The name of the route table.
-  - `location` (required): The location of the resource group.
-  - `resource_group_name` (required): The name of the resource group.
-  - `tags` (optional): A map of key-value pairs for tags associated with the route table.
-  - `routes` (optional): A map defining routes for the route table. Each route object has the following properties:
-      - `name` (required): The name of the route.
-      - `address_prefix` (required): The address prefix for the route.
-      - `next_hop_type` (required): The type of next hop for the route.
-      - `next_hop_in_ip_address` (required): The next hop IP address for the route.
+Description: Whether BGP route propagation is enabled.
+
+Type: `bool`
+
+Default: `true`
+
+### <a name="input_routes"></a> [routes](#input\_routes)
+
+Description: A list of objects defining route tables and their associated routes to be created:
+
+- `name` (required): The name of the route.
+- `address_prefix` (required): The address prefix for the route.
+- `next_hop_type` (required): The type of next hop for the route.
+- `next_hop_in_ip_address` (required): The next hop IP address for the route.
 
 Type:
 
 ```hcl
-map(object({
-    name                = string
-    location            = string
-    resource_group_name = string
-    tags                = optional(map(string))
-
-    routes = optional(map(object({
-      name                   = string
-      address_prefix         = string
-      next_hop_type          = string
-      next_hop_in_ip_address = string
-    })))
+list(object({
+    name                   = string
+    address_prefix         = string
+    next_hop_type          = string
+    next_hop_in_ip_address = string
   }))
 ```
+
+Default: `[]`
+
+### <a name="input_tags"></a> [tags](#input\_tags)
+
+Description: A map of tags to assign to the route table.
+
+Type: `map(string)`
 
 Default: `{}`
 
@@ -105,11 +129,15 @@ Default: `{}`
 
 The following resources are used by this module:
 
-- [azapi_resource.route_table](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.route_table](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 
 ## Outputs
 
-No outputs.
+The following outputs are exported:
+
+### <a name="output_route_table_resource_id"></a> [route\_table\_resource\_id](#output\_route\_table\_resource\_id)
+
+Description: The created route table ID.
 
 <!-- markdownlint-enable -->
 <!-- END_TF_DOCS -->

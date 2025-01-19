@@ -156,12 +156,6 @@ Source: ./modules/resourcegroup
 
 Version:
 
-### <a name="module_resourcegroup_networkwatcherrg"></a> [resourcegroup\_networkwatcherrg](#module\_resourcegroup\_networkwatcherrg)
-
-Source: ./modules/resourcegroup
-
-Version:
-
 ### <a name="module_resourceproviders"></a> [resourceproviders](#module\_resourceproviders)
 
 Source: ./modules/resourceprovider
@@ -328,20 +322,6 @@ Type: `bool`
 
 Default: `false`
 
-### <a name="input_network_watcher_resource_group_enabled"></a> [network\_watcher\_resource\_group\_enabled](#input\_network\_watcher\_resource\_group\_enabled)
-
-Description: Create `NetworkWatcherRG` in the subscription.
-
-Although this resource group is created automatically by Azure,  
-it is not managed by Terraform and therefore can impede the subscription cancellation process.
-
-Enabling this variable will create the resource group in the subscription and allow Terraform to manage it,  
-which includes destroying the resource (and all resources within it).
-
-Type: `bool`
-
-Default: `false`
-
 ### <a name="input_resource_group_creation_enabled"></a> [resource\_group\_creation\_enabled](#input\_resource\_group\_creation\_enabled)
 
 Description: Whether to create additional resource groups in the target subscription. Requires `var.resource_groups`.
@@ -358,7 +338,7 @@ Description: A map of the resource groups to create. The value is an object with
 - `location` - the location of the resource group
 - `tags` - (optional) a map of type string
 
-> Do not include the `NetworkWatcherRG` resource group in this map if you have enabled `var.network_watcher_resource_group_enabled`.
+We recommend that you include an entry to create the NetworkWatcherRG resource group so that this is managed by Terraform.
 
 Type:
 
@@ -1075,10 +1055,22 @@ The following resources are used by this module:
 
 The following outputs are exported:
 
+### <a name="output_budget_resource_id"></a> [budget\_resource\_id](#output\_budget\_resource\_id)
+
+Description: The created budget resource IDs, expressed as a map.
+
 ### <a name="output_management_group_subscription_association_id"></a> [management\_group\_subscription\_association\_id](#output\_management\_group\_subscription\_association\_id)
 
 Description: The management\_group\_subscription\_association\_id output is the ID of the management group subscription association.  
 Value will be null if `var.subscription_management_group_association_enabled` is false.
+
+### <a name="output_resource_group_resource_ids"></a> [resource\_group\_resource\_ids](#output\_resource\_group\_resource\_ids)
+
+Description: The created resource group IDs, expressed as a map.
+
+### <a name="output_route_table_resource_ids"></a> [route\_table\_resource\_ids](#output\_route\_table\_resource\_ids)
+
+Description: The created route table resource IDs, expressed as a map.
 
 ### <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id)
 

@@ -84,7 +84,11 @@ The following resources are used by this module:
 
 ## Outputs
 
-No outputs.
+The following outputs are exported:
+
+### <a name="output_resource_group_resource_id"></a> [resource\_group\_resource\_id](#output\_resource\_group\_resource\_id)
+
+Description: The created resource group resource ID.
 
 <!-- markdownlint-enable -->
 <!-- END_TF_DOCS -->

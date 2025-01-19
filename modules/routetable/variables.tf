@@ -9,32 +9,64 @@ DESCRIPTION
   }
 }
 
-variable "route_tables" {
-  type = map(object({
-    name                = string
-    location            = string
-    resource_group_name = string
-    tags                = optional(map(string))
-
-    routes = optional(map(object({
-      name                   = string
-      address_prefix         = string
-      next_hop_type          = string
-      next_hop_in_ip_address = string
-    })))
-  }))
+variable "resource_group_name" {
+  type        = string
   description = <<DESCRIPTION
-A map defining route tables and their associated routes to be created.
-  - `name` (required): The name of the route table.
-  - `location` (required): The location of the resource group.
-  - `resource_group_name` (required): The name of the resource group.
-  - `tags` (optional): A map of key-value pairs for tags associated with the route table.
-  - `routes` (optional): A map defining routes for the route table. Each route object has the following properties:
-      - `name` (required): The name of the route.
-      - `address_prefix` (required): The address prefix for the route.
-      - `next_hop_type` (required): The type of next hop for the route.
-      - `next_hop_in_ip_address` (required): The next hop IP address for the route.
+The name of the resource group to create the virtual network in.
+The resource group must exist, this module will not create it.
 DESCRIPTION
   nullable    = false
+}
+
+variable "bgp_route_propagation_enabled" {
+  type        = bool
+  description = <<DESCRIPTION
+Whether BGP route propagation is enabled.
+DESCRIPTION
+  default     = true
+}
+
+variable "name" {
+  type        = string
+  description = <<DESCRIPTION
+The name of the route table to create.
+DESCRIPTION
+  nullable    = false
+}
+
+variable "location" {
+  type        = string
+  description = <<DESCRIPTION
+The location of the route table.
+DESCRIPTION
+  nullable    = false
+}
+
+variable "tags" {
+  type        = map(string)
+  description = <<DESCRIPTION
+A map of tags to assign to the route table.
+DESCRIPTION
   default     = {}
+  nullable    = false
+}
+
+variable "routes" {
+  type = list(object({
+    name                   = string
+    address_prefix         = string
+    next_hop_type          = string
+    next_hop_in_ip_address = string
+  }))
+
+  description = <<DESCRIPTION
+A list of objects defining route tables and their associated routes to be created:
+
+- `name` (required): The name of the route.
+- `address_prefix` (required): The address prefix for the route.
+- `next_hop_type` (required): The type of next hop for the route.
+- `next_hop_in_ip_address` (required): The next hop IP address for the route.
+DESCRIPTION
+  nullable    = false
+  default     = []
 }

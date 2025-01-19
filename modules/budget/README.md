@@ -117,7 +117,11 @@ The following resources are used by this module:
 
 ## Outputs
 
-No outputs.
+The following outputs are exported:
+
+### <a name="output_budget_resource_id"></a> [budget\_resource\_id](#output\_budget\_resource\_id)
+
+Description: The Azure resource id of the created budget.
 
 <!-- markdownlint-enable -->
 <!-- END_TF_DOCS -->
