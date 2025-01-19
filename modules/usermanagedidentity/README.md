@@ -67,9 +67,9 @@ module "umi" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.8)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.11.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
 
 ## Modules
 
@@ -129,7 +129,7 @@ map(object({
     subject_identifier = string
     audiences          = optional(set(string), ["api://AzureADTokenExchange"])
     issuer_url         = string
-  })
+  }))
 ```
 
 Default: `{}`
@@ -157,7 +157,7 @@ map(object({
     repository   = string
     entity       = string
     value        = optional(string, "")
-  })
+  }))
 ```
 
 Default: `{}`
@@ -185,7 +185,7 @@ map(object({
     project      = string
     workspace    = string
     run_phase    = string
-  })
+  }))
 ```
 
 Default: `{}`

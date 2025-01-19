@@ -136,9 +136,9 @@ module "lz_vending" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.3)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.8)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 1.4)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
 
 ## Modules
 
@@ -205,7 +205,7 @@ The following input variables are required:
 
 ### <a name="input_location"></a> [location](#input\_location)
 
-Description: The default location of resources created by this module.
+Description: The default location of resources created by this module.  
 Virtual networks will be created in this location unless overridden by the `location` attribute.
 
 Type: `string`
@@ -216,7 +216,7 @@ The following input variables are optional (have default values):
 
 ### <a name="input_budget_enabled"></a> [budget\_enabled](#input\_budget\_enabled)
 
-Description: Whether to create budgets.
+Description: Whether to create budgets.  
 If enabled, supply the list of budgets in `var.budgets`.
 
 Type: `bool`
@@ -291,16 +291,16 @@ map(object({
       contact_roles  = optional(list(string), [])
       contact_groups = optional(list(string), [])
       locale         = optional(string, "en-us")
-    }), {})
-  })
+    })), {})
+  }))
 ```
 
 Default: `{}`
 
 ### <a name="input_disable_telemetry"></a> [disable\_telemetry](#input\_disable\_telemetry)
 
-Description: To disable tracking, we have included this variable with a simple boolean flag.
-The default value is `false` which does not disable the telemetry.
+Description: To disable tracking, we have included this variable with a simple boolean flag.  
+The default value is `false` which does not disable the telemetry.  
 If you would like to disable this tracking, then simply set this value to true and this module will not create the telemetry tracking resources and therefore telemetry tracking will be disabled.
 
 For more information, see the [wiki](https://aka.ms/lz-vending/tf/telemetry)
@@ -326,10 +326,10 @@ Default: `false`
 
 Description: Create `NetworkWatcherRG` in the subscription.
 
-Although this resource group is created automatically by Azure,
+Although this resource group is created automatically by Azure,  
 it is not managed by Terraform and therefore can impede the subscription cancellation process.
 
-Enabling this variable will create the resource group in the subscription and allow Terraform to manage it,
+Enabling this variable will create the resource group in the subscription and allow Terraform to manage it,  
 which includes destroying the resource (and all resources within it).
 
 Type: `bool`
@@ -361,14 +361,14 @@ map(object({
     name     = string
     location = string
     tags     = optional(map(string), {})
-  })
+  }))
 ```
 
 Default: `{}`
 
 ### <a name="input_role_assignment_enabled"></a> [role\_assignment\_enabled](#input\_role\_assignment\_enabled)
 
-Description: Whether to create role assignments.
+Description: Whether to create role assignments.  
 If enabled, supply the list of role assignments in `var.role_assignments`.
 
 Type: `bool`
@@ -417,7 +417,7 @@ map(object({
     relative_scope    = optional(string, ""),
     condition         = optional(string, ""),
     condition_version = optional(string, ""),
-  })
+  }))
 ```
 
 Default: `{}`
@@ -452,10 +452,10 @@ Default: `false`
 
 Description: The name of the subscription alias.
 
-The string must be comprised of a-z, A-Z, 0-9, - and \_.
+The string must be comprised of a-z, A-Z, 0-9, - and \_.  
 The maximum length is 63 characters.
 
-You may also supply an empty string if you do not want to create a new subscription alias.
+You may also supply an empty string if you do not want to create a new subscription alias.  
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -474,7 +474,7 @@ E.g.
 - For PartnerLed, e.g. MPA - `/providers/Microsoft.Billing/billingAccounts/{billingAccountName}/customers/{customerName}`
 - For Legacy EA - `/providers/Microsoft.Billing/billingAccounts/{billingAccountName}/enrollmentAccounts/{enrollmentAccountName}`
 
-You may also supply an empty string if you do not want to create a new subscription alias.
+You may also supply an empty string if you do not want to create a new subscription alias.  
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -485,10 +485,10 @@ Default: `""`
 
 Description: The display name of the subscription alias.
 
-The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.
+The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.  
 The maximum length is 63 characters.
 
-You may also supply an empty string if you do not want to create a new subscription alias.
+You may also supply an empty string if you do not want to create a new subscription alias.  
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -499,16 +499,16 @@ Default: `""`
 
 Description: An existing subscription id.
 
-Use this when you do not want the module to create a new subscription.
+Use this when you do not want the module to create a new subscription.  
 But do want to manage the management group membership.
 
-A GUID should be supplied in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
+A GUID should be supplied in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.  
 All letters must be lowercase.
 
-When using this, `subscription_management_group_association_enabled` should be enabled,
+When using this, `subscription_management_group_association_enabled` should be enabled,  
 and `subscription_management_group_id` should be supplied.
 
-You may also supply an empty string if you want to create a new subscription alias.
+You may also supply an empty string if you want to create a new subscription alias.  
 In this scenario, `subscription_alias_enabled` should be set to `true` and the following other variables must be supplied:
 
 - `subscription_alias_name`
@@ -534,7 +534,7 @@ Default: `false`
 
 Description:   The destination management group ID for the new subscription.
 
-**Note:** Do not supply the display name.
+**Note:** Do not supply the display name.  
 The management group ID forms part of the Azure resource ID. E.g.,
 `/providers/Microsoft.Management/managementGroups/{managementGroupId}`.
 
@@ -544,9 +544,9 @@ Default: `""`
 
 ### <a name="input_subscription_register_resource_providers_and_features"></a> [subscription\_register\_resource\_providers\_and\_features](#input\_subscription\_register\_resource\_providers\_and\_features)
 
-Description: The map of resource providers to register.
-The map keys are the resource provider namespace, e.g. `Microsoft.Compute`.
-The map values are a list of provider features to enable.
+Description: The map of resource providers to register.  
+The map keys are the resource provider namespace, e.g. `Microsoft.Compute`.  
+The map values are a list of provider features to enable.  
 Leave the value empty to not register any resource provider features.
 
 The default values are taken from [Hashicorp's AzureRM provider](https://github.com/hashicorp/terraform-provider-azurerm/blob/main/internal/resourceproviders/required.go).
@@ -626,7 +626,7 @@ Default:
 
 ### <a name="input_subscription_register_resource_providers_enabled"></a> [subscription\_register\_resource\_providers\_enabled](#input\_subscription\_register\_resource\_providers\_enabled)
 
-Description: Whether to register resource providers for the subscription.
+Description: Whether to register resource providers for the subscription.  
 Use `var.subscription_register_resource_providers_and_features` to customize registration.
 
 Type: `bool`
@@ -635,7 +635,7 @@ Default: `false`
 
 ### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
 
-Description: A map of tags to assign to the newly created subscription.
+Description: A map of tags to assign to the newly created subscription.  
 Only valid when `subsciption_alias_enabled` is set to `true`.
 
 Example value:
@@ -653,7 +653,7 @@ Default: `{}`
 
 ### <a name="input_subscription_update_existing"></a> [subscription\_update\_existing](#input\_subscription\_update\_existing)
 
-Description: Whether to update an existing subscription with the supplied tags and display name.
+Description: Whether to update an existing subscription with the supplied tags and display name.  
 If enabled, the following must also be supplied:
 - `subscription_id`
 
@@ -663,16 +663,16 @@ Default: `false`
 
 ### <a name="input_subscription_use_azapi"></a> [subscription\_use\_azapi](#input\_subscription\_use\_azapi)
 
-Description: Whether to create a new subscription using the azapi provider. This may be required if the principal running
-terraform does not have the required permissions to create a subscription under the default management group.
+Description: Whether to create a new subscription using the azapi provider. This may be required if the principal running  
+terraform does not have the required permissions to create a subscription under the default management group.  
 If enabled, the following must also be supplied:
 - `subscription_alias_name`
 - `subscription_display_name`
 - `subscription_billing_scope`
-- `subscription_workload`
+- `subscription_workload`  
 Optionally, supply the following to enable the placement of the subscription into a management group:
 - `subscription_management_group_id`
-- `subscription_management_group_association_enabled`
+- `subscription_management_group_association_enabled`  
 If disabled, supply the `subscription_id` variable to use an existing subscription instead.
 > **Note**: When the subscription is destroyed, this module will try to remove the NetworkWatcherRG resource group using `az cli`.
 > This requires the `az cli` tool be installed and authenticated.
@@ -688,7 +688,7 @@ Description: The billing scope for the new subscription alias.
 
 The workload type can be either `Production` or `DevTest` and is case sensitive.
 
-You may also supply an empty string if you do not want to create a new subscription alias.
+You may also supply an empty string if you do not want to create a new subscription alias.  
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -726,7 +726,7 @@ map(object({
     subject_identifier = string
     issuer_url         = string
     audiences          = optional(set(string), ["api://AzureADTokenExchange"])
-  })
+  }))
 ```
 
 Default: `{}`
@@ -754,7 +754,7 @@ map(object({
     repository   = string
     entity       = string
     value        = optional(string, "")
-  })
+  }))
 ```
 
 Default: `{}`
@@ -782,7 +782,7 @@ map(object({
     project      = string
     workspace    = string
     run_phase    = string
-  })
+  }))
 ```
 
 Default: `{}`
@@ -837,7 +837,7 @@ Default: `{}`
 
 ### <a name="input_umi_role_assignments"></a> [umi\_role\_assignments](#input\_umi\_role\_assignments)
 
-Description: Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.
+Description: Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.  
 This will be merged with the other role assignments specified in `var.role_assignments`.
 
 The role assignments can be used resource groups created by the `var.resource_groups` map.
@@ -857,7 +857,7 @@ map(object({
     relative_scope    = optional(string, "")
     condition         = optional(string, "")
     condition_version = optional(string, "")
-  })
+  }))
 ```
 
 Default: `{}`
@@ -917,7 +917,7 @@ The following values configure bi-directional hub & spoke peering for the given 
 
 ### Mesh peering values
 
-Mesh peering is the capability to create a bi-directional peerings between all supplied virtual networks in `var.virtual_networks`.
+Mesh peering is the capability to create a bi-directional peerings between all supplied virtual networks in `var.virtual_networks`.  
 Peerings will only be created between virtual networks with the `mesh_peering_enabled` value set to `true`.
 
 - `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
@@ -925,10 +925,10 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 
 ### Resource group values
 
-The default is that a resource group will be created for each resource\_group\_name specified in the `var.virtual_networks` map.
-It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.
-We recommend using resource groups aligned to the region of the virtual network,
-however if you want multiple virtual networks in more than one location to share a resource group,
+The default is that a resource group will be created for each resource\_group\_name specified in the `var.virtual_networks` map.  
+It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.  
+We recommend using resource groups aligned to the region of the virtual network,  
+however if you want multiple virtual networks in more than one location to share a resource group,  
 only one of the virtual networks should have `resource_group_creation_enabled` set to `true`.
 
 - `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default `true`]
@@ -993,10 +993,10 @@ map(object({
       secure_internet_traffic = optional(bool, false)
       secure_private_traffic  = optional(bool, false)
       routing_intent_enabled  = optional(bool, false)
-    }, {})
+    }), {})
 
     tags = optional(map(string), {})
-  })
+  }))
 ```
 
 Default: `{}`
@@ -1011,7 +1011,7 @@ Type:
 object({
     create  = optional(string, "30s")
     destroy = optional(string, "0s")
-  }
+  })
 ```
 
 Default: `{}`
@@ -1028,7 +1028,7 @@ The following outputs are exported:
 
 ### <a name="output_management_group_subscription_association_id"></a> [management\_group\_subscription\_association\_id](#output\_management\_group\_subscription\_association\_id)
 
-Description: The management\_group\_subscription\_association\_id output is the ID of the management group subscription association.
+Description: The management\_group\_subscription\_association\_id output is the ID of the management group subscription association.  
 Value will be null if `var.subscription_management_group_association_enabled` is false.
 
 ### <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id)
@@ -1041,22 +1041,22 @@ Description: The subscription\_resource\_id is the Azure subscription resource i
 
 ### <a name="output_umi_client_id"></a> [umi\_client\_id](#output\_umi\_client\_id)
 
-Description: The client id of the user managed identity.
+Description: The client id of the user managed identity.  
 Value will be null if `var.umi_enabled` is false.
 
 ### <a name="output_umi_id"></a> [umi\_id](#output\_umi\_id)
 
-Description: The Azure resource id of the user managed identity.
+Description: The Azure resource id of the user managed identity.  
 Value will be null if `var.umi_enabled` is false.
 
 ### <a name="output_umi_principal_id"></a> [umi\_principal\_id](#output\_umi\_principal\_id)
 
-Description: The principal id of the user managed identity, sometimes known as the object id.
+Description: The principal id of the user managed identity, sometimes known as the object id.  
 Value will be null if `var.umi_enabled` is false.
 
 ### <a name="output_umi_tenant_id"></a> [umi\_tenant\_id](#output\_umi\_tenant\_id)
 
-Description: The tenant id of the user managed identity.
+Description: The tenant id of the user managed identity.  
 Value will be null if `var.umi_enabled` is false.
 
 ### <a name="output_virtual_network_resource_group_ids"></a> [virtual\_network\_resource\_group\_ids](#output\_virtual\_network\_resource\_group\_ids)
