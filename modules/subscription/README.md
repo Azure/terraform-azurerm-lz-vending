@@ -82,10 +82,10 @@ Default: `false`
 
 Description: The name of the subscription alias.
 
-The string must be comprised of a-z, A-Z, 0-9, - and \_.  
+The string must be comprised of a-z, A-Z, 0-9, - and \_.
 The maximum length is 63 characters.
 
-You may also supply an empty string if you do not want to create a new subscription alias.  
+You may also supply an empty string if you do not want to create a new subscription alias.
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -104,7 +104,7 @@ E.g.
 - For PartnerLed, e.g. MPA - `/providers/Microsoft.Billing/billingAccounts/{billingAccountName}/customers/{customerName}`
 - For Legacy EA - `/providers/Microsoft.Billing/billingAccounts/{billingAccountName}/enrollmentAccounts/{enrollmentAccountName}`
 
-You may also supply an empty string if you do not want to create a new subscription alias.  
+You may also supply an empty string if you do not want to create a new subscription alias.
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -115,10 +115,10 @@ Default: `""`
 
 Description: The display name of the subscription alias.
 
-The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.  
+The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.
 The maximum length is 64 characters.
 
-You may also supply an empty string if you do not want to create a new subscription alias.  
+You may also supply an empty string if you do not want to create a new subscription alias.
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -147,7 +147,7 @@ Default: `false`
 
 Description: The destination management group ID for the new subscription.
 
-**Note:** Do not supply the display name.  
+**Note:** Do not supply the display name.
 The management group ID forms part of the Azure resource ID. E.g.,
 `/providers/Microsoft.Management/managementGroups/{managementGroupId}`.
 
@@ -157,7 +157,7 @@ Default: `""`
 
 ### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
 
-Description: A map of tags to assign to the newly created subscription.  
+Description: A map of tags to assign to the newly created subscription.
 Only valid when `subsciption_alias_enabled` is set to `true`.
 
 Example value:
@@ -175,7 +175,7 @@ Default: `{}`
 
 ### <a name="input_subscription_update_existing"></a> [subscription\_update\_existing](#input\_subscription\_update\_existing)
 
-Description: Whether to update an existing subscription with the supplied tags and display name.  
+Description: Whether to update an existing subscription with the supplied tags and display name.
 If enabled, the following must also be supplied:
 - `subscription_id`
 
@@ -197,7 +197,7 @@ Description: The billing scope for the new subscription alias.
 
 The workload type can be either `Production` or `DevTest` and is case sensitive.
 
-You may also supply an empty string if you do not want to create a new subscription alias.  
+You may also supply an empty string if you do not want to create a new subscription alias.
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
@@ -214,7 +214,7 @@ Type:
 object({
     create  = optional(string, "30s")
     destroy = optional(string, "0s")
-  })
+  }
 ```
 
 Default: `{}`
@@ -241,17 +241,17 @@ The following outputs are exported:
 
 ### <a name="output_management_group_subscription_association_id"></a> [management\_group\_subscription\_association\_id](#output\_management\_group\_subscription\_association\_id)
 
-Description: The management\_group\_subscription\_association\_id output is the ID of the management group subscription association.  
+Description: The management\_group\_subscription\_association\_id output is the ID of the management group subscription association.
 Value will be null if `var.subscription_management_group_association_enabled` is false.
 
 ### <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id)
 
-Description: The subscription\_id is the id of the newly created subscription, or that of the supplied var.subscription\_id.  
+Description: The subscription\_id is the id of the newly created subscription, or that of the supplied var.subscription\_id.
 Value will be null if `var.subscription_id` is blank and `var.subscription_alias_enabled` is false.
 
 ### <a name="output_subscription_resource_id"></a> [subscription\_resource\_id](#output\_subscription\_resource\_id)
 
-Description: The subscription\_resource\_id output is the Azure resource id for the newly created subscription.  
+Description: The subscription\_resource\_id output is the Azure resource id for the newly created subscription.
 Value will be null if `var.subscription_id` is blank and `var.subscription_alias_enabled` is false.
 
 <!-- markdownlint-enable -->

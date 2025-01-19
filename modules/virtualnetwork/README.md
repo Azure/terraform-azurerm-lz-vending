@@ -78,7 +78,7 @@ Description: A map of the virtual networks to create. The map key must be known 
 
 ### DNS servers
 
-- `dns_servers`: A list of DNS servers to use for the virtual network, e.g. `["192.168.0.1", "10.0.0.1]`. If empty will use the Azure default DNS. [optional - default empty list]  
+- `dns_servers`: A list of DNS servers to use for the virtual network, e.g. `["192.168.0.1", "10.0.0.1]`. If empty will use the Azure default DNS. [optional - default empty list]
 DNS. [optional - default empty list]
 
 ### DDOS protection plan
@@ -105,7 +105,7 @@ The following values configure bi-directional hub & spoke peering for the given 
 
 ### Mesh peering values
 
-Mesh peering is the capability to create a bi-directional peerings between all supplied virtual networks in `var.virtual_networks`.  
+Mesh peering is the capability to create a bi-directional peerings between all supplied virtual networks in `var.virtual_networks`.
 Peerings will only be created between virtual networks with the `mesh_peering_enabled` value set to `true`.
 
 - `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
@@ -113,10 +113,10 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 
 ### Resource group values
 
-The default is that a resource group will be created for each resource\_group\_name specified in the `var.virtual_networks` map.  
-It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.  
-We recommend using resource groups aligned to the region of the virtual network,  
-however if you want multiple virtual networks in more than one location to share a resource group,  
+The default is that a resource group will be created for each resource\_group\_name specified in the `var.virtual_networks` map.
+It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.
+We recommend using resource groups aligned to the region of the virtual network,
+however if you want multiple virtual networks in more than one location to share a resource group,
 only one of the virtual networks should have `resource_group_creation_enabled` set to `true`.
 
 - `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default `true`]
@@ -181,10 +181,10 @@ map(object({
       secure_internet_traffic = optional(bool, false)
       secure_private_traffic  = optional(bool, false)
       routing_intent_enabled  = optional(bool, false)
-    }), {})
+    }, {})
 
     tags = optional(map(string), {})
-  }))
+  })
 ```
 
 ## Optional Inputs
@@ -193,7 +193,7 @@ The following input variables are optional (have default values):
 
 ### <a name="input_location"></a> [location](#input\_location)
 
-Description: The default location of resources created by this module.  
+Description: The default location of resources created by this module.
 Virtual networks will be created in this location unless overridden by the `location` attribute.
 
 Type: `string`

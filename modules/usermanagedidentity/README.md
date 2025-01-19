@@ -129,7 +129,7 @@ map(object({
     subject_identifier = string
     audiences          = optional(set(string), ["api://AzureADTokenExchange"])
     issuer_url         = string
-  }))
+  })
 ```
 
 Default: `{}`
@@ -157,7 +157,7 @@ map(object({
     repository   = string
     entity       = string
     value        = optional(string, "")
-  }))
+  })
 ```
 
 Default: `{}`
@@ -185,7 +185,7 @@ map(object({
     project      = string
     workspace    = string
     run_phase    = string
-  }))
+  })
 ```
 
 Default: `{}`

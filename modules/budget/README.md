@@ -81,7 +81,7 @@ Type:
 object({
     start_date = string
     end_date   = string
-  })
+  }
 ```
 
 ## Optional Inputs
@@ -104,7 +104,7 @@ map(object({
     contact_roles  = optional(list(string), [])
     contact_groups = optional(list(string), [])
     locale         = optional(string, "en-us")
-  }))
+  })
 ```
 
 Default: `{}`
