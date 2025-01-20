@@ -255,12 +255,15 @@ func TestIntegrationResourceGroups(t *testing.T) {
 	t.Parallel()
 
 	v := map[string]any{
-		"subscription_id":                        "00000000-0000-0000-0000-000000000000",
-		"location":                               "westeurope",
-		"network_watcher_resource_group_enabled": true,
-		"resource_group_creation_enabled":        true,
-		"disable_telemetry":                      true,
+		"subscription_id":                 "00000000-0000-0000-0000-000000000000",
+		"location":                        "westeurope",
+		"resource_group_creation_enabled": true,
+		"disable_telemetry":               true,
 		"resource_groups": map[string]any{
+			"NetworkWatcherRG": map[string]any{
+				"location": "westeurope",
+				"name":     "NetworkWatcherRG",
+			},
 			"rg1": map[string]any{
 				"location": "westeurope",
 				"name":     "rg1",
@@ -274,7 +277,7 @@ func TestIntegrationResourceGroups(t *testing.T) {
 
 	resources := []string{
 		`module.resourcegroup["rg1"].azapi_resource.rg`,
-		`module.resourcegroup_networkwatcherrg[0].azapi_resource.rg`,
+		`module.resourcegroup["NetworkWatcherRG"].azapi_resource.rg`,
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)

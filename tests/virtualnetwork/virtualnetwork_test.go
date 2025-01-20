@@ -450,6 +450,13 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	primaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
 	primaryvnet["vwan_connection_enabled"] = true
 
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	secondaryvnet["vwan_hub_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test_rg/providers/Microsoft.Network/virtualHubs/te.st-hub"
+	secondaryvnet["vwan_connection_enabled"] = true
+	secondaryvnet["vwan_security_configuration"] = map[string]any{
+		"routing_intent_enabled": true,
+	}
+
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
@@ -464,6 +471,7 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
+		"azapi_resource.vhubconnection_routing_intent[\"secondary\"]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
