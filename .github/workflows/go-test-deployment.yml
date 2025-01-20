@@ -2,7 +2,7 @@
 name: Deployment test
 
 on:
-  pull_request_target:
+  pull_request:
     types: ['opened', 'reopened', 'synchronize', 'labeled']
   workflow_dispatch:
     inputs:
@@ -36,7 +36,13 @@ jobs:
     if: |
       (
         (
-          contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:')
+          (
+            contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:')
+          )
+          &&
+          (
+            github.event.pull_request.head.repo.full_name == 'Azure/terraform-azurerm-lz-vending'
+          )
         )
         ||
         (
@@ -57,7 +63,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
 
       - name: Setup Terraform
