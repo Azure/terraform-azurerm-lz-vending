@@ -422,7 +422,7 @@ Description: A map defining route tables and their associated routes to be creat
   - `name` (required): The name of the route table.
   - `location` (required): The location of the resource group.
   - `resource_group_name` (required): The name of the resource group.
-  - `disable_bgp_route_propagation` (optional): Boolean that controls whether routes learned by BGP are propagated to the route table.
+  - `bgp_route_propagation_enabled` (optional): Boolean that controls whether routes learned by BGP are propagated to the route table. Default is `true`.
   - `tags` (optional): A map of key-value pairs for tags associated with the route table.
   - `routes` (optional): A map defining routes for the route table. Each route object has the following properties:
       - `name` (required): The name of the route.
@@ -437,7 +437,7 @@ map(object({
     name                          = string
     location                      = string
     resource_group_name           = string
-    disable_bgp_route_propagation = optional(bool, false)
+    bgp_route_propagation_enabled = optional(bool, true)
     tags                          = optional(map(string))
 
     routes = optional(map(object({

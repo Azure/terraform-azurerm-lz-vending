@@ -116,7 +116,7 @@ We are unable to do this for you because we do not know the specific instances o
 
 ```hcl
 moved {
-  from = module.<YOUR_MODULE_ALIAS>.module.virtualnetwork.azapi_resource.vhubconnection["instance_name"]
-  to   = module.<YOUR_MODULE_ALIAS>.module.virtualnetwork.azapi_resource.vhubconnection_routing_intent["instance_name"]
+  from = module.YOUR_MODULE_ALIAS.module.virtualnetwork.azapi_resource.vhubconnection["instance_name"]
+  to   = module.YOUR_MODULE_ALIAS.module.virtualnetwork.azapi_resource.vhubconnection_routing_intent["instance_name"]
 }
 ```
