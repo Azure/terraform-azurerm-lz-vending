@@ -2,7 +2,7 @@
 name: Deployment test
 
 on:
-  pull_request_target:
+  pull_request:
     types: ['opened', 'reopened', 'synchronize', 'labeled']
   workflow_dispatch:
     inputs:
@@ -36,7 +36,13 @@ jobs:
     if: |
       (
         (
-          contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:')
+          (
+            contains(github.event.pull_request.labels.*.name, 'PR: Safe to test :test_tube:')
+          )
+          &&
+          (
+            github.event.pull_request.head.repo.full_name == 'Azure/terraform-azurerm-lz-vending'
+          )
         )
         ||
         (
@@ -55,25 +61,24 @@ jobs:
         run: env | sort
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: ${{ matrix.terraform_version }}
           terraform_wrapper: false
 
       - name: Setup go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a # v5.2.0
         with:
-          go-version: '1.20.x'
+          go-version-file: tests/go.mod
           cache-dependency-path: tests/go.sum
 
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/CLI@089eac9d8cc39f5d003e94f8b65efc51076c9cbd # v2.1.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -108,7 +113,7 @@ jobs:
 
       # This only works on Linux based runners
       - name: Azure logout
-        uses: azure/CLI@v2
+        uses: azure/CLI@089eac9d8cc39f5d003e94f8b65efc51076c9cbd # v2.1.0
         if: always()
         with:
           inlineScript: |
