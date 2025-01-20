@@ -17,4 +17,11 @@ module "subscription" {
   subscription_update_existing                         = var.subscription_update_existing
   subscription_workload                                = var.subscription_workload
   wait_for_subscription_before_subscription_operations = var.wait_for_subscription_before_subscription_operations
+  subscription_dfc_contact_enabled                     = var.subscription_dfc_contact_enabled
+  subscription_dfc_contact = {
+    emails                = var.subscription_dfc_contact.emails
+    phone                 = var.subscription_dfc_contact.phone
+    alert_notifications   = var.subscription_dfc_contact.alert_notifications
+    notifications_by_role = var.subscription_dfc_contact.notifications_by_role
+  }
 }

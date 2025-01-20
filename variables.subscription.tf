@@ -197,3 +197,38 @@ variable "wait_for_subscription_before_subscription_operations" {
 The duration to wait after vending a subscription before performing subscription operations.
 DESCRIPTION
 }
+
+variable "subscription_dfc_contact_enabled" {
+  type        = bool
+  default     = false
+  description = <<DESCRIPTION
+Whether to enable Microsoft Defender for Cloud (DFC) contact settings on the subscription. [optional - default `false`]
+If enabled, provide settings in var.subscription_dfc_contact
+DESCRIPTION
+}
+
+variable "subscription_dfc_contact" {
+  type = object({
+    notifications_by_role = optional(list(string), [])
+    emails                = optional(string, "")
+    phone                 = optional(string, "")
+    alert_notifications   = optional(string, "Off")
+  })
+  nullable    = false
+  default     = {}
+  description = <<DESCRIPTION
+Microsoft Defender for Cloud (DFC) contact and notification configurations
+
+### Security Contact Information - Determines who'll get email notifications from Defender for Cloud 
+
+- `notifications_by_role`: All users with these specific RBAC roles on the subscription will get email notifications. [optional - allowed values are: `AccountAdmin`, `ServiceAdmin`, `Owner` and `Contributor` - default empty]
+- `emails`: List of additional email addresses which will get notifications. Multiple emails can be provided in a ; separated list. Example: "john@microsoft.com;jane@microsoft.com". [optional - default empty]
+- `phone`: The security contact's phone number. [optional - default empty]
+> **Note**: At least one role or email address must be provided to enable alert notification.
+
+### Alert Notifications
+
+- `alert_notifications`: Enables email notifications and defines the minimal alert severity. [optional - allowed values are: `Off`, `High`, `Medium` or `Low` - default `Off`]
+
+DESCRIPTION
+}
