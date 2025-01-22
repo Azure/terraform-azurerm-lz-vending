@@ -5,6 +5,13 @@ output "virtual_network_resource_ids" {
   }
 }
 
+output "virtual_network_names" {
+  description = "The created virtual network names, expressed as a map"
+  value = {
+    for k, v in azapi_resource.vnet : k => v.name
+  }
+}
+
 output "resource_group_ids" {
   description = "The created resource group IDs, expressed as a map."
   value = {
