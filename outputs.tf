@@ -18,6 +18,11 @@ output "virtual_network_resource_group_ids" {
   description = "A map of resource group ids, keyed by the var.virtual_networks input map. Only populated if the virtualnetwork submodule is enabled."
 }
 
+output "virtual_network_resource_names" {
+  value       = local.virtual_network_resource_names
+  description = "A map of virtual network resource names, keyed by the var.virtual_networks input map. Only populated if the virtualnetwork submodule is enabled."
+}
+
 output "management_group_subscription_association_id" {
   value       = var.subscription_management_group_association_enabled ? module.subscription[0].management_group_subscription_association_id : null
   description = <<DESCRIPTION
