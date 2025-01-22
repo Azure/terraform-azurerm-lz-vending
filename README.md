@@ -1067,6 +1067,10 @@ Description: A map of resource group ids, keyed by the var.virtual\_networks inp
 
 Description: A map of virtual network resource ids, keyed by the var.virtual\_networks input map. Only populated if the virtualnetwork submodule is enabled.
 
+### <a name="output_virtual_network_resource_names"></a> [virtual\_network\_resource\_names](#output\_virtual\_network\_resource\_names)
+
+Description: A map of virtual network resource names, keyed by the var.virtual\_networks input map. Only populated if the virtualnetwork submodule is enabled.
+
 <!-- markdownlint-enable -->
 <!-- markdownlint-disable MD041 -->
 ## Telemetry
