@@ -75,7 +75,7 @@ make test TESTFILTER=Subscription
 
 ### Deployment Testing
 
-These tests wil resources to an Azure environment, so ensure you are prepared to incur any costs.
+These tests will deploy resources to an Azure environment, so ensure you are prepared to incur any costs.
 
 Use cases for deployment testing:
 

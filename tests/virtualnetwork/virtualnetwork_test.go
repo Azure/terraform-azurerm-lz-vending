@@ -228,6 +228,54 @@ func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
 	}
 }
 
+// TestVirtualNetworkCreateValidWithSubnet tests the creation of a plan that
+// creates a virtual network with a subnet.
+func TestVirtualNetworkCreateValidWithSubnet(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable hub network peering to primary vnet in test mock input variables
+	expectedsubnetname = "snet-default"
+	expectedsubnetrange = "192.168.0.0/26"
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":                expectedsubnetname,
+			"address_space":       []any{expectedsubnetrange},
+		},
+	}
+
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// The additional two are the inbound & outbound peering
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"]",
+		"module.virtual_networks[\"secondary\"]",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	subnet := "module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet"
+	terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet)
+
+	check.InPlan(test.PlanStruct).That(subnet).Key("body").Query("properties.name").HasValue(expectedsubnetname).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(subnet).Key("body").Query("properties.address_space").HasValue(expectedsubnetrange).ErrorIsNil(t)
+
+}
+
 // TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
 // creates a virtual network with bidirectional peering to a hub.
 func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
