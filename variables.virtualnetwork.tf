@@ -12,10 +12,11 @@ variable "virtual_networks" {
 
     location = optional(string, "")
 
-    dns_servers = optional(list(string), [])
+    dns_servers             = optional(list(string), [])
+    flow_timeout_in_minutes = optional(number, null)
 
     ddos_protection_enabled = optional(bool, false)
-    ddos_protection_plan_id = optional(string, "")
+    ddos_protection_plan_id = optional(string, null)
 
     subnets = optional(map(object(
       {

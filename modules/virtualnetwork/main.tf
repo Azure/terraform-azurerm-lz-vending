@@ -22,10 +22,10 @@ resource "azapi_resource" "rg_lock" {
     }
   }
   depends_on = [
-    azapi_resource.vnet,
-    azapi_resource.peering_hub_outbound,
-    azapi_resource.peering_hub_inbound,
-    azapi_resource.peering_mesh,
+    module.virtual_networks,
+    module.peering_hub_outbound,
+    module.peering_hub_inbound,
+    module.peering_mesh,
     azapi_resource.vhubconnection,
     azapi_resource.vhubconnection_routing_intent,
   ]
@@ -51,14 +51,14 @@ resource "azapi_resource" "rg_lock" {
 # }
 
 module "virtual_networks" {
-  for_each = var.virtual_networks
-  source   = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version  = "0.7.1"
+  for_each        = var.virtual_networks
+  source          = "Azure/avm-res-network-virtualnetwork/azurerm"
+  version         = "0.7.1"
   subscription_id = var.subscription_id
 
   name                    = each.value.name
   address_space           = each.value.address_space
-  resource_group_name     = try(azurerm_resource_group.rg[each.key].name, each.value.resource_group_name)
+  resource_group_name     = each.value.resource_group_name
   location                = each.value.location
   flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
 
@@ -66,7 +66,7 @@ module "virtual_networks" {
     id     = each.value.ddos_protection_plan_id
     enable = true
   }
-  dns_servers = each.value.dns_servers == null ? null : {
+  dns_servers = each.value.dns_servers == [] ? null : {
     dns_servers = each.value.dns_servers
   }
   subnets = each.value.subnets
@@ -97,9 +97,10 @@ module "virtual_networks" {
 # }
 
 module "peering_hub_outbound" {
-  for_each = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_fromhub }
-  source   = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version  = "0.7.1"
+  for_each        = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_fromhub }
+  source          = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
+  version         = "0.7.1"
+  subscription_id = var.subscription_id
 
   virtual_network              = each.value["outbound"].this_resource_id
   remote_virtual_network       = each.value["outbound"].remote_resource_id
@@ -133,9 +134,10 @@ module "peering_hub_outbound" {
 # }
 
 module "peering_hub_inbound" {
-  for_each = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_tohub }
-  source   = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version  = "0.7.1"
+  for_each        = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_tohub }
+  source          = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
+  version         = "0.7.1"
+  subscription_id = var.subscription_id
 
   virtual_network              = each.value["inbound"].this_resource_id
   remote_virtual_network       = each.value["inbound"].remote_resource_id
@@ -169,9 +171,10 @@ module "peering_hub_inbound" {
 # }
 
 module "peering_mesh" {
-  for_each = { for i in local.virtual_networks_mesh_peering_list : "${i.source_key}-${i.destination_key}" => i }
-  source   = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version  = "0.7.1"
+  for_each        = { for i in local.virtual_networks_mesh_peering_list : "${i.source_key}-${i.destination_key}" => i }
+  source          = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
+  version         = "0.7.1"
+  subscription_id = var.subscription_id
 
   virtual_network              = each.value.this_resource_id
   remote_virtual_network       = each.value.remote_resource_id
@@ -188,7 +191,7 @@ resource "azapi_resource" "vhubconnection" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_connection_enabled && !v.vwan_security_configuration.routing_intent_enabled }
   type      = "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2022-07-01"
   parent_id = each.value.vwan_hub_resource_id
-  name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", azapi_resource.vnet[each.key].id)}")
+  name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", module.virtual_networks[each.key].resource_id)}")
   body = {
     properties = local.vhubconnection_body_properties[each.key]
   }
@@ -201,7 +204,7 @@ resource "azapi_resource" "vhubconnection_routing_intent" {
   for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_connection_enabled && v.vwan_security_configuration.routing_intent_enabled }
   type      = "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2022-07-01"
   parent_id = each.value.vwan_hub_resource_id
-  name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", azapi_resource.vnet[each.key].id)}")
+  name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", module.virtual_networks[each.key].resource_id)}")
   body = {
     properties = local.vhubconnection_body_properties[each.key]
   }
