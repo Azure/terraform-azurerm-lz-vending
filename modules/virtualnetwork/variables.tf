@@ -66,8 +66,29 @@ A map of the virtual networks to create. The map key must be known at the plan s
 ### Required fields
 
 - `name`: The name of the virtual network. [required]
-- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [required]
+- `address_space`: The address space of the virtual network as a list of strings in CIDR format. Both IPv4 and IPv6 are supported, e.g. `["192.168.0.0/24", "10.0.0.0/24", "2001:db8::/64"]`. [required]
 - `resource_group_name`: The name of the resource group to create the virtual network in. The default is that the resource group will be created by this module. [required]
+
+### Address Space
+
+The `address_space` defines the IP address ranges for the virtual network. It must be provided as a list of strings in CIDR notation. Both IPv4 and IPv6 CIDR formats are supported.
+
+#### Examples of valid inputs:
+- **IPv4 only**: `["192.168.0.0/24", "10.0.0.0/16"]`
+- **IPv6 only**:
+  - Full notation: `["2001:db8:0:0:0:0:0:1/64"]`
+  - Shorthand notation: `["2001:db8::/64", "::1/128"]`
+- **Mixed IPv4 and IPv6**: `["192.168.1.0/24", "2001:db8::/64"]`
+
+#### Validation rules:
+- IPv4 addresses must be in valid CIDR notation with a subnet mask between `/0` and `/32`.
+- IPv6 addresses must be in valid CIDR notation with a subnet mask between `/0` and `/128`.
+- Shorthand IPv6 notation (e.g., `::` for consecutive zero blocks) is fully supported.
+
+#### Examples of invalid inputs:
+- `192.168.1.256/24` (invalid IPv4 address)
+- `2001:db8:::1/64` (invalid IPv6 address with too many colons)
+- `2001:db8::/129` (invalid CIDR range for IPv6)
 
 ### DNS servers
 
