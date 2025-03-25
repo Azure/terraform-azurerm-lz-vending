@@ -165,10 +165,10 @@ DESCRIPTION
       for k, v in var.virtual_networks :
       [
         for cidr in v.address_space :
-        can(regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(3[0-2]|[1-2][0-9]|[0-9]))$", cidr))
+        can(regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(3[0-2]|[1-2][0-9]|[0-9]))$|^(([a-fA-F\\d]{1,4}:){1,7}:|:(([a-fA-F\\d]{1,4}:){1,7}|:))([a-fA-F\\d]{1,4})?(\\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))?$", cidr))
       ]
     ]))
-    error_message = "Address space entries must be specified in CIDR notation, e.g. 192.168.0.0/24."
+    error_message = "Address space entries must be specified in CIDR notation, e.g. 192.168.0.0/24 for IPv4 or 2001:db8::/32 for IPv6."
   }
 
   # validate ddos protection plan resource id for networks with ddos protection enabled
