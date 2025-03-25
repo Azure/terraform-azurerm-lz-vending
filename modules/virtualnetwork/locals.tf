@@ -41,36 +41,6 @@ locals {
     } if v.hub_peering_enabled
   }
 
-  # service_endpoint_policy_map = {
-  #   for k, v in var.virtual_networks : k => {
-  #     for subnetKey, subnet in v.subnets : subnetKey => {
-  #       for index, policy_id in tolist(subnet.service_endpoint_policies) : index => {
-  #         id = policy_id
-  #       }
-  #     } if subnet.service_endpoint_policies != null
-  #   }
-  # }
-
-
-  # subnets = { for subnet in flatten([
-  #   for k, v in var.virtual_networks : [
-  #     for subnetKey, subnet in v.subnets : [{
-  #       composite_key                                 = "${k}-${subnetKey}"
-  #       virtual_newtork_key                           = k
-  #       virtual_network_id                            = local.virtual_network_resource_ids[k]
-  #       name                                          = subnet.name
-  #       address_prefixes                              = subnet.address_prefixes
-  #       nat_gateway                                   = subnet.nat_gateway
-  #       network_security_group                        = subnet.network_security_group
-  #       private_endpoint_network_policies             = subnet.private_endpoint_network_policies_enabled ? "Enabled" : "Disabled"
-  #       private_link_service_network_policies_enabled = subnet.private_link_service_network_policies_enabled
-  #       service_endpoints                             = subnet.service_endpoints
-  #       service_endpoint_policies                     = subnet.service_endpoint_policies //try(local.service_endpoint_policy_map[k][subnetKey], null)
-  #       delegation                                    = subnet.delegations
-  #       route_table                                   = subnet.route_table //try(subnet.route_table.id, null) == null ? null : { id = subnet.route_table.id }
-  #     }]
-  #   ]]) : subnet.composite_key => subnet
-  # }
   # vwan_propagated_routetables_resource_ids is a map of the virtual network vwan propagated routetable ids
   # for each virtual network that enabled for vwan connectivity.
   vwan_propagated_routetables_resource_ids = {
@@ -132,30 +102,6 @@ locals {
     } if v.resource_group_creation_enabled
   ])
 }
-
-# TBD
-# # virtual network body properties
-# locals {
-#   vnet_body_properties = {
-#     for k, v in var.virtual_networks : k =>
-#     merge(
-#       {
-#         addressSpace = {
-#           addressPrefixes = v.address_space
-#         }
-#         dhcpOptions = {
-#           dnsServers = v.dns_servers
-#         }
-#       },
-#       v.ddos_protection_enabled ? {
-#         ddosProtectionPlan = {
-#           id = v.ddos_protection_plan_id
-#         }
-#         enableDdosProtection = true
-#       } : null
-#     )
-#   }
-# }
 
 locals {
   vhubconnection_body_properties = {

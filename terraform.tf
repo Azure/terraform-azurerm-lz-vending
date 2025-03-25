@@ -5,9 +5,5 @@ terraform {
       source  = "azure/azapi"
       version = "~> 2.2"
     }
-    # azurerm = {
-    #   source  = "hashicorp/azurerm"
-    #   version = ">= 3.116, < 5.0"
-    # }
   }
 }

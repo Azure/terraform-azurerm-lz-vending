@@ -45,7 +45,7 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	vns := v["virtual_networks"].(map[string]map[string]any)
 	for k, v := range vns {
 		rgres := fmt.Sprintf("azapi_resource.rg[\"%s-rg\"]", k)
-		vnetres := fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)
+		vnetres := fmt.Sprintf("module.virtual_networks[\"%s\"].azapi_resource.vnet", k)
 		check.InPlan(test.PlanStruct).That(rgres).Key("name").HasValue(v["resource_group_name"]).ErrorIsNil(t)
 		check.InPlan(test.PlanStruct).That(rgres).Key("location").HasValue(v["location"]).ErrorIsNil(t)
 		check.InPlan(test.PlanStruct).That(vnetres).Key("name").HasValue(v["name"]).ErrorIsNil(t)
@@ -74,7 +74,7 @@ func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
 	// Loop through each virtual network and check the values
 	vns := v["virtual_networks"].(map[string]map[string]any)
 	for k, v := range vns {
-		res := fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"].azapi_resource.vnet", k)
 		check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.dhcpOptions.dnsServers").HasValue(v["dns_servers"]).ErrorIsNil(t)
 	}
 }
@@ -125,7 +125,7 @@ func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 	// The additional two are the inbound & outbound peering
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNilFatal(t)
 
-	peer1 := "azapi_resource.peering_mesh[\"primary-secondary\"]"
+	peer1 := "module.peering_mesh[\"primary-secondary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.allowForwardedTraffic").HasValue(false).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
@@ -133,7 +133,7 @@ func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 	peer1Remote := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/secondary-rg/providers/Microsoft.Network/virtualNetworks/secondary-vnet"
 	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.remoteVirtualNetwork.id").HasValue(peer1Remote).ErrorIsNil(t)
 
-	peer2 := "azapi_resource.peering_mesh[\"secondary-primary\"]"
+	peer2 := "module.peering_mesh[\"secondary-primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.allowForwardedTraffic").HasValue(true).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
@@ -231,7 +231,7 @@ func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
 
 // TestVirtualNetworkCreateValidWithSubnet tests the creation of a plan that
 // creates a virtual network with a subnet.
-func TestVirtualNetworkCreateSubnetValid(t *testing.T) {
+func TestVirtualNetworkCreateValidSubnet(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
@@ -479,6 +479,27 @@ func TestVirtualNetworkCreateValidWithSubnetNatGateway(t *testing.T) {
 	}
 }
 
+// TestVirtualNetworkCreateSubnetInvalidNetworkSecurityGroup test the resource id value is correct
+func TestVirtualNetworkCreateSubnetInvalidNatGateway(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []string{"192.168.0.0/26"},
+			"nat_gateway": map[string]any{
+				"id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/routeTable/testrt",
+			},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	assert.ErrorContains(t, err, "Nat Gateway resource id must be valid")
+}
+
 // TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup tests the creation of a plan that
 // creates a virtual network with a subnet and a network security group.
 func TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup(t *testing.T) {
@@ -543,6 +564,27 @@ func TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup(t *testing.T) {
 			}
 		}
 	}
+}
+
+// TestVirtualNetworkCreateSubnetInvalidNetworkSecurityGroup test the resource id value is correct
+func TestVirtualNetworkCreateSubnetInvalidNetworkSecurityGroup(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []string{"192.168.0.0/26"},
+			"network_security_group": map[string]any{
+				"id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/routeTable/testrt",
+			},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	assert.ErrorContains(t, err, "Network security group resource id must be valid")
 }
 
 // TestVirtualNetworkCreateValidWithSubnetPrivateEndpointNetworkPolicy tests the creation of a plan that
@@ -1144,8 +1186,8 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.peering_hub_outbound[\"primary\"]",
-		"azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1155,7 +1197,7 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 
 	// We can only check the body of the outbound peering as the inbound values
 	// are not known until apply
-	outbound := "azapi_resource.peering_hub_outbound[\"primary\"]"
+	outbound := "module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]"
 	terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, outbound)
 
 	check.InPlan(test.PlanStruct).That(outbound).Key("body").Query("properties.allowForwardedTraffic").HasValue(true).ErrorIsNil(t)
@@ -1165,7 +1207,7 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 	check.InPlan(test.PlanStruct).That(outbound).Key("body").Query("properties.remoteVirtualNetwork.id").HasValue(primaryvnet["hub_network_resource_id"]).ErrorIsNil(t)
 
 	// More limited checks on the inbound peering
-	inbound := "azapi_resource.peering_hub_inbound[\"primary\"]"
+	inbound := "module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(inbound).Key("parent_id").HasValue(primaryvnet["hub_network_resource_id"]).ErrorIsNil(t)
 }
 
@@ -1196,8 +1238,8 @@ func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.peering_hub_outbound[\"primary\"]",
-		"azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1206,11 +1248,11 @@ func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
 	}
 
 	// Check outbound peering name
-	outbound := "azapi_resource.peering_hub_outbound[\"primary\"]"
+	outbound := "module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(outbound).Key("name").HasValue(primaryvnet["hub_peering_name_tohub"]).ErrorIsNil(t)
 
 	// Check inbound peering name
-	inbound := "azapi_resource.peering_hub_inbound[\"primary\"]"
+	inbound := "module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(inbound).Key("name").HasValue(primaryvnet["hub_peering_name_fromhub"]).ErrorIsNil(t)
 }
 
@@ -1242,7 +1284,7 @@ func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.peering_hub_outbound[\"primary\"]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1279,7 +1321,7 @@ func TestVirtualNetworkCreateValidWithOnlyFromHubPeering(t *testing.T) {
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1314,8 +1356,8 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.peering_hub_outbound[\"primary\"]",
-		"azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1325,7 +1367,7 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 
 	// We can only check the body of the outbound peering as the inbound values
 	// not known until apply
-	res := "azapi_resource.peering_hub_outbound[\"primary\"]"
+	res := "module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.useRemoteGateways").HasValue(false).ErrorIsNil(t)
 }
 
