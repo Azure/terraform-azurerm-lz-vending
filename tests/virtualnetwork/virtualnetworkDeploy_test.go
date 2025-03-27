@@ -104,9 +104,9 @@ func TestDeployVirtualNetworkValidSubnets(t *testing.T) {
 	}
 	delegations := []map[string]any{}
 	delegations = append(delegations, map[string]any{
-		"name": "Microsoft.ContainerInstance.containerGroups",
+		"name": "Microsoft.ContainerInstance/containerGroups",
 		"service_delegation": map[string]any{
-			"name": "Microsoft.ContainerInstance.containerGroups",
+			"name": "Microsoft.ContainerInstance/containerGroups",
 		},
 	})
 	secondaryvnet["subnets"] = map[string]map[string]any{
@@ -127,11 +127,14 @@ func TestDeployVirtualNetworkValidSubnets(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(7).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"containers\"].azapi_resource.subnet",
 	}
 	for _, r := range resources {
 		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
