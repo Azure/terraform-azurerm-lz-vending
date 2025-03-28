@@ -71,6 +71,11 @@ jobs:
           go-version-file: tests/go.mod
           cache-dependency-path: tests/go.sum
 
+
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: ${{ matrix.terraform_version }}
+
       - name: Set GOMAXPROCS to 2 * number of cores
         run: |
           CORES="$(grep -Pc '^processor\t' /proc/cpuinfo)"

@@ -77,6 +77,10 @@ jobs:
           go-version-file: tests/go.mod
           cache-dependency-path: tests/go.sum
 
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: ${{ matrix.terraform_version }}
+
       - name: Azure login
         uses: azure/CLI@089eac9d8cc39f5d003e94f8b65efc51076c9cbd # v2.1.0
         with:
