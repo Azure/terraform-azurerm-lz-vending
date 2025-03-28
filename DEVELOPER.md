@@ -50,7 +50,18 @@ You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#G
 
 ### Unit Testing
 
-These tests do not deploy resources to an Azure environment, but may require access in order to run `terraform plan`.
+#### Unit test environment variables
+
+These tests do not deploy resources to an Azure environment, but may require access in order to run `terraform plan`. 
+
+Example error when running virtual network tests without environment variables: `Error: subscription_id is a required provider property when performing a plan/apply operation`
+
+Please make sure to set the following environment variables:
+
+* `AZURE_TENANT_ID` - set to the tenant id of the Azure account.
+* `AZURE_SUBSCRIPTION_ID` - set to the subscription id to use for deployment testing.
+
+**NOTE:** You may login to your Azure account using `az login -t <tenant-id>`  and selecting the subscription from the cli. If you are not prompted you can run the `az account set --subscription <subscription-id>` command.
 
 Use cases for unit testing:
 
@@ -75,7 +86,7 @@ make test TESTFILTER=Subscription
 
 ### Deployment Testing
 
-These tests wil resources to an Azure environment, so ensure you are prepared to incur any costs.
+These tests will deploy resources to an Azure environment, so ensure you are prepared to incur any costs.
 
 Use cases for deployment testing:
 
@@ -105,7 +116,7 @@ The following environment variables are required for deployment testing:
 * `AZURE_BILLING_SCOPE` - set to the resource id of the billing scope to use for the deployment.
 * `AZURE_SUBSCRIPTION_ID` - set to the subscription id to use for deployment testing.
 * `AZURE_TENANT_ID` - set to the tenant id of the Azure account.
-* `TERRATEST_DEPLOY` - set to a non-empty value to run the deployemnt tests. `make testdeploy` will do this for you.
+* `TERRATEST_DEPLOY` - set to a non-empty value to run the deployment tests. `make testdeploy` will do this for you.
 
 ## PR Naming
 

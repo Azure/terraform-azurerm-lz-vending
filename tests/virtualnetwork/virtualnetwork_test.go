@@ -2,6 +2,7 @@ package virtualnetwork
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
@@ -29,8 +30,8 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
@@ -44,7 +45,7 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	vns := v["virtual_networks"].(map[string]map[string]any)
 	for k, v := range vns {
 		rgres := fmt.Sprintf("azapi_resource.rg[\"%s-rg\"]", k)
-		vnetres := fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)
+		vnetres := fmt.Sprintf("module.virtual_networks[\"%s\"].azapi_resource.vnet", k)
 		check.InPlan(test.PlanStruct).That(rgres).Key("name").HasValue(v["resource_group_name"]).ErrorIsNil(t)
 		check.InPlan(test.PlanStruct).That(rgres).Key("location").HasValue(v["location"]).ErrorIsNil(t)
 		check.InPlan(test.PlanStruct).That(vnetres).Key("name").HasValue(v["name"]).ErrorIsNil(t)
@@ -67,13 +68,13 @@ func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// want 8 resources, like TestVirtualNetworkCreateValid
+	// want 6 resources, like TestVirtualNetworkCreateValid
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNilFatal(t)
 
 	// Loop through each virtual network and check the values
 	vns := v["virtual_networks"].(map[string]map[string]any)
 	for k, v := range vns {
-		res := fmt.Sprintf("azapi_resource.vnet[\"%s\"]", k)
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"].azapi_resource.vnet", k)
 		check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.dhcpOptions.dnsServers").HasValue(v["dns_servers"]).ErrorIsNil(t)
 	}
 }
@@ -97,10 +98,10 @@ func TestVirtualNetworkCreateValidWithTags(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, same as TestVirtualNetworkCreateValid test
+	// We want 6 resources here, same as TestVirtualNetworkCreateValid test
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNilFatal(t)
 
-	check.InPlan(test.PlanStruct).That("azapi_resource.vnet[\"primary\"]").Key("tags").HasValue(primaryvnet["tags"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("module.virtual_networks[\"primary\"].azapi_resource.vnet").Key("tags").HasValue(primaryvnet["tags"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.rg[\"primary-rg\"]").Key("tags").HasValue(primaryvnet["resource_group_tags"]).ErrorIsNil(t)
 }
 
@@ -120,11 +121,11 @@ func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNilFatal(t)
 
-	peer1 := "azapi_resource.peering_mesh[\"primary-secondary\"]"
+	peer1 := "module.peering_mesh[\"primary-secondary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.allowForwardedTraffic").HasValue(false).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
@@ -132,7 +133,7 @@ func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 	peer1Remote := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/secondary-rg/providers/Microsoft.Network/virtualNetworks/secondary-vnet"
 	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.remoteVirtualNetwork.id").HasValue(peer1Remote).ErrorIsNil(t)
 
-	peer2 := "azapi_resource.peering_mesh[\"secondary-primary\"]"
+	peer2 := "module.peering_mesh[\"secondary-primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.allowForwardedTraffic").HasValue(true).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That(peer2).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
@@ -154,12 +155,12 @@ func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, as only one of the two vnets has mesh peering enabled, then no peerings should be created
+	// We want 6 resources here, as only one of the two vnets has mesh peering enabled, then no peerings should be created
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
@@ -184,12 +185,12 @@ func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 6 resources here, as the two vnets have the same rg, then 2 fewer resources than
+	// We want 4 resources here, as the two vnets have the same rg, then 2 fewer resources than
 	// TestVirtualNetworkCreateValid (rg + rg lock)
 	resources := []string{
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -213,12 +214,12 @@ func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 6 resources here, as the two vnets have the same rg, then 2 fewer resources than
+	// We want 4 resources here, as the two vnets have the same rg, then 2 fewer resources than
 	// TestVirtualNetworkCreateValid (rg + rg lock)
 	resources := []string{
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -226,6 +227,938 @@ func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
 	for _, r := range resources {
 		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
+}
+
+// TestVirtualNetworkCreateValidWithSubnet tests the creation of a plan that
+// creates a virtual network with a subnet.
+func TestVirtualNetworkCreateValidSubnet(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vns := v["virtual_networks"].(map[string]map[string]any)
+	for k, v := range vns {
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
+		subnets, exists := v["subnets"].(map[string]map[string]any)
+		if exists {
+			for subnet_k, subnet_v := range subnets {
+				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
+				check.InPlan(test.PlanStruct).That(subnet_res).Key("name").HasValue(subnet_v["name"]).ErrorIsNil(t)
+				check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.addressPrefixes").HasValue(subnet_v["address_prefixes"]).ErrorIsNil(t)
+			}
+		}
+	}
+}
+
+// TestVirtualNetworkCreateSubnetZeroLengthAddressPrefixes tests the length of address_space > 0
+func TestVirtualNetworkCreateSubnetZeroLengthAddressPrefixes(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []string{},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	assert.ErrorContains(t, err, "At least 1 subnet address prefix must be specified")
+}
+
+// TestVirtualNetworkCreateValidWithMultiplSubnets tests the creation of a plan that
+// creates a virtual network with a single subnet in each.
+func TestVirtualNetworkCreateValidWithMultiplSubnets(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+		},
+	}
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	secondaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.1.0/26"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vns := v["virtual_networks"].(map[string]map[string]any)
+	for k, v := range vns {
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
+		subnets, exists := v["subnets"].(map[string]map[string]any)
+		if exists {
+			for subnet_k, subnet_v := range subnets {
+				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
+				check.InPlan(test.PlanStruct).That(subnet_res).Key("name").HasValue(subnet_v["name"]).ErrorIsNil(t)
+				check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.addressPrefixes").HasValue(subnet_v["address_prefixes"]).ErrorIsNil(t)
+			}
+		}
+	}
+}
+
+// TestVirtualNetworkCreateValidWithMultiplSubnetsInSingleVnet tests the creation of a plan that
+// creates a virtual network with multiple subnets and another virtual network without subnets.
+func TestVirtualNetworkCreateValidWithMultiplSubnetsInSingleVnet(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+		},
+		"privateendpoint": {
+			"name":             "snet-privateendpoint",
+			"address_prefixes": []any{"192.168.0.64/26"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"primary\"].module.subnet[\"privateendpoint\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vns := v["virtual_networks"].(map[string]map[string]any)
+	for k, v := range vns {
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
+		subnets, exists := v["subnets"].(map[string]map[string]any)
+		if exists {
+			for subnet_k, subnet_v := range subnets {
+				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
+				check.InPlan(test.PlanStruct).That(subnet_res).Key("name").HasValue(subnet_v["name"]).ErrorIsNil(t)
+				check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.addressPrefixes").HasValue(subnet_v["address_prefixes"]).ErrorIsNil(t)
+			}
+		}
+	}
+}
+
+// TestVirtualNetworkCreateValidWithSubnetNatGateway tests the creation of a plan that
+// creates a virtual network with a subnet and a nat gateway.
+func TestVirtualNetworkCreateValidWithSubnetNatGateway(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+			"nat_gateway": map[string]any{
+				"id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/natGateways/testvnatgw",
+			},
+		},
+	}
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	secondaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.1.0/26"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vns := v["virtual_networks"].(map[string]map[string]any)
+	for k, v := range vns {
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
+		subnets, exists := v["subnets"].(map[string]map[string]any)
+		if exists {
+			for subnet_k, subnet_v := range subnets {
+				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
+				natgw, ng_exists := subnet_v["nat_gateway"].(map[string]any)
+				if ng_exists == false || natgw == nil || reflect.ValueOf(natgw).IsNil() {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.natGateway").DoesNotExist().ErrorIsNil(t)
+				} else {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.natGateway.id").HasValue(subnet_v["nat_gateway"].(map[string]any)["id"].(string)).ErrorIsNil(t)
+				}
+			}
+		}
+	}
+}
+
+// TestVirtualNetworkCreateSubnetInvalidNetworkSecurityGroup test the resource id value is correct
+func TestVirtualNetworkCreateSubnetInvalidNatGateway(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []string{"192.168.0.0/26"},
+			"nat_gateway": map[string]any{
+				"id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/routeTable/testrt",
+			},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	assert.ErrorContains(t, err, "Nat Gateway resource id must be valid")
+}
+
+// TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup tests the creation of a plan that
+// creates a virtual network with a subnet and a network security group.
+func TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+			"network_security_group": map[string]any{
+				"id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/networkSecurityGroups/testvnsg",
+			},
+		},
+	}
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	secondaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.1.0/26"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vns := v["virtual_networks"].(map[string]map[string]any)
+	for k, v := range vns {
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
+		subnets, exists := v["subnets"].(map[string]map[string]any)
+		if exists {
+			for subnet_k, subnet_v := range subnets {
+				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
+				nsg, nsg_exists := subnet_v["network_security_group"].(map[string]any)
+				if nsg_exists == false || nsg == nil || reflect.ValueOf(nsg).IsNil() {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.networkSecurityGroup").DoesNotExist().ErrorIsNil(t)
+				} else {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.networkSecurityGroup.id").HasValue(subnet_v["network_security_group"].(map[string]any)["id"].(string)).ErrorIsNil(t)
+				}
+			}
+		}
+	}
+}
+
+// TestVirtualNetworkCreateSubnetInvalidNetworkSecurityGroup test the resource id value is correct
+func TestVirtualNetworkCreateSubnetInvalidNetworkSecurityGroup(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []string{"192.168.0.0/26"},
+			"network_security_group": map[string]any{
+				"id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/routeTable/testrt",
+			},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	assert.ErrorContains(t, err, "Network security group resource id must be valid")
+}
+
+// TestVirtualNetworkCreateValidWithSubnetPrivateEndpointNetworkPolicy tests the creation of a plan that
+// creates a virtual network with a subnet and a private endpoint network policy enabled and disabled.
+func TestVirtualNetworkCreateValidWithSubnetPrivateEndpointNetworkPolicy(t *testing.T) {
+	// run bith scenarios here
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":                              "snet-default",
+			"address_prefixes":                  []any{"192.168.0.0/26"},
+			"private_endpoint_network_policies": "Disabled",
+		},
+	}
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	secondaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.1.0/26"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vns := v["virtual_networks"].(map[string]map[string]any)
+	for k, v := range vns {
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
+		subnets, exists := v["subnets"].(map[string]map[string]any)
+		if exists {
+			for subnet_k, subnet_v := range subnets {
+				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
+				pe, pe_exists := subnet_v["private_endpoint_network_policies"]
+				if pe_exists == false {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.privateEndpointNetworkPolicies").HasValue("Enabled").ErrorIsNil(t)
+				} else {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.privateEndpointNetworkPolicies").HasValue(pe).ErrorIsNil(t)
+				}
+			}
+		}
+	}
+}
+
+// TestVirtualNetworkCreateValidWithSubnetPrivateLinkServiceNetworkPolicy tests the creation of a plan that
+// creates a virtual network with a subnet and a private link service network policy enabled and disabled.
+func TestVirtualNetworkCreateValidWithSubnetPrivateLinkServiceNetworkPolicy(t *testing.T) {
+	// run bith scenarios here
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+			"private_link_service_network_policies_enabled": false,
+		},
+	}
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	secondaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.1.0/26"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vns := v["virtual_networks"].(map[string]map[string]any)
+	for k, v := range vns {
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
+		subnets, exists := v["subnets"].(map[string]map[string]any)
+		if exists {
+			for subnet_k, subnet_v := range subnets {
+				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
+				_, pls_exists := subnet_v["private_link_service_network_policies_enabled"]
+				if pls_exists == false {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.privateLinkServiceNetworkPolicies").HasValue("Enabled").ErrorIsNil(t)
+				} else {
+					if subnet_v["private_link_service_network_policies_enabled"] == true {
+						check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.privateLinkServiceNetworkPolicies").HasValue("Enabled").ErrorIsNil(t)
+					} else {
+						check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.privateLinkServiceNetworkPolicies").HasValue("Disabled").ErrorIsNil(t)
+					}
+				}
+			}
+		}
+	}
+}
+
+// TestVirtualNetworkCreateValidWithSubnetRouteTable tests the creation of a plan that
+// creates a virtual network with a subnet and a route table associated with it.
+func TestVirtualNetworkCreateValidWithSubnetRouteTable(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+			"route_table": map[string]any{
+				"id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/routeTables/testrt",
+			},
+		},
+	}
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	secondaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.1.0/26"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vns := v["virtual_networks"].(map[string]map[string]any)
+	for k, v := range vns {
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
+		subnets, exists := v["subnets"].(map[string]map[string]any)
+		if exists {
+			for subnet_k, subnet_v := range subnets {
+				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
+				rt, rt_exists := subnet_v["route_table"].(map[string]any)
+				if rt_exists == false || rt == nil || reflect.ValueOf(rt).IsNil() {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.routeTable").DoesNotExist().ErrorIsNil(t)
+				} else {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.routeTable.id").HasValue(subnet_v["route_table"].(map[string]any)["id"].(string)).ErrorIsNil(t)
+				}
+			}
+		}
+	}
+}
+
+// TestVirtualNetworkCreateValidWithSubnetDefaultOutboundAccess tests the creation of a plan that
+// creates a virtual network with a subnet with default outbound access enabled and disabled.
+func TestVirtualNetworkCreateValidWithSubnetDefaultOutboundAccess(t *testing.T) {
+	// run bith scenarios here
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":                            "snet-default",
+			"address_prefixes":                []any{"192.168.0.0/26"},
+			"default_outbound_access_enabled": true,
+		},
+	}
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	secondaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.1.0/26"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vns := v["virtual_networks"].(map[string]map[string]any)
+	for k, v := range vns {
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
+		subnets, exists := v["subnets"].(map[string]map[string]any)
+		if exists {
+			for subnet_k, subnet_v := range subnets {
+				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
+				doa, doa_exists := subnet_v["default_outbound_access_enabled"]
+				if doa_exists == false {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.defaultOutboundAccess").HasValue(false).ErrorIsNil(t)
+				} else {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.defaultOutboundAccess").HasValue(doa).ErrorIsNil(t)
+				}
+			}
+		}
+	}
+}
+
+// TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpoint tests the creation of a plan that
+// creates a virtual network with a subnet and a single service endpoint assigned.
+func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpoint(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":              "snet-default",
+			"address_prefixes":  []any{"192.168.0.0/26"},
+			"service_endpoints": []any{"Microsoft.Storage"},
+		},
+	}
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	secondaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.1.0/26"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	vns := v["virtual_networks"].(map[string]map[string]any)
+	for k, v := range vns {
+		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
+		subnets, exists := v["subnets"].(map[string]map[string]any)
+		if exists {
+			for subnet_k, subnet_v := range subnets {
+				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
+				_, se_exists := subnet_v["service_endpoints"].([]any)
+				if se_exists {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.serviceEndpoints.0.service").HasValue("Microsoft.Storage").ErrorIsNil(t)
+				} else {
+					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.serviceEndpoints").DoesNotExist().ErrorIsNil(t)
+				}
+			}
+		}
+	}
+}
+
+// TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpoints tests the creation of a plan that
+// creates a virtual network with a subnet and multiple service endpoint assigned.
+func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpoints(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":              "snet-default",
+			"address_prefixes":  []any{"192.168.0.0/26"},
+			"service_endpoints": []any{"Microsoft.Storage", "Microsoft.KeyVault"},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	res := "module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet"
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpoints.1.service").HasValue("Microsoft.Storage").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpoints.0.service").HasValue("Microsoft.KeyVault").ErrorIsNil(t)
+}
+
+// TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpointPolicy tests the creation of a plan that
+// creates a virtual network with a subnet and a single service endpoint policy assigned.
+func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpointPolicy(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	sep_res_id := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/serviceEndpointPolicies/testsep"
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+			"service_endpoint_policies": map[string]map[string]any{
+				"policy1": {
+					"id": sep_res_id,
+				},
+			},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	res := "module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet"
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpointPolicies.0.id").HasValue(sep_res_id).ErrorIsNil(t)
+}
+
+// TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies tests the creation of a plan that
+// creates a virtual network with a subnet and multiple service endpoint policies assigned.
+func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	storage_sep_res_id := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/serviceEndpointPolicies/testsepsto"
+	kv_sep_res_id := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/serviceEndpointPolicies/testsepkv"
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+			"service_endpoint_policies": map[string]map[string]any{
+				"policy1": {
+					"id": storage_sep_res_id,
+				},
+				"policy2": {
+					"id": kv_sep_res_id,
+				},
+			},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	res := "module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet"
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpointPolicies.0.id").HasValue(storage_sep_res_id).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpointPolicies.1.id").HasValue(kv_sep_res_id).ErrorIsNil(t)
+}
+
+// TestVirtualNetworkCreateValidWithSubnetSingleDelegation tests the creation of a plan that
+// creates a virtual network with a subnet and a single delegation.
+func TestVirtualNetworkCreateValidWithSubnetSingleDelegation(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	expected_delegations := []map[string]any{}
+	expected_delegations = append(expected_delegations, map[string]any{
+		"name": "Microsoft.Web/serverFarms",
+		"service_delegation": map[string]any{
+			"name": "Microsoft.Web/serverFarms",
+		},
+	})
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+			"delegation":       expected_delegations,
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	res := "module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet"
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.name").HasValue("Microsoft.Web/serverFarms").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.properties.serviceName").HasValue("Microsoft.Web/serverFarms").ErrorIsNil(t)
+}
+
+// TestVirtualNetworkCreateValidWithSubnetMultipleDelegations tests the creation of a plan that
+// creates a virtual network with a subnet and multiple delegations.
+func TestVirtualNetworkCreateValidWithSubnetMultipleDelegations(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+
+	// Enable primary vnet subnet in test mock input variables
+	expected_delegations := []map[string]any{}
+	expected_delegations = append(expected_delegations, map[string]any{
+		"name": "Microsoft.Web/serverFarms",
+		"service_delegation": map[string]any{
+			"name": "Microsoft.Web/serverFarms",
+		},
+	})
+	expected_delegations = append(expected_delegations, map[string]any{
+		"name": "Microsoft.ContainerInstance/containerGroups",
+		"service_delegation": map[string]any{
+			"name": "Microsoft.ContainerInstance/containerGroups",
+		},
+	})
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+			"delegation":       expected_delegations,
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	resources := []string{
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+	}
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
+
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	res := "module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet"
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.name").HasValue("Microsoft.Web/serverFarms").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.properties.serviceName").HasValue("Microsoft.Web/serverFarms").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.1.name").HasValue("Microsoft.ContainerInstance/containerGroups").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.1.properties.serviceName").HasValue("Microsoft.ContainerInstance/containerGroups").ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
@@ -244,17 +1177,17 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.peering_hub_outbound[\"primary\"]",
-		"azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -264,7 +1197,7 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 
 	// We can only check the body of the outbound peering as the inbound values
 	// are not known until apply
-	outbound := "azapi_resource.peering_hub_outbound[\"primary\"]"
+	outbound := "module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]"
 	terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, outbound)
 
 	check.InPlan(test.PlanStruct).That(outbound).Key("body").Query("properties.allowForwardedTraffic").HasValue(true).ErrorIsNil(t)
@@ -274,7 +1207,7 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 	check.InPlan(test.PlanStruct).That(outbound).Key("body").Query("properties.remoteVirtualNetwork.id").HasValue(primaryvnet["hub_network_resource_id"]).ErrorIsNil(t)
 
 	// More limited checks on the inbound peering
-	inbound := "azapi_resource.peering_hub_inbound[\"primary\"]"
+	inbound := "module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(inbound).Key("parent_id").HasValue(primaryvnet["hub_network_resource_id"]).ErrorIsNil(t)
 }
 
@@ -296,17 +1229,17 @@ func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.peering_hub_outbound[\"primary\"]",
-		"azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -315,11 +1248,11 @@ func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
 	}
 
 	// Check outbound peering name
-	outbound := "azapi_resource.peering_hub_outbound[\"primary\"]"
+	outbound := "module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(outbound).Key("name").HasValue(primaryvnet["hub_peering_name_tohub"]).ErrorIsNil(t)
 
 	// Check inbound peering name
-	inbound := "azapi_resource.peering_hub_inbound[\"primary\"]"
+	inbound := "module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(inbound).Key("name").HasValue(primaryvnet["hub_peering_name_fromhub"]).ErrorIsNil(t)
 }
 
@@ -342,16 +1275,16 @@ func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional one is the outbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.peering_hub_outbound[\"primary\"]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -379,16 +1312,16 @@ func TestVirtualNetworkCreateValidWithOnlyFromHubPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
-	// The additional two are the inbound & outbound peering
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// The additional one is the inbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -414,17 +1347,17 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.peering_hub_outbound[\"primary\"]",
-		"azapi_resource.peering_hub_inbound[\"primary\"]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -434,7 +1367,7 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 
 	// We can only check the body of the outbound peering as the inbound values
 	// not known until apply
-	res := "azapi_resource.peering_hub_outbound[\"primary\"]"
+	res := "module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.useRemoteGateways").HasValue(false).ErrorIsNil(t)
 }
 
@@ -461,13 +1394,13 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
-	// The additional resource is the vhub connection
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// The additional resource is the vhub connection and the other is routing intent
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
@@ -512,13 +1445,13 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
@@ -555,13 +1488,13 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
@@ -595,13 +1528,13 @@ func TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
@@ -656,13 +1589,13 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetAndPrivateTraffic(t *tes
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
@@ -717,13 +1650,13 @@ func TestVirtualNetworkCreateValidWithVhubRoutingIntentEnabled(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection_routing_intent[\"primary\"]",
@@ -812,18 +1745,18 @@ func TestVirtualNetworkCreateInvalidResourceGroupCreation(t *testing.T) {
 func TestVirtualNetworkDdosProtection(t *testing.T) {
 	t.Parallel()
 
-	// We want 8 resources here
+	// We want 6 resources here
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
 	}
 
 	vnetresources := []string{
-		"azapi_resource.vnet[\"primary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
 	}
 
 	t.Run("Enabled", func(t *testing.T) {
@@ -852,8 +1785,8 @@ func TestVirtualNetworkDdosProtection(t *testing.T) {
 
 		check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 		for _, r := range vnetresources {
-			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.enableDdosProtection").DoesNotExist().ErrorIsNil(t)
-			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.ddosProtectionPlan.id").DoesNotExist().ErrorIsNil(t)
+			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.enableDdosProtection").HasValue(false).ErrorIsNil(t)
+			check.InPlan(test.PlanStruct).That(r).Key("body").Query("properties.ddosProtectionPlan").DoesNotExist().ErrorIsNil(t)
 		}
 	})
 }
@@ -861,7 +1794,8 @@ func TestVirtualNetworkDdosProtection(t *testing.T) {
 // getMockInputVariables returns a set of mock input variables that can be used and modified for testing scenarios.
 func getMockInputVariables() map[string]any {
 	return map[string]any{
-		"subscription_id": "00000000-0000-0000-0000-000000000000",
+		"subscription_id":  "00000000-0000-0000-0000-000000000000",
+		"enable_telemetry": false,
 		"virtual_networks": map[string]map[string]any{
 			"primary": {
 				"name":                "primary-vnet",

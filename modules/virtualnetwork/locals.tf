@@ -27,14 +27,14 @@ locals {
       # Peering this network to the remote network
       outbound = {
         name               = coalesce(v.hub_peering_name_tohub, "peer-${uuidv5("url", v.hub_network_resource_id)}")
-        this_resource_id   = azapi_resource.vnet[k].id
+        this_resource_id   = module.virtual_networks[k].resource_id
         remote_resource_id = v.hub_network_resource_id
       },
       # Peering the remote network to this network
       inbound = {
         name               = coalesce(v.hub_peering_name_fromhub, "peer-${uuidv5("url", local.virtual_network_resource_ids[k])}")
         this_resource_id   = v.hub_network_resource_id
-        remote_resource_id = azapi_resource.vnet[k].id
+        remote_resource_id = module.virtual_networks[k].resource_id
       }
       peering_direction   = contains(local.valid_peering_directions, coalesce(lower(v.hub_peering_direction), local.peering_direction_both)) ? coalesce(lower(v.hub_peering_direction), local.peering_direction_both) : local.peering_direction_both
       use_remote_gateways = v.hub_peering_use_remote_gateways
@@ -82,7 +82,7 @@ locals {
         source_key              = k_src
         destination_key         = k_dst
         name                    = "peer-${uuidv5("url", v_dst)}"
-        this_resource_id        = azapi_resource.vnet[k_src].id
+        this_resource_id        = module.virtual_networks[k_src].resource_id
         remote_resource_id      = v_dst
         allow_forwarded_traffic = var.virtual_networks[k_src].mesh_peering_allow_forwarded_traffic
       } if var.virtual_networks[k_dst].mesh_peering_enabled && k_src != k_dst
@@ -101,29 +101,6 @@ locals {
       tags      = v.resource_group_tags
     } if v.resource_group_creation_enabled
   ])
-}
-
-# virtual network body properties
-locals {
-  vnet_body_properties = {
-    for k, v in var.virtual_networks : k =>
-    merge(
-      {
-        addressSpace = {
-          addressPrefixes = v.address_space
-        }
-        dhcpOptions = {
-          dnsServers = v.dns_servers
-        }
-      },
-      v.ddos_protection_enabled ? {
-        ddosProtectionPlan = {
-          id = v.ddos_protection_plan_id
-        }
-        enableDdosProtection = true
-      } : null
-    )
-  }
 }
 
 locals {

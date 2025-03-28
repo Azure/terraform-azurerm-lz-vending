@@ -29,11 +29,11 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(4).ErrorIsNil(t)
 
 	resources := []string{
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 	}
 	for _, r := range resources {
 		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
@@ -65,11 +65,76 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(4).ErrorIsNil(t)
 
 	resources := []string{
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+	}
+	for _, r := range resources {
+		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
+	}
+
+	// defer terraform destroy with retry
+	defer test.DestroyRetry(setuptest.DefaultRetry) //nolint:errcheck
+	test.ApplyIdempotent().ErrorIsNil(t)
+
+	// check there two outputs for the virtual network resource ids
+	test.Output("virtual_network_resource_ids").Query("primary").Exists().ErrorIsNil(t)
+	test.Output("virtual_network_resource_ids").Query("secondary").Exists().ErrorIsNil(t)
+}
+
+// TestDeployVirtualNetworkValidSubnets tests the deployment of virtual networks
+// with valid input variables and subnet configurations
+func TestDeployVirtualNetworkValidSubnets(t *testing.T) {
+	t.Parallel()
+
+	utils.PreCheckDeployTests(t)
+	v, err := getValidInputVariables()
+	require.NoErrorf(t, err, "could not generate valid input variables, %s", err)
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":             "snet-default",
+			"address_prefixes": []any{"192.168.0.0/26"},
+			"private_link_service_network_policies_enabled": false,
+			"private_endpoint_network_policies":             "Disabled",
+		},
+	}
+	delegations := []map[string]any{}
+	delegations = append(delegations, map[string]any{
+		"name": "Microsoft.ContainerInstance/containerGroups",
+		"service_delegation": map[string]any{
+			"name": "Microsoft.ContainerInstance/containerGroups",
+		},
+	})
+	secondaryvnet["subnets"] = map[string]map[string]any{
+		"default": {
+			"name":                            "snet-default",
+			"address_prefixes":                []any{"192.168.1.0/26"},
+			"default_outbound_access_enabled": true,
+			"service_endpoints":               []any{"Microsoft.Storage"},
+		},
+		"containers": {
+			"name":             "snet-containers",
+			"address_prefixes": []any{"192.168.1.64/26"},
+			"delegation":       delegations,
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(7).ErrorIsNil(t)
+
+	resources := []string{
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].module.subnet[\"containers\"].azapi_resource.subnet",
 	}
 	for _, r := range resources {
 		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
@@ -104,15 +169,15 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(12).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
-		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork_test.azapi_resource.vnet[\"secondary\"]",
-		"module.virtualnetwork_test.azapi_resource.peering_hub_inbound[\"primary\"]",
-		"module.virtualnetwork_test.azapi_resource.peering_hub_inbound[\"secondary\"]",
-		"module.virtualnetwork_test.azapi_resource.peering_hub_outbound[\"primary\"]",
-		"module.virtualnetwork_test.azapi_resource.peering_hub_outbound[\"secondary\"]",
+		"module.virtualnetwork_test.module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtualnetwork_test.module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtualnetwork_test.module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
+		"module.virtualnetwork_test.module.peering_hub_inbound[\"secondary\"].azapi_resource.this[0]",
+		"module.virtualnetwork_test.module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.virtualnetwork_test.module.peering_hub_outbound[\"secondary\"].azapi_resource.this[0]",
 	}
 	for _, r := range resources {
 		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
@@ -145,13 +210,13 @@ func TestDeployVirtualNetworkValidUniDirectionalVnetPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(10).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
-		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork_test.azapi_resource.vnet[\"secondary\"]",
-		"module.virtualnetwork_test.azapi_resource.peering_hub_inbound[\"primary\"]",
-		"module.virtualnetwork_test.azapi_resource.peering_hub_outbound[\"secondary\"]",
+		"module.virtualnetwork_test.module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtualnetwork_test.module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtualnetwork_test.module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
+		"module.virtualnetwork_test.module.peering_hub_outbound[\"secondary\"].azapi_resource.this[0]",
 	}
 	for _, r := range resources {
 		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
@@ -180,11 +245,11 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(11).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
-		"module.virtualnetwork_test.azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork_test.azapi_resource.vnet[\"secondary\"]",
+		"module.virtualnetwork_test.module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtualnetwork_test.module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"module.virtualnetwork_test.azapi_resource.vhubconnection[\"primary\"]",
 		"module.virtualnetwork_test.azapi_resource.vhubconnection[\"secondary\"]",
 	}
@@ -289,13 +354,13 @@ func TestDeployVirtualNetworkValidMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
-		"azapi_resource.vnet[\"primary\"]",
-		"azapi_resource.vnet[\"secondary\"]",
-		"azapi_resource.peering_mesh[\"primary-secondary\"]",
-		"azapi_resource.peering_mesh[\"secondary-primary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.peering_mesh[\"primary-secondary\"].azapi_resource.this[0]",
+		"module.peering_mesh[\"secondary-primary\"].azapi_resource.this[0]",
 	}
 	for _, r := range resources {
 		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
@@ -315,7 +380,8 @@ func getValidInputVariables() (map[string]any, error) {
 	name2 := name + "-2"
 
 	return map[string]any{
-		"subscription_id": os.Getenv("AZURE_SUBSCRIPTION_ID"),
+		"subscription_id":  os.Getenv("AZURE_SUBSCRIPTION_ID"),
+		"enable_telemetry": false,
 		"virtual_networks": map[string]map[string]any{
 			"primary": {
 				"name":                        name,
