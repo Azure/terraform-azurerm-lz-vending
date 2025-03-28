@@ -68,7 +68,7 @@ func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// want 8 resources, like TestVirtualNetworkCreateValid
+	// want 6 resources, like TestVirtualNetworkCreateValid
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNilFatal(t)
 
 	// Loop through each virtual network and check the values
@@ -98,7 +98,7 @@ func TestVirtualNetworkCreateValidWithTags(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, same as TestVirtualNetworkCreateValid test
+	// We want 6 resources here, same as TestVirtualNetworkCreateValid test
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNilFatal(t)
 
 	check.InPlan(test.PlanStruct).That("module.virtual_networks[\"primary\"].azapi_resource.vnet").Key("tags").HasValue(primaryvnet["tags"]).ErrorIsNil(t)
@@ -121,7 +121,7 @@ func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNilFatal(t)
 
@@ -155,7 +155,7 @@ func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, as only one of the two vnets has mesh peering enabled, then no peerings should be created
+	// We want 6 resources here, as only one of the two vnets has mesh peering enabled, then no peerings should be created
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -185,7 +185,7 @@ func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 6 resources here, as the two vnets have the same rg, then 2 fewer resources than
+	// We want 4 resources here, as the two vnets have the same rg, then 2 fewer resources than
 	// TestVirtualNetworkCreateValid (rg + rg lock)
 	resources := []string{
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -214,7 +214,7 @@ func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 6 resources here, as the two vnets have the same rg, then 2 fewer resources than
+	// We want 4 resources here, as the two vnets have the same rg, then 2 fewer resources than
 	// TestVirtualNetworkCreateValid (rg + rg lock)
 	resources := []string{
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -1177,7 +1177,7 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
@@ -1229,7 +1229,7 @@ func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
@@ -1275,7 +1275,7 @@ func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional one is the outbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
@@ -1312,8 +1312,8 @@ func TestVirtualNetworkCreateValidWithOnlyFromHubPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
-	// The additional two are the inbound & outbound peering
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// The additional one is the inbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -1347,7 +1347,7 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
@@ -1394,8 +1394,8 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
-	// The additional resource is the vhub connection
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// The additional resource is the vhub connection and the other is routing intent
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -1445,7 +1445,7 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
@@ -1488,7 +1488,7 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
@@ -1528,7 +1528,7 @@ func TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
@@ -1589,7 +1589,7 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetAndPrivateTraffic(t *tes
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
@@ -1650,7 +1650,7 @@ func TestVirtualNetworkCreateValidWithVhubRoutingIntentEnabled(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
@@ -1745,7 +1745,7 @@ func TestVirtualNetworkCreateInvalidResourceGroupCreation(t *testing.T) {
 func TestVirtualNetworkDdosProtection(t *testing.T) {
 	t.Parallel()
 
-	// We want 8 resources here
+	// We want 6 resources here
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",

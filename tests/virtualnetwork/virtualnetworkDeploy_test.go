@@ -29,7 +29,7 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(4).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
@@ -65,7 +65,7 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(4).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
@@ -169,7 +169,7 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(12).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.module.virtual_networks[\"primary\"].azapi_resource.vnet",
@@ -210,7 +210,7 @@ func TestDeployVirtualNetworkValidUniDirectionalVnetPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(10).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.module.virtual_networks[\"primary\"].azapi_resource.vnet",
@@ -245,7 +245,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(11).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.module.virtual_networks[\"primary\"].azapi_resource.vnet",
@@ -354,7 +354,7 @@ func TestDeployVirtualNetworkValidMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
