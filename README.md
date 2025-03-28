@@ -956,6 +956,7 @@ Description: A map of the virtual networks to create. The map key must be known 
     - `name` - The name of the delegation.
     - `service_delegation` - An object with the following fields:
       - `name` - The name of the service delegation.
+      - `actions` - A list of actions that should be delegated, the list is specific to the service being delegated.
 
 ### Hub network peering values
 
