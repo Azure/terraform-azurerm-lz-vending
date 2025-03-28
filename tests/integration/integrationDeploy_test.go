@@ -128,7 +128,7 @@ func getValidInputVariables() (map[string]any, error) {
 				"name":                            name,
 				"resource_group_name":             name,
 				"location":                        "northeurope",
-				"address_space":                   []string{"10.1.0.0/24", "172.16.1.0/24"},
+				"address_space":                   []string{"10.1.0.0/24", "172.16.1.0/24", "2001:db8::/64"},
 				"hub_peering_enabled":             true,
 				"hub_peering_use_remote_gateways": false,
 			},

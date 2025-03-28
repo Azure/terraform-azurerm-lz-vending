@@ -890,7 +890,7 @@ func getMockInputVariables() map[string]any {
 		"virtual_networks": map[string]map[string]any{
 			"primary": {
 				"name":                "primary-vnet",
-				"address_space":       []any{"192.168.0.0/24"},
+				"address_space":       []any{"192.168.0.0/24", "2001:db8::/64"},
 				"location":            "westeurope",
 				"resource_group_name": "primary-rg",
 			},

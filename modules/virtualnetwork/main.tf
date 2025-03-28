@@ -37,7 +37,7 @@ resource "azapi_resource" "rg_lock" {
 resource "azapi_resource" "vnet" {
   for_each  = var.virtual_networks
   parent_id = "${local.subscription_resource_id}/resourceGroups/${each.value.resource_group_name}"
-  type      = "Microsoft.Network/virtualNetworks@2021-08-01"
+  type      = "Microsoft.Network/virtualNetworks@2024-05-01"
   name      = each.value.name
   location  = coalesce(each.value.location, var.location)
   body = jsonencode({

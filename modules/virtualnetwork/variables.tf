@@ -66,7 +66,7 @@ A map of the virtual networks to create. The map key must be known at the plan s
 ### Required fields
 
 - `name`: The name of the virtual network. [required]
-- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [required]
+- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24", "2001:db8::/64"]`. [required]
 - `resource_group_name`: The name of the resource group to create the virtual network in. The default is that the resource group will be created by this module. [required]
 
 ### DNS servers
@@ -165,10 +165,10 @@ DESCRIPTION
       for k, v in var.virtual_networks :
       [
         for cidr in v.address_space :
-        can(regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(3[0-2]|[1-2][0-9]|[0-9]))$", cidr))
+        can(regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(3[0-2]|[1-2][0-9]|[0-9]))$|^([\\da-fA-F]{1,4}:){7}[\\da-fA-F]{1,4}(\\/(1[0-2][0-8]|[1-9][0-9]|[0-9]))$|^:(:[\\da-fA-F]{1,4}){1,7}(\\/(1[0-2][0-8]|[1-9][0-9]|[0-9]))$|^([\\da-fA-F]{1,4}:){1,7}:(\\/(1[0-2][0-8]|[1-9][0-9]|[0-9]))$|^([\\da-fA-F]{1,4}:){1}(:[\\da-fA-F]{1,4}){1,6}(\\/(1[0-2][0-8]|[1-9][0-9]|[0-9]))$|^([\\da-fA-F]{1,4}:){2}(:[\\da-fA-F]{1,5})(\\/(1[0-2][0-8]|[1-9][0-9]|[0-9]))$|^([\\da-fA-F]{1,4}:){3}(:[\\da-fA-F]{1,4}){1,4}(\\/(1[0-2][0-8]|[1-9][0-9]|[0-9]))$|^([\\da-fA-F]{1,4}:){4}(:[\\da-fA-F]{1,3})(\\/(1[0-2][0-8]|[1-9][0-9]|[0-9]))$|^([\\da-fA-F]{1,4}:){5}(:[\\da-fA-F]{1,2})(\\/(1[0-2][0-8]|[1-9][0-9]|[0-9]))$|^([\\da-fA-F]{1,4}:){6}(:[\\da-fA-F]{1})(\\/(1[0-2][0-8]|[1-9][0-9]|[0-9]))$", cidr))
       ]
     ]))
-    error_message = "Address space entries must be specified in CIDR notation, e.g. 192.168.0.0/24."
+    error_message = "Address space entries must be specified in CIDR notation, e.g. 192.168.0.0/24 for IPv4 or 2001:db8::/64 for IPv6."
   }
 
   # validate ddos protection plan resource id for networks with ddos protection enabled

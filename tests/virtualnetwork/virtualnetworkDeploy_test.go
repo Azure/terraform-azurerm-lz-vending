@@ -271,7 +271,7 @@ func TestDeployVirtualNetworkSubnetIdempotency(t *testing.T) {
 
 	// test an update to vnet address space, then check for subnet still existing
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
-	primaryvnet["address_space"] = []string{"192.168.0.0/23"}
+	primaryvnet["address_space"] = []string{"192.168.0.0/23", "2001:db8::/64"}
 	_, err = terraform.PlanE(t, test.Options)
 	require.NoError(t, err)
 	_, err = terraform.ApplyAndIdempotentE(t, test.Options)
@@ -331,7 +331,7 @@ func getValidInputVariables() (map[string]any, error) {
 		"virtual_networks": map[string]map[string]any{
 			"primary": {
 				"name":                        name,
-				"address_space":               []string{"192.168.0.0/24"},
+				"address_space":               []string{"192.168.0.0/24", "2001:db8::/64"},
 				"location":                    "westeurope",
 				"resource_group_name":         name,
 				"resource_group_lock_enabled": false,
