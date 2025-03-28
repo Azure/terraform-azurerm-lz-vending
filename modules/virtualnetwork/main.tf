@@ -36,7 +36,7 @@ resource "azapi_resource" "rg_lock" {
 module "virtual_networks" {
   for_each        = var.virtual_networks
   source          = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version         = "0.7.1"
+  version         = "0.8.1"
   subscription_id = var.subscription_id
 
   name                    = each.value.name
@@ -63,7 +63,7 @@ module "virtual_networks" {
 module "peering_hub_outbound" {
   for_each        = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_fromhub }
   source          = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version         = "0.7.1"
+  version         = "0.8.1"
   subscription_id = var.subscription_id
 
   virtual_network = {
@@ -85,7 +85,7 @@ module "peering_hub_outbound" {
 module "peering_hub_inbound" {
   for_each        = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_tohub }
   source          = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version         = "0.7.1"
+  version         = "0.8.1"
   subscription_id = var.subscription_id
 
   virtual_network = {
@@ -107,7 +107,7 @@ module "peering_hub_inbound" {
 module "peering_mesh" {
   for_each        = { for i in local.virtual_networks_mesh_peering_list : "${i.source_key}-${i.destination_key}" => i }
   source          = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version         = "0.7.1"
+  version         = "0.8.1"
   subscription_id = var.subscription_id
 
   virtual_network = {

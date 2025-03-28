@@ -325,7 +325,7 @@ func TestVirtualNetworkCreateValidWithMultiplSubnets(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -381,7 +381,7 @@ func TestVirtualNetworkCreateValidWithMultiplSubnetsInSingleVnet(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -443,7 +443,7 @@ func TestVirtualNetworkCreateValidWithSubnetNatGateway(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -530,7 +530,7 @@ func TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -616,7 +616,7 @@ func TestVirtualNetworkCreateValidWithSubnetPrivateEndpointNetworkPolicy(t *test
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -681,7 +681,7 @@ func TestVirtualNetworkCreateValidWithSubnetPrivateLinkServiceNetworkPolicy(t *t
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -751,7 +751,7 @@ func TestVirtualNetworkCreateValidWithSubnetRouteTable(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -816,7 +816,7 @@ func TestVirtualNetworkCreateValidWithSubnetDefaultOutboundAccess(t *testing.T) 
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -880,7 +880,7 @@ func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpoint(t *testing.T) 
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -937,7 +937,7 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpoints(t *testing.
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -984,7 +984,7 @@ func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpointPolicy(t *testi
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -1034,7 +1034,7 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies(t *t
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -1065,9 +1065,9 @@ func TestVirtualNetworkCreateValidWithSubnetSingleDelegation(t *testing.T) {
 	// Enable primary vnet subnet in test mock input variables
 	expected_delegations := []map[string]any{}
 	expected_delegations = append(expected_delegations, map[string]any{
-		"name": "Microsoft.Web.serverFarms",
+		"name": "Microsoft.Web/serverFarms",
 		"service_delegation": map[string]any{
-			"name": "Microsoft.Web.serverFarms",
+			"name": "Microsoft.Web/serverFarms",
 		},
 	})
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -1083,7 +1083,7 @@ func TestVirtualNetworkCreateValidWithSubnetSingleDelegation(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -1100,8 +1100,8 @@ func TestVirtualNetworkCreateValidWithSubnetSingleDelegation(t *testing.T) {
 	}
 
 	res := "module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet"
-	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.name").HasValue("Microsoft.Web.serverFarms").ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.properties.serviceName").HasValue("Microsoft.Web.serverFarms").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.name").HasValue("Microsoft.Web/serverFarms").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.properties.serviceName").HasValue("Microsoft.Web/serverFarms").ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithSubnetMultipleDelegations tests the creation of a plan that
@@ -1114,15 +1114,15 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleDelegations(t *testing.T) {
 	// Enable primary vnet subnet in test mock input variables
 	expected_delegations := []map[string]any{}
 	expected_delegations = append(expected_delegations, map[string]any{
-		"name": "Microsoft.Web.serverFarms",
+		"name": "Microsoft.Web/serverFarms",
 		"service_delegation": map[string]any{
-			"name": "Microsoft.Web.serverFarms",
+			"name": "Microsoft.Web/serverFarms",
 		},
 	})
 	expected_delegations = append(expected_delegations, map[string]any{
-		"name": "Microsoft.ContainerInstance.containerGroups",
+		"name": "Microsoft.ContainerInstance/containerGroups",
 		"service_delegation": map[string]any{
-			"name": "Microsoft.ContainerInstance.containerGroups",
+			"name": "Microsoft.ContainerInstance/containerGroups",
 		},
 	})
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -1138,7 +1138,7 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleDelegations(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
@@ -1155,10 +1155,10 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleDelegations(t *testing.T) {
 	}
 
 	res := "module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet"
-	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.name").HasValue("Microsoft.Web.serverFarms").ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.properties.serviceName").HasValue("Microsoft.Web.serverFarms").ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.1.name").HasValue("Microsoft.ContainerInstance.containerGroups").ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.1.properties.serviceName").HasValue("Microsoft.ContainerInstance.containerGroups").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.name").HasValue("Microsoft.Web/serverFarms").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.0.properties.serviceName").HasValue("Microsoft.Web/serverFarms").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.1.name").HasValue("Microsoft.ContainerInstance/containerGroups").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.delegations.1.properties.serviceName").HasValue("Microsoft.ContainerInstance/containerGroups").ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
