@@ -73,7 +73,7 @@ Description: A map of the virtual networks to create. The map key must be known 
 ### Required fields
 
 - `name`: The name of the virtual network. [required]
-- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [required]
+- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24", "2001:db8::/64"]`. [required]
 - `resource_group_name`: The name of the resource group to create the virtual network in. The default is that the resource group will be created by this module. [required]
 
 ### DNS servers
