@@ -1,21 +1,22 @@
 module "usermanagedidentity" {
-  source   = "./modules/usermanagedidentity"
-  count    = var.umi_enabled ? 1 : 0
-  name     = var.umi_name
-  location = var.location
-  tags     = var.umi_tags
-
-  resource_group_creation_enabled = var.umi_resource_group_creation_enabled
-  resource_group_name             = var.umi_resource_group_name
-  resource_group_lock_enabled     = var.umi_resource_group_lock_enabled
-  resource_group_lock_name        = var.umi_resource_group_lock_name
-  resource_group_tags             = var.umi_resource_group_tags
-
+  source          = "./modules/usermanagedidentity"
   subscription_id = local.subscription_id
 
-  federated_credentials_advanced        = var.umi_federated_credentials_advanced
-  federated_credentials_github          = var.umi_federated_credentials_github
-  federated_credentials_terraform_cloud = var.umi_federated_credentials_terraform_cloud
+  for_each = { for umi_k, umi_v in var.user_managed_identities : umi_k => umi_v if var.umi_enabled }
+
+  name     = each.value.name
+  location = length(each.value.location) > 0 ? each.value.location : var.location
+  tags     = each.value.tags
+
+  resource_group_creation_enabled = var.resource_group_creation_enabled
+  resource_group_name             = each.value.resource_group_name
+  resource_group_lock_enabled     = each.value.resource_group_lock_enabled
+  resource_group_lock_name        = each.value.resource_group_lock_name
+  resource_group_tags             = each.value.resource_group_tags
+
+  federated_credentials_advanced        = each.value.federated_credentials_advanced
+  federated_credentials_github          = each.value.federated_credentials_github
+  federated_credentials_terraform_cloud = each.value.federated_credentials_terraform_cloud
 
   depends_on = [
     module.resourcegroup

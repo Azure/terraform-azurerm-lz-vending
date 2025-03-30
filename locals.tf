@@ -29,4 +29,45 @@ locals {
   # resource_group_ids is a map of resource groups created, if the module has been enabled.
   # This is used in the outputs.tf file to return the resource group ids.
   virtual_network_resource_group_ids = var.virtual_network_enabled ? module.virtualnetwork[0].resource_group_resource_ids : {}
+
+  # user_managed_identity_role_assignments is a list of objects containing the identity information after the user managed identities are created, if the module has been enabled.
+  # since var.user_managed_identities is a map that contains the role assignments maps, we need to use a for loop to extract the values from the nested map.
+  # using https://github.com/Azure/terraform-robust-module-design/blob/main/nested_maps/flatten_nested_map/main.tf as a reference.
+  user_managed_identity_role_assignments = {
+    for item in flatten(
+      [
+        for umi_k, umi_v in var.user_managed_identities : [
+          for role_k, role_v in umi_v.role_assignments : {
+            umi_key  = umi_k
+            role_key = role_k
+            role_assignment = {
+              identity          = one([for i in module.usermanagedidentity : i if i.resource_id == "/subscriptions/${local.subscription_id}/resourcegroups/${umi_v.resource_group_name}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${umi_v.name}"])
+              definition        = role_v.definition
+              scope             = "${local.subscription_resource_id}${role_v.relative_scope}"
+              condition         = role_v.condition
+              condition_version = role_v.condition_version
+            }
+          }
+        ]
+      ]
+    ) : "${item.umi_key}/${item.role_key}" => item.role_assignment
+  }
+
+  # umi_resource_ids is a map of user managed identities created, if the module has been enabled.
+  # This is used in the outputs.tf file to return the umi resource ids.
+  umi_resource_ids = var.umi_enabled ? { for k, v in module.usermanagedidentity : k => v.resource_id } : {}
+
+  # umi_principal_ids is a map of principal ids for the user managed identities created, if the module has been enabled.
+  # This is used in the outputs.tf file to return the umi principal ids.
+  umi_principal_ids = var.umi_enabled ? { for k, v in module.usermanagedidentity : k => v.principal_id } : {}
+
+  # umi_tenant_ids is a map of tenant ids for the user managed identities created, if the module has been enabled.
+  # This is used in the outputs.tf file to return the umi tenant ids. Since there can my duplicate tenant ids, 
+  # we should only return unique values.
+  umi_tenant_ids = var.umi_enabled ? { for k, v in module.usermanagedidentity : k => v.tenant_id } : {}
+
+  # umi_client_ids is a map of client ids for the user managed identities created, if the module has been enabled.
+  # This is used in the outputs.tf file to return the umi client ids.
+  umi_client_ids = var.umi_enabled ? { for k, v in module.usermanagedidentity : k => v.client_id } : {}
 }
+

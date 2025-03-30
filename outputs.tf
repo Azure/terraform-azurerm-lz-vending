@@ -26,36 +26,36 @@ Value will be null if `var.subscription_management_group_association_enabled` is
 DESCRIPTION
 }
 
-output "umi_client_id" {
+output "umi_client_ids" {
   description = <<DESCRIPTION
 The client id of the user managed identity.
 Value will be null if `var.umi_enabled` is false.
 DESCRIPTION
-  value       = one(module.usermanagedidentity) != null ? one(module.usermanagedidentity).client_id : null
+  value       = local.umi_client_ids
 }
 
-output "umi_tenant_id" {
+output "umi_tenant_ids" {
   description = <<DESCRIPTION
 The tenant id of the user managed identity.
 Value will be null if `var.umi_enabled` is false.
 DESCRIPTION
-  value       = one(module.usermanagedidentity) != null ? one(module.usermanagedidentity).tenant_id : null
+  value       = local.umi_tenant_ids
 }
 
-output "umi_principal_id" {
+output "umi_principal_ids" {
   description = <<DESCRIPTION
 The principal id of the user managed identity, sometimes known as the object id.
 Value will be null if `var.umi_enabled` is false.
 DESCRIPTION
-  value       = one(module.usermanagedidentity) != null ? one(module.usermanagedidentity).principal_id : null
+  value       = local.umi_principal_ids
 }
 
-output "umi_id" {
+output "umi_resource_ids" {
   description = <<DESCRIPTION
 The Azure resource id of the user managed identity.
 Value will be null if `var.umi_enabled` is false.
 DESCRIPTION
-  value       = one(module.usermanagedidentity) != null ? one(module.usermanagedidentity).umi_id : null
+  value       = local.umi_resource_ids
 }
 
 output "resource_group_resource_ids" {

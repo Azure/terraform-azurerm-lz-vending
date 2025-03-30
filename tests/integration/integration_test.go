@@ -290,16 +290,20 @@ func TestIntegrationUmiRoleAssignment(t *testing.T) {
 	t.Parallel()
 
 	v := map[string]any{
-		"subscription_id":         "00000000-0000-0000-0000-000000000000",
-		"location":                "westeurope",
-		"disable_telemetry":       true,
-		"umi_enabled":             true,
-		"umi_name":                "umi",
-		"umi_resource_group_name": "rg-umi",
-		"umi_role_assignments": map[string]any{
-			"umi_ra": map[string]any{
-				"definition":     "Owner",
-				"relative_scope": "",
+		"subscription_id":   "00000000-0000-0000-0000-000000000000",
+		"location":          "westeurope",
+		"disable_telemetry": true,
+		"umi_enabled":       true,
+		"user_managed_identities": map[string]any{
+			"default": map[string]any{
+				"name":                "umi",
+				"resource_group_name": "rg-umi",
+				"role_assignments": map[string]any{
+					"owner": map[string]any{
+						"definition":     "Owner",
+						"relative_scope": "",
+					},
+				},
 			},
 		},
 	}
@@ -309,10 +313,67 @@ func TestIntegrationUmiRoleAssignment(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
-		`module.usermanagedidentity[0].azapi_resource.umi`,
-		`module.usermanagedidentity[0].azapi_resource.rg_lock[0]`,
-		`module.usermanagedidentity[0].azapi_resource.rg[0]`,
-		`module.roleassignment_umi["umi_ra"].azurerm_role_assignment.this`,
+		`module.usermanagedidentity["default"].azapi_resource.umi`,
+		`module.roleassignment_umi["default/owner"].azurerm_role_assignment.this`,
+	}
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+	for _, v := range resources {
+		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
+	}
+}
+
+func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
+	t.Parallel()
+
+	v := map[string]any{
+		"subscription_id":   "00000000-0000-0000-0000-000000000000",
+		"location":          "westeurope",
+		"disable_telemetry": true,
+		"umi_enabled":       true,
+		"user_managed_identities": map[string]any{
+			"default": map[string]any{
+				"name":                "umi",
+				"resource_group_name": "rg-umi",
+				"role_assignments": map[string]any{
+					"owner": map[string]any{
+						"definition":     "Owner",
+						"relative_scope": "",
+					},
+					"blob": map[string]any{
+						"definition":     "Storage Blob Data Owner",
+						"relative_scope": "",
+					},
+				},
+			},
+			"backup": map[string]any{
+				"name":                "umi-backup",
+				"resource_group_name": "rg-umi",
+				"role_assignments": map[string]any{
+					"owner": map[string]any{
+						"definition":     "Owner",
+						"relative_scope": "",
+					},
+					"blob": map[string]any{
+						"definition":     "Storage Blob Data Owner",
+						"relative_scope": "",
+					},
+				},
+			},
+		},
+	}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	resources := []string{
+		`module.usermanagedidentity["default"].azapi_resource.umi`,
+		`module.roleassignment_umi["default/owner"].azurerm_role_assignment.this`,
+		`module.roleassignment_umi["default/blob"].azurerm_role_assignment.this`,
+		`module.usermanagedidentity["backup"].azapi_resource.umi`,
+		`module.roleassignment_umi["backup/owner"].azurerm_role_assignment.this`,
+		`module.roleassignment_umi["backup/blob"].azurerm_role_assignment.this`,
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
