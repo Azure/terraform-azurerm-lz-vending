@@ -735,168 +735,95 @@ Type: `bool`
 
 Default: `false`
 
-### <a name="input_umi_federated_credentials_advanced"></a> [umi\_federated\_credentials\_advanced](#input\_umi\_federated\_credentials\_advanced)
+### <a name="input_user_managed_identities"></a> [user\_managed\_identities](#input\_user\_managed\_identities)
 
-Description: Configure federated identity credentials, using OpenID Connect, for use scenarios outside GitHub Actions and Terraform Cloud.
+Description:   
+A map of user-managed identities to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply. The value is a map of attributes.
 
-The may key is arbitrary and only used for the `for_each` in the resource declaration.
+### Required fields
 
-The map value is an object with the following attributes:
+- `name`: The name of the user-assigned managed identity. [required]
+- `resource_group_name`: The name of the resource group to create the user-assigned managed identity in. [required]
 
-- `name`: The name of the federated credential resource, the last segment of the Azure resource id.
-- `subject_identifier`: The subject of the token.
-- `issuer_url`: The URL of the token issuer, should begin with `https://`
-- `audience`: (optional) The token audience, defaults to `api://AzureADTokenExchange`.
+### Optional fields
 
-Type:
+- `location`: The location of the user-assigned managed identity. [optional]
+- `tags`: The tags to apply to the user-assigned managed identity. [optional]
+- `resource_group_tags`: The tags to apply to the user-assigned managed identity resource group, if we create it. [optional]
+- `resource_group_lock_enabled`: Whether to enable resource group lock for the user-assigned managed identity resource group. [optional]
+- `resource_group_lock_name`: The name of the resource group lock for the user-assigned managed identity resource group, if blank will be set to `lock-<resource_group_name>`. [optional]
 
-```hcl
-map(object({
-    name               = string
-    subject_identifier = string
-    issuer_url         = string
-    audiences          = optional(set(string), ["api://AzureADTokenExchange"])
-  }))
-```
+### Role Based Access Control (RBAC)
 
-Default: `{}`
+The following fields are used to configure role assignments for the user-assigned managed identity.
+- `role_assignments`: A map of role assignments to create for the user-assigned managed identity. [optional]
 
-### <a name="input_umi_federated_credentials_github"></a> [umi\_federated\_credentials\_github](#input\_umi\_federated\_credentials\_github)
+### Federated Credentials
 
-Description: Configure federated identity credentials, using OpenID Connect, for use in GitHub actions.
+The following fields are used to configure federated identity credentials, using OpenID Connect, for use in GitHub actions, Azure DevOps pipelines, and Terraform Cloud.
 
-The may key is arbitrary and only used for the `for_each` in the resource declaration.
+#### GitHub Actions
+- `federated_credentials_github`: A map of federated credentials to create for the user-assigned managed identity. [optional]
+  - `name` - the name of the federated credential resource, the last segment of the Azure resource id.
+  - `organization` - the name of the GitHub organization, e.g. `Azure` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
+  - `repository` - the name of the GitHub respository, e.g. `terraform-azurerm-lz-vending` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
+  - `entity` - one of 'environment', 'pull\_request', 'tag', or 'branch'
+  - `value` - identifies the `entity` type, e.g. `main` when using entity is `branch`. Should be blank when `entity` is `pull_request`.
 
-The map value is an object with the following attributes:
+#### Terraform Cloud
+- `federated_credentials_terraform_cloud`: A map of federated credentials to create for the user-assigned managed identity. [optional]
+  - `name` - the name of the federated credential resource, the last segment of the Azure resource id.
+  - `organization` - the name of the Terraform Cloud organization.
+  - `project` - the name of the Terraform Cloud project.
+  - `workspace` - the name of the Terraform Cloud workspace.
+  - `run_phase` - one of `plan`, or `apply`.
 
-- `name` - the name of the federated credential resource, the last segment of the Azure resource id.
-- `organization` - the name of the GitHub organization, e.g. `Azure` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
-- `repository` - the name of the GitHub respository, e.g. `terraform-azurerm-lz-vending` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
-- `entity` - one of 'environment', 'pull\_request', 'tag', or 'branch'
-- `value` - identifies the `entity` type, e.g. `main` when using entity is `branch`. Should be blank when `entity` is `pull_request`.
-
-Type:
-
-```hcl
-map(object({
-    name         = optional(string, "")
-    organization = string
-    repository   = string
-    entity       = string
-    value        = optional(string, "")
-  }))
-```
-
-Default: `{}`
-
-### <a name="input_umi_federated_credentials_terraform_cloud"></a> [umi\_federated\_credentials\_terraform\_cloud](#input\_umi\_federated\_credentials\_terraform\_cloud)
-
-Description: Configure federated identity credentials, using OpenID Connect, for use in Terraform Cloud.
-
-The may key is arbitrary and only used for the `for_each` in the resource declaration.
-
-The map value is an object with the following attributes:
-
-- `name` - the name of the federated credential resource, the last segment of the Azure resource id.
-- `organization` - the name of the Terraform Cloud organization.
-- `project` - the name of the Terraform Cloud project.
-- `workspace` - the name of the Terraform Cloud workspace.
-- `run_phase` - one of `plan`, or `apply`.
+#### Advanced Federated Credentials
+- `federated_credentials_advanced`: A map of federated credentials to create for the user-assigned managed identity. [optional]
+  - `name`: The name of the federated credential resource, the last segment of the Azure resource id.
+  - `subject_identifier`: The subject of the token.
+  - `issuer_url`: The URL of the token issuer, should begin with `https://`
+  - `audience`: (optional) The token audience, defaults to `api://AzureADTokenExchange`.
 
 Type:
 
 ```hcl
 map(object({
-    name         = optional(string, "")
-    organization = string
-    project      = string
-    workspace    = string
-    run_phase    = string
+    name                        = string
+    resource_group_name         = string
+    location                    = optional(string, "")
+    tags                        = optional(map(string), {})
+    resource_group_tags         = optional(map(string), {})
+    resource_group_lock_enabled = optional(bool, true)
+    resource_group_lock_name    = optional(string, "")
+    role_assignments = optional(map(object({
+      definition        = string
+      relative_scope    = optional(string, "")
+      condition         = optional(string, "")
+      condition_version = optional(string, "")
+    })), {})
+    federated_credentials_github = optional(map(object({
+      name         = optional(string, "")
+      organization = string
+      repository   = string
+      entity       = string
+      value        = optional(string, "")
+    })), {})
+    federated_credentials_terraform_cloud = optional(map(object({
+      name         = optional(string, "")
+      organization = string
+      project      = string
+      workspace    = string
+      run_phase    = string
+    })), {})
+    federated_credentials_advanced = optional(map(object({
+      name               = string
+      subject_identifier = string
+      issuer_url         = string
+      audiences          = optional(set(string), ["api://AzureADTokenExchange"])
+    })), {})
   }))
 ```
-
-Default: `{}`
-
-### <a name="input_umi_name"></a> [umi\_name](#input\_umi\_name)
-
-Description: The name of the user-assigned managed identity
-
-Type: `string`
-
-Default: `""`
-
-### <a name="input_umi_resource_group_creation_enabled"></a> [umi\_resource\_group\_creation\_enabled](#input\_umi\_resource\_group\_creation\_enabled)
-
-Description: Whether to create the supplied resource group for the user-assigned managed identity
-
-Type: `bool`
-
-Default: `true`
-
-### <a name="input_umi_resource_group_lock_enabled"></a> [umi\_resource\_group\_lock\_enabled](#input\_umi\_resource\_group\_lock\_enabled)
-
-Description: Whether to enable resource group lock for the user-assigned managed identity resource group
-
-Type: `bool`
-
-Default: `true`
-
-### <a name="input_umi_resource_group_lock_name"></a> [umi\_resource\_group\_lock\_name](#input\_umi\_resource\_group\_lock\_name)
-
-Description: The name of the resource group lock for the user-assigned managed identity resource group, if blank will be set to `lock-<resource_group_name>`
-
-Type: `string`
-
-Default: `""`
-
-### <a name="input_umi_resource_group_name"></a> [umi\_resource\_group\_name](#input\_umi\_resource\_group\_name)
-
-Description: The name of the resource group in which to create the user-assigned managed identity
-
-Type: `string`
-
-Default: `""`
-
-### <a name="input_umi_resource_group_tags"></a> [umi\_resource\_group\_tags](#input\_umi\_resource\_group\_tags)
-
-Description: The tags to apply to the user-assigned managed identity resource group, if we create it.
-
-Type: `map(string)`
-
-Default: `{}`
-
-### <a name="input_umi_role_assignments"></a> [umi\_role\_assignments](#input\_umi\_role\_assignments)
-
-Description: Supply a map of objects containing the details of the role assignments to create for the user-assigned managed identity.  
-This will be merged with the other role assignments specified in `var.role_assignments`.
-
-The role assignments can be used resource groups created by the `var.resource_groups` map.
-
-Requires both `var.umi_enabled` and `var.role_assignment_enabled` to be `true`.
-
-Object fields:
-
-- `definition`: The role definition to assign. Either use the name or the role definition resource id.
-- `relative_scope`: Scope relative to the created subscription. Leave blank for subscription scope.
-
-Type:
-
-```hcl
-map(object({
-    definition        = string
-    relative_scope    = optional(string, "")
-    condition         = optional(string, "")
-    condition_version = optional(string, "")
-  }))
-```
-
-Default: `{}`
-
-### <a name="input_umi_tags"></a> [umi\_tags](#input\_umi\_tags)
-
-Description: The tags to apply to the user-assigned managed identity
-
-Type: `map(string)`
 
 Default: `{}`
 
@@ -1139,22 +1066,22 @@ Description: The subscription\_id is the Azure subscription id that resources ha
 
 Description: The subscription\_resource\_id is the Azure subscription resource id that resources have been deployed into
 
-### <a name="output_umi_client_id"></a> [umi\_client\_id](#output\_umi\_client\_id)
+### <a name="output_umi_client_ids"></a> [umi\_client\_ids](#output\_umi\_client\_ids)
 
 Description: The client id of the user managed identity.  
 Value will be null if `var.umi_enabled` is false.
 
-### <a name="output_umi_id"></a> [umi\_id](#output\_umi\_id)
-
-Description: The Azure resource id of the user managed identity.  
-Value will be null if `var.umi_enabled` is false.
-
-### <a name="output_umi_principal_id"></a> [umi\_principal\_id](#output\_umi\_principal\_id)
+### <a name="output_umi_principal_ids"></a> [umi\_principal\_ids](#output\_umi\_principal\_ids)
 
 Description: The principal id of the user managed identity, sometimes known as the object id.  
 Value will be null if `var.umi_enabled` is false.
 
-### <a name="output_umi_tenant_id"></a> [umi\_tenant\_id](#output\_umi\_tenant\_id)
+### <a name="output_umi_resource_ids"></a> [umi\_resource\_ids](#output\_umi\_resource\_ids)
+
+Description: The Azure resource id of the user managed identity.  
+Value will be null if `var.umi_enabled` is false.
+
+### <a name="output_umi_tenant_ids"></a> [umi\_tenant\_ids](#output\_umi\_tenant\_ids)
 
 Description: The tenant id of the user managed identity.  
 Value will be null if `var.umi_enabled` is false.

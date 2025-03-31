@@ -256,13 +256,13 @@ Description: The client id of the user managed identity
 
 Description: The object id of the user managed identity
 
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: The resource id of the user managed identity
+
 ### <a name="output_tenant_id"></a> [tenant\_id](#output\_tenant\_id)
 
 Description: The tenant id of the user managed identity
-
-### <a name="output_umi_id"></a> [umi\_id](#output\_umi\_id)
-
-Description: The resource id of the user managed identity
 
 <!-- markdownlint-enable -->
 <!-- END_TF_DOCS -->
