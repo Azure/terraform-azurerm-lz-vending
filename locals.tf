@@ -41,7 +41,7 @@ locals {
             umi_key  = umi_k
             role_key = role_k
             role_assignment = {
-              identity          = one([for i in module.usermanagedidentity : i if i.resource_id == "/subscriptions/${local.subscription_id}/resourcegroups/${umi_v.resource_group_name}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${umi_v.name}"])
+              principal_id      = module.usermanagedidentity["${umi_k}"].principal_id
               definition        = role_v.definition
               scope             = "${local.subscription_resource_id}${role_v.relative_scope}"
               condition         = role_v.condition

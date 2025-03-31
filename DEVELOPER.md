@@ -21,8 +21,8 @@ Or, use [Windows Subsystem for Linux](https://docs.microsoft.com/windows/wsl/ins
 #### Install Go and Make
 
 <!-- markdownlint-disable MD033 -->
-1. Run `curl -L https://go.dev/dl/go1.21.0.linux-amd64.tar.gz -o go1.21.0.linux-amd64.tar.gz` (replace with a different version of go if desired)
-2. Run `rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.0.linux-amd64.tar.gz`
+1. Run `curl -L https://go.dev/dl/go1.24.1.linux-amd64.tar.gz -o go1.24.1.linux-amd64.tar.gz` (replace with a different version of go if desired)
+2. Run `rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.1.linux-amd64.tar.gz`
 3. Run `sudo nano ~/.profile`
 4. Add the following lines at the end of the file:
 5. Type <kbd>Ctrl</kbd> + <kbd>x</kbd> to save, then enter <kbd>y</kbd> and hit <kbd>enter</kbd>
