@@ -834,8 +834,8 @@ func TestVirtualNetworkCreateInvalidAddressSpaceIpv6(t *testing.T) {
 	assert.ErrorContains(t, err, "Address space entries must be specified in CIDR notation supporting IPv4 or IPv6")
 }
 
-// TestVirtualNetworkCreateIpv6AddressSpaceOnly tests that if a vnet has only an IPv6 address space, 
-// When using IPv6 address space it's only supported to have dual stack of IPv4 and IPv6 address space. 
+// TestVirtualNetworkCreateIpv6AddressSpaceOnly tests that if a vnet has only an IPv6 address space,
+// When using IPv6 address space it's only supported to have dual stack of IPv4 and IPv6 address space.
 
 func TestVirtualNetworkCreateIpv6AddressSpaceOnly(t *testing.T) {
 	t.Parallel()
@@ -934,10 +934,10 @@ func getMockInputVariables() map[string]any {
 				"resource_group_name": "secondary-rg",
 			},
 			"third": {
-				"name": 				"ipv4-ipv6-vnet",
-				"address_space": 		[]any{"192.168.2.0/24", "2001:db8::/32"},
-				"location":      		"westeurope",
-				"resource_group_name": 	"third-rg",
+				"name":                "ipv4-ipv6-vnet",
+				"address_space":       []any{"192.168.2.0/24", "2001:db8::/32"},
+				"location":            "westeurope",
+				"resource_group_name": "third-rg",
 			},
 		},
 	}
