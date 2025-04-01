@@ -17,7 +17,7 @@ const (
 )
 
 // TestVirtualNetworkCreateValid tests the creation of a plan that
-// creates two virtual networks in the specified resource groups.
+// creates three virtual networks in the specified resource groups.
 func TestVirtualNetworkCreateValid(t *testing.T) {
 	t.Parallel()
 
@@ -29,12 +29,16 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	resources := []string{
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
+		"azapi_resource.rg[\"third-rg\"]",
 		"azapi_resource.vnet[\"primary\"]",
 		"azapi_resource.vnet[\"secondary\"]",
+		"azapi_resource.vnet[\"third\"]",
 		"azapi_update_resource.vnet[\"primary\"]",
 		"azapi_update_resource.vnet[\"secondary\"]",
+		"azapi_update_resource.vnet[\"third\"]",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.rg_lock[\"third-rg\"]",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -816,6 +820,35 @@ func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
 	assert.ErrorContains(t, err, "Address space entries must be specified in CIDR notation")
 }
 
+// TestVirtualNetworkCreateInvalidAddressSpaceIpv6 tests a valid CIDR IPv6 address space is used
+
+func TestVirtualNetworkCreateInvalidAddressSpaceIpv6(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["third"]
+	primaryvnet["address_space"] = []string{"192.168.2.0/24", "2001:db8::/129"}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	assert.ErrorContains(t, err, "Address space entries must be specified in CIDR notation supporting IPv4 or IPv6")
+}
+
+// TestVirtualNetworkCreateIpv6AddressSpaceOnly tests that if a vnet has only an IPv6 address space, 
+// When using IPv6 address space it's only supported to have dual stack of IPv4 and IPv6 address space. 
+
+func TestVirtualNetworkCreateIpv6AddressSpaceOnly(t *testing.T) {
+	t.Parallel()
+
+	v := getMockInputVariables()
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["third"]
+	primaryvnet["address_space"] = []string{"2001:db8::/32"}
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	assert.ErrorContains(t, err, "When using IPv6 address space, it must be dual stack with IPv4 address space")
+}
+
 // TestVirtualNetworkCreateInvalidResourceGroupCreation tests that resource group naming is unique
 // when using vnets in multiple locaitons that share a resoruce group.
 // NOTE - this is not a recommended deployment pattern.
@@ -899,6 +932,12 @@ func getMockInputVariables() map[string]any {
 				"address_space":       []any{"192.168.1.0/24"},
 				"location":            "northeurope",
 				"resource_group_name": "secondary-rg",
+			},
+			"third": {
+				"name": 				"ipv4-ipv6-vnet",
+				"address_space": 		[]any{"192.168.2.0/24", "2001:db8::/32"},
+				"location":      		"westeurope",
+				"resource_group_name": 	"third-rg",
 			},
 		},
 	}
