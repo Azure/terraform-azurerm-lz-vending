@@ -339,13 +339,15 @@ func TestVirtualNetworkCreateValidWithMultiplSubnets(t *testing.T) {
 
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -395,14 +397,16 @@ func TestVirtualNetworkCreateValidWithMultiplSubnetsInSingleVnet(t *testing.T) {
 
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
 		"module.virtual_networks[\"primary\"].module.subnet[\"privateendpoint\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -457,13 +461,15 @@ func TestVirtualNetworkCreateValidWithSubnetNatGateway(t *testing.T) {
 
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -544,13 +550,15 @@ func TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup(t *testing.T) {
 
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -630,13 +638,15 @@ func TestVirtualNetworkCreateValidWithSubnetPrivateEndpointNetworkPolicy(t *test
 
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -695,13 +705,15 @@ func TestVirtualNetworkCreateValidWithSubnetPrivateLinkServiceNetworkPolicy(t *t
 
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -765,13 +777,15 @@ func TestVirtualNetworkCreateValidWithSubnetRouteTable(t *testing.T) {
 
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -830,13 +844,15 @@ func TestVirtualNetworkCreateValidWithSubnetDefaultOutboundAccess(t *testing.T) 
 
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -894,13 +910,15 @@ func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpoint(t *testing.T) 
 
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].module.subnet[\"default\"].azapi_resource.subnet",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
@@ -951,13 +969,15 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpoints(t *testing.
 
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -998,13 +1018,15 @@ func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpointPolicy(t *testi
 
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1048,13 +1070,15 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies(t *t
 
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1097,13 +1121,15 @@ func TestVirtualNetworkCreateValidWithSubnetSingleDelegation(t *testing.T) {
 
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1152,13 +1178,15 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleDelegations(t *testing.T) {
 
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1192,14 +1220,16 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1244,14 +1274,16 @@ func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1290,13 +1322,15 @@ func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional one is the outbound peering
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1327,13 +1361,15 @@ func TestVirtualNetworkCreateValidWithOnlyFromHubPeering(t *testing.T) {
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional one is the inbound peering
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1373,14 +1409,16 @@ func TestVirtualNetworkCreateValidWithPeeringUseCustomOptions(t *testing.T) {
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
+		"module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1427,14 +1465,16 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection and the other is routing intent
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
-		"azapi_resource.vhubconnection[\"primary\"]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection_routing_intent[\"secondary\"]",
+		"azapi_resource.vhubconnection[\"primary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1478,13 +1518,15 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1521,13 +1563,15 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic(t *testing.T) {
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1561,13 +1605,15 @@ func TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic(t *testing.T) {
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1622,13 +1668,15 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetAndPrivateTraffic(t *tes
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection[\"primary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1683,13 +1731,15 @@ func TestVirtualNetworkCreateValidWithVhubRoutingIntentEnabled(t *testing.T) {
 	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	// The additional resource is the vhub connection
 	resources := []string{
-		"azapi_resource.rg[\"primary-rg\"]",
-		"azapi_resource.rg[\"secondary-rg\"]",
-		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
 		"azapi_resource.rg_lock[\"primary-rg\"]",
 		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"azapi_resource.rg[\"primary-rg\"]",
+		"azapi_resource.rg[\"secondary-rg\"]",
 		"azapi_resource.vhubconnection_routing_intent[\"primary\"]",
+		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1777,12 +1827,14 @@ func TestVirtualNetworkDdosProtection(t *testing.T) {
 
 	// We want 6 resources here
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 
 	vnetresources := []string{
