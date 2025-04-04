@@ -28,12 +28,14 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -71,7 +73,7 @@ func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
 	defer test.Cleanup()
 
 	// want 6 resources, like TestVirtualNetworkCreateValid
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNilFatal(t)
 
 	// Loop through each virtual network and check the values
 	vns := v["virtual_networks"].(map[string]map[string]any)
@@ -100,8 +102,8 @@ func TestVirtualNetworkCreateValidWithTags(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 6 resources here, same as TestVirtualNetworkCreateValid test
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNilFatal(t)
+	// We want 8 resources here, same as TestVirtualNetworkCreateValid test
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNilFatal(t)
 
 	check.InPlan(test.PlanStruct).That("module.virtual_networks[\"primary\"].azapi_resource.vnet").Key("tags").HasValue(primaryvnet["tags"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.rg[\"primary-rg\"]").Key("tags").HasValue(primaryvnet["resource_group_tags"]).ErrorIsNil(t)
@@ -123,9 +125,9 @@ func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 8 resources here, 2 more than the TestVirtualNetworkCreateValid test
+	// We want 10 resources here, 2 more than the TestVirtualNetworkCreateValid test
 	// The additional two are the inbound & outbound peering
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNilFatal(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(10).ErrorIsNilFatal(t)
 
 	peer1 := "module.peering_mesh[\"primary-secondary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(peer1).Key("body").Query("properties.allowForwardedTraffic").HasValue(false).ErrorIsNil(t)
@@ -157,14 +159,16 @@ func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 6 resources here, as only one of the two vnets has mesh peering enabled, then no peerings should be created
+	// We want 8 resources here, as only one of the two vnets has mesh peering enabled, then no peerings should be created
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -187,13 +191,15 @@ func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 4 resources here, as the two vnets have the same rg, then 2 fewer resources than
+	// We want 6 resources here, as the two vnets have the same rg, then 2 fewer resources than
 	// TestVirtualNetworkCreateValid (rg + rg lock)
 	resources := []string{
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -216,13 +222,15 @@ func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 4 resources here, as the two vnets have the same rg, then 2 fewer resources than
+	// We want 6 resources here, as the two vnets have the same rg, then 2 fewer resources than
 	// TestVirtualNetworkCreateValid (rg + rg lock)
 	resources := []string{
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -251,15 +259,17 @@ func TestVirtualNetworkCreateValidSubnet(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 7 resources here, 1 more than the TestVirtualNetworkCreateValid test
+	// We want 9 resources here, 1 more than the TestVirtualNetworkCreateValid test
 	resources := []string{
+		"azapi_resource.rg_lock[\"primary-rg\"]",
+		"azapi_resource.rg_lock[\"secondary-rg\"]",
 		"azapi_resource.rg[\"primary-rg\"]",
 		"azapi_resource.rg[\"secondary-rg\"]",
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"azapi_resource.rg_lock[\"primary-rg\"]",
-		"azapi_resource.rg_lock[\"secondary-rg\"]",
+		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet",
+		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
+		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNilFatal(t)
 
@@ -1744,7 +1754,7 @@ func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
 
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	defer test.Cleanup()
-	assert.ErrorContains(t, err, "Address space entries must be specified in CIDR notation")
+	assert.ErrorContains(t, err, "Address space entries must be specified in IPv4 or IPv6 CIDR notation")
 }
 
 // TestVirtualNetworkCreateInvalidResourceGroupCreation tests that resource group naming is unique
