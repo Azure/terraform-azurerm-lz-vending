@@ -281,7 +281,7 @@ map(object({
     time_grain        = string
     time_period_start = string
     time_period_end   = string
-    relative_scope    = optional(string, "")
+    relative_scope    = optional(string, null)
     notifications = optional(map(object({
       enabled        = bool
       operator       = string
@@ -372,6 +372,8 @@ Object fields:
 - `relative_scope`: (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
 - `condition`: (optional) A condition to apply to the role assignment. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 - `condition_version`: (optional) The version of the condition syntax. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
+- `principal_type`: (optional) The type of the principal. Can be `"User"`, `"Group"`, `"Device"`, `"ForeignGroup"`, or `"ServicePrincipal"`.
+- `definition_lookup_enabled`: (optional) Whether to look up the role definition resource id from the role definition name. If disabled, the `definition` must be a role definition resource id. Default is `true`.
 
 E.g.
 
@@ -398,11 +400,13 @@ Type:
 
 ```hcl
 map(object({
-    principal_id      = string,
-    definition        = string,
-    relative_scope    = optional(string, ""),
-    condition         = optional(string, ""),
-    condition_version = optional(string, ""),
+    principal_id              = string,
+    definition                = string,
+    relative_scope            = optional(string, null)
+    condition                 = optional(string, null)
+    condition_version         = optional(string, null)
+    principal_type            = optional(string, null)
+    definition_lookup_enabled = optional(bool, true)
   }))
 ```
 
@@ -490,7 +494,7 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_subscription_billing_scope"></a> [subscription\_billing\_scope](#input\_subscription\_billing\_scope)
 
@@ -509,7 +513,7 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_subscription_display_name"></a> [subscription\_display\_name](#input\_subscription\_display\_name)
 
@@ -523,7 +527,7 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id)
 
@@ -548,7 +552,7 @@ In this scenario, `subscription_alias_enabled` should be set to `true` and the f
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_subscription_management_group_association_enabled"></a> [subscription\_management\_group\_association\_enabled](#input\_subscription\_management\_group\_association\_enabled)
 
@@ -570,7 +574,7 @@ The management group ID forms part of the Azure resource ID. E.g.,
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_subscription_register_resource_providers_and_features"></a> [subscription\_register\_resource\_providers\_and\_features](#input\_subscription\_register\_resource\_providers\_and\_features)
 
@@ -691,27 +695,6 @@ Type: `bool`
 
 Default: `false`
 
-### <a name="input_subscription_use_azapi"></a> [subscription\_use\_azapi](#input\_subscription\_use\_azapi)
-
-Description: Whether to create a new subscription using the azapi provider. This may be required if the principal running  
-terraform does not have the required permissions to create a subscription under the default management group.  
-If enabled, the following must also be supplied:
-- `subscription_alias_name`
-- `subscription_display_name`
-- `subscription_billing_scope`
-- `subscription_workload`  
-Optionally, supply the following to enable the placement of the subscription into a management group:
-- `subscription_management_group_id`
-- `subscription_management_group_association_enabled`  
-If disabled, supply the `subscription_id` variable to use an existing subscription instead.
-> **Note**: When the subscription is destroyed, this module will try to remove the NetworkWatcherRG resource group using `az cli`.
-> This requires the `az cli` tool be installed and authenticated.
-> If the command fails for any reason, the provider will attempt to cancel the subscription anyway.
-
-Type: `bool`
-
-Default: `false`
-
 ### <a name="input_subscription_workload"></a> [subscription\_workload](#input\_subscription\_workload)
 
 Description: The billing scope for the new subscription alias.
@@ -723,7 +706,7 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_umi_enabled"></a> [umi\_enabled](#input\_umi\_enabled)
 
@@ -756,7 +739,7 @@ A map of user-managed identities to create. The map key must be known at the pla
 ### Role Based Access Control (RBAC)
 
 The following fields are used to configure role assignments for the user-assigned managed identity.
-- `role_assignments`: A map of role assignments to create for the user-assigned managed identity. [optional]
+- `role_assignments`: A map of role assignments to create for the user-assigned managed identity. [optional] - See `role_assignments` variable for details.
 
 ### Federated Credentials
 
@@ -791,26 +774,28 @@ Type:
 map(object({
     name                        = string
     resource_group_name         = string
-    location                    = optional(string, "")
+    location                    = optional(string, null)
     tags                        = optional(map(string), {})
     resource_group_tags         = optional(map(string), {})
     resource_group_lock_enabled = optional(bool, true)
-    resource_group_lock_name    = optional(string, "")
+    resource_group_lock_name    = optional(string, null)
     role_assignments = optional(map(object({
-      definition        = string
-      relative_scope    = optional(string, "")
-      condition         = optional(string, "")
-      condition_version = optional(string, "")
+      definition                = string
+      relative_scope            = optional(string, null)
+      condition                 = optional(string, null)
+      condition_version         = optional(string, null)
+      principal_type            = optional(string, null)
+      definition_lookup_enabled = optional(bool, true)
     })), {})
     federated_credentials_github = optional(map(object({
-      name         = optional(string, "")
+      name         = optional(string, null)
       organization = string
       repository   = string
       entity       = string
-      value        = optional(string, "")
+      value        = optional(string, null)
     })), {})
     federated_credentials_terraform_cloud = optional(map(object({
-      name         = optional(string, "")
+      name         = optional(string, null)
       organization = string
       project      = string
       workspace    = string
@@ -887,14 +872,29 @@ Description: A map of the virtual networks to create. The map key must be known 
 
 ### Hub network peering values
 
-The following values configure bi-directional hub & spoke peering for the given virtual network.
+The following values configure bi-directional hub & spoke peering for the given virtual network:
 
 - `hub_peering_enabled`: Whether to enable hub peering. [optional]
 - `hub_peering_direction`: The direction of the peering. [optional - allowed values are: `tohub`, `fromhub` or `both` - default `both`]
 - `hub_network_resource_id`: The resource ID of the hub network to peer with. [optional - but required if hub\_peering\_enabled is `true`]
 - `hub_peering_name_tohub`: The name of the peering to the hub network. [optional - leave empty to use calculated name]
 - `hub_peering_name_fromhub`: The name of the peering from the hub network. [optional - leave empty to use calculated name]
-- `hub_peering_use_remote_gateways`: Whether to use remote gateways for the hub peering. [optional - default true]
+
+#### Hub network peering options
+
+The following values configure the options for the hub network peering. These are configurable in each direction:
+
+- `allow_forwarded_traffic`: Whether to allow forwarded traffic for the peering. [optional - default `true`]
+- `allow_gateway_transit`: Whether to allow gateway transit for the peering. [optional - default `false` (outbound) or `true` (inbound)]
+- `allow_virtual_network_access`: Whether to allow virtual network access for the peering. [optional - default `true`]
+- `do_not_verify_remote_gateways`: Whether to not verify remote gateways for the peering. [optional - default `false`]
+- `enable_only_ipv6_peering`: Whether to enable only IPv6 peering. [optional - default `false`]
+- `local_peered_address_spaces`: A list of local address spaces to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `local_peered_subnets`: A list of local subnets to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `peer_complete_vnets`: Whether to peer complete virtual networks. [optional - default `true`]
+- `remote_peered_address_spaces`: A list of remote address spaces to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `remote_peered_subnets`: A list of remote subnets to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `use_remote_gateways`: Whether to use remote gateways for the peering. [optional - default `true` (outbound) or `false` (inbound)]
 
 ### Mesh peering values
 
@@ -942,7 +942,7 @@ map(object({
     address_space       = list(string)
     resource_group_name = string
 
-    location = optional(string, "")
+    location = optional(string, null)
 
     dns_servers             = optional(list(string), [])
     flow_timeout_in_minutes = optional(number, null)
@@ -983,25 +983,50 @@ map(object({
       }
     )), {})
 
-    hub_network_resource_id         = optional(string, "")
-    hub_peering_enabled             = optional(bool, false)
-    hub_peering_direction           = optional(string, "both")
-    hub_peering_name_tohub          = optional(string, "")
-    hub_peering_name_fromhub        = optional(string, "")
-    hub_peering_use_remote_gateways = optional(bool, true)
+    hub_network_resource_id = optional(string, null)
+    hub_peering_enabled     = optional(bool, false)
+    hub_peering_direction   = optional(string, "both")
+    hub_peering_name_tohub  = optional(string, null)
+    hub_peering_options_tohub = optional(object({
+      allow_forwarded_traffic       = optional(bool, true)
+      allow_gateway_transit         = optional(bool, false)
+      allow_virtual_network_access  = optional(bool, true)
+      do_not_verify_remote_gateways = optional(bool, false)
+      enable_only_ipv6_peering      = optional(bool, false)
+      local_peered_address_spaces   = optional(list(string), [])
+      local_peered_subnets          = optional(list(string), [])
+      peer_complete_vnets           = optional(bool, true)
+      remote_peered_address_spaces  = optional(list(string), [])
+      remote_peered_subnets         = optional(list(string), [])
+      use_remote_gateways           = optional(bool, true)
+    }), {})
+    hub_peering_name_fromhub = optional(string, null)
+    hub_peering_options_fromhub = optional(object({
+      allow_forwarded_traffic       = optional(bool, true)
+      allow_gateway_transit         = optional(bool, true)
+      allow_virtual_network_access  = optional(bool, true)
+      do_not_verify_remote_gateways = optional(bool, false)
+      enable_only_ipv6_peering      = optional(bool, false)
+      local_peered_address_spaces   = optional(list(string), [])
+      local_peered_subnets          = optional(list(string), [])
+      peer_complete_vnets           = optional(bool, true)
+      remote_peered_address_spaces  = optional(list(string), [])
+      remote_peered_subnets         = optional(list(string), [])
+      use_remote_gateways           = optional(bool, false)
+    }), {})
 
     mesh_peering_enabled                 = optional(bool, false)
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
 
     resource_group_creation_enabled = optional(bool, true)
     resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string, "")
+    resource_group_lock_name        = optional(string, null)
     resource_group_tags             = optional(map(string), {})
 
-    vwan_associated_routetable_resource_id   = optional(string, "")
+    vwan_associated_routetable_resource_id   = optional(string, null)
     vwan_connection_enabled                  = optional(bool, false)
-    vwan_connection_name                     = optional(string, "")
-    vwan_hub_resource_id                     = optional(string, "")
+    vwan_connection_name                     = optional(string, null)
+    vwan_hub_resource_id                     = optional(string, null)
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
     vwan_security_configuration = optional(object({
@@ -1035,7 +1060,7 @@ Default: `{}`
 
 The following resources are used by this module:
 
-- [azapi_resource.telemetry_root](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.telemetry_root](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 
 ## Outputs
 

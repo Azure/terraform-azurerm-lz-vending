@@ -13,4 +13,5 @@ module "virtualnetwork_test" {
   source           = "../../"
   subscription_id  = var.subscription_id
   virtual_networks = var.virtual_networks
+  enable_telemetry = var.enable_telemetry
 }

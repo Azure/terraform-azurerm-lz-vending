@@ -12,26 +12,28 @@ variable "user_managed_identities" {
   type = map(object({
     name                        = string
     resource_group_name         = string
-    location                    = optional(string, "")
+    location                    = optional(string, null)
     tags                        = optional(map(string), {})
     resource_group_tags         = optional(map(string), {})
     resource_group_lock_enabled = optional(bool, true)
-    resource_group_lock_name    = optional(string, "")
+    resource_group_lock_name    = optional(string, null)
     role_assignments = optional(map(object({
-      definition        = string
-      relative_scope    = optional(string, "")
-      condition         = optional(string, "")
-      condition_version = optional(string, "")
+      definition                = string
+      relative_scope            = optional(string, null)
+      condition                 = optional(string, null)
+      condition_version         = optional(string, null)
+      principal_type            = optional(string, null)
+      definition_lookup_enabled = optional(bool, true)
     })), {})
     federated_credentials_github = optional(map(object({
-      name         = optional(string, "")
+      name         = optional(string, null)
       organization = string
       repository   = string
       entity       = string
-      value        = optional(string, "")
+      value        = optional(string, null)
     })), {})
     federated_credentials_terraform_cloud = optional(map(object({
-      name         = optional(string, "")
+      name         = optional(string, null)
       organization = string
       project      = string
       workspace    = string
@@ -65,7 +67,7 @@ A map of user-managed identities to create. The map key must be known at the pla
 ### Role Based Access Control (RBAC)
 
 The following fields are used to configure role assignments for the user-assigned managed identity.
-- `role_assignments`: A map of role assignments to create for the user-assigned managed identity. [optional]
+- `role_assignments`: A map of role assignments to create for the user-assigned managed identity. [optional] - See `role_assignments` variable for details.
 
 ### Federated Credentials
 

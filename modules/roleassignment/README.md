@@ -31,7 +31,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.10)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
 
 ## Modules
 
@@ -41,18 +41,6 @@ No modules.
 ## Required Inputs
 
 The following input variables are required:
-
-### <a name="input_role_assignment_condition"></a> [role\_assignment\_condition](#input\_role\_assignment\_condition)
-
-Description: (Optional) The condition that limits the resources that the role can be assigned to.
-
-Type: `string`
-
-### <a name="input_role_assignment_condition_version"></a> [role\_assignment\_condition\_version](#input\_role\_assignment\_condition\_version)
-
-Description: The version of the condition. Possible values are `""`, 1.0 or 2.0. If `""`, null will be set in role\_assignment\_condition and role\_assignment\_condition\_version.
-
-Type: `string`
 
 ### <a name="input_role_assignment_definition"></a> [role\_assignment\_definition](#input\_role\_assignment\_definition)
 
@@ -80,13 +68,48 @@ Type: `string`
 
 ## Optional Inputs
 
-No optional inputs.
+The following input variables are optional (have default values):
+
+### <a name="input_role_assignment_condition"></a> [role\_assignment\_condition](#input\_role\_assignment\_condition)
+
+Description: (Optional) The condition that limits the resources that the role can be assigned to.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_role_assignment_condition_version"></a> [role\_assignment\_condition\_version](#input\_role\_assignment\_condition\_version)
+
+Description: The version of the condition. Possible values are `null`, 1.0 or 2.0. If `null` then `role_assignment_condition` will also be null.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_role_assignment_definition_lookup_enabled"></a> [role\_assignment\_definition\_lookup\_enabled](#input\_role\_assignment\_definition\_lookup\_enabled)
+
+Description: Whether to look up the role definition resource id from the role definition name.  
+If disabled, the `role_assignment_definition` must be a role definition resource id.
+
+Type: `bool`
+
+Default: `true`
+
+### <a name="input_role_assignment_principal_type"></a> [role\_assignment\_principal\_type](#input\_role\_assignment\_principal\_type)
+
+Description: Required when using attribute based access control (ABAC).  
+The type of principal. Can be `User`, `Group`, `ServicePrincipal`, `Device`, or `ForeignGroup`.
+
+Type: `string`
+
+Default: `null`
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
+- [azapi_resource.this](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource_list.role_definitions](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/resource_list) (data source)
 
 ## Outputs
 

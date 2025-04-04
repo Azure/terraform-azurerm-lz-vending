@@ -4,22 +4,6 @@ locals {
 }
 
 locals {
-  # virtual_networks_resource_ids is a map of the virtual network resource IDs.
-  # we construct these to better enable testing of values in the plan
-  virtual_network_resource_ids = {
-    for k, v in var.virtual_networks : k => "${local.subscription_resource_id}/resourceGroups/${v.resource_group_name}/providers/Microsoft.Network/virtualNetworks/${v.name}"
-  }
-
-  # peering direction constansts
-  peering_direction_both    = "both"
-  peering_direction_tohub   = "tohub"
-  peering_direction_fromhub = "fromhub"
-
-  # allowed values for peering direction
-  valid_peering_directions = [local.peering_direction_tohub, local.peering_direction_fromhub, local.peering_direction_both]
-
-  # virtual_networks_hub_peering_map is a map of the virtual network hub peerings
-
   # hub_peering_map is a map of the virtual network hub peerings for those networks
   # with hub peering enabled
   hub_peering_map = {
@@ -29,51 +13,29 @@ locals {
         name               = coalesce(v.hub_peering_name_tohub, "peer-${uuidv5("url", v.hub_network_resource_id)}")
         this_resource_id   = module.virtual_networks[k].resource_id
         remote_resource_id = v.hub_network_resource_id
+        options            = v.hub_peering_options_tohub
       },
       # Peering the remote network to this network
       inbound = {
         name               = coalesce(v.hub_peering_name_fromhub, "peer-${uuidv5("url", local.virtual_network_resource_ids[k])}")
         this_resource_id   = v.hub_network_resource_id
         remote_resource_id = module.virtual_networks[k].resource_id
+        options            = v.hub_peering_options_fromhub
       }
-      peering_direction   = contains(local.valid_peering_directions, coalesce(lower(v.hub_peering_direction), local.peering_direction_both)) ? coalesce(lower(v.hub_peering_direction), local.peering_direction_both) : local.peering_direction_both
-      use_remote_gateways = v.hub_peering_use_remote_gateways
+      peering_direction = contains(local.valid_peering_directions, coalesce(lower(v.hub_peering_direction), local.peering_direction_both)) ? coalesce(lower(v.hub_peering_direction), local.peering_direction_both) : local.peering_direction_both
     } if v.hub_peering_enabled
   }
-
-  # vwan_propagated_routetables_resource_ids is a map of the virtual network vwan propagated routetable ids
-  # for each virtual network that enabled for vwan connectivity.
-  vwan_propagated_routetables_resource_ids = {
-    for k, v in var.virtual_networks : k => coalescelist(
-      [
-        for i in v.vwan_propagated_routetables_resource_ids : { id = i }
-      ],
-      [
-        { id = "${v.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable" }
-      ]
-    ) if v.vwan_connection_enabled
+  # peering direction constansts
+  peering_direction_both    = "both"
+  peering_direction_fromhub = "fromhub"
+  peering_direction_tohub   = "tohub"
+  # allowed values for peering direction
+  valid_peering_directions = [local.peering_direction_tohub, local.peering_direction_fromhub, local.peering_direction_both]
+  # virtual_networks_resource_ids is a map of the virtual network resource IDs.
+  # we construct these to better enable testing of values in the plan
+  virtual_network_resource_ids = {
+    for k, v in var.virtual_networks : k => "${local.subscription_resource_id}/resourceGroups/${v.resource_group_name}/providers/Microsoft.Network/virtualNetworks/${v.name}"
   }
-
-  vwan_propagated_noneroutetables_resource_ids = {
-    for k, v in var.virtual_networks : k => coalescelist(
-      [
-        for i in v.vwan_propagated_routetables_resource_ids : { id = i }
-      ],
-      [
-        { id = "${v.vwan_hub_resource_id}/hubRouteTables/noneRouteTable" }
-      ]
-    ) if v.vwan_connection_enabled
-  }
-
-  # vwan_propagated_routetables_labels is a map of the virtual network vwan propagated routetables labels
-  # for each virtual network that enabled for vwan connectivity.
-  vwan_propagated_routetables_labels = {
-    for k, v in var.virtual_networks : k => coalescelist(
-      v.vwan_propagated_routetables_labels,
-      ["default"]
-    ) if v.vwan_connection_enabled
-  }
-
   # virtual_networks_mesh_peering_map is the data required to create the mesh peerings.
   # That is those peerings between the virtual networks that are supplied in the var.virtual_networks variable
   virtual_networks_mesh_peering_list = flatten([
@@ -88,6 +50,36 @@ locals {
       } if var.virtual_networks[k_dst].mesh_peering_enabled && k_src != k_dst
     ] if var.virtual_networks[k_src].mesh_peering_enabled
   ])
+  vwan_propagated_noneroutetables_resource_ids = {
+    for k, v in var.virtual_networks : k => coalescelist(
+      [
+        for i in v.vwan_propagated_routetables_resource_ids : { id = i }
+      ],
+      [
+        { id = "${v.vwan_hub_resource_id}/hubRouteTables/noneRouteTable" }
+      ]
+    ) if v.vwan_connection_enabled
+  }
+  # vwan_propagated_routetables_labels is a map of the virtual network vwan propagated routetables labels
+  # for each virtual network that enabled for vwan connectivity.
+  vwan_propagated_routetables_labels = {
+    for k, v in var.virtual_networks : k => coalescelist(
+      v.vwan_propagated_routetables_labels,
+      ["default"]
+    ) if v.vwan_connection_enabled
+  }
+  # vwan_propagated_routetables_resource_ids is a map of the virtual network vwan propagated routetable ids
+  # for each virtual network that enabled for vwan connectivity.
+  vwan_propagated_routetables_resource_ids = {
+    for k, v in var.virtual_networks : k => coalescelist(
+      [
+        for i in v.vwan_propagated_routetables_resource_ids : { id = i }
+      ],
+      [
+        { id = "${v.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable" }
+      ]
+    ) if v.vwan_connection_enabled
+  }
 }
 
 locals {
@@ -116,7 +108,7 @@ locals {
       v.vwan_security_configuration.routing_intent_enabled ? {} : {
         routingConfiguration = {
           associatedRouteTable = {
-            id = v.vwan_associated_routetable_resource_id != "" ? v.vwan_associated_routetable_resource_id : "${v.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
+            id = v.vwan_associated_routetable_resource_id != null ? v.vwan_associated_routetable_resource_id : "${v.vwan_hub_resource_id}/hubRouteTables/defaultRouteTable"
           }
           propagatedRouteTables = {
             ids    = v.vwan_security_configuration.secure_private_traffic ? local.vwan_propagated_noneroutetables_resource_ids[k] : local.vwan_propagated_routetables_resource_ids[k]

@@ -1,26 +1,29 @@
 # azapi_resource.rg is the resource group that the virtual network will be created in
 # the module will create as many as is required by the var.virtual_networks input variable
 resource "azapi_resource" "rg" {
-  for_each  = { for i in local.resource_group_data : i.name => i }
-  parent_id = local.subscription_resource_id
+  for_each = { for i in local.resource_group_data : i.name => i }
+
   type      = "Microsoft.Resources/resourceGroups@2021-04-01"
-  name      = each.key
   location  = each.value.location
+  name      = each.key
+  parent_id = local.subscription_resource_id
   tags      = each.value.tags
 }
 
 # azapi_resource.rg_lock is an optional resource group lock that can be used
 # to prevent accidental deletion.
 resource "azapi_resource" "rg_lock" {
-  for_each  = { for i in local.resource_group_data : i.name => i if i.lock }
-  type      = "Microsoft.Authorization/locks@2017-04-01"
-  parent_id = azapi_resource.rg[each.key].id
-  name      = coalesce(each.value.lock_name, substr("lock-${each.key}", 0, 90))
+  for_each = { for i in local.resource_group_data : i.name => i if i.lock }
+
+  type = "Microsoft.Authorization/locks@2017-04-01"
   body = {
     properties = {
       level = "CanNotDelete"
     }
   }
+  name      = coalesce(each.value.lock_name, substr("lock-${each.key}", 0, 90))
+  parent_id = azapi_resource.rg[each.key].id
+
   depends_on = [
     module.virtual_networks,
     module.peering_hub_outbound,
@@ -49,13 +52,15 @@ module "virtual_networks" {
     id     = each.value.ddos_protection_plan_id
     enable = true
   }
-  dns_servers = each.value.dns_servers == [] ? null : {
+  dns_servers = length(each.value.dns_servers) == 0 ? null : {
     dns_servers = each.value.dns_servers
   }
   subnets = each.value.subnets
 
   tags             = each.value.tags
   enable_telemetry = var.enable_telemetry
+
+  depends_on = [azapi_resource.rg]
 }
 
 # module.peering_hub_outbound uses the peering submodule from theAzure Verified Module
@@ -72,16 +77,18 @@ module "peering_hub_outbound" {
   remote_virtual_network = {
     "resource_id" = each.value["outbound"].remote_resource_id,
   }
-  name                         = each.value["outbound"].name
-  allow_forwarded_traffic      = true
-  allow_gateway_transit        = false
-  allow_virtual_network_access = true
-  use_remote_gateways          = each.value.use_remote_gateways
+  name                         = each.value.outbound.name
+  allow_forwarded_traffic      = each.value.outbound.options.allow_forwarded_traffic
+  allow_gateway_transit        = each.value.outbound.options.allow_gateway_transit
+  allow_virtual_network_access = each.value.outbound.options.allow_virtual_network_access
+  use_remote_gateways          = each.value.outbound.options.use_remote_gateways
   create_reverse_peering       = false
+
+  depends_on = [module.virtual_networks]
 }
 
 # module.peering_hub_inbound uses the peering submodule from theAzure Verified Module
-# to creat the inbound peering from the hub network to the spoke network when specified
+# to create the inbound peering from the hub network to the spoke network when specified
 module "peering_hub_inbound" {
   for_each        = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_tohub }
   source          = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
@@ -94,12 +101,14 @@ module "peering_hub_inbound" {
   remote_virtual_network = {
     "resource_id" = each.value["inbound"].remote_resource_id,
   }
-  name                         = each.value["inbound"].name
-  allow_forwarded_traffic      = true
-  allow_gateway_transit        = true
-  allow_virtual_network_access = true
-  use_remote_gateways          = false
+  name                         = each.value.inbound.name
+  allow_forwarded_traffic      = each.value.inbound.options.allow_forwarded_traffic
+  allow_gateway_transit        = each.value.inbound.options.allow_gateway_transit
+  allow_virtual_network_access = each.value.inbound.options.allow_virtual_network_access
+  use_remote_gateways          = each.value.inbound.options.use_remote_gateways
   create_reverse_peering       = false
+
+  depends_on = [module.virtual_networks]
 }
 
 # module.peering_mesh uses the peering submodule from theAzure Verified Module
@@ -122,30 +131,38 @@ module "peering_mesh" {
   allow_virtual_network_access = true
   use_remote_gateways          = false
   create_reverse_peering       = false
+
+  depends_on = [module.virtual_networks]
 }
 
 # azapi_resource.vhubconnection creates a virtual wan hub connection between the spoke and the supplied vwan hub.
 resource "azapi_resource" "vhubconnection" {
-  for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_connection_enabled && !v.vwan_security_configuration.routing_intent_enabled }
-  type      = "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2022-07-01"
-  parent_id = each.value.vwan_hub_resource_id
-  name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", module.virtual_networks[each.key].resource_id)}")
+  for_each = { for k, v in var.virtual_networks : k => v if v.vwan_connection_enabled && !v.vwan_security_configuration.routing_intent_enabled }
+
+  type = "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2022-07-01"
   body = {
     properties = local.vhubconnection_body_properties[each.key]
   }
+  name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", module.virtual_networks[each.key].resource_id)}")
+  parent_id = each.value.vwan_hub_resource_id
+
+  depends_on = [module.virtual_networks]
 }
 
 # azapi_resource.vhubconnection creates a virtual wan hub connection between the spoke and the supplied vwan hub.
 # This resource is used when routing intent is enabled on the vwan security configuration,
 # as the routing configuration is then ignored.
 resource "azapi_resource" "vhubconnection_routing_intent" {
-  for_each  = { for k, v in var.virtual_networks : k => v if v.vwan_connection_enabled && v.vwan_security_configuration.routing_intent_enabled }
-  type      = "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2022-07-01"
-  parent_id = each.value.vwan_hub_resource_id
-  name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", module.virtual_networks[each.key].resource_id)}")
+  for_each = { for k, v in var.virtual_networks : k => v if v.vwan_connection_enabled && v.vwan_security_configuration.routing_intent_enabled }
+
+  type = "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2022-07-01"
   body = {
     properties = local.vhubconnection_body_properties[each.key]
   }
+  name      = coalesce(each.value.vwan_connection_name, "vhc-${uuidv5("url", module.virtual_networks[each.key].resource_id)}")
+  parent_id = each.value.vwan_hub_resource_id
+
+  depends_on = [module.virtual_networks]
 
   lifecycle {
     ignore_changes = [

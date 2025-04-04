@@ -162,14 +162,18 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
 	primaryvnet["hub_peering_enabled"] = true
 	secondaryvnet["hub_peering_enabled"] = true
-	primaryvnet["hub_peering_use_remote_gateways"] = false
-	secondaryvnet["hub_peering_use_remote_gateways"] = false
+	primaryvnet["hub_peering_options_tohub"] = map[string]any{
+		"use_remote_gateways": false,
+	}
+	secondaryvnet["hub_peering_options_tohub"] = map[string]any{
+		"use_remote_gateways": false,
+	}
 
 	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(12).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.module.virtual_networks[\"primary\"].azapi_resource.vnet",
@@ -203,14 +207,18 @@ func TestDeployVirtualNetworkValidUniDirectionalVnetPeering(t *testing.T) {
 	primaryvnet["hub_peering_direction"] = "fromhub"
 	secondaryvnet["hub_peering_enabled"] = true
 	secondaryvnet["hub_peering_direction"] = "tohub"
-	primaryvnet["hub_peering_use_remote_gateways"] = false
-	secondaryvnet["hub_peering_use_remote_gateways"] = false
+	primaryvnet["hub_peering_options_tohub"] = map[string]any{
+		"use_remote_gateways": false,
+	}
+	secondaryvnet["hub_peering_options_tohub"] = map[string]any{
+		"use_remote_gateways": false,
+	}
 
 	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(10).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.module.virtual_networks[\"primary\"].azapi_resource.vnet",
@@ -245,7 +253,7 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(11).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtualnetwork_test.module.virtual_networks[\"primary\"].azapi_resource.vnet",
@@ -354,7 +362,7 @@ func TestDeployVirtualNetworkValidMeshPeering(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(8).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",

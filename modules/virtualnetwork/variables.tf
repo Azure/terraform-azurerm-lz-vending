@@ -3,19 +3,12 @@ variable "subscription_id" {
   description = <<DESCRIPTION
 The subscription ID of the subscription to create the virtual network in.
 DESCRIPTION
+  nullable    = false
+
   validation {
     condition     = can(regex("^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_id))
     error_message = "Must a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
   }
-}
-
-variable "location" {
-  type        = string
-  description = <<DESCRIPTION
-The default location of resources created by this module.
-Virtual networks will be created in this location unless overridden by the `location` attribute.
-DESCRIPTION
-  default     = ""
 }
 
 variable "virtual_networks" {
@@ -24,7 +17,7 @@ variable "virtual_networks" {
     address_space       = list(string)
     resource_group_name = string
 
-    location = optional(string, "")
+    location = optional(string, null)
 
     dns_servers             = optional(list(string), [])
     flow_timeout_in_minutes = optional(number, null)
@@ -65,25 +58,50 @@ variable "virtual_networks" {
       }
     )), {})
 
-    hub_network_resource_id         = optional(string, "")
-    hub_peering_enabled             = optional(bool, false)
-    hub_peering_direction           = optional(string, "both")
-    hub_peering_name_tohub          = optional(string, "")
-    hub_peering_name_fromhub        = optional(string, "")
-    hub_peering_use_remote_gateways = optional(bool, true)
+    hub_network_resource_id = optional(string, null)
+    hub_peering_enabled     = optional(bool, false)
+    hub_peering_direction   = optional(string, "both")
+    hub_peering_name_tohub  = optional(string, null)
+    hub_peering_options_tohub = optional(object({
+      allow_forwarded_traffic       = optional(bool, true)
+      allow_gateway_transit         = optional(bool, false)
+      allow_virtual_network_access  = optional(bool, true)
+      do_not_verify_remote_gateways = optional(bool, false)
+      enable_only_ipv6_peering      = optional(bool, false)
+      local_peered_address_spaces   = optional(list(string), [])
+      local_peered_subnets          = optional(list(string), [])
+      peer_complete_vnets           = optional(bool, true)
+      remote_peered_address_spaces  = optional(list(string), [])
+      remote_peered_subnets         = optional(list(string), [])
+      use_remote_gateways           = optional(bool, true)
+    }), {})
+    hub_peering_name_fromhub = optional(string, null)
+    hub_peering_options_fromhub = optional(object({
+      allow_forwarded_traffic       = optional(bool, true)
+      allow_gateway_transit         = optional(bool, true)
+      allow_virtual_network_access  = optional(bool, true)
+      do_not_verify_remote_gateways = optional(bool, false)
+      enable_only_ipv6_peering      = optional(bool, false)
+      local_peered_address_spaces   = optional(list(string), [])
+      local_peered_subnets          = optional(list(string), [])
+      peer_complete_vnets           = optional(bool, true)
+      remote_peered_address_spaces  = optional(list(string), [])
+      remote_peered_subnets         = optional(list(string), [])
+      use_remote_gateways           = optional(bool, false)
+    }), {})
 
     mesh_peering_enabled                 = optional(bool, false)
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
 
     resource_group_creation_enabled = optional(bool, true)
     resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string, "")
+    resource_group_lock_name        = optional(string, null)
     resource_group_tags             = optional(map(string), {})
 
-    vwan_associated_routetable_resource_id   = optional(string, "")
+    vwan_associated_routetable_resource_id   = optional(string, null)
     vwan_connection_enabled                  = optional(bool, false)
-    vwan_connection_name                     = optional(string, "")
-    vwan_hub_resource_id                     = optional(string, "")
+    vwan_connection_name                     = optional(string, null)
+    vwan_hub_resource_id                     = optional(string, null)
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
     vwan_security_configuration = optional(object({
@@ -153,6 +171,22 @@ The following values configure bi-directional hub & spoke peering for the given 
 - `hub_peering_name_fromhub`: The name of the peering from the hub network. [optional - leave empty to use calculated name]
 - `hub_peering_use_remote_gateways`: Whether to use remote gateways for the hub peering. [optional - default true]
 
+#### Hub network peering options
+
+The following values configure the options for the hub network peering. These are configurable in each direction:
+
+- `allow_forwarded_traffic`: Whether to allow forwarded traffic for the peering. [optional - default `true`]
+- `allow_gateway_transit`: Whether to allow gateway transit for the peering. [optional - default `false` (outbound) or `true` (inbound)]
+- `allow_virtual_network_access`: Whether to allow virtual network access for the peering. [optional - default `true`]
+- `do_not_verify_remote_gateways`: Whether to not verify remote gateways for the peering. [optional - default `false`]
+- `enable_only_ipv6_peering`: Whether to enable only IPv6 peering. [optional - default `false`]
+- `local_peered_address_spaces`: A list of local address spaces to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `local_peered_subnets`: A list of local subnets to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `peer_complete_vnets`: Whether to peer complete virtual networks. [optional - default `true`]
+- `remote_peered_address_spaces`: A list of remote address spaces to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `remote_peered_subnets`: A list of remote subnets to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `use_remote_gateways`: Whether to use remote gateways for the peering. [optional - default `true` (outbound) or `false` (inbound)]
+
 ### Mesh peering values
 
 Mesh peering is the capability to create a bi-directional peerings between all supplied virtual networks in `var.virtual_networks`.
@@ -197,7 +231,6 @@ DESCRIPTION
     condition     = length(var.virtual_networks) > 0
     error_message = "The virtual_networks variable must not be empty."
   }
-
   # validate virtual network name
   validation {
     condition = alltrue([
@@ -206,7 +239,6 @@ DESCRIPTION
     ])
     error_message = "Virtual network name must consist of a-z, A-Z, 0-9, -, _, and . (period) and be between 2 and 64 characters in length."
   }
-
   # validate address space is not zero length
   validation {
     condition = alltrue([
@@ -215,19 +247,17 @@ DESCRIPTION
     ])
     error_message = "At least 1 address space must be specified."
   }
-
   # validate address space CIDR blocks are valid
   validation {
     condition = alltrue(flatten([
       for k, v in var.virtual_networks :
       [
         for cidr in v.address_space :
-        can(regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(3[0-2]|[1-2][0-9]|[0-9]))$", cidr))
+        can(cidrhost(cidr, 0))
       ]
     ]))
-    error_message = "Address space entries must be specified in CIDR notation, e.g. 192.168.0.0/24."
+    error_message = "Address space entries must be specified in IPv4 or IPv6 CIDR notation, e.g. 192.168.0.0/24, or 2001:db8::/32."
   }
-
   # validate virtual network subnet names
   validation {
     condition = alltrue(flatten([
@@ -239,7 +269,6 @@ DESCRIPTION
     ]))
     error_message = "Virtual network subnet name must consist of a-z, A-Z, 0-9, -, _, and . (period) and be between 2 and 64 characters in length."
   }
-
   # validate subnet address prefixes is not zero length
   validation {
     condition = alltrue(flatten([
@@ -251,7 +280,6 @@ DESCRIPTION
     ]))
     error_message = "At least 1 subnet address prefix must be specified."
   }
-
   # validate subnet nat gateway id is valid
   validation {
     condition = alltrue(flatten([
@@ -263,7 +291,6 @@ DESCRIPTION
     ]))
     error_message = "Nat Gateway resource id must be valid, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/natGateways/testvnatgw."
   }
-
   # validate subnet network security group id is valid
   validation {
     condition = alltrue(flatten([
@@ -275,7 +302,6 @@ DESCRIPTION
     ]))
     error_message = "Network security group resource id must be valid, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/networkSecurityGroups/testvnsg."
   }
-
   # validate ddos protection plan resource id for networks with ddos protection enabled
   validation {
     condition = alltrue([
@@ -284,7 +310,6 @@ DESCRIPTION
     ])
     error_message = "Hub network resource id must be an Azure ddos protection plan resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/ddosProtectionPlans/my-protection-plan."
   }
-
   # validate hub network resource id for networks with hub peering enabled
   validation {
     condition = alltrue([
@@ -293,7 +318,6 @@ DESCRIPTION
     ])
     error_message = "Hub network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
   }
-
   # validate vwan hub resource id for networks with vwan connection enabled
   validation {
     condition = alltrue([
@@ -302,42 +326,25 @@ DESCRIPTION
     ])
     error_message = "The vWAN hub resource id must be an Azure vWAN hub network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub."
   }
-
   # validate vwan associated routetable resource id for networks with vwan connection enabled
   validation {
     condition = alltrue([
       for k, v in var.virtual_networks :
-      can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", v.vwan_associated_routetable_resource_id)) if v.vwan_connection_enabled
+      v.vwan_associated_routetable_resource_id != null ? can(regex("^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", v.vwan_associated_routetable_resource_id)) : true if v.vwan_connection_enabled
     ])
     error_message = "The vWAN associated routetable resource id must be an Azure vwan hub routetable resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
   }
-
   # validate vwan propagated routetable resource ids for networks with vwan connection enabled
   validation {
     condition = alltrue(flatten([
       for k, v in var.virtual_networks :
       [
         for i in v.vwan_propagated_routetables_resource_ids :
-        can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", i))
+        i != null ? can(regex("^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualHubs/[\\w-_.]{1,80}/hubRouteTables/[\\w-_.]{1,80}$", i)) : true
       ] if v.vwan_connection_enabled
     ]))
     error_message = "The vWAN propagated routetables resource id must be an Azure vwan hub routetable resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualHubs/my-vhub/hubRouteTables/defaultRouteTable."
   }
-
-  # Reserved for future functionality
-  #
-  # # validate other peering network resource id
-  # validation {
-  #   condition = alltrue(flatten([
-  #     for k, v in var.virtual_networks :
-  #     [
-  #       for k2, v2 in v.other_peerings :
-  #       can(regex("^$|^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/virtualNetworks/[\\w-_.]{2,64}$", v2.remote_network_resource_id))
-  #     ]
-  #   ]))
-  #   error_message = "Other peering remote network resource id must be an Azure virtual network resource id, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/virtualNetworks/my-vnet."
-  # }
-
   # validate resource groups with creation enabled have unique names.
   validation {
     condition = can(
@@ -359,8 +366,17 @@ variable "enable_telemetry" {
   default     = true
   description = <<DESCRIPTION
 This variable controls whether or not telemetry is enabled for the module.
-For more information see https://aka.ms/avm/telemetryinfo.
+For more information see <https://aka.ms/avm/telemetryinfo>.
 If it is set to false, then no telemetry will be collected.
 DESCRIPTION
   nullable    = false
+}
+
+variable "location" {
+  type        = string
+  default     = ""
+  description = <<DESCRIPTION
+The default location of resources created by this module.
+Virtual networks will be created in this location unless overridden by the `location` attribute.
+DESCRIPTION
 }

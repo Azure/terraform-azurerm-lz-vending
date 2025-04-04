@@ -5,3 +5,7 @@ variable "subscription_id" {
 variable "virtual_networks" {
   type = any
 }
+
+variable "enable_telemetry" {
+  type = bool
+}

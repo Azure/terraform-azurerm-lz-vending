@@ -88,3 +88,7 @@ jobs:
           AZAPI_VERSION: ${{ matrix.azapi_version }}
           AZURERM_VERSION: ${{ matrix.azurerm_version }}
           TERRATEST_LOG: ${{ github.event.inputs.terratest_log }}
+
+      - name: Terraform unit test
+        run: |
+          make tftest-unit

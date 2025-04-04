@@ -5,7 +5,7 @@ module "usermanagedidentity" {
   for_each = { for umi_k, umi_v in var.user_managed_identities : umi_k => umi_v if var.umi_enabled }
 
   name     = each.value.name
-  location = length(each.value.location) > 0 ? each.value.location : var.location
+  location = coalesce(each.value.location, var.location)
   tags     = each.value.tags
 
   resource_group_creation_enabled = var.resource_group_creation_enabled

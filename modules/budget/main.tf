@@ -1,7 +1,5 @@
 resource "azapi_resource" "budget" {
-  type      = "Microsoft.Consumption/budgets@2021-10-01"
-  name      = var.budget_name
-  parent_id = var.budget_scope
+  type = "Microsoft.Consumption/budgets@2021-10-01"
   body = {
     properties = {
       amount        = var.budget_amount
@@ -14,4 +12,6 @@ resource "azapi_resource" "budget" {
       }
     }
   }
+  name      = var.budget_name
+  parent_id = var.budget_scope
 }

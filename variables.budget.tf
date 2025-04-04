@@ -13,7 +13,7 @@ variable "budgets" {
     time_grain        = string
     time_period_start = string
     time_period_end   = string
-    relative_scope    = optional(string, "")
+    relative_scope    = optional(string, null)
     notifications = optional(map(object({
       enabled        = bool
       operator       = string

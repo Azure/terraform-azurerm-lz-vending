@@ -82,7 +82,7 @@ The following input variables are required:
 
 ### <a name="input_location"></a> [location](#input\_location)
 
-Description: The name of the user-assigned managed identity
+Description: The location of the user-assigned managed identity
 
 Type: `string`
 
@@ -152,11 +152,11 @@ Type:
 
 ```hcl
 map(object({
-    name         = optional(string, "")
+    name         = optional(string, null)
     organization = string
     repository   = string
     entity       = string
-    value        = optional(string, "")
+    value        = optional(string, null)
   }))
 ```
 
@@ -180,7 +180,7 @@ Type:
 
 ```hcl
 map(object({
-    name         = optional(string, "")
+    name         = optional(string, null)
     organization = string
     project      = string
     workspace    = string
@@ -208,11 +208,11 @@ Default: `true`
 
 ### <a name="input_resource_group_lock_name"></a> [resource\_group\_lock\_name](#input\_resource\_group\_lock\_name)
 
-Description: The name of the resource group lock for the user-assigned managed identity resource group, if blank will be set to `lock-<resource_group_name>`
+Description: The name of the resource group lock for the user-assigned managed identity resource group, if `null` will be set to `lock-<resource_group_name>`
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_resource_group_tags"></a> [resource\_group\_tags](#input\_resource\_group\_tags)
 

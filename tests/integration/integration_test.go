@@ -35,12 +35,21 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
-		"module.subscription[0].azurerm_subscription.this[0]",
-		"module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
-		"module.virtualnetwork[0].azapi_resource.peering_hub_outbound[\"primary\"]",
+		"module.subscription[0].azapi_resource_action.subscription_cancel[0]",
+		"module.subscription[0].azapi_resource_action.subscription_rename[0]",
+		"module.subscription[0].azapi_resource.subscription[0]",
+		"module.subscription[0].azapi_update_resource.subscription_tags[0]",
+		"module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]",
 		"module.virtualnetwork[0].azapi_resource.rg_lock[\"primary-rg\"]",
 		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
-		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
+		"module.virtualnetwork[0].module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
+		"module.virtualnetwork[0].module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.azurerm_client_config.telemetry[0]",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.modtm_module_source.telemetry[0]",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].modtm_telemetry.telemetry[0]",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].random_uuid.telemetry[0]",
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
@@ -69,10 +78,18 @@ func TestIntegrationVwan(t *testing.T) {
 
 	resources := []string{
 		"azapi_resource.telemetry_root[0]",
-		"module.subscription[0].azurerm_subscription.this[0]",
+		"module.subscription[0].azapi_resource_action.subscription_cancel[0]",
+		"module.subscription[0].azapi_resource_action.subscription_rename[0]",
+		"module.subscription[0].azapi_resource.subscription[0]",
+		"module.subscription[0].azapi_update_resource.subscription_tags[0]",
+		"module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]",
 		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"primary\"]",
-		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
-		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].azapi_resource.vnet",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.azurerm_client_config.telemetry[0]",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.modtm_module_source.telemetry[0]",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].modtm_telemetry.telemetry[0]",
+		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].random_uuid.telemetry[0]",
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)

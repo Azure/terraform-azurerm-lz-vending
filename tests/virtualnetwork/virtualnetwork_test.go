@@ -63,7 +63,9 @@ func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 	secondaryvnet := v["virtual_networks"].(map[string]map[string]any)["secondary"]
 	primaryvnet["dns_servers"] = []any{"1.2.3.4", "4.3.2.1"}
-	secondaryvnet["dns_servers"] = []any{}
+	secondaryvnet["dns_servers"] = []any{
+		"8.8.8.8",
+	}
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
@@ -1333,7 +1335,7 @@ func TestVirtualNetworkCreateValidWithOnlyFromHubPeering(t *testing.T) {
 // TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled
 // tests the creation of a plan that configured the outbound peering
 // with useRemoteGateways disabled.
-func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testing.T) {
+func TestVirtualNetworkCreateValidWithPeeringUseCustomOptions(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
@@ -1341,7 +1343,18 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet2"
 	primaryvnet["hub_peering_enabled"] = true
-	primaryvnet["hub_peering_use_remote_gateways"] = false
+	primaryvnet["hub_peering_options_tohub"] = map[string]any{
+		"allow_forwarded_traffic":      false,
+		"allow_virtual_network_access": false,
+		"allow_gateway_transit":        false,
+		"use_remote_gateways":          false,
+	}
+	primaryvnet["hub_peering_options_fromhub"] = map[string]any{
+		"allow_forwarded_traffic":      true,
+		"allow_virtual_network_access": true,
+		"allow_gateway_transit":        true,
+		"use_remote_gateways":          true,
+	}
 
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
@@ -1365,10 +1378,17 @@ func TestVirtualNetworkCreateValidWithPeeringUseRemoteGatewaysDisabled(t *testin
 		check.InPlan(test.PlanStruct).That(r).Exists().ErrorIsNil(t)
 	}
 
-	// We can only check the body of the outbound peering as the inbound values
-	// not known until apply
-	res := "module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]"
+	res := "module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]"
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.useRemoteGateways").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.allowForwardedTraffic").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(true).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.allowGatewayTransit").HasValue(true).ErrorIsNil(t)
+
+	res = "module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]"
 	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.useRemoteGateways").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.allowForwardedTraffic").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.allowVirtualNetworkAccess").HasValue(false).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.allowGatewayTransit").HasValue(false).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithVhub tests the creation of a plan that
@@ -1759,7 +1779,7 @@ func TestVirtualNetworkDdosProtection(t *testing.T) {
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
 	}
 
-	t.Run("Enabled", func(t *testing.T) {
+	t.Run("DdosEnabled", func(t *testing.T) {
 		v := getMockInputVariables()
 		primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 		primaryvnet["ddos_protection_enabled"] = true
@@ -1776,7 +1796,7 @@ func TestVirtualNetworkDdosProtection(t *testing.T) {
 		}
 	})
 
-	t.Run("Disabled", func(t *testing.T) {
+	t.Run("DdosDisabled", func(t *testing.T) {
 		v := getMockInputVariables()
 
 		test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)

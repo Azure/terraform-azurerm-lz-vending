@@ -28,9 +28,11 @@ module "roleassignment_umi" {
   ]
   for_each = local.user_managed_identity_role_assignments
 
-  role_assignment_principal_id      = each.value.principal_id
-  role_assignment_definition        = each.value.definition
-  role_assignment_scope             = each.value.scope
-  role_assignment_condition         = each.value.condition
-  role_assignment_condition_version = each.value.condition_version
+  role_assignment_principal_id              = each.value.principal_id
+  role_assignment_definition                = each.value.definition
+  role_assignment_scope                     = each.value.scope
+  role_assignment_condition                 = each.value.condition
+  role_assignment_condition_version         = each.value.condition_version
+  role_assignment_principal_type            = each.value.principal_type
+  role_assignment_definition_lookup_enabled = each.value.definition_lookup_enabled
 }

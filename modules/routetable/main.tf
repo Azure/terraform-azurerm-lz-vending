@@ -1,8 +1,5 @@
 resource "azapi_resource" "route_table" {
-  type      = "Microsoft.Network/routeTables@2023-04-01"
-  parent_id = "${local.subscription_resource_id}/resourceGroups/${var.resource_group_name}"
-  name      = var.name
-  location  = var.location
+  type = "Microsoft.Network/routeTables@2023-04-01"
   body = {
     properties = {
       disableBgpRoutePropagation = !var.bgp_route_propagation_enabled
@@ -18,5 +15,8 @@ resource "azapi_resource" "route_table" {
       ]
     }
   }
-  tags = var.tags
+  location  = var.location
+  name      = var.name
+  parent_id = "${local.subscription_resource_id}/resourceGroups/${var.resource_group_name}"
+  tags      = var.tags
 }

@@ -48,6 +48,17 @@ resource "azapi_resource" "vhub" {
       }
     }
   }
+  retry = {
+    error_message_regex = [
+      "The specified operation 'DeleteVirtualHub' is not supported. Deletion is not supported when RoutingStatus on Hub is 'Provisioning'"
+    ]
+    interval_seconds     = 60
+    max_interval_seconds = 120
+  }
+  timeouts {
+    create = "30m"
+    delete = "45m"
+  }
 }
 
 resource "azapi_resource" "hubfw" {
@@ -116,4 +127,5 @@ module "virtualnetwork_test" {
   source           = "../../"
   subscription_id  = var.subscription_id
   virtual_networks = local.virtual_networks_merged
+  enable_telemetry = var.enable_telemetry
 }
