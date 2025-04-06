@@ -65,7 +65,7 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(4).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(6).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
@@ -127,7 +127,7 @@ func TestDeployVirtualNetworkValidSubnets(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(7).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(9).ErrorIsNil(t)
 
 	resources := []string{
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
