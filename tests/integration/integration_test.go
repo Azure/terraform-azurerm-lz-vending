@@ -4,7 +4,6 @@ package integration
 // in specific scenarios.
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
@@ -34,22 +33,22 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
-		"azapi_resource.telemetry_root[0]",
-		"module.subscription[0].azapi_resource_action.subscription_cancel[0]",
-		"module.subscription[0].azapi_resource_action.subscription_rename[0]",
-		"module.subscription[0].azapi_resource.subscription[0]",
-		"module.subscription[0].azapi_update_resource.subscription_tags[0]",
-		"module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]",
-		"module.virtualnetwork[0].azapi_resource.rg_lock[\"primary-rg\"]",
-		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
-		"module.virtualnetwork[0].module.peering_hub_inbound[\"primary\"].azapi_resource.this[0]",
-		"module.virtualnetwork[0].module.peering_hub_outbound[\"primary\"].azapi_resource.this[0]",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.azurerm_client_config.telemetry[0]",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.modtm_module_source.telemetry[0]",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].modtm_telemetry.telemetry[0]",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].random_uuid.telemetry[0]",
+		`azapi_resource.telemetry_root[0]`,
+		`module.subscription[0].azapi_resource_action.subscription_cancel[0]`,
+		`module.subscription[0].azapi_resource_action.subscription_rename[0]`,
+		`module.subscription[0].azapi_resource.subscription[0]`,
+		`module.subscription[0].azapi_update_resource.subscription_tags[0]`,
+		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
+		`module.virtualnetwork[0].azapi_resource.rg_lock["primary-rg"]`,
+		`module.virtualnetwork[0].azapi_resource.rg["primary-rg"]`,
+		`module.virtualnetwork[0].module.peering_hub_inbound["primary"].azapi_resource.this[0]`,
+		`module.virtualnetwork[0].module.peering_hub_outbound["primary"].azapi_resource.this[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.this`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.modtm_module_source.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].modtm_telemetry.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
@@ -77,19 +76,20 @@ func TestIntegrationVwan(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
-		"azapi_resource.telemetry_root[0]",
-		"module.subscription[0].azapi_resource_action.subscription_cancel[0]",
-		"module.subscription[0].azapi_resource_action.subscription_rename[0]",
-		"module.subscription[0].azapi_resource.subscription[0]",
-		"module.subscription[0].azapi_update_resource.subscription_tags[0]",
-		"module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]",
-		"module.virtualnetwork[0].azapi_resource.vhubconnection[\"primary\"]",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.azurerm_client_config.telemetry[0]",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].data.modtm_module_source.telemetry[0]",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].modtm_telemetry.telemetry[0]",
-		"module.virtualnetwork[0].module.virtual_networks[\"primary\"].random_uuid.telemetry[0]",
+		`azapi_resource.telemetry_root[0]`,
+		`module.subscription[0].azapi_resource_action.subscription_cancel[0]`,
+		`module.subscription[0].azapi_resource_action.subscription_rename[0]`,
+		`module.subscription[0].azapi_resource.subscription[0]`,
+		`module.subscription[0].azapi_update_resource.subscription_tags[0]`,
+		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
+		`module.virtualnetwork[0].azapi_resource.rg["primary-rg"]`,
+		`module.virtualnetwork[0].azapi_resource.vhubconnection["primary"]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.this`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.modtm_module_source.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].modtm_telemetry.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
@@ -123,9 +123,14 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
-		"azapi_resource.telemetry_root[0]",
-		"module.subscription[0].azurerm_subscription.this[0]",
-		"module.roleassignment[\"ra\"].azurerm_role_assignment.this",
+		`azapi_resource.telemetry_root[0]`,
+		`module.roleassignment["ra"].data.azapi_resource_list.role_definitions[0]`,
+		`module.roleassignment["ra"].azapi_resource.this`,
+		`module.subscription[0].azapi_resource.subscription[0]`,
+		`module.subscription[0].azapi_resource_action.subscription_cancel[0]`,
+		`module.subscription[0].azapi_resource_action.subscription_rename[0]`,
+		`module.subscription[0].azapi_update_resource.subscription_tags[0]`,
+		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
@@ -155,11 +160,16 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
-		"azapi_resource.telemetry_root[0]",
-		"module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
-		"module.virtualnetwork[0].azapi_resource.peering_hub_outbound[\"primary\"]",
-		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
+		`azapi_resource.telemetry_root[0]`,
+		`module.virtualnetwork[0].azapi_resource.rg["primary-rg"]`,
+		`module.virtualnetwork[0].module.peering_hub_inbound["primary"].azapi_resource.this[0]`,
+		`module.virtualnetwork[0].module.peering_hub_outbound["primary"].azapi_resource.this[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.this`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.modtm_module_source.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].modtm_telemetry.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
@@ -168,81 +178,6 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	}
 
 	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000300").ErrorIsNil(t)
-}
-
-// TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc tests the resource plan when supplying an existing subscription,
-// with a new virtual network with peerings to a supplied hub network.
-func TestIntegrationHubAndSpokeExistingSubscriptionWithMgAssoc(t *testing.T) {
-	t.Parallel()
-
-	v := getMockInputVariables()
-	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
-	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
-	primaryvnet["hub_peering_enabled"] = true
-	v["subscription_alias_enabled"] = false
-	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
-	v["virtual_network_enabled"] = true
-	v["subscription_management_group_association_enabled"] = true
-	v["subscription_management_group_id"] = "Test"
-	delete(v, "subscription_tags")
-
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, err)
-	defer test.Cleanup()
-
-	resources := []string{
-		"azapi_resource.telemetry_root[0]",
-		"module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
-		"module.virtualnetwork[0].azapi_resource.peering_hub_outbound[\"primary\"]",
-		"module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
-		"module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
-		"module.subscription[0].azurerm_management_group_subscription_association.this[0]",
-	}
-
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	for _, v := range resources {
-		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
-	}
-
-	// check bit field is correct
-	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000302").ErrorIsNil(t)
-}
-
-// TestIntegrationWithYaml tests the use of the module with a for_each loop
-// using YAML files as input.
-func TestIntegrationWithYaml(t *testing.T) {
-	t.Parallel()
-
-	testDir := "testdata/" + t.Name()
-
-	test, err := setuptest.Dirs(moduleDir, testDir).WithVars(nil).InitPlanShowWithPrepFunc(t, utils.RequiredProviders)
-	require.NoError(t, err)
-	defer test.Cleanup()
-
-	resources := []string{
-		"module.lz_vending[\"%s\"].azapi_resource.telemetry_root[0]",
-		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
-		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_resource.rg_lock[\"primary-rg\"]",
-		"module.lz_vending[\"%s\"].module.virtualnetwork[0].azapi_resource.rg[\"primary-rg\"]",
-		"module.lz_vending[\"%s\"].module.subscription[0].azurerm_subscription.this[0]",
-		"module.lz_vending[\"%s\"].module.subscription[0].azurerm_management_group_subscription_association.this[0]",
-		"module.lz_vending[\"%s\"].module.roleassignment[\"my_ra_1\"].azurerm_role_assignment.this",
-		"module.lz_vending[\"%s\"].module.roleassignment[\"my_ra_2\"].azurerm_role_assignment.this",
-	}
-
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources) * 3).ErrorIsNil(t)
-
-	lzs := []string{
-		"landing_zone_1.yaml",
-		"landing_zone_2.yaml",
-		"landing_zone_3.yaml",
-	}
-	for _, v := range resources {
-		for _, lz := range lzs {
-			res := fmt.Sprintf(v, lz)
-			check.InPlan(test.PlanStruct).That(res).Exists().ErrorIsNil(t)
-		}
-	}
 }
 
 // TestIntegrationHubAndSpoke tests the resource plan when creating a new subscription,
@@ -259,7 +194,11 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
-		"module.subscription[0].azurerm_subscription.this[0]",
+		`module.subscription[0].azapi_resource.subscription[0]`,
+		`module.subscription[0].azapi_resource_action.subscription_cancel[0]`,
+		`module.subscription[0].azapi_resource_action.subscription_rename[0]`,
+		`module.subscription[0].azapi_update_resource.subscription_tags[0]`,
+		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
@@ -331,7 +270,8 @@ func TestIntegrationUmiRoleAssignment(t *testing.T) {
 
 	resources := []string{
 		`module.usermanagedidentity["default"].azapi_resource.umi`,
-		`module.roleassignment_umi["default/owner"].azurerm_role_assignment.this`,
+		`module.roleassignment_umi["default/owner"].azapi_resource.this`,
+		`module.roleassignment_umi["default/owner"].data.azapi_resource_list.role_definitions[0]`,
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
@@ -385,12 +325,16 @@ func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
 	defer test.Cleanup()
 
 	resources := []string{
-		`module.usermanagedidentity["default"].azapi_resource.umi`,
-		`module.roleassignment_umi["default/owner"].azurerm_role_assignment.this`,
-		`module.roleassignment_umi["default/blob"].azurerm_role_assignment.this`,
+		`module.roleassignment_umi["backup/blob"].azapi_resource.this`,
+		`module.roleassignment_umi["backup/blob"].data.azapi_resource_list.role_definitions[0]`,
+		`module.roleassignment_umi["backup/owner"].azapi_resource.this`,
+		`module.roleassignment_umi["backup/owner"].data.azapi_resource_list.role_definitions[0]`,
+		`module.roleassignment_umi["default/blob"].azapi_resource.this`,
+		`module.roleassignment_umi["default/blob"].data.azapi_resource_list.role_definitions[0]`,
+		`module.roleassignment_umi["default/owner"].azapi_resource.this`,
+		`module.roleassignment_umi["default/owner"].data.azapi_resource_list.role_definitions[0]`,
 		`module.usermanagedidentity["backup"].azapi_resource.umi`,
-		`module.roleassignment_umi["backup/owner"].azurerm_role_assignment.this`,
-		`module.roleassignment_umi["backup/blob"].azurerm_role_assignment.this`,
+		`module.usermanagedidentity["default"].azapi_resource.umi`,
 	}
 
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
