@@ -17,7 +17,7 @@ import (
 )
 
 var billingScope = os.Getenv("AZURE_BILLING_SCOPE")
-var tenantId = os.Getenv("AZURE_TENANT_ID")
+var tenantID = os.Getenv("AZURE_TENANT_ID")
 
 // TestDeploySubscriptionAliasValid tests the deployment of a subscription alias
 // with valid input variables.
@@ -103,7 +103,7 @@ func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
 	// err = azureutils.IsSubscriptionInManagementGroup(t, u, v["subscription_management_group_id"].(string))
 	// assert.NoErrorf(t, err, "subscription %s is not in management group %s", sid, v["subscription_management_group_id"].(string))
 
-	if err := azureutils.SetSubscriptionManagementGroup(u, tenantId); err != nil {
+	if err := azureutils.SetSubscriptionManagementGroup(u, tenantID); err != nil {
 		t.Logf("cannot move subscription to tenant root group: %v", err)
 	}
 }

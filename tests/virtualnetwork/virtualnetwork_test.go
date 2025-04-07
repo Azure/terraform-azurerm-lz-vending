@@ -282,11 +282,11 @@ func TestVirtualNetworkCreateValidSubnet(t *testing.T) {
 		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
 		subnets, exists := v["subnets"].(map[string]map[string]any)
 		if exists {
-			for subnet_k, subnet_v := range subnets {
-				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
-				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
-				check.InPlan(test.PlanStruct).That(subnet_res).Key("name").HasValue(subnet_v["name"]).ErrorIsNil(t)
-				check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.addressPrefixes").HasValue(subnet_v["address_prefixes"]).ErrorIsNil(t)
+			for subnetKey, subnetVal := range subnets {
+				subnetRes := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnetKey)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnetRes)
+				check.InPlan(test.PlanStruct).That(subnetRes).Key("name").HasValue(subnetVal["name"]).ErrorIsNil(t)
+				check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.addressPrefixes").HasValue(subnetVal["address_prefixes"]).ErrorIsNil(t)
 			}
 		}
 	}
@@ -361,11 +361,11 @@ func TestVirtualNetworkCreateValidWithMultiplSubnets(t *testing.T) {
 		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
 		subnets, exists := v["subnets"].(map[string]map[string]any)
 		if exists {
-			for subnet_k, subnet_v := range subnets {
-				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
-				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
-				check.InPlan(test.PlanStruct).That(subnet_res).Key("name").HasValue(subnet_v["name"]).ErrorIsNil(t)
-				check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.addressPrefixes").HasValue(subnet_v["address_prefixes"]).ErrorIsNil(t)
+			for subnetKey, subnetVal := range subnets {
+				subnetRes := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnetKey)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnetRes)
+				check.InPlan(test.PlanStruct).That(subnetRes).Key("name").HasValue(subnetVal["name"]).ErrorIsNil(t)
+				check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.addressPrefixes").HasValue(subnetVal["address_prefixes"]).ErrorIsNil(t)
 			}
 		}
 	}
@@ -419,11 +419,11 @@ func TestVirtualNetworkCreateValidWithMultiplSubnetsInSingleVnet(t *testing.T) {
 		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
 		subnets, exists := v["subnets"].(map[string]map[string]any)
 		if exists {
-			for subnet_k, subnet_v := range subnets {
-				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
-				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
-				check.InPlan(test.PlanStruct).That(subnet_res).Key("name").HasValue(subnet_v["name"]).ErrorIsNil(t)
-				check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.addressPrefixes").HasValue(subnet_v["address_prefixes"]).ErrorIsNil(t)
+			for subnetKey, subnetVal := range subnets {
+				subnetRes := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnetKey)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnetRes)
+				check.InPlan(test.PlanStruct).That(subnetRes).Key("name").HasValue(subnetVal["name"]).ErrorIsNil(t)
+				check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.addressPrefixes").HasValue(subnetVal["address_prefixes"]).ErrorIsNil(t)
 			}
 		}
 	}
@@ -483,14 +483,14 @@ func TestVirtualNetworkCreateValidWithSubnetNatGateway(t *testing.T) {
 		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
 		subnets, exists := v["subnets"].(map[string]map[string]any)
 		if exists {
-			for subnet_k, subnet_v := range subnets {
-				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
-				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
-				natgw, ng_exists := subnet_v["nat_gateway"].(map[string]any)
-				if ng_exists == false || natgw == nil || reflect.ValueOf(natgw).IsNil() {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.natGateway").DoesNotExist().ErrorIsNil(t)
+			for subnetKey, subnetVal := range subnets {
+				subnetRes := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnetKey)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnetRes)
+				natGw, ngExists := subnetVal["nat_gateway"].(map[string]any)
+				if ngExists == false || natGw == nil || reflect.ValueOf(natGw).IsNil() {
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.natGateway").DoesNotExist().ErrorIsNil(t)
 				} else {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.natGateway.id").HasValue(subnet_v["nat_gateway"].(map[string]any)["id"].(string)).ErrorIsNil(t)
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.natGateway.id").HasValue(subnetVal["nat_gateway"].(map[string]any)["id"].(string)).ErrorIsNil(t)
 				}
 			}
 		}
@@ -572,14 +572,14 @@ func TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup(t *testing.T) {
 		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
 		subnets, exists := v["subnets"].(map[string]map[string]any)
 		if exists {
-			for subnet_k, subnet_v := range subnets {
-				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
-				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
-				nsg, nsg_exists := subnet_v["network_security_group"].(map[string]any)
-				if nsg_exists == false || nsg == nil || reflect.ValueOf(nsg).IsNil() {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.networkSecurityGroup").DoesNotExist().ErrorIsNil(t)
+			for subnetKey, subnetVal := range subnets {
+				subnetKey := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnetKey)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnetKey)
+				nsg, nsgExists := subnetVal["network_security_group"].(map[string]any)
+				if nsgExists == false || nsg == nil || reflect.ValueOf(nsg).IsNil() {
+					check.InPlan(test.PlanStruct).That(subnetKey).Key("body").Query("properties.networkSecurityGroup").DoesNotExist().ErrorIsNil(t)
 				} else {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.networkSecurityGroup.id").HasValue(subnet_v["network_security_group"].(map[string]any)["id"].(string)).ErrorIsNil(t)
+					check.InPlan(test.PlanStruct).That(subnetKey).Key("body").Query("properties.networkSecurityGroup.id").HasValue(subnetVal["network_security_group"].(map[string]any)["id"].(string)).ErrorIsNil(t)
 				}
 			}
 		}
@@ -660,14 +660,14 @@ func TestVirtualNetworkCreateValidWithSubnetPrivateEndpointNetworkPolicy(t *test
 		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
 		subnets, exists := v["subnets"].(map[string]map[string]any)
 		if exists {
-			for subnet_k, subnet_v := range subnets {
-				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
-				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
-				pe, pe_exists := subnet_v["private_endpoint_network_policies"]
-				if pe_exists == false {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.privateEndpointNetworkPolicies").HasValue("Enabled").ErrorIsNil(t)
+			for subnetKey, subnetVal := range subnets {
+				subnetRes := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnetKey)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnetRes)
+				pe, peExists := subnetVal["private_endpoint_network_policies"]
+				if peExists == false {
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.privateEndpointNetworkPolicies").HasValue("Enabled").ErrorIsNil(t)
 				} else {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.privateEndpointNetworkPolicies").HasValue(pe).ErrorIsNil(t)
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.privateEndpointNetworkPolicies").HasValue(pe).ErrorIsNil(t)
 				}
 			}
 		}
@@ -727,17 +727,17 @@ func TestVirtualNetworkCreateValidWithSubnetPrivateLinkServiceNetworkPolicy(t *t
 		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
 		subnets, exists := v["subnets"].(map[string]map[string]any)
 		if exists {
-			for subnet_k, subnet_v := range subnets {
-				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
-				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
-				_, pls_exists := subnet_v["private_link_service_network_policies_enabled"]
-				if pls_exists == false {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.privateLinkServiceNetworkPolicies").HasValue("Enabled").ErrorIsNil(t)
+			for subnetKey, subnetVal := range subnets {
+				subnetRes := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnetKey)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnetRes)
+				_, plsExists := subnetVal["private_link_service_network_policies_enabled"]
+				if plsExists == false {
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.privateLinkServiceNetworkPolicies").HasValue("Enabled").ErrorIsNil(t)
 				} else {
-					if subnet_v["private_link_service_network_policies_enabled"] == true {
-						check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.privateLinkServiceNetworkPolicies").HasValue("Enabled").ErrorIsNil(t)
+					if subnetVal["private_link_service_network_policies_enabled"] == true {
+						check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.privateLinkServiceNetworkPolicies").HasValue("Enabled").ErrorIsNil(t)
 					} else {
-						check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.privateLinkServiceNetworkPolicies").HasValue("Disabled").ErrorIsNil(t)
+						check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.privateLinkServiceNetworkPolicies").HasValue("Disabled").ErrorIsNil(t)
 					}
 				}
 			}
@@ -799,14 +799,14 @@ func TestVirtualNetworkCreateValidWithSubnetRouteTable(t *testing.T) {
 		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
 		subnets, exists := v["subnets"].(map[string]map[string]any)
 		if exists {
-			for subnet_k, subnet_v := range subnets {
-				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
-				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
-				rt, rt_exists := subnet_v["route_table"].(map[string]any)
-				if rt_exists == false || rt == nil || reflect.ValueOf(rt).IsNil() {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.routeTable").DoesNotExist().ErrorIsNil(t)
+			for subnetKey, subnetVal := range subnets {
+				subnetRes := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnetKey)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnetRes)
+				rt, rtExists := subnetVal["route_table"].(map[string]any)
+				if rtExists == false || rt == nil || reflect.ValueOf(rt).IsNil() {
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.routeTable").DoesNotExist().ErrorIsNil(t)
 				} else {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.routeTable.id").HasValue(subnet_v["route_table"].(map[string]any)["id"].(string)).ErrorIsNil(t)
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.routeTable.id").HasValue(subnetVal["route_table"].(map[string]any)["id"].(string)).ErrorIsNil(t)
 				}
 			}
 		}
@@ -866,14 +866,14 @@ func TestVirtualNetworkCreateValidWithSubnetDefaultOutboundAccess(t *testing.T) 
 		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
 		subnets, exists := v["subnets"].(map[string]map[string]any)
 		if exists {
-			for subnet_k, subnet_v := range subnets {
-				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
-				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
-				doa, doa_exists := subnet_v["default_outbound_access_enabled"]
-				if doa_exists == false {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.defaultOutboundAccess").HasValue(false).ErrorIsNil(t)
+			for subnetKey, subnetVal := range subnets {
+				subnetRes := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnetKey)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnetRes)
+				doa, doaExists := subnetVal["default_outbound_access_enabled"]
+				if doaExists == false {
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.defaultOutboundAccess").HasValue(false).ErrorIsNil(t)
 				} else {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.defaultOutboundAccess").HasValue(doa).ErrorIsNil(t)
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.defaultOutboundAccess").HasValue(doa).ErrorIsNil(t)
 				}
 			}
 		}
@@ -932,14 +932,14 @@ func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpoint(t *testing.T) 
 		res := fmt.Sprintf("module.virtual_networks[\"%s\"]", k)
 		subnets, exists := v["subnets"].(map[string]map[string]any)
 		if exists {
-			for subnet_k, subnet_v := range subnets {
-				subnet_res := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnet_k)
-				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnet_res)
-				_, se_exists := subnet_v["service_endpoints"].([]any)
-				if se_exists {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.serviceEndpoints.0.service").HasValue("Microsoft.Storage").ErrorIsNil(t)
+			for subnetKey, subnetVal := range subnets {
+				subnetRes := fmt.Sprintf("%s.module.subnet[\"%s\"].azapi_resource.subnet", res, subnetKey)
+				terraform.RequirePlannedValuesMapKeyExists(t, test.PlanStruct, subnetRes)
+				_, seExists := subnetVal["service_endpoints"].([]any)
+				if seExists {
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.serviceEndpoints.0.service").HasValue("Microsoft.Storage").ErrorIsNil(t)
 				} else {
-					check.InPlan(test.PlanStruct).That(subnet_res).Key("body").Query("properties.serviceEndpoints").DoesNotExist().ErrorIsNil(t)
+					check.InPlan(test.PlanStruct).That(subnetRes).Key("body").Query("properties.serviceEndpoints").DoesNotExist().ErrorIsNil(t)
 				}
 			}
 		}
@@ -998,7 +998,7 @@ func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpointPolicy(t *testi
 	v := getMockInputVariables()
 
 	// Enable primary vnet subnet in test mock input variables
-	sep_res_id := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/serviceEndpointPolicies/testsep"
+	sepResID := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/serviceEndpointPolicies/testsep"
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 	primaryvnet["subnets"] = map[string]map[string]any{
 		"default": {
@@ -1006,7 +1006,7 @@ func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpointPolicy(t *testi
 			"address_prefixes": []any{"192.168.0.0/26"},
 			"service_endpoint_policies": map[string]map[string]any{
 				"policy1": {
-					"id": sep_res_id,
+					"id": sepResID,
 				},
 			},
 		},
@@ -1035,7 +1035,7 @@ func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpointPolicy(t *testi
 	}
 
 	res := "module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet"
-	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpointPolicies.0.id").HasValue(sep_res_id).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpointPolicies.0.id").HasValue(sepResID).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies tests the creation of a plan that
@@ -1046,8 +1046,8 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies(t *t
 	v := getMockInputVariables()
 
 	// Enable primary vnet subnet in test mock input variables
-	storage_sep_res_id := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/serviceEndpointPolicies/testsepsto"
-	kv_sep_res_id := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/serviceEndpointPolicies/testsepkv"
+	storageSepResID := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/serviceEndpointPolicies/testsepsto"
+	kvSepResID := "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/serviceEndpointPolicies/testsepkv"
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 	primaryvnet["subnets"] = map[string]map[string]any{
 		"default": {
@@ -1055,10 +1055,10 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies(t *t
 			"address_prefixes": []any{"192.168.0.0/26"},
 			"service_endpoint_policies": map[string]map[string]any{
 				"policy1": {
-					"id": storage_sep_res_id,
+					"id": storageSepResID,
 				},
 				"policy2": {
-					"id": kv_sep_res_id,
+					"id": kvSepResID,
 				},
 			},
 		},
@@ -1087,8 +1087,8 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies(t *t
 	}
 
 	res := "module.virtual_networks[\"primary\"].module.subnet[\"default\"].azapi_resource.subnet"
-	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpointPolicies.0.id").HasValue(storage_sep_res_id).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpointPolicies.1.id").HasValue(kv_sep_res_id).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpointPolicies.0.id").HasValue(storageSepResID).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That(res).Key("body").Query("properties.serviceEndpointPolicies.1.id").HasValue(kvSepResID).ErrorIsNil(t)
 }
 
 // TestVirtualNetworkCreateValidWithSubnetSingleDelegation tests the creation of a plan that
@@ -1099,8 +1099,8 @@ func TestVirtualNetworkCreateValidWithSubnetSingleDelegation(t *testing.T) {
 	v := getMockInputVariables()
 
 	// Enable primary vnet subnet in test mock input variables
-	expected_delegations := []map[string]any{}
-	expected_delegations = append(expected_delegations, map[string]any{
+	expectedDelegations := []map[string]any{}
+	expectedDelegations = append(expectedDelegations, map[string]any{
 		"name": "Microsoft.Web/serverFarms",
 		"service_delegation": map[string]any{
 			"name": "Microsoft.Web/serverFarms",
@@ -1111,7 +1111,7 @@ func TestVirtualNetworkCreateValidWithSubnetSingleDelegation(t *testing.T) {
 		"default": {
 			"name":             "snet-default",
 			"address_prefixes": []any{"192.168.0.0/26"},
-			"delegation":       expected_delegations,
+			"delegation":       expectedDelegations,
 		},
 	}
 
@@ -1150,14 +1150,14 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleDelegations(t *testing.T) {
 	v := getMockInputVariables()
 
 	// Enable primary vnet subnet in test mock input variables
-	expected_delegations := []map[string]any{}
-	expected_delegations = append(expected_delegations, map[string]any{
+	expectedDelegations := []map[string]any{}
+	expectedDelegations = append(expectedDelegations, map[string]any{
 		"name": "Microsoft.Web/serverFarms",
 		"service_delegation": map[string]any{
 			"name": "Microsoft.Web/serverFarms",
 		},
 	})
-	expected_delegations = append(expected_delegations, map[string]any{
+	expectedDelegations = append(expectedDelegations, map[string]any{
 		"name": "Microsoft.ContainerInstance/containerGroups",
 		"service_delegation": map[string]any{
 			"name": "Microsoft.ContainerInstance/containerGroups",
@@ -1168,7 +1168,7 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleDelegations(t *testing.T) {
 		"default": {
 			"name":             "snet-default",
 			"address_prefixes": []any{"192.168.0.0/26"},
-			"delegation":       expected_delegations,
+			"delegation":       expectedDelegations,
 		},
 	}
 

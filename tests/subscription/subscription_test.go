@@ -82,8 +82,8 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.additionalProperties.tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
 
-	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
-	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.additionalProperties.managementGroupId").HasValue(mgResId).ErrorIsNil(t)
+	mgResID := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.additionalProperties.managementGroupId").HasValue(mgResID).ErrorIsNil(t)
 }
 
 // TestSubscriptionAliasCreateInvalidBillingScope tests the validation function of the subscription_billing_scope variable.

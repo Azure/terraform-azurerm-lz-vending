@@ -9,12 +9,12 @@ import (
 )
 
 // ListResourceGroup returns all resource groups in the subscription
-func ListResourceGroup(ctx context.Context, subId uuid.UUID) ([]*armresources.ResourceGroup, error) {
+func ListResourceGroup(ctx context.Context, subID uuid.UUID) ([]*armresources.ResourceGroup, error) {
 	cred, err := newDefaultAzureCredential()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Azure credential: %v", err)
 	}
-	resourceGroupClient, err := armresources.NewResourceGroupsClient(subId.String(), cred, nil)
+	resourceGroupClient, err := armresources.NewResourceGroupsClient(subID.String(), cred, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create resource group client: %v", err)
 	}
@@ -27,18 +27,18 @@ func ListResourceGroup(ctx context.Context, subId uuid.UUID) ([]*armresources.Re
 		if err != nil {
 			return nil, err
 		}
-		resourceGroups = append(resourceGroups, pageResp.ResourceGroupListResult.Value...)
+		resourceGroups = append(resourceGroups, pageResp.Value...)
 	}
 	return resourceGroups, nil
 }
 
 // DeleteResourceGroup deletes a resource group by name and subscription id
-func DeleteResourceGroup(ctx context.Context, rgname string, subId uuid.UUID) error {
+func DeleteResourceGroup(ctx context.Context, rgname string, subID uuid.UUID) error {
 	cred, err := newDefaultAzureCredential()
 	if err != nil {
 		return fmt.Errorf("failed to create Azure credential: %v", err)
 	}
-	resourceGroupClient, err := armresources.NewResourceGroupsClient(subId.String(), cred, nil)
+	resourceGroupClient, err := armresources.NewResourceGroupsClient(subID.String(), cred, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create resource group client: %v", err)
 	}

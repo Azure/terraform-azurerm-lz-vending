@@ -18,7 +18,7 @@ import (
 // OidcCredential contains the fields needed to authenticate to Azure using an OIDC token
 type OidcCredential struct {
 	requestToken  string
-	requestUrl    string
+	requestURL    string
 	token         string
 	tokenFilePath string
 	cred          *azidentity.ClientAssertionCredential
@@ -30,7 +30,7 @@ type OidcCredentialOptions struct {
 	TenantID      string
 	ClientID      string
 	RequestToken  string
-	RequestUrl    string
+	RequestURL    string
 	Token         string
 	TokenFilePath string
 }
@@ -39,7 +39,7 @@ type OidcCredentialOptions struct {
 func NewOidcCredential(options *OidcCredentialOptions) (*OidcCredential, error) {
 	w := &OidcCredential{
 		requestToken:  options.RequestToken,
-		requestUrl:    options.RequestUrl,
+		requestURL:    options.RequestURL,
 		token:         options.Token,
 		tokenFilePath: options.TokenFilePath,
 	}
@@ -72,7 +72,7 @@ func (w *OidcCredential) getAssertion(ctx context.Context) (string, error) {
 		return string(idTokenData), nil
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, w.requestUrl, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, w.requestURL, http.NoBody)
 	if err != nil {
 		return "", fmt.Errorf("getAssertion: failed to build request")
 	}

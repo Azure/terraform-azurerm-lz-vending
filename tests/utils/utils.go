@@ -16,7 +16,7 @@ import (
 // We need to do this because Terraform adds newline characters depending on the width of the console window.
 // TODO: Test on Windows if we get \r\n instead of just \n.
 func SanitiseErrorMessage(err error) string {
-	return strings.Replace(err.Error(), "\n", " ", -1)
+	return strings.ReplaceAll(err.Error(), "\n", " ")
 }
 
 // GetLogger returns a logger that can be used for testing.
@@ -64,7 +64,7 @@ func RandomHex(n int) (string, error) {
 }
 
 // GetTestDir returns the directory of the test file.
-func GetTestDir(t *testing.T) string {
+func GetTestDir(_ *testing.T) string {
 	_, filename, _, _ := runtime.Caller(1)
 	return filepath.Dir(filename)
 }
