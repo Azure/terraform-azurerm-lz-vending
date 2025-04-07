@@ -1,6 +1,6 @@
 # Default owners
-* @Azure/terraform-azurerm-lz-vending-admins
+* @Azure/alz-core-team
 # Require admin approval for the following files:
-.github/CODEOWNERS @Azure/terraform-azurerm-lz-vending-admins
-.github/workflows/ @Azure/terraform-azurerm-lz-vending-admins
-Makefile @Azure/terraform-azurerm-lz-vending-admins
+.github/CODEOWNERS @Azure/alz-core-team
+.github/workflows/ @Azure/alz-core-team
+Makefile @Azure/alz-core-team
