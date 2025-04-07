@@ -1,6 +1,6 @@
 # Default owners
-* @Azure/alz-core-team
+* @Azure/alz-terraform-admins
 # Require admin approval for the following files:
-.github/CODEOWNERS @Azure/alz-core-team
-.github/workflows/ @Azure/alz-core-team
-Makefile @Azure/alz-core-team
+.github/CODEOWNERS @Azure/alz-terraform-admins
+.github/workflows/ @Azure/alz-terraform-admins
+Makefile @Azure/alz-terraform-admins
