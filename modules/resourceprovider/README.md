@@ -64,6 +64,7 @@ Description: The resource provider features to register, e.g. [`MyFeature`]
 Type: `set(string)`
 
 Default: `[]`
+<!-- markdownlint-disable MD024 -->
 
 ## Resources
 

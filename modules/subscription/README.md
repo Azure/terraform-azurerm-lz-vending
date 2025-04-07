@@ -210,6 +210,7 @@ object({
 ```
 
 Default: `{}`
+<!-- markdownlint-disable MD024 -->
 
 ## Resources
 

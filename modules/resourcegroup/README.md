@@ -75,6 +75,7 @@ Description: Map of tags to be applied to the resource group
 Type: `map(string)`
 
 Default: `{}`
+<!-- markdownlint-disable MD024 -->
 
 ## Resources
 

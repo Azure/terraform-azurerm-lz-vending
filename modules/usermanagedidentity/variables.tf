@@ -85,7 +85,7 @@ DESCRIPTION
   }
   validation {
     condition = alltrue([
-      for v in var.federated_credentials_github : v.value != ""
+      for v in var.federated_credentials_github : v.value != null
       if v.entity != "pull_request"
     ])
     error_message = "Field 'value' must be specified for all entities except 'pull_request'."

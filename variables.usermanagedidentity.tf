@@ -48,7 +48,6 @@ variable "user_managed_identities" {
   }))
   default     = {}
   description = <<DESCRIPTION
-
 A map of user-managed identities to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply. The value is a map of attributes.
 
 ### Required fields
@@ -74,6 +73,7 @@ The following fields are used to configure role assignments for the user-assigne
 The following fields are used to configure federated identity credentials, using OpenID Connect, for use in GitHub actions, Azure DevOps pipelines, and Terraform Cloud.
 
 #### GitHub Actions
+
 - `federated_credentials_github`: A map of federated credentials to create for the user-assigned managed identity. [optional]
   - `name` - the name of the federated credential resource, the last segment of the Azure resource id.
   - `organization` - the name of the GitHub organization, e.g. `Azure` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
@@ -82,6 +82,7 @@ The following fields are used to configure federated identity credentials, using
   - `value` - identifies the `entity` type, e.g. `main` when using entity is `branch`. Should be blank when `entity` is `pull_request`.
 
 #### Terraform Cloud
+
 - `federated_credentials_terraform_cloud`: A map of federated credentials to create for the user-assigned managed identity. [optional]
   - `name` - the name of the federated credential resource, the last segment of the Azure resource id.
   - `organization` - the name of the Terraform Cloud organization.
@@ -90,12 +91,11 @@ The following fields are used to configure federated identity credentials, using
   - `run_phase` - one of `plan`, or `apply`.
 
 #### Advanced Federated Credentials
+
 - `federated_credentials_advanced`: A map of federated credentials to create for the user-assigned managed identity. [optional]
   - `name`: The name of the federated credential resource, the last segment of the Azure resource id.
   - `subject_identifier`: The subject of the token.
   - `issuer_url`: The URL of the token issuer, should begin with `https://`
   - `audience`: (optional) The token audience, defaults to `api://AzureADTokenExchange`.
-
-
 DESCRIPTION
 }

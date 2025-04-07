@@ -229,6 +229,7 @@ Description: The tags to apply to the user-assigned managed identity
 Type: `map(string)`
 
 Default: `{}`
+<!-- markdownlint-disable MD024 -->
 
 ## Resources
 

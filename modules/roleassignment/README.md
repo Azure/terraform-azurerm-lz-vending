@@ -103,6 +103,7 @@ The type of principal. Can be `User`, `Group`, `ServicePrincipal`, `Device`, or 
 Type: `string`
 
 Default: `null`
+<!-- markdownlint-disable MD024 -->
 
 ## Resources
 

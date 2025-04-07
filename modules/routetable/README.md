@@ -124,6 +124,7 @@ Description: A map of tags to assign to the route table.
 Type: `map(string)`
 
 Default: `{}`
+<!-- markdownlint-disable MD024 -->
 
 ## Resources
 
