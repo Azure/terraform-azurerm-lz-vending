@@ -1,6 +1,5 @@
 <!-- markdownlint-disable MD041 -->
-Prior to v5.0, this module used both the [AzureRM][azurerm_provider] and then[AzAPI][azapi_provider] providers.
-
+Prior to v5.0, this module used both the [AzureRM][azurerm_provider] and then [AzAPI][azapi_provider] providers.
 After v5.0 the module has been refactored to use only the AzAPI provider.
 This was done because of the design of the AzureRM v4.0 provider and its mandatory requirement to be supplied with a subscription id at init time.
 This does not make sense for a module that is designed to create subscriptions!
