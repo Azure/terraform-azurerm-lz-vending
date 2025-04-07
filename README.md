@@ -556,7 +556,7 @@ Default: `null`
 
 ### <a name="input_subscription_management_group_association_enabled"></a> [subscription\_management\_group\_association\_enabled](#input\_subscription\_management\_group\_association\_enabled)
 
-Description: Whether to create the `azurerm_management_group_subscription_association` resource.
+Description: Whether to create the management group association resource.
 
 If enabled, the `subscription_management_group_id` must also be supplied.
 
