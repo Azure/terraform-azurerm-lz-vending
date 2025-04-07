@@ -54,6 +54,7 @@ The following requirements are needed by this module:
 No modules.
 
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD024 -->
 ## Required Inputs
 
 The following input variables are required:
@@ -124,7 +125,6 @@ Description: A map of tags to assign to the route table.
 Type: `map(string)`
 
 Default: `{}`
-<!-- markdownlint-disable MD024 -->
 
 ## Resources
 

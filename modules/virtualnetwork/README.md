@@ -82,6 +82,7 @@ Source: Azure/avm-res-network-virtualnetwork/azurerm
 Version: 0.8.1
 
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD024 -->
 ## Required Inputs
 
 The following input variables are required:
@@ -333,7 +334,6 @@ Virtual networks will be created in this location unless overridden by the `loca
 Type: `string`
 
 Default: `""`
-<!-- markdownlint-disable MD024 -->
 
 ## Resources
 

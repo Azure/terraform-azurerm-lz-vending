@@ -42,6 +42,7 @@ The following requirements are needed by this module:
 No modules.
 
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD024 -->
 ## Required Inputs
 
 The following input variables are required:
@@ -75,7 +76,6 @@ Description: Map of tags to be applied to the resource group
 Type: `map(string)`
 
 Default: `{}`
-<!-- markdownlint-disable MD024 -->
 
 ## Resources
 

@@ -31,8 +31,8 @@ content: |-
   {{ .Modules }}
 
   <!-- markdownlint-disable MD013 -->
-  {{ .Inputs }}
   <!-- markdownlint-disable MD024 -->
+  {{ .Inputs }}
 
   {{ .Resources }}
 

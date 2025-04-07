@@ -199,6 +199,7 @@ Source: ./modules/virtualnetwork
 Version:
 
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD024 -->
 ## Required Inputs
 
 The following input variables are required:
@@ -1057,7 +1058,6 @@ object({
 ```
 
 Default: `{}`
-<!-- markdownlint-disable MD024 -->
 
 ## Resources
 
