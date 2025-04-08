@@ -31,19 +31,18 @@ module "subscription" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.4.0)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.10)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.11.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.7.0)
-
-- <a name="requirement_time"></a> [time](#requirement\_time) (>= 0.9.1)
+- <a name="requirement_time"></a> [time](#requirement\_time) (~> 0.9)
 
 ## Modules
 
 No modules.
 
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD024 -->
 ## Required Inputs
 
 No required inputs.
@@ -85,12 +84,12 @@ Description: The name of the subscription alias.
 The string must be comprised of a-z, A-Z, 0-9, - and \_.  
 The maximum length is 63 characters.
 
-You may also supply an empty string if you do not want to create a new subscription alias.  
+You may also supply a null string if you do not want to create a new subscription alias.  
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_subscription_billing_scope"></a> [subscription\_billing\_scope](#input\_subscription\_billing\_scope)
 
@@ -109,7 +108,7 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_subscription_display_name"></a> [subscription\_display\_name](#input\_subscription\_display\_name)
 
@@ -123,7 +122,7 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id)
 
@@ -131,7 +130,7 @@ Description: n/a
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_subscription_management_group_association_enabled"></a> [subscription\_management\_group\_association\_enabled](#input\_subscription\_management\_group\_association\_enabled)
 
@@ -153,12 +152,12 @@ The management group ID forms part of the Azure resource ID. E.g.,
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_subscription_tags"></a> [subscription\_tags](#input\_subscription\_tags)
 
 Description: A map of tags to assign to the newly created subscription.  
-Only valid when `subsciption_alias_enabled` is set to `true`.
+Only valid when `subscription_alias_enabled` OR `subscription_update_existing` is set to `true`.
 
 Example value:
 
@@ -176,16 +175,10 @@ Default: `{}`
 ### <a name="input_subscription_update_existing"></a> [subscription\_update\_existing](#input\_subscription\_update\_existing)
 
 Description: Whether to update an existing subscription with the supplied tags and display name.  
+Must be set to `false` if `subscription_alias_enabled` is set to `true`.
+
 If enabled, the following must also be supplied:
 - `subscription_id`
-
-Type: `bool`
-
-Default: `false`
-
-### <a name="input_subscription_use_azapi"></a> [subscription\_use\_azapi](#input\_subscription\_use\_azapi)
-
-Description: Whether to use the azapi\_resource resource to create the subscription alias. This includes the subscription alias in the management group.
 
 Type: `bool`
 
@@ -202,7 +195,7 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 
 Type: `string`
 
-Default: `""`
+Default: `null`
 
 ### <a name="input_wait_for_subscription_before_subscription_operations"></a> [wait\_for\_subscription\_before\_subscription\_operations](#input\_wait\_for\_subscription\_before\_subscription\_operations)
 
@@ -228,8 +221,6 @@ The following resources are used by this module:
 - [azapi_resource_action.subscription_cancel](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
 - [azapi_resource_action.subscription_rename](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource_action) (resource)
 - [azapi_update_resource.subscription_tags](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/update_resource) (resource)
-- [azurerm_management_group_subscription_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group_subscription_association) (resource)
-- [azurerm_subscription.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription) (resource)
 - [terraform_data.replacement](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) (resource)
 - [time_sleep.wait_for_subscription_before_subscription_operations](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) (resource)
 - [azapi_resource_list.subscription_management_group_association](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/resource_list) (data source)
@@ -238,11 +229,6 @@ The following resources are used by this module:
 ## Outputs
 
 The following outputs are exported:
-
-### <a name="output_management_group_subscription_association_id"></a> [management\_group\_subscription\_association\_id](#output\_management\_group\_subscription\_association\_id)
-
-Description: The management\_group\_subscription\_association\_id output is the ID of the management group subscription association.  
-Value will be null if `var.subscription_management_group_association_enabled` is false.
 
 ### <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id)
 

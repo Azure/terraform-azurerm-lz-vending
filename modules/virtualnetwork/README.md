@@ -47,15 +47,42 @@ module "virtualnetwork" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.10)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.11.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
+
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
 ## Modules
 
-No modules.
+The following Modules are called:
+
+### <a name="module_peering_hub_inbound"></a> [peering\_hub\_inbound](#module\_peering\_hub\_inbound)
+
+Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
+
+Version: 0.8.1
+
+### <a name="module_peering_hub_outbound"></a> [peering\_hub\_outbound](#module\_peering\_hub\_outbound)
+
+Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
+
+Version: 0.8.1
+
+### <a name="module_peering_mesh"></a> [peering\_mesh](#module\_peering\_mesh)
+
+Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
+
+Version: 0.8.1
+
+### <a name="module_virtual_networks"></a> [virtual\_networks](#module\_virtual\_networks)
+
+Source: Azure/avm-res-network-virtualnetwork/azurerm
+
+Version: 0.8.1
 
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD024 -->
 ## Required Inputs
 
 The following input variables are required:
@@ -93,6 +120,29 @@ DNS. [optional - default empty list]
 > Note at least one of `location` or `var.location` must be specified.
 > If both are empty then the module will fail.
 
+#### Subnets
+
+- `subnets` - (Optional) A map of subnets to create in the virtual network. The value is an object with the following fields:
+  - `name` - The name of the subnet.
+  - `address_prefixes` - The IPv4 address prefixes to use for the subnet in CIDR format.
+  - `nat_gateway` - (Optional) An object with the following fields:
+    - `id` - The ID of the NAT Gateway which should be associated with the Subnet. Changing this forces a new resource to be created.
+  - `network_security_group` - (Optional) An object with the following fields:
+    - `id` - The ID of the Network Security Group which should be associated with the Subnet. Changing this forces a new association to be created.
+  - `private_endpoint_network_policies_enabled` - (Optional) Enable or Disable network policies for the private endpoint on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true.
+  - `private_link_service_network_policies_enabled` - (Optional) Enable or Disable network policies for the private link service on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true.
+  - `route_table` - (Optional) An object with the following fields which are mutually exclusive, choose either an external route table or the generated route table:
+    - `id` - The ID of the Route Table which should be associated with the Subnet. Changing this forces a new association to be created.
+  - `default_outbound_access_enabled` - (Optional) Whether to allow internet access from the subnet. Defaults to `false`.
+  - `service_endpoints` - (Optional) The list of Service endpoints to associate with the subnet.
+  - `service_endpoint_policies` - (Optional) The list of Service Endpoint Policy objects with the resource id to associate with the subnet.
+    - `id` - The ID of the endpoint policy that should be associated with the subnet.
+  - `service_endpoint_policy_assignment_enabled` - (Optional) Should the Service Endpoint Policy be assigned to the subnet? Default `true`.
+  - `delegation` - (Optional) An object with the following fields:
+    - `name` - The name of the delegation.
+    - `service_delegation` - An object with the following fields:
+      - `name` - The name of the service delegation.
+
 ### Hub network peering values
 
 The following values configure bi-directional hub & spoke peering for the given virtual network.
@@ -102,6 +152,22 @@ The following values configure bi-directional hub & spoke peering for the given 
 - `hub_peering_name_tohub`: The name of the peering to the hub network. [optional - leave empty to use calculated name]
 - `hub_peering_name_fromhub`: The name of the peering from the hub network. [optional - leave empty to use calculated name]
 - `hub_peering_use_remote_gateways`: Whether to use remote gateways for the hub peering. [optional - default true]
+
+#### Hub network peering options
+
+The following values configure the options for the hub network peering. These are configurable in each direction:
+
+- `allow_forwarded_traffic`: Whether to allow forwarded traffic for the peering. [optional - default `true`]
+- `allow_gateway_transit`: Whether to allow gateway transit for the peering. [optional - default `false` (outbound) or `true` (inbound)]
+- `allow_virtual_network_access`: Whether to allow virtual network access for the peering. [optional - default `true`]
+- `do_not_verify_remote_gateways`: Whether to not verify remote gateways for the peering. [optional - default `false`]
+- `enable_only_ipv6_peering`: Whether to enable only IPv6 peering. [optional - default `false`]
+- `local_peered_address_spaces`: A list of local address spaces to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `local_peered_subnets`: A list of local subnets to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `peer_complete_vnets`: Whether to peer complete virtual networks. [optional - default `true`]
+- `remote_peered_address_spaces`: A list of remote address spaces to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `remote_peered_subnets`: A list of remote subnets to peer with. [optional - default empty and only used if `peer_complete_vnets` is `false`]
+- `use_remote_gateways`: Whether to use remote gateways for the peering. [optional - default `true` (outbound) or `false` (inbound)]
 
 ### Mesh peering values
 
@@ -149,32 +215,91 @@ map(object({
     address_space       = list(string)
     resource_group_name = string
 
-    location = optional(string, "")
+    location = optional(string)
 
-    dns_servers = optional(list(string), [])
+    dns_servers             = optional(list(string), [])
+    flow_timeout_in_minutes = optional(number)
 
     ddos_protection_enabled = optional(bool, false)
-    ddos_protection_plan_id = optional(string, "")
+    ddos_protection_plan_id = optional(string)
 
-    hub_network_resource_id         = optional(string, "")
-    hub_peering_enabled             = optional(bool, false)
-    hub_peering_direction           = optional(string, "both")
-    hub_peering_name_tohub          = optional(string, "")
-    hub_peering_name_fromhub        = optional(string, "")
-    hub_peering_use_remote_gateways = optional(bool, true)
+    subnets = optional(map(object(
+      {
+        name             = string
+        address_prefixes = list(string)
+        nat_gateway = optional(object({
+          id = string
+        }))
+        network_security_group = optional(object({
+          id = string
+        }))
+        private_endpoint_network_policies             = optional(string, "Enabled")
+        private_link_service_network_policies_enabled = optional(bool, true)
+        route_table = optional(object({
+          id = optional(string)
+        }))
+        default_outbound_access_enabled = optional(bool, false)
+        service_endpoints               = optional(set(string))
+        service_endpoint_policies = optional(map(object({
+          id = string
+        })))
+        delegation = optional(list(
+          object(
+            {
+              name = string
+              service_delegation = object({
+                name = string
+              })
+            }
+          )
+        ))
+      }
+    )), {})
+
+    hub_network_resource_id = optional(string)
+    hub_peering_enabled     = optional(bool, false)
+    hub_peering_direction   = optional(string, "both")
+    hub_peering_name_tohub  = optional(string)
+    hub_peering_options_tohub = optional(object({
+      allow_forwarded_traffic       = optional(bool, true)
+      allow_gateway_transit         = optional(bool, false)
+      allow_virtual_network_access  = optional(bool, true)
+      do_not_verify_remote_gateways = optional(bool, false)
+      enable_only_ipv6_peering      = optional(bool, false)
+      local_peered_address_spaces   = optional(list(string), [])
+      local_peered_subnets          = optional(list(string), [])
+      peer_complete_vnets           = optional(bool, true)
+      remote_peered_address_spaces  = optional(list(string), [])
+      remote_peered_subnets         = optional(list(string), [])
+      use_remote_gateways           = optional(bool, true)
+    }), {})
+    hub_peering_name_fromhub = optional(string)
+    hub_peering_options_fromhub = optional(object({
+      allow_forwarded_traffic       = optional(bool, true)
+      allow_gateway_transit         = optional(bool, true)
+      allow_virtual_network_access  = optional(bool, true)
+      do_not_verify_remote_gateways = optional(bool, false)
+      enable_only_ipv6_peering      = optional(bool, false)
+      local_peered_address_spaces   = optional(list(string), [])
+      local_peered_subnets          = optional(list(string), [])
+      peer_complete_vnets           = optional(bool, true)
+      remote_peered_address_spaces  = optional(list(string), [])
+      remote_peered_subnets         = optional(list(string), [])
+      use_remote_gateways           = optional(bool, false)
+    }), {})
 
     mesh_peering_enabled                 = optional(bool, false)
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
 
     resource_group_creation_enabled = optional(bool, true)
     resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string, "")
+    resource_group_lock_name        = optional(string)
     resource_group_tags             = optional(map(string), {})
 
-    vwan_associated_routetable_resource_id   = optional(string, "")
+    vwan_associated_routetable_resource_id   = optional(string)
     vwan_connection_enabled                  = optional(bool, false)
-    vwan_connection_name                     = optional(string, "")
-    vwan_hub_resource_id                     = optional(string, "")
+    vwan_connection_name                     = optional(string)
+    vwan_hub_resource_id                     = optional(string)
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
     vwan_security_configuration = optional(object({
@@ -191,6 +316,16 @@ map(object({
 
 The following input variables are optional (have default values):
 
+### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
+
+Description: This variable controls whether or not telemetry is enabled for the module.  
+For more information see <https://aka.ms/avm/telemetryinfo>.  
+If it is set to false, then no telemetry will be collected.
+
+Type: `bool`
+
+Default: `true`
+
 ### <a name="input_location"></a> [location](#input\_location)
 
 Description: The default location of resources created by this module.  
@@ -204,20 +339,16 @@ Default: `""`
 
 The following resources are used by this module:
 
-- [azapi_resource.peering_hub_inbound](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.peering_hub_outbound](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.peering_mesh](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.rg](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.rg_lock](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.vhubconnection](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.vnet](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_update_resource.vnet](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/update_resource) (resource)
+- [azapi_resource.rg](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.rg_lock](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.vhubconnection](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.vhubconnection_routing_intent](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 
 ## Outputs
 
 The following outputs are exported:
 
-### <a name="output_resource_group_ids"></a> [resource\_group\_ids](#output\_resource\_group\_ids)
+### <a name="output_resource_group_resource_ids"></a> [resource\_group\_resource\_ids](#output\_resource\_group\_resource\_ids)
 
 Description: The created resource group IDs, expressed as a map.
 

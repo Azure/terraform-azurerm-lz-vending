@@ -35,6 +35,23 @@ fumpt:
 lint:
 	cd tests && golangci-lint run
 
+tftest-unit:
+	@echo "==> Running unit tests in root module..."
+	@if [ -d "$(CURDIR)/tests/unit" ]; then \
+		terraform init -test-directory "$(CURDIR)/tests/unit"; \
+		terraform test -test-directory "$(CURDIR)/tests/unit"; \
+	fi
+	@echo "==> Running unit tests in submodules..."
+	@for dir in $$(find ./modules -maxdepth 1 -type d); do \
+		cd "$$dir"; \
+		echo "==> Running unit tests in submodule $$dir..."; \
+		if [ -d "tests/unit" ]; then \
+			terraform init -test-directory "tests/unit"; \
+			terraform test -test-directory "tests/unit"; \
+		fi; \
+		cd -; \
+	done
+
 test: fmtcheck
 	cd tests && go test $(TEST) $(TESTARGS) -run ^Test$(TESTFILTER) -timeout=$(TESTTIMEOUT)
 

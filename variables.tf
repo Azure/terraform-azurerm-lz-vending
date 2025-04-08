@@ -4,10 +4,12 @@ variable "location" {
 The default location of resources created by this module.
 Virtual networks will be created in this location unless overridden by the `location` attribute.
 DESCRIPTION
+  nullable    = false
 }
 
 variable "disable_telemetry" {
   type        = bool
+  default     = false
   description = <<DESCRIPTION
 To disable tracking, we have included this variable with a simple boolean flag.
 The default value is `false` which does not disable the telemetry.
@@ -28,5 +30,5 @@ module "lz_vending" {
 }
 ```
 DESCRIPTION
-  default     = false
+  nullable    = false
 }

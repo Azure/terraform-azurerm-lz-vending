@@ -10,7 +10,7 @@ resource "azapi_resource" "hub" {
   name      = "${var.virtual_networks["primary"].name}-hub"
   parent_id = azapi_resource.rg.id
   location  = azapi_resource.rg.location
-  body = jsonencode({
+  body = {
     properties = {
       addressSpace = {
         addressPrefixes = [
@@ -32,7 +32,7 @@ resource "azapi_resource" "hub" {
         }
       ]
     }
-  })
+  }
 }
 
 locals {
@@ -52,4 +52,5 @@ module "virtualnetwork_test" {
   source           = "../../"
   subscription_id  = var.subscription_id
   virtual_networks = local.virtual_networks_merged
+  enable_telemetry = var.enable_telemetry
 }

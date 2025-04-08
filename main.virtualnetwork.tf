@@ -6,8 +6,9 @@ module "virtualnetwork" {
   subscription_id  = local.subscription_id
   virtual_networks = var.virtual_networks
   location         = var.location
+  enable_telemetry = !var.disable_telemetry
 
   depends_on = [
-    module.resourcegroup_networkwatcherrg,
+    module.resourcegroup
   ]
 }

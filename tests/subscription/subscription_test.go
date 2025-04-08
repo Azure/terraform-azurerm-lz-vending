@@ -17,30 +17,11 @@ const (
 
 // TestSubscriptionAliasCreateValid tests the validation functions with valid data,
 // then creates a plan and compares the input variables to the planned values.
+// This test uses the azapi provider.
 func TestSubscriptionAliasCreateValid(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, err)
-	defer test.Cleanup()
-
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("alias").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("billing_scope_id").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("subscription_name").HasValue(v["subscription_display_name"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
-}
-
-// TestSubscriptionAliasCreateValid tests the validation functions with valid data,
-// then creates a plan and compares the input variables to the planned values.
-// This test uses the azapi provider.
-func TestSubscriptionAliasCreateValidAzApi(t *testing.T) {
-	t.Parallel()
-
-	v := getMockInputVariables()
-	v["subscription_use_azapi"] = true
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
@@ -69,37 +50,13 @@ func TestSubscriptionAliasCreateValidAzApi(t *testing.T) {
 // TestSubscriptionAliasCreateValidWithManagementGroup tests the
 // validation functions with valid data, including a destination management group,
 // then creates a plan and compares the input variables to the planned values.
-func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
-	t.Parallel()
-
-	v := getMockInputVariables()
-	v["subscription_management_group_id"] = "testdeploy"
-	v["subscription_management_group_association_enabled"] = true
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, err)
-	defer test.Cleanup()
-
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(2).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("alias").HasValue(v["subscription_alias_name"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("billing_scope_id").HasValue(v["subscription_billing_scope"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("subscription_name").HasValue(v["subscription_display_name"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azurerm_subscription.this[0]").Key("workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
-
-	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
-	check.InPlan(test.PlanStruct).That("azurerm_management_group_subscription_association.this[0]").Key("management_group_id").HasValue(mgResId).ErrorIsNil(t)
-}
-
-// TestSubscriptionAliasCreateValidWithManagementGroupAzApi tests the
-// validation functions with valid data, including a destination management group,
-// then creates a plan and compares the input variables to the planned values.
 // This test uses the azapi provider.
-func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
+func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_management_group_id"] = os.Getenv("ARM_TENANT_ID")
 	v["subscription_management_group_association_enabled"] = true
-	v["subscription_use_azapi"] = true
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
@@ -125,61 +82,8 @@ func TestSubscriptionAliasCreateValidWithManagementGroupAzApi(t *testing.T) {
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.workload").HasValue(v["subscription_workload"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.additionalProperties.tags").HasValue(v["subscription_tags"]).ErrorIsNil(t)
 
-	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
-	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.additionalProperties.managementGroupId").HasValue(mgResId).ErrorIsNil(t)
-}
-
-// TestSubscriptionExistingWithManagementGroup tests the
-// validation functions with an existing subscription id, including a destination management group,
-// then creates a plan and compares the input variables to the planned values.
-func TestSubscriptionExistingWithManagementGroup(t *testing.T) {
-	t.Parallel()
-
-	v := getMockInputVariables()
-	v["subscription_management_group_id"] = "testdeploy"
-	v["subscription_management_group_association_enabled"] = true
-	v["subscription_alias_enabled"] = false
-	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, err)
-	defer test.Cleanup()
-
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
-
-	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
-	check.InPlan(test.PlanStruct).That("azurerm_management_group_subscription_association.this[0]").Key("management_group_id").HasValue(mgResId).ErrorIsNil(t)
-}
-
-// TestSubscriptionExistingWithManagementGroup tests the
-// validation functions with an existing subscription id, including a destination management group,
-// then creates a plan and compares the input variables to the planned values.
-func TestSubscriptionExistingWithManagementGroupAndUpdateExisting(t *testing.T) {
-	t.Parallel()
-
-	v := getMockInputVariables()
-	v["subscription_management_group_id"] = "testdeploy"
-	v["subscription_management_group_association_enabled"] = true
-	v["subscription_alias_enabled"] = false
-	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
-	v["subscription_update_existing"] = true
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	require.NoError(t, err)
-	defer test.Cleanup()
-
-	resources := []string{
-		"azapi_resource_action.subscription_rename[0]",
-		"azapi_update_resource.subscription_tags[0]",
-		"azurerm_management_group_subscription_association.this[0]",
-	}
-
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-
-	for _, res := range resources {
-		check.InPlan(test.PlanStruct).That(res).Exists().ErrorIsNil(t)
-	}
-
-	mgResId := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
-	check.InPlan(test.PlanStruct).That("azurerm_management_group_subscription_association.this[0]").Key("management_group_id").HasValue(mgResId).ErrorIsNil(t)
+	mgResID := "/providers/Microsoft.Management/managementGroups/" + v["subscription_management_group_id"].(string)
+	check.InPlan(test.PlanStruct).That("azapi_resource.subscription[0]").Key("body").Query("properties.additionalProperties.managementGroupId").HasValue(mgResID).ErrorIsNil(t)
 }
 
 // TestSubscriptionAliasCreateInvalidBillingScope tests the validation function of the subscription_billing_scope variable.
@@ -266,7 +170,6 @@ func getMockInputVariables() map[string]any {
 		"subscription_alias_name":    "test-subscription-alias",
 		"subscription_billing_scope": "/providers/Microsoft.Billing/billingAccounts/0000000/enrollmentAccounts/000000",
 		"subscription_display_name":  "test-subscription-alias",
-		"subscription_use_azapi":     false,
 		"subscription_workload":      "Production",
 		"subscription_tags": map[string]any{
 			"test-tag":   "test-value",

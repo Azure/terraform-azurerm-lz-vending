@@ -10,13 +10,13 @@ resource "azapi_resource" "vwan" {
   name      = "${var.virtual_networks["primary"].name}-vwan"
   location  = azapi_resource.rg.location
   parent_id = azapi_resource.rg.id
-  body = jsonencode({
+  body = {
     properties = {
       type                       = "Standard"
       allowBranchToBranchTraffic = true
       disableVpnEncryption       = false
     }
-  })
+  }
 }
 
 resource "azapi_resource" "vhub" {
@@ -24,7 +24,7 @@ resource "azapi_resource" "vhub" {
   name      = "${var.virtual_networks["primary"].name}-vhub"
   location  = azapi_resource.vwan.location
   parent_id = azapi_resource.rg.id
-  body = jsonencode({
+  body = {
     properties = {
       addressPrefix = "192.168.100.0/23"
       sku           = "Standard"
@@ -32,7 +32,18 @@ resource "azapi_resource" "vhub" {
         id = azapi_resource.vwan.id
       }
     }
-  })
+  }
+  retry = {
+    error_message_regex = [
+      "The specified operation 'DeleteVirtualHub' is not supported. Deletion is not supported when RoutingStatus on Hub is 'Provisioning'"
+    ]
+    interval_seconds     = 60
+    max_interval_seconds = 120
+  }
+  timeouts {
+    create = "30m"
+    delete = "45m"
+  }
 }
 
 locals {
@@ -52,4 +63,5 @@ module "virtualnetwork_test" {
   source           = "../../"
   subscription_id  = var.subscription_id
   virtual_networks = local.virtual_networks_merged
+  enable_telemetry = var.enable_telemetry
 }

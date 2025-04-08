@@ -22,7 +22,7 @@ func ListSubnets(rg, vnet string, subid uuid.UUID) ([]*armnetwork.Subnet, error)
 		if err != nil {
 			return nil, fmt.Errorf("failed to list subnets: %v", err)
 		}
-		subnets = append(subnets, pageResp.SubnetListResult.Value...)
+		subnets = append(subnets, pageResp.Value...)
 	}
 	return subnets, nil
 }

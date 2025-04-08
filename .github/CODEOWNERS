@@ -1,7 +1,6 @@
 # Default owners
-* @Azure/terraform-azurerm-lz-vending-admins
+* @Azure/alz-core-team-technical
 # Require admin approval for the following files:
-.github/CODEOWNERS @Azure/terraform-azurerm-lz-vending-admins
-.github/fabricbot.json @Azure/terraform-azurerm-lz-vending-admins
-.github/workflows/ @Azure/terraform-azurerm-lz-vending-admins
-Makefile @Azure/terraform-azurerm-lz-vending-admins
+.github/CODEOWNERS @Azure/alz-core-team-technical
+.github/workflows/ @Azure/alz-core-team-technical
+Makefile @Azure/alz-core-team-technical

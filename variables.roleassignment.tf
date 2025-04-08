@@ -9,11 +9,13 @@ DESCRIPTION
 
 variable "role_assignments" {
   type = map(object({
-    principal_id      = string,
-    definition        = string,
-    relative_scope    = optional(string, ""),
-    condition         = optional(string, ""),
-    condition_version = optional(string, ""),
+    principal_id              = string,
+    definition                = string,
+    relative_scope            = optional(string)
+    condition                 = optional(string)
+    condition_version         = optional(string)
+    principal_type            = optional(string)
+    definition_lookup_enabled = optional(bool, true)
   }))
   description = <<DESCRIPTION
 Supply a map of objects containing the details of the role assignments to create.
@@ -25,6 +27,9 @@ Object fields:
 - `relative_scope`: (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
 - `condition`: (optional) A condition to apply to the role assignment. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 - `condition_version`: (optional) The version of the condition syntax. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
+- `principal_type`: (optional) The type of the principal. Can be `"User"`, `"Group"`, `"Device"`, `"ForeignGroup"`, or `"ServicePrincipal"`.
+- `definition_lookup_enabled`: (optional) Whether to look up the role definition resource id from the role definition name. If disabled, the `definition` must be a role definition resource id. Default is `true`.
+
 
 E.g.
 

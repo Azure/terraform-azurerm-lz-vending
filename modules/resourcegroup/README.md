@@ -33,15 +33,16 @@ module "resourcegroups" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.10)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.11.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
 
 ## Modules
 
 No modules.
 
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD024 -->
 ## Required Inputs
 
 The following input variables are required:
@@ -84,7 +85,11 @@ The following resources are used by this module:
 
 ## Outputs
 
-No outputs.
+The following outputs are exported:
+
+### <a name="output_resource_group_resource_id"></a> [resource\_group\_resource\_id](#output\_resource\_group\_resource\_id)
+
+Description: The created resource group resource ID.
 
 <!-- markdownlint-enable -->
 <!-- END_TF_DOCS -->

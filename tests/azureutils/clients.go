@@ -114,7 +114,7 @@ func newDefaultAzureCredential() (azcore.TokenCredential, error) {
 			TenantID:      multiEnvDefault("", "ARM_TENANT_ID", "AZURE_TENANT_ID"),
 			ClientID:      multiEnvDefault("", "ARM_CLIENT_ID", "AZURE_CLIENT_ID"),
 			RequestToken:  multiEnvDefault("", "ARM_OIDC_REQUEST_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_TOKEN"),
-			RequestUrl:    multiEnvDefault("", "ARM_OIDC_REQUEST_URL", "ACTIONS_ID_TOKEN_REQUEST_URL"),
+			RequestURL:    multiEnvDefault("", "ARM_OIDC_REQUEST_URL", "ACTIONS_ID_TOKEN_REQUEST_URL"),
 			Token:         multiEnvDefault("", "ARM_OIDC_TOKEN"),
 			TokenFilePath: multiEnvDefault("", "ARM_OIDC_TOKEN_FILE_PATH"),
 		})
