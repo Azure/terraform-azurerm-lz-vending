@@ -56,11 +56,11 @@ DESCRIPTION
 # allow the caller to easily configure federated credentials for GitHub Actions
 variable "federated_credentials_github" {
   type = map(object({
-    name         = optional(string, null)
+    name         = optional(string)
     organization = string
     repository   = string
     entity       = string
-    value        = optional(string, null)
+    value        = optional(string)
   }))
   default     = {}
   description = <<DESCRIPTION
@@ -95,7 +95,7 @@ DESCRIPTION
 # allow the caller to easily configure federated credentials for Terraform Cloud
 variable "federated_credentials_terraform_cloud" {
   type = map(object({
-    name         = optional(string, null)
+    name         = optional(string)
     organization = string
     project      = string
     workspace    = string

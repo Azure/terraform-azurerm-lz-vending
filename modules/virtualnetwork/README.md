@@ -215,13 +215,13 @@ map(object({
     address_space       = list(string)
     resource_group_name = string
 
-    location = optional(string, null)
+    location = optional(string)
 
     dns_servers             = optional(list(string), [])
-    flow_timeout_in_minutes = optional(number, null)
+    flow_timeout_in_minutes = optional(number)
 
     ddos_protection_enabled = optional(bool, false)
-    ddos_protection_plan_id = optional(string, null)
+    ddos_protection_plan_id = optional(string)
 
     subnets = optional(map(object(
       {
@@ -256,10 +256,10 @@ map(object({
       }
     )), {})
 
-    hub_network_resource_id = optional(string, null)
+    hub_network_resource_id = optional(string)
     hub_peering_enabled     = optional(bool, false)
     hub_peering_direction   = optional(string, "both")
-    hub_peering_name_tohub  = optional(string, null)
+    hub_peering_name_tohub  = optional(string)
     hub_peering_options_tohub = optional(object({
       allow_forwarded_traffic       = optional(bool, true)
       allow_gateway_transit         = optional(bool, false)
@@ -273,7 +273,7 @@ map(object({
       remote_peered_subnets         = optional(list(string), [])
       use_remote_gateways           = optional(bool, true)
     }), {})
-    hub_peering_name_fromhub = optional(string, null)
+    hub_peering_name_fromhub = optional(string)
     hub_peering_options_fromhub = optional(object({
       allow_forwarded_traffic       = optional(bool, true)
       allow_gateway_transit         = optional(bool, true)
@@ -293,13 +293,13 @@ map(object({
 
     resource_group_creation_enabled = optional(bool, true)
     resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string, null)
+    resource_group_lock_name        = optional(string)
     resource_group_tags             = optional(map(string), {})
 
-    vwan_associated_routetable_resource_id   = optional(string, null)
+    vwan_associated_routetable_resource_id   = optional(string)
     vwan_connection_enabled                  = optional(bool, false)
-    vwan_connection_name                     = optional(string, null)
-    vwan_hub_resource_id                     = optional(string, null)
+    vwan_connection_name                     = optional(string)
+    vwan_hub_resource_id                     = optional(string)
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
     vwan_security_configuration = optional(object({

@@ -153,11 +153,11 @@ Type:
 
 ```hcl
 map(object({
-    name         = optional(string, null)
+    name         = optional(string)
     organization = string
     repository   = string
     entity       = string
-    value        = optional(string, null)
+    value        = optional(string)
   }))
 ```
 
@@ -181,7 +181,7 @@ Type:
 
 ```hcl
 map(object({
-    name         = optional(string, null)
+    name         = optional(string)
     organization = string
     project      = string
     workspace    = string

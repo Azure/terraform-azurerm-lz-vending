@@ -282,7 +282,7 @@ map(object({
     time_grain        = string
     time_period_start = string
     time_period_end   = string
-    relative_scope    = optional(string, null)
+    relative_scope    = optional(string)
     notifications = optional(map(object({
       enabled        = bool
       operator       = string
@@ -403,10 +403,10 @@ Type:
 map(object({
     principal_id              = string,
     definition                = string,
-    relative_scope            = optional(string, null)
-    condition                 = optional(string, null)
-    condition_version         = optional(string, null)
-    principal_type            = optional(string, null)
+    relative_scope            = optional(string)
+    condition                 = optional(string)
+    condition_version         = optional(string)
+    principal_type            = optional(string)
     definition_lookup_enabled = optional(bool, true)
   }))
 ```
@@ -777,28 +777,28 @@ Type:
 map(object({
     name                        = string
     resource_group_name         = string
-    location                    = optional(string, null)
+    location                    = optional(string)
     tags                        = optional(map(string), {})
     resource_group_tags         = optional(map(string), {})
     resource_group_lock_enabled = optional(bool, true)
-    resource_group_lock_name    = optional(string, null)
+    resource_group_lock_name    = optional(string)
     role_assignments = optional(map(object({
       definition                = string
-      relative_scope            = optional(string, null)
-      condition                 = optional(string, null)
-      condition_version         = optional(string, null)
-      principal_type            = optional(string, null)
+      relative_scope            = optional(string)
+      condition                 = optional(string)
+      condition_version         = optional(string)
+      principal_type            = optional(string)
       definition_lookup_enabled = optional(bool, true)
     })), {})
     federated_credentials_github = optional(map(object({
-      name         = optional(string, null)
+      name         = optional(string)
       organization = string
       repository   = string
       entity       = string
-      value        = optional(string, null)
+      value        = optional(string)
     })), {})
     federated_credentials_terraform_cloud = optional(map(object({
-      name         = optional(string, null)
+      name         = optional(string)
       organization = string
       project      = string
       workspace    = string
@@ -945,13 +945,13 @@ map(object({
     address_space       = list(string)
     resource_group_name = string
 
-    location = optional(string, null)
+    location = optional(string)
 
     dns_servers             = optional(list(string), [])
-    flow_timeout_in_minutes = optional(number, null)
+    flow_timeout_in_minutes = optional(number)
 
     ddos_protection_enabled = optional(bool, false)
-    ddos_protection_plan_id = optional(string, null)
+    ddos_protection_plan_id = optional(string)
 
     subnets = optional(map(object(
       {
@@ -966,7 +966,7 @@ map(object({
         private_endpoint_network_policies             = optional(string, "Enabled")
         private_link_service_network_policies_enabled = optional(bool, true)
         route_table = optional(object({
-          id = optional(string)
+          id = string
         }))
         default_outbound_access_enabled = optional(bool, false)
         service_endpoints               = optional(set(string))
@@ -986,10 +986,10 @@ map(object({
       }
     )), {})
 
-    hub_network_resource_id = optional(string, null)
+    hub_network_resource_id = optional(string)
     hub_peering_enabled     = optional(bool, false)
     hub_peering_direction   = optional(string, "both")
-    hub_peering_name_tohub  = optional(string, null)
+    hub_peering_name_tohub  = optional(string)
     hub_peering_options_tohub = optional(object({
       allow_forwarded_traffic       = optional(bool, true)
       allow_gateway_transit         = optional(bool, false)
@@ -1003,7 +1003,7 @@ map(object({
       remote_peered_subnets         = optional(list(string), [])
       use_remote_gateways           = optional(bool, true)
     }), {})
-    hub_peering_name_fromhub = optional(string, null)
+    hub_peering_name_fromhub = optional(string)
     hub_peering_options_fromhub = optional(object({
       allow_forwarded_traffic       = optional(bool, true)
       allow_gateway_transit         = optional(bool, true)
@@ -1023,13 +1023,13 @@ map(object({
 
     resource_group_creation_enabled = optional(bool, true)
     resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string, null)
+    resource_group_lock_name        = optional(string)
     resource_group_tags             = optional(map(string), {})
 
-    vwan_associated_routetable_resource_id   = optional(string, null)
+    vwan_associated_routetable_resource_id   = optional(string)
     vwan_connection_enabled                  = optional(bool, false)
-    vwan_connection_name                     = optional(string, null)
-    vwan_hub_resource_id                     = optional(string, null)
+    vwan_connection_name                     = optional(string)
+    vwan_hub_resource_id                     = optional(string)
     vwan_propagated_routetables_labels       = optional(list(string), [])
     vwan_propagated_routetables_resource_ids = optional(list(string), [])
     vwan_security_configuration = optional(object({

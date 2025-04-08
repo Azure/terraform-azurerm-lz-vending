@@ -11,10 +11,10 @@ variable "role_assignments" {
   type = map(object({
     principal_id              = string,
     definition                = string,
-    relative_scope            = optional(string, null)
-    condition                 = optional(string, null)
-    condition_version         = optional(string, null)
-    principal_type            = optional(string, null)
+    relative_scope            = optional(string)
+    condition                 = optional(string)
+    condition_version         = optional(string)
+    principal_type            = optional(string)
     definition_lookup_enabled = optional(bool, true)
   }))
   description = <<DESCRIPTION

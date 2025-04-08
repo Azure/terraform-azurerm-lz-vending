@@ -12,28 +12,28 @@ variable "user_managed_identities" {
   type = map(object({
     name                        = string
     resource_group_name         = string
-    location                    = optional(string, null)
+    location                    = optional(string)
     tags                        = optional(map(string), {})
     resource_group_tags         = optional(map(string), {})
     resource_group_lock_enabled = optional(bool, true)
-    resource_group_lock_name    = optional(string, null)
+    resource_group_lock_name    = optional(string)
     role_assignments = optional(map(object({
       definition                = string
-      relative_scope            = optional(string, null)
-      condition                 = optional(string, null)
-      condition_version         = optional(string, null)
-      principal_type            = optional(string, null)
+      relative_scope            = optional(string)
+      condition                 = optional(string)
+      condition_version         = optional(string)
+      principal_type            = optional(string)
       definition_lookup_enabled = optional(bool, true)
     })), {})
     federated_credentials_github = optional(map(object({
-      name         = optional(string, null)
+      name         = optional(string)
       organization = string
       repository   = string
       entity       = string
-      value        = optional(string, null)
+      value        = optional(string)
     })), {})
     federated_credentials_terraform_cloud = optional(map(object({
-      name         = optional(string, null)
+      name         = optional(string)
       organization = string
       project      = string
       workspace    = string
