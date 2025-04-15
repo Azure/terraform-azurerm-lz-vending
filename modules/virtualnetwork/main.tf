@@ -45,7 +45,7 @@ module "virtual_networks" {
   name                    = each.value.name
   address_space           = each.value.address_space
   resource_group_name     = each.value.resource_group_name
-  location                = each.value.location
+  location                = coalesce(each.value.location, var.location)
   flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
 
   ddos_protection_plan = each.value.ddos_protection_plan_id == null ? null : {
