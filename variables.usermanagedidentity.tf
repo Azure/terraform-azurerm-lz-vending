@@ -2,10 +2,20 @@ variable "umi_enabled" {
   description = <<DESCRIPTION
 Whether to enable the creation of a user-assigned managed identity.
 
-Requires `umi_name` and `umi_resosurce_group_name` to be non-empty.
+Requires `umi.name` and `umi.resosurce_group_name` to be non-empty.
 DESCRIPTION
   type        = bool
   default     = false
+}
+
+variable "umi_resource_group_creation_enabled" {
+  description = <<DESCRIPTION
+Whether to enable the creation of the resource group where the user-assigned managed identity will be created in.
+
+Requires `umi.name` and `umi.resosurce_group_name` to be non-empty. If you plan to create more than one identity within a resource group please create the resource groups using `var.resource_groups`.
+DESCRIPTION
+  type        = bool
+  default     = true
 }
 
 variable "user_managed_identities" {
