@@ -70,40 +70,24 @@ locals {
     ddos_protection_enabled = vnet_v.ddos_protection_enabled
     ddos_protection_plan_id = vnet_v.ddos_protection_plan_id
 
-    subnets                 = local.virtual_network_subnets_map[vnet_k]
+    subnets                 =  { for subnet_k, subnet_v in vnet_v.subnets : subkey_k => {
+        name                                          = subnet_v.name
+        address_prefixes                              = subnet_v.address_prefixes
+        nat_gateway                                   = subnet_v.nat_gateway
+        network_security_group                        =  subnet_v.network_security_group
+        private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
+        private_link_service_network_policies_enabled = subnet_v.private_link_service_network_policies_enabled
+        route_table                                   = {
+          id = try(coalesce(try(subnet_v.route_table.id, null), try(local.virtual_network_subnet_route_table_available_resource_ids[try(subnet_v.route_table.key_reference, null)]), null), null)
+        }
+        default_outbound_access_enabled               = subnet_v.default_outbound_access_enabled
+        service_endpoints                             = subnet_v.service_endpoints
+        service_endpoint_policies                     = subnet_v.service_endpoint_policies
+        delegation                                    = try(subnet_v.delegation, null)
+      }
+    } 
   }
 }
-
-
-# virtual_network_subnets_map is a map with the virtual network name as the key and the subnet properties re-mapped
-# to support the reference of route tables created by the LZ-Vending route table module. This type of reference will
-# also be required with network security group created is added to this accelerator.
-  virtual_network_subnets_map = {
-    for item in flatten(
-      [
-        for vnet_k, vnet_v in var.virtual_networks : [
-          for subnet_k, subnet_v in vnet_v.subnets : {
-            vnet_key  = vnet_k
-            subnet_key = subnet_k
-            subnets = {
-              name                                          = subnet_v.name
-              address_prefixes                              = subnet_v.address_prefixes
-              nat_gateway                                   = subnet_v.nat_gateway
-              network_security_group                        =  subnet_v.network_security_group
-              private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
-              private_link_service_network_policies_enabled = subnet_v.private_link_service_network_policies_enabled
-              route_table                                   = try(coalesce(try(subnet_v.route_table.id, null), try(local.virtual_network_subnet_route_table_available_resource_ids[try(subnet_v.route_table.key_reference, null)]), null), null)
-              default_outbound_access_enabled               = subnet_v.default_outbound_access_enabled
-              service_endpoints                             = subnet_v.service_endpoints
-              service_endpoint_policies                     = subnet_v.service_endpoint_policies
-              delegation                                    = try(subnet_v.delegation, null)
-            }
-          }
-        ]
-      ]
-    ) : "${item.vnet_key}" => item.subnets
-  }
-
 
   # virtual_network_subnet_route_table_available_resource_ids is a map of route table names and resource ids.
   # The need for this is within the LZ-Vending module there route table may be created but the user would not know
