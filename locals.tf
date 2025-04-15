@@ -60,7 +60,7 @@ locals {
   virtual_networks = [
   for vnet_k, vnet_v in var.virtual_networks : {
     name                    = vnet_v.name
-    address_prefixes        = vnet_v.address_prefixes
+    address_space           = vnet_v.address_space
     resource_group_name     = vnet_v.resource_group_name
     location                = vnet_v.location
     dns_servers             = vnet_v.dns_servers
@@ -70,7 +70,7 @@ locals {
     ddos_protection_enabled = vnet_v.ddos_protection_enabled
     ddos_protection_plan_id = vnet_v.ddos_protection_plan_id
 
-    subnets                 = local.virtual_network_subnets_map[vnet_k].subnets
+    subnets                 = local.virtual_network_subnets_map[vnet_k]
   }
 ]
 
