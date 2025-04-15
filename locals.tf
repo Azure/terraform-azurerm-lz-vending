@@ -101,7 +101,7 @@ locals {
           }
         ]
       ]
-    ) : "${item.vnet_k}" => item.subnets
+    ) : "${item.vnet_key}" => item.subnets
   }
 
 
