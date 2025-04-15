@@ -92,11 +92,11 @@ locals {
               network_security_group                        =  subnet_v.network_security_group
               private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
               private_link_service_network_policies_enabled = subnet_v.private_link_service_network_policies_enabled
-              route_table                                   = coalesce(subnet_v.route_table.id, try(local.virtual_network_subnet_route_table_available_resource_ids[subnet_v.route_table.name_reference], null), null)
+              route_table                                   = try(coalesce(try(subnet_v.route_table.id, null), try(local.virtual_network_subnet_route_table_available_resource_ids[try(subnet_v.route_table.name_reference, null)]), null), null)
               default_outbound_access_enabled               = subnet_v.default_outbound_access_enabled
               service_endpoints                             = subnet_v.service_endpoints
               service_endpoint_policies                     = subnet_v.service_endpoint_policies
-              delegation                                    = subnet_v.delegation
+              delegation                                    = try(subnet_v.delegation, null)
             }
           }
         ]
