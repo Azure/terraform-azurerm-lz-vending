@@ -110,7 +110,7 @@ locals {
   # the resource id in advance, in such case they could specify the name in the `name_reference` property of the
   # virtual network subnet's route table object.
 
-  virtual_network_subnet_route_table_available_resource_ids = { for rt_k, rt_v in module.routetable : element(split("/", rt_v.route_table_resource_id), -1) => rt_v.route_table_resource_id }
+  virtual_network_subnet_route_table_available_resource_ids = { for rt_k, rt_v in module.routetable : element(split("/", rt_v.route_table_resource_id), -1) => rt_v.route_table.route_table_resource_id }
 
 
   # resource_group_ids is a map of resource groups created, if the module has been enabled.
