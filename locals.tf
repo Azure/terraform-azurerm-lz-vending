@@ -57,8 +57,8 @@ locals {
 
   # This virtual_networks varialbe is used internally to consume the mapped subnet properties for dependencies on resources such as 
   # route tables today but at some point network security groups as well.
-  virtual_networks = [
-  for vnet_k, vnet_v in var.virtual_networks : {
+  virtual_networks = {
+  for vnet_k, vnet_v in var.virtual_networks : vnet_k => {
     name                    = vnet_v.name
     address_space           = vnet_v.address_space
     resource_group_name     = vnet_v.resource_group_name
@@ -72,7 +72,7 @@ locals {
 
     subnets                 = local.virtual_network_subnets_map[vnet_k]
   }
-]
+}
 
 
 # virtual_network_subnets_map is a map with the virtual network name as the key and the subnet properties re-mapped
