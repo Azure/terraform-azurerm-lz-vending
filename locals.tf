@@ -122,14 +122,19 @@ locals {
 
   # route_table_routes is a list of objects containing the routes converted from a map to a list information after the user managed identities are created, if the module has been enabled.
   # since var.user_managed_identities is a map that contains the role assignments maps, we need to use a for loop to extract the values from the nested map.
-  route_tables = [
-    for rt_k, rt_v in var.route_tables : {
-      name = rt_v.name
-      location = rt_v.location
-      resource_group_name = rt_v.resource_group_name
-      bgp_route_propagation_enabled = rt_v.bgp_route_propagation_enabled
-      tags = rt_v.tags
-      routes = [for k, v in rt_v.routes : v]
-    }
-  ]
+  route_tables = {
+    for item in flatten(
+      [
+        for rt_k, rt_v in var.route_tables : {
+          rt_key = rt_k
+          name = rt_v.name
+          location = rt_v.location
+          resource_group_name = rt_v.resource_group_name
+          bgp_route_propagation_enabled = rt_v.bgp_route_propagation_enabled
+          tags = rt_v.tags
+          routes = [for k, v in rt_v.routes : v]
+        }
+      ]
+    ) : item.rt_key => item
+  }
 }
