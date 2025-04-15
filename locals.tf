@@ -70,7 +70,7 @@ locals {
     ddos_protection_enabled = vnet_v.ddos_protection_enabled
     ddos_protection_plan_id = vnet_v.ddos_protection_plan_id
 
-    subnets                 =  { for subnet_k, subnet_v in vnet_v.subnets : subkey_k => {
+    subnets                 =  { for subnet_k, subnet_v in vnet_v.subnets : subnet_k => {
         name                                          = subnet_v.name
         address_prefixes                              = subnet_v.address_prefixes
         nat_gateway                                   = subnet_v.nat_gateway
