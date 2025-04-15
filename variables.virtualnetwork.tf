@@ -32,7 +32,7 @@ variable "virtual_networks" {
         private_link_service_network_policies_enabled = optional(bool, true)
         route_table = optional(object({
           id = optional(string)
-          name_reference = optional(string)
+          key_reference = optional(string)
         }))
         default_outbound_access_enabled = optional(bool, false)
         service_endpoints               = optional(set(string))
