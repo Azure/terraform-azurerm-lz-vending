@@ -92,7 +92,7 @@ locals {
               network_security_group                        =  subnet_v.network_security_group
               private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
               private_link_service_network_policies_enabled = subnet_v.private_link_service_network_policies_enabled
-              route_table                                   = try(coalesce(try(subnet_v.route_table.id, null), try(local.virtual_network_subnet_route_table_available_resource_ids[try(subnet_v.route_table.name_reference, null)]), null), null)
+              route_table                                   = try(coalesce(try(subnet_v.route_table.id, null), try(local.virtual_network_subnet_route_table_available_resource_ids[try(subnet_v.route_table.key_reference, null)]), null), null)
               default_outbound_access_enabled               = subnet_v.default_outbound_access_enabled
               service_endpoints                             = subnet_v.service_endpoints
               service_endpoint_policies                     = subnet_v.service_endpoint_policies
@@ -107,10 +107,10 @@ locals {
 
   # virtual_network_subnet_route_table_available_resource_ids is a map of route table names and resource ids.
   # The need for this is within the LZ-Vending module there route table may be created but the user would not know
-  # the resource id in advance, in such case they could specify the name in the `name_reference` property of the
+  # the resource id in advance, in such case they could specify the name in the `key_reference` property of the
   # virtual network subnet's route table object.
 
-  virtual_network_subnet_route_table_available_resource_ids = { for rt_k, rt_v in module.routetable : rt_k => rt_v.route_table.route_table_resource_id }
+  virtual_network_subnet_route_table_available_resource_ids = { for rt_k, rt_v in module.routetable : rt_k => rt_v.route_table_resource_id.route_table }
 
 
   # resource_group_ids is a map of resource groups created, if the module has been enabled.
