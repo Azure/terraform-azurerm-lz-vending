@@ -4,6 +4,16 @@ variable "virtual_network_enabled" {
   default     = false
 }
 
+variable "virtual_network_resource_group_creation_enabled" {
+  description = <<DESCRIPTION
+Whether to enable the creation of the resource group where the virtual network will be created in.
+
+Requires `virtual_networks[key].location` and `virtual_networks[key].resosurce_group_name` to be non-empty. If you plan to create more than one virtual network within a resource group please create the resource groups using `var.resource_groups`.
+DESCRIPTION
+  type        = bool
+  default     = true
+}
+
 variable "virtual_networks" {
   type = map(object({
     name                = string
@@ -191,7 +201,9 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 - `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
 - `mesh_peering_allow_forwarded_traffic`: Whether to allow forwarded traffic for the mesh peering. [optional - default false]
 
-### Resource group values
+### Resource group values [DEPRECATED]
+
+**Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
 
 The default is that a resource group will be created for each resource_group_name specified in the `var.virtual_networks` map.
 It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.

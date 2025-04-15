@@ -124,6 +124,15 @@ DESCRIPTION
   }
 }
 
+### Resource group values [DEPRECATED]
+
+**Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired.
+
+- `resource_group_creation_enabled`: Whether to create a resource group for the user managed identity. [optional - default `true`]
+- `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default `true`]
+- `resource_group_lock_name`: The name of the resource lock. [optional - leave empty to use calculated name]
+- `resource_group_tags`: A map of tags to apply to the resource group, e.g. `{ mytag = "myvalue", mytag2 = "myvalue2" }`. [optional - default empty]
+
 variable "resource_group_creation_enabled" {
   type        = bool
   default     = true

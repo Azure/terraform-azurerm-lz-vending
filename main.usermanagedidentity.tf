@@ -8,7 +8,7 @@ module "usermanagedidentity" {
   location = coalesce(each.value.location, var.location)
   tags     = each.value.tags
 
-  resource_group_creation_enabled = coalesce(var.umi_resource_group_creation_enabled, var.resource_group_creation_enabled)
+  resource_group_creation_enabled = each.value.resource_group_creation_enabled
   resource_group_name             = each.value.resource_group_name
   resource_group_lock_enabled     = each.value.resource_group_lock_enabled
   resource_group_lock_name        = each.value.resource_group_lock_name
