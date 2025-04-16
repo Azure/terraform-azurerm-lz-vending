@@ -128,9 +128,9 @@ variable "resource_group_creation_enabled" {
   type        = bool
   default     = true
   description = <<DESCRIPTION
-    ### Resource group values [DEPRECATED]
+    Resource group values [DEPRECATED]
 
-    **Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
+    Note: The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
 
     Whether to create the supplied resource group for the user-assigned managed identity
   DESCRIPTION
@@ -141,9 +141,9 @@ variable "resource_group_lock_enabled" {
   type        = bool
   default     = true
   description = <<DESCRIPTION
-    ### Resource group values [DEPRECATED]
+    Resource group values [DEPRECATED]
 
-    **Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
+    Note: The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
 
     Whether to enable resource group lock for the user-assigned managed identity resource group
   DESCRIPTION
@@ -154,9 +154,9 @@ variable "resource_group_lock_name" {
   type        = string
   default     = null
   description = <<DESCRIPTION
-    ### Resource group values [DEPRECATED]
+    Resource group values [DEPRECATED]
 
-    **Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
+    Note: The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
 
     The name of the resource group lock for the user-assigned managed identity resource group, if `null` will be set to `lock-<resource_group_name>`
   DESCRIPTION
@@ -166,9 +166,9 @@ variable "resource_group_tags" {
   type        = map(string)
   default     = {}
   description = <<DESCRIPTION
-    ### Resource group values [DEPRECATED]
+    Resource group values [DEPRECATED]
 
-    **Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
+    Note:The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
 
     The tags to apply to the user-assigned managed identity resource group, if we create it.
   DESCRIPTION
