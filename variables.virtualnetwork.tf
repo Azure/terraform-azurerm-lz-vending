@@ -4,16 +4,6 @@ variable "virtual_network_enabled" {
   default     = false
 }
 
-variable "virtual_network_resource_group_creation_enabled" {
-  description = <<DESCRIPTION
-Whether to enable the creation of the resource group where the virtual network will be created in.
-
-Requires `virtual_networks[key].location` and `virtual_networks[key].resosurce_group_name` to be non-empty. If you plan to create more than one virtual network within a resource group please create the resource groups using `var.resource_groups`.
-DESCRIPTION
-  type        = bool
-  default     = true
-}
-
 variable "virtual_networks" {
   type = map(object({
     name                = string
@@ -41,7 +31,7 @@ variable "virtual_networks" {
         private_endpoint_network_policies             = optional(string, "Enabled")
         private_link_service_network_policies_enabled = optional(bool, true)
         route_table = optional(object({
-          id = optional(string)
+          id            = optional(string)
           key_reference = optional(string)
         }))
         default_outbound_access_enabled = optional(bool, false)

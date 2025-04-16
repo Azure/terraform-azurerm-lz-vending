@@ -10,14 +10,14 @@ DESCRIPTION
 
 variable "user_managed_identities" {
   type = map(object({
-    name                        = string
-    resource_group_name         = string
-    location                    = optional(string)
-    tags                        = optional(map(string), {})
+    name                            = string
+    resource_group_name             = string
+    location                        = optional(string)
+    tags                            = optional(map(string), {})
     resource_group_creation_enabled = optional(bool, true)
-    resource_group_tags         = optional(map(string), {})
-    resource_group_lock_enabled = optional(bool, true)
-    resource_group_lock_name    = optional(string)
+    resource_group_tags             = optional(map(string), {})
+    resource_group_lock_enabled     = optional(bool, true)
+    resource_group_lock_name        = optional(string)
     role_assignments = optional(map(object({
       definition                = string
       relative_scope            = optional(string)
