@@ -20,7 +20,7 @@ variable "user_managed_identities" {
     resource_group_lock_name        = optional(string)
     role_assignments = optional(map(object({
       definition                = string
-      relative_scope            = optional(string)
+      relative_scope            = optional(string, "")
       condition                 = optional(string)
       condition_version         = optional(string)
       principal_type            = optional(string)
