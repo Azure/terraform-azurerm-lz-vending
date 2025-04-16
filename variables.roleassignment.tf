@@ -11,7 +11,7 @@ variable "role_assignments" {
   type = map(object({
     principal_id              = string,
     definition                = string,
-    relative_scope            = optional(string)
+    relative_scope            = optional(string, "")
     condition                 = optional(string)
     condition_version         = optional(string)
     principal_type            = optional(string)
