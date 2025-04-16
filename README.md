@@ -140,6 +140,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
 
+- <a name="requirement_time"></a> [time](#requirement\_time) (~> 0.9)
+
 ## Modules
 
 The following Modules are called:
