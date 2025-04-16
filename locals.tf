@@ -85,7 +85,32 @@ locals {
         service_endpoint_policies                     = subnet_v.service_endpoint_policies
         delegation                                    = try(subnet_v.delegation, null)
       }
-    } 
+    }
+    hub_network_resource_id = vnet_v.hub_network_resource_id
+    hub_peering_enabled     = vnet_v.hub_peering_enabled
+    hub_peering_direction   = vnet_v.hub_peering_direction
+    hub_peering_name_tohub  = vnet_v.hub_peering_name_tohub
+    hub_peering_options_tohub = vnet_v.hub_peering_options_tohub
+    hub_peering_name_fromhub = vnet_v.hub_peering_name_fromhub
+    hub_peering_options_fromhub = vnet_v.hub_peering_options_fromhub
+
+    mesh_peering_enabled                 = vnet_v.mesh_peering_enabled
+    mesh_peering_allow_forwarded_traffic = vnet_v.mesh_peering_allow_forwarded_traffic
+
+    resource_group_creation_enabled = vnet_v.resource_group_creation_enabled
+    resource_group_lock_enabled     = vnet_v.resource_group_lock_enabled
+    resource_group_lock_name        = vnet_v.resource_group_lock_name
+    resource_group_tags             = vnet_v.resource_group_tags
+
+    vwan_associated_routetable_resource_id   = vnet_v.vwan_associated_routetable_resource_id
+    vwan_connection_enabled                  = vnet_v.vwan_connection_enabled
+    vwan_connection_name                     = vnet_v.vwan_connection_name
+    vwan_hub_resource_id                     = vnet_v.vwan_hub_resource_id
+    vwan_propagated_routetables_labels       = vnet_v.vwan_propagated_routetables_labels
+    vwan_propagated_routetables_resource_ids = vnet_v.vwan_propagated_routetables_resource_ids
+    vwan_security_configuration = vnet_v.vwan_security_configuration
+
+    tags =  vnet_v.tags
   }
 }
 
