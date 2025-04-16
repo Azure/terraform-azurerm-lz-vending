@@ -5,5 +5,9 @@ terraform {
       source  = "azure/azapi"
       version = "~> 2.2"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.9"
+    }
   }
 }
