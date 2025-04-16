@@ -129,7 +129,7 @@ locals {
 
   # route_table_routes is a list of objects containing the routes that need to be converted from a map to a list to match the submodule input variable definition.
   route_tables = {
-    for rt_k, rt_v in var.route_tables : {
+    for rt_k, rt_v in var.route_tables : rt_k => {
         name                          = rt_v.name
         location                      = rt_v.location
         resource_group_name           = rt_v.resource_group_name
