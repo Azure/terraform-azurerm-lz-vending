@@ -77,9 +77,7 @@ locals {
         network_security_group                        =  subnet_v.network_security_group
         private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
         private_link_service_network_policies_enabled = subnet_v.private_link_service_network_policies_enabled
-        route_table                                   = {
-          id = try(coalesce(try(subnet_v.route_table.id, null), try(local.virtual_network_subnet_route_table_available_resource_ids[try(subnet_v.route_table.key_reference, null)]), null), null)
-        }
+        route_table                                   = try(subnet_v.route_table, null) != null ? { id = coalesce(subnet_v.route_table.id, local.virtual_network_subnet_route_table_available_resource_ids[subnet_v.route_table.key_reference]) : null
         default_outbound_access_enabled               = subnet_v.default_outbound_access_enabled
         service_endpoints                             = subnet_v.service_endpoints
         service_endpoint_policies                     = subnet_v.service_endpoint_policies
