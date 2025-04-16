@@ -77,7 +77,7 @@ locals {
         network_security_group                        = subnet_v.network_security_group
         private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
         private_link_service_network_policies_enabled = subnet_v.private_link_service_network_policies_enabled
-        route_table                                   = try(subnet_v.route_table, null) != null ? { id = coalesce(subnet_v.route_table.id, local.virtual_network_subnet_route_table_available_resource_ids[subnet_v.route_table.key_reference]) } : null
+        route_table                                   = subnet_v.route_table != null ? { id = coalesce(subnet_v.route_table.id, local.virtual_network_subnet_route_table_available_resource_ids[subnet_v.route_table.key_reference]) } : null
         default_outbound_access_enabled               = subnet_v.default_outbound_access_enabled
         service_endpoints                             = subnet_v.service_endpoints
         service_endpoint_policies                     = subnet_v.service_endpoint_policies
@@ -127,21 +127,15 @@ locals {
   # This is used in the outputs.tf file to return the virtual network resource ids.
   virtual_network_resource_ids = var.virtual_network_enabled ? module.virtualnetwork[0].virtual_network_resource_ids : {}
 
-  # route_table_routes is a list of objects containing the routes converted from a map to a list information after the user managed identities are created, if the module has been enabled.
-  # since var.user_managed_identities is a map that contains the role assignments maps, we need to use a for loop to extract the values from the nested map.
+  # route_table_routes is a list of objects containing the routes that need to be converted from a map to a list to match the submodule input variable definition.
   route_tables = {
-    for item in flatten(
-      [
-        for rt_k, rt_v in var.route_tables : {
-          rt_key                        = rt_k
-          name                          = rt_v.name
-          location                      = rt_v.location
-          resource_group_name           = rt_v.resource_group_name
-          bgp_route_propagation_enabled = rt_v.bgp_route_propagation_enabled
-          tags                          = rt_v.tags
-          routes                        = [for k, v in rt_v.routes : v]
-        }
-      ]
-    ) : item.rt_key => item
+    for rt_k, rt_v in var.route_tables : {
+        name                          = rt_v.name
+        location                      = rt_v.location
+        resource_group_name           = rt_v.resource_group_name
+        bgp_route_propagation_enabled = rt_v.bgp_route_propagation_enabled
+        tags                          = rt_v.tags
+        routes                        = [for k, v in rt_v.routes : v]
+      }
   }
 }
