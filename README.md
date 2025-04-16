@@ -282,7 +282,7 @@ map(object({
     time_grain        = string
     time_period_start = string
     time_period_end   = string
-    relative_scope    = optional(string)
+    relative_scope    = optional(string, "")
     notifications = optional(map(object({
       enabled        = bool
       operator       = string
@@ -403,7 +403,7 @@ Type:
 map(object({
     principal_id              = string,
     definition                = string,
-    relative_scope            = optional(string)
+    relative_scope            = optional(string, "")
     condition                 = optional(string)
     condition_version         = optional(string)
     principal_type            = optional(string)
@@ -784,7 +784,7 @@ map(object({
     resource_group_lock_name    = optional(string)
     role_assignments = optional(map(object({
       definition                = string
-      relative_scope            = optional(string)
+      relative_scope            = optional(string, "")
       condition                 = optional(string)
       condition_version         = optional(string)
       principal_type            = optional(string)
