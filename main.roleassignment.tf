@@ -16,6 +16,17 @@ module "roleassignment" {
   role_assignment_condition_version = each.value.condition_version
 }
 
+resource "time_sleep" "wait_for_umi_before_umi_role_assignment_operations" {
+  count = length(local.user_managed_identity_role_assignments) > 0 ? 1 : 0
+
+  create_duration  = var.wait_for_umi_before_umi_role_assignment_operations.create
+  destroy_duration = var.wait_for_umi_before_umi_role_assignment_operations.destroy
+
+  depends_on = [
+    module.usermanagedidentity
+  ]
+}
+
 # The roleassignments_umi module creates role assignments from the data
 # supplied in the var.user_managed_identities object role_assignments property
 module "roleassignment_umi" {
@@ -23,7 +34,7 @@ module "roleassignment_umi" {
   depends_on = [
     module.resourcegroup,
     module.subscription,
-    module.usermanagedidentity,
+    time_sleep.wait_for_umi_before_umi_role_assignment_operations,
     module.virtualnetwork,
   ]
   for_each = local.user_managed_identity_role_assignments

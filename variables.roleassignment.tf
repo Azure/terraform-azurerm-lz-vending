@@ -55,3 +55,14 @@ DESCRIPTION
   nullable    = false
   default     = {}
 }
+
+variable "wait_for_umi_before_umi_role_assignment_operations" {
+  type = object({
+    create  = optional(string, "30s")
+    destroy = optional(string, "0s")
+  })
+  default     = {}
+  description = <<DESCRIPTION
+The duration to wait after creating a user managed identity before performing role assignment operations.
+DESCRIPTION
+}

@@ -13,3 +13,11 @@ Value will be null if `var.subscription_id` is blank and `var.subscription_alias
 DESCRIPTION
   value       = local.subscription_id != null ? "/subscriptions/${local.subscription_id}" : null
 }
+
+output "management_group_subscription_association_id" {
+  value       = var.subscription_management_group_association_enabled ? try(azapi_resource_action.subscription_association[0].id, null) : null
+  description = <<DESCRIPTION
+The management_group_subscription_association_id output is the ID of the management group subscription association.
+Value will be null if `var.subscription_management_group_association_enabled` is false.
+DESCRIPTION
+}

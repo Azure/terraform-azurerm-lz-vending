@@ -230,6 +230,11 @@ The following resources are used by this module:
 
 The following outputs are exported:
 
+### <a name="output_management_group_subscription_association_id"></a> [management\_group\_subscription\_association\_id](#output\_management\_group\_subscription\_association\_id)
+
+Description: The management\_group\_subscription\_association\_id output is the ID of the management group subscription association.  
+Value will be null if `var.subscription_management_group_association_enabled` is false.
+
 ### <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id)
 
 Description: The subscription\_id is the id of the newly created subscription, or that of the supplied var.subscription\_id.  
