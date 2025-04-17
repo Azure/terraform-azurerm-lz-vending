@@ -28,7 +28,7 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	primaryvnet["resource_group_lock_enabled"] = true
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = true
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.RequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 
@@ -71,7 +71,7 @@ func TestIntegrationVwan(t *testing.T) {
 	primaryvnet["vwan_connection_enabled"] = true
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = true
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.RequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 
@@ -118,7 +118,7 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 			"relative_scope": "",
 		},
 	}
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.RequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 
@@ -155,7 +155,7 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
 	v["virtual_network_enabled"] = true
 	delete(v, "subscription_tags")
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.RequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 
@@ -189,7 +189,7 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 	v["subscription_alias_enabled"] = true
 	v["disable_telemetry"] = true
 
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.RequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 
@@ -227,7 +227,7 @@ func TestIntegrationResourceGroups(t *testing.T) {
 		},
 	}
 
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShow(t)
 	require.NoError(t, err)
 	defer test.Cleanup()
 
@@ -264,11 +264,14 @@ func TestIntegrationUmiRoleAssignment(t *testing.T) {
 		},
 	}
 
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.RequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 
 	resources := []string{
+		`time_sleep.wait_for_umi_before_umi_role_assignment_operations[0]`,
+		`module.usermanagedidentity["default"].azapi_resource.rg[0]`,
+		`module.usermanagedidentity["default"].azapi_resource.rg_lock[0]`,
 		`module.usermanagedidentity["default"].azapi_resource.umi`,
 		`module.roleassignment_umi["default/owner"].azapi_resource.this`,
 		`module.roleassignment_umi["default/owner"].data.azapi_resource_list.role_definitions[0]`,
@@ -320,7 +323,7 @@ func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
 		},
 	}
 
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.RequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
 

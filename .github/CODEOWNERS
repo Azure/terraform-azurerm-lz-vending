@@ -1,5 +1,4 @@
 # Default owners
-* @Azure/alz-core-team-technical
 # Require admin approval for the following files:
 .github/CODEOWNERS @Azure/alz-core-team-technical
 .github/workflows/ @Azure/alz-core-team-technical

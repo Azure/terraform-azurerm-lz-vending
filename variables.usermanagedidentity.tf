@@ -2,7 +2,7 @@ variable "umi_enabled" {
   description = <<DESCRIPTION
 Whether to enable the creation of a user-assigned managed identity.
 
-Requires `umi_name` and `umi_resosurce_group_name` to be non-empty.
+Requires `umi.name` and `umi.resosurce_group_name` to be non-empty.
 DESCRIPTION
   type        = bool
   default     = false
@@ -10,13 +10,14 @@ DESCRIPTION
 
 variable "user_managed_identities" {
   type = map(object({
-    name                        = string
-    resource_group_name         = string
-    location                    = optional(string)
-    tags                        = optional(map(string), {})
-    resource_group_tags         = optional(map(string), {})
-    resource_group_lock_enabled = optional(bool, true)
-    resource_group_lock_name    = optional(string)
+    name                            = string
+    resource_group_name             = string
+    location                        = optional(string)
+    tags                            = optional(map(string), {})
+    resource_group_creation_enabled = optional(bool, true)
+    resource_group_tags             = optional(map(string), {})
+    resource_group_lock_enabled     = optional(bool, true)
+    resource_group_lock_name        = optional(string)
     role_assignments = optional(map(object({
       definition                = string
       relative_scope            = optional(string, "")
@@ -59,6 +60,12 @@ A map of user-managed identities to create. The map key must be known at the pla
 
 - `location`: The location of the user-assigned managed identity. [optional]
 - `tags`: The tags to apply to the user-assigned managed identity. [optional]
+
+### Resource group values [DEPRECATED]
+
+**Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired.
+
+- `resource_group_creation_enabled`: Whether to create a resource group for the user managed identity. [optional - default `true`]
 - `resource_group_tags`: The tags to apply to the user-assigned managed identity resource group, if we create it. [optional]
 - `resource_group_lock_enabled`: Whether to enable resource group lock for the user-assigned managed identity resource group. [optional]
 - `resource_group_lock_name`: The name of the resource group lock for the user-assigned managed identity resource group, if blank will be set to `lock-<resource_group_name>`. [optional]
