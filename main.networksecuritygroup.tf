@@ -7,7 +7,7 @@ module "networksecuritygroup" {
 
   subscription_id = local.subscription_id
 
-  for_each = { for nsg_k, nsg_v in var.user_managed_identities : nsg_k => nsg_v if var.network_security_group_enabled }
+  for_each = { for nsg_k, nsg_v in var.network_security_groups : nsg_k => nsg_v if var.network_security_group_enabled }
 
   name     = each.value.name
   location = coalesce(each.value.location, var.location)
