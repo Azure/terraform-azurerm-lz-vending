@@ -17,9 +17,9 @@ See documentation for optional parameters.
 
 ```terraform
 module "networksecuritygroup" {
-  source  = "./"
+  source = "./"
 
-  subscription_id = "00000000-0000-0000-0000-000000000000"
+  subscription_id     = "00000000-0000-0000-0000-000000000000"
   resource_group_name = "test-rg"
   name                = "test-nsg1"
   location            = var.location
