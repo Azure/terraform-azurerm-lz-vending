@@ -13,7 +13,7 @@ resource "azapi_resource" "network_security_group" {
             description = rule.description
             destinationAddressPrefix = rule.destination_address_prefix
             destinationAddressPrefixes = rule.destination_address_prefixes
-            destinationApplicationSecurityGroups = rule.destination_application_security_group_ids
+            destinationApplicationSecurityGroups = rule.destination_application_security_group_ids != null ? [ for asg in rule.destination_application_security_group_ids : { id = asg } ] : null
             destinationPortRange = rule.destination_port_range
             destinationPortRanges = rule.destination_port_ranges
             direction = rule.direction
@@ -21,7 +21,7 @@ resource "azapi_resource" "network_security_group" {
             protocol = rule.protocol
             sourceAddressPrefix = rule.source_address_prefix
             sourceAddressPrefixes = rule.source_address_prefixes
-            sourceApplicationSecurityGroups = rule.source_application_security_group_ids
+            sourceApplicationSecurityGroups = rule.source_application_security_group_ids != null ? [ for asg in rule.source_application_security_group_ids : { id = asg } ] : null
             sourcePortRange = rule.source_port_range
             sourcePortRanges = rule.source_port_ranges
           }
