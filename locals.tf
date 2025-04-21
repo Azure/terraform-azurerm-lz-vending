@@ -81,7 +81,7 @@ locals {
         default_outbound_access_enabled               = subnet_v.default_outbound_access_enabled
         service_endpoints                             = subnet_v.service_endpoints
         service_endpoint_policies                     = subnet_v.service_endpoint_policies
-        delegation                                    = try(subnet_v.delegation, null)
+        delegation                                    = subnet_v.delegations
         }
       }
       hub_network_resource_id     = vnet_v.hub_network_resource_id
