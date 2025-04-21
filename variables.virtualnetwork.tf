@@ -26,7 +26,8 @@ variable "virtual_networks" {
           id = string
         }))
         network_security_group = optional(object({
-          id = string
+          id            = optional(string)
+          key_reference = optional(string)
         }))
         private_endpoint_network_policies             = optional(string, "Enabled")
         private_link_service_network_policies_enabled = optional(bool, true)
@@ -140,6 +141,7 @@ A map of the virtual networks to create. The map key must be known at the plan s
     - `id` - The ID of the NAT Gateway which should be associated with the Subnet. Changing this forces a new resource to be created.
   - `network_security_group` - (Optional) An object with the following fields:
     - `id` - The ID of the Network Security Group which should be associated with the Subnet. Changing this forces a new association to be created.
+    - `key_reference` - The name of the var.network_security_group map key that should be associated with the subnet once it has been provisioned. If you are passing in an `id` value, this will not be used.
   - `private_endpoint_network_policies_enabled` - (Optional) Enable or Disable network policies for the private endpoint on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true.
   - `private_link_service_network_policies_enabled` - (Optional) Enable or Disable network policies for the private link service on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true.
   - `route_table` - (Optional) An object with the following fields which are mutually exclusive, choose either an external route table or the generated route table:

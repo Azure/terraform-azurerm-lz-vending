@@ -74,7 +74,7 @@ locals {
         name                                          = subnet_v.name
         address_prefixes                              = subnet_v.address_prefixes
         nat_gateway                                   = subnet_v.nat_gateway
-        network_security_group                        = subnet_v.network_security_group
+        network_security_group                        = subnet_v.network_security_group != null ? { id = coalesce(subnet_v.network_security_group.id, local.virtual_network_subnet_network_security_group_available_resource_ids[subnet_v.network_security_group.key_reference]) } : null
         private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
         private_link_service_network_policies_enabled = subnet_v.private_link_service_network_policies_enabled
         route_table                                   = subnet_v.route_table != null ? { id = coalesce(subnet_v.route_table.id, local.virtual_network_subnet_route_table_available_resource_ids[subnet_v.route_table.key_reference]) } : null
@@ -113,11 +113,18 @@ locals {
   }
 
   # virtual_network_subnet_route_table_available_resource_ids is a map of route table names and resource ids.
-  # The need for this is within the LZ-Vending module there route table may be created but the user would not know
+  # The need for this is within the LZ-Vending module their route table may be created but the user would not know
   # the resource id in advance, in such case they could specify the name in the `key_reference` property of the
   # virtual network subnet's route table object.
 
   virtual_network_subnet_route_table_available_resource_ids = { for rt_k, rt_v in module.routetable : rt_k => rt_v.route_table_resource_id.route_table }
+
+  # virtual_network_subnet_network_security_group_available_resource_ids is a map of network security group names and resource ids.
+  # The need for this is within the LZ-Vending module their network security group may be created but the user would not know
+  # the resource id in advance, in such case they could specify the name in the `key_reference` property of the
+  # virtual network subnet's network security group object.
+
+  virtual_network_subnet_network_security_group_available_resource_ids = { for nsg_k, nsg_v in module.networksecuritygroup : nsg_k => nsg_v.network_security_group_resource_id.network_security_group }
 
 
   # resource_group_ids is a map of resource groups created, if the module has been enabled.
