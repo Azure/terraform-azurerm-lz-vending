@@ -1,0 +1,32 @@
+resource "azapi_resource" "network_security_group" {
+  type      = "Microsoft.Network/networkSecurityGroups@2024-05-01"
+  name      = var.name
+  parent_id = "${local.subscription_resource_id}/resourceGroups/${var.resource_group_name}"
+  location  = var.location
+  body = {
+    properties = {
+      securityRules = [
+        for rule in var.security_rules : {
+          name = rule.name
+          properties = {
+            access = rule.access
+            description = rule.description
+            destinationAddressPrefix = rule.destination_address_prefix
+            destinationAddressPrefixes = rule.destination_address_prefixes
+            destinationApplicationSecurityGroups = rule.destination_application_security_group_ids
+            destinationPortRange = rule.destination_port_range
+            destinationPortRanges = rule.destination_port_ranges
+            direction = rule.direction
+            priority = rule.priority
+            protocol = rule.protocol
+            sourceAddressPrefix = rule.source_address_prefix
+            sourceAddressPrefixes = rule.source_address_prefixes
+            sourceApplicationSecurityGroups = rule.source_application_security_group_ids
+            sourcePortRange = rule.source_port_range
+            sourcePortRanges = rule.source_port_ranges
+          }
+        }
+      ]
+    }
+  }
+}
