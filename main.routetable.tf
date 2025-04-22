@@ -1,7 +1,7 @@
 # route table submodule, disabled by default
 # Will create a route table, and optionally routes
 module "routetable" {
-  for_each        = var.route_table_enabled ? var.route_tables : {}
+  for_each        = var.route_table_enabled ? local.route_tables : {}
   source          = "./modules/routetable"
   subscription_id = local.subscription_id
 

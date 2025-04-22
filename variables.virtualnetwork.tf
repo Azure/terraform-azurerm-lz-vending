@@ -26,12 +26,14 @@ variable "virtual_networks" {
           id = string
         }))
         network_security_group = optional(object({
-          id = string
+          id            = optional(string)
+          key_reference = optional(string)
         }))
         private_endpoint_network_policies             = optional(string, "Enabled")
         private_link_service_network_policies_enabled = optional(bool, true)
         route_table = optional(object({
-          id = string
+          id            = optional(string)
+          key_reference = optional(string)
         }))
         default_outbound_access_enabled = optional(bool, false)
         service_endpoints               = optional(set(string))
@@ -139,10 +141,12 @@ A map of the virtual networks to create. The map key must be known at the plan s
     - `id` - The ID of the NAT Gateway which should be associated with the Subnet. Changing this forces a new resource to be created.
   - `network_security_group` - (Optional) An object with the following fields:
     - `id` - The ID of the Network Security Group which should be associated with the Subnet. Changing this forces a new association to be created.
+    - `key_reference` - The name of the var.network_security_group map key that should be associated with the subnet once it has been provisioned. If you are passing in an `id` value, this will not be used.
   - `private_endpoint_network_policies_enabled` - (Optional) Enable or Disable network policies for the private endpoint on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true.
   - `private_link_service_network_policies_enabled` - (Optional) Enable or Disable network policies for the private link service on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true.
   - `route_table` - (Optional) An object with the following fields which are mutually exclusive, choose either an external route table or the generated route table:
     - `id` - The ID of the Route Table which should be associated with the Subnet. Changing this forces a new association to be created.
+    - `key_reference` - The name of the var.route_tables map key that should be associated with the subnet once it has been provisioned. If you are passing in an `id` value, this will not be used.
   - `default_outbound_access_enabled` - (Optional) Whether to allow internet access from the subnet. Defaults to `false`.
   - `service_endpoints` - (Optional) The list of Service endpoints to associate with the subnet.
   - `service_endpoint_policies` - (Optional) The list of Service Endpoint Policy objects with the resource id to associate with the subnet.
@@ -189,7 +193,9 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 - `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
 - `mesh_peering_allow_forwarded_traffic`: Whether to allow forwarded traffic for the mesh peering. [optional - default false]
 
-### Resource group values
+### Resource group values [DEPRECATED]
+
+**Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
 
 The default is that a resource group will be created for each resource_group_name specified in the `var.virtual_networks` map.
 It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.

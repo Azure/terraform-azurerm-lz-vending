@@ -54,10 +54,95 @@ locals {
       ]
     ) : "${item.umi_key}/${item.role_key}" => item.role_assignment
   }
+
+  # This virtual_networks varialbe is used internally to consume the mapped subnet properties for dependencies on resources such as 
+  # route tables today but at some point network security groups as well.
+  virtual_networks = {
+    for vnet_k, vnet_v in var.virtual_networks : vnet_k => {
+      name                = vnet_v.name
+      address_space       = vnet_v.address_space
+      resource_group_name = vnet_v.resource_group_name
+      location            = vnet_v.location
+      dns_servers         = vnet_v.dns_servers
+
+      flow_timeout_in_minutes = vnet_v.flow_timeout_in_minutes
+
+      ddos_protection_enabled = vnet_v.ddos_protection_enabled
+      ddos_protection_plan_id = vnet_v.ddos_protection_plan_id
+
+      subnets = { for subnet_k, subnet_v in vnet_v.subnets : subnet_k => {
+        name                                          = subnet_v.name
+        address_prefixes                              = subnet_v.address_prefixes
+        nat_gateway                                   = subnet_v.nat_gateway
+        network_security_group                        = subnet_v.network_security_group != null ? { id = coalesce(subnet_v.network_security_group.id, local.virtual_network_subnet_network_security_group_available_resource_ids[subnet_v.network_security_group.key_reference]) } : null
+        private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
+        private_link_service_network_policies_enabled = subnet_v.private_link_service_network_policies_enabled
+        route_table                                   = subnet_v.route_table != null ? { id = coalesce(subnet_v.route_table.id, local.virtual_network_subnet_route_table_available_resource_ids[subnet_v.route_table.key_reference]) } : null
+        default_outbound_access_enabled               = subnet_v.default_outbound_access_enabled
+        service_endpoints                             = subnet_v.service_endpoints
+        service_endpoint_policies                     = subnet_v.service_endpoint_policies
+        delegation                                    = subnet_v.delegations
+        }
+      }
+      hub_network_resource_id     = vnet_v.hub_network_resource_id
+      hub_peering_enabled         = vnet_v.hub_peering_enabled
+      hub_peering_direction       = vnet_v.hub_peering_direction
+      hub_peering_name_tohub      = vnet_v.hub_peering_name_tohub
+      hub_peering_options_tohub   = vnet_v.hub_peering_options_tohub
+      hub_peering_name_fromhub    = vnet_v.hub_peering_name_fromhub
+      hub_peering_options_fromhub = vnet_v.hub_peering_options_fromhub
+
+      mesh_peering_enabled                 = vnet_v.mesh_peering_enabled
+      mesh_peering_allow_forwarded_traffic = vnet_v.mesh_peering_allow_forwarded_traffic
+
+      resource_group_creation_enabled = vnet_v.resource_group_creation_enabled
+      resource_group_lock_enabled     = vnet_v.resource_group_lock_enabled
+      resource_group_lock_name        = vnet_v.resource_group_lock_name
+      resource_group_tags             = vnet_v.resource_group_tags
+
+      vwan_associated_routetable_resource_id   = vnet_v.vwan_associated_routetable_resource_id
+      vwan_connection_enabled                  = vnet_v.vwan_connection_enabled
+      vwan_connection_name                     = vnet_v.vwan_connection_name
+      vwan_hub_resource_id                     = vnet_v.vwan_hub_resource_id
+      vwan_propagated_routetables_labels       = vnet_v.vwan_propagated_routetables_labels
+      vwan_propagated_routetables_resource_ids = vnet_v.vwan_propagated_routetables_resource_ids
+      vwan_security_configuration              = vnet_v.vwan_security_configuration
+
+      tags = vnet_v.tags
+    }
+  }
+
+  # virtual_network_subnet_route_table_available_resource_ids is a map of route table names and resource ids.
+  # The need for this is within the LZ-Vending module their route table may be created but the user would not know
+  # the resource id in advance, in such case they could specify the name in the `key_reference` property of the
+  # virtual network subnet's route table object.
+
+  virtual_network_subnet_route_table_available_resource_ids = { for rt_k, rt_v in module.routetable : rt_k => rt_v.route_table_resource_id.route_table }
+
+  # virtual_network_subnet_network_security_group_available_resource_ids is a map of network security group names and resource ids.
+  # The need for this is within the LZ-Vending module their network security group may be created but the user would not know
+  # the resource id in advance, in such case they could specify the name in the `key_reference` property of the
+  # virtual network subnet's network security group object.
+
+  virtual_network_subnet_network_security_group_available_resource_ids = { for nsg_k, nsg_v in module.networksecuritygroup : nsg_k => nsg_v.network_security_group_resource_id.network_security_group }
+
+
   # resource_group_ids is a map of resource groups created, if the module has been enabled.
   # This is used in the outputs.tf file to return the resource group ids.
   virtual_network_resource_group_ids = var.virtual_network_enabled ? module.virtualnetwork[0].resource_group_resource_ids : {}
   # virtual_networks_merged is a map of virtual networks created, if the module has been enabled.
   # This is used in the outputs.tf file to return the virtual network resource ids.
   virtual_network_resource_ids = var.virtual_network_enabled ? module.virtualnetwork[0].virtual_network_resource_ids : {}
+
+  # route_table_routes is a list of objects containing the routes that need to be converted from a map to a list to match the submodule input variable definition.
+  route_tables = {
+    for rt_k, rt_v in var.route_tables : rt_k => {
+      name                          = rt_v.name
+      location                      = rt_v.location
+      resource_group_name           = rt_v.resource_group_name
+      bgp_route_propagation_enabled = rt_v.bgp_route_propagation_enabled
+      tags                          = rt_v.tags
+      routes                        = [for k, v in rt_v.routes : v]
+    }
+  }
 }

@@ -140,6 +140,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
 
+- <a name="requirement_time"></a> [time](#requirement\_time) (~> 0.9)
+
 ## Modules
 
 The following Modules are called:
@@ -147,6 +149,12 @@ The following Modules are called:
 ### <a name="module_budget"></a> [budget](#module\_budget)
 
 Source: ./modules/budget
+
+Version:
+
+### <a name="module_networksecuritygroup"></a> [networksecuritygroup](#module\_networksecuritygroup)
+
+Source: ./modules/networksecuritygroup
 
 Version:
 
@@ -322,6 +330,84 @@ module "lz_vending" {
 Type: `bool`
 
 Default: `false`
+
+### <a name="input_network_security_group_enabled"></a> [network\_security\_group\_enabled](#input\_network\_security\_group\_enabled)
+
+Description: Whether to create network security groups and security rules in the target subscription. Requires `var.network_security_groups`.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_network_security_groups"></a> [network\_security\_groups](#input\_network\_security\_groups)
+
+Description: A map of the network security groups to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply.
+
+### Required fields
+
+- `name`: The name of the network security group. Changing this forces a new resource to be created. [required]
+- `resource_group_resource_id`: The resource id of the resource group to create the network security group in. Moving forward, the modules within this accelerator will adopt the standard of requiring the input be a resource id rather than a resource group name. Changing this forces a new resource to be created. [required]
+
+### Location
+
+- `location`: The supported Azure location where the resource exists. Changing this forces a new resource to be created.
+
+### Tags
+
+- `tags`: A map of tags to apply to the virtual network. [optional - default empty]
+
+### Security Rules
+
+- `security_rules` - (Optional) A map of security rules to create within the network network security group. The value is an object with the following fields:
+  - `access` - (Required) Specifies whether network traffic is allowed or denied. Possible values are `Allow` and `Deny`.
+  - `description` - (Optional) A description for this rule. Restricted to 140 characters.
+  - `destination_address_prefix` - (Optional) CIDR or destination IP range or * to match any IP. Tags such as `VirtualNetwork`, `AzureLoadBalancer` and `Internet` can also be used. Besides, it also supports all available Service Tags like ‘Sql.WestEurope‘, ‘Storage.EastUS‘, etc. You can list the available service tags with the CLI: ```shell az network list-service-tags --location westcentralus
+```. For further information please see [Azure CLI
+  - `destination_address_prefixes` - (Optional) List of destination address prefixes. Tags may not be used. This is required if `destination_address_prefix` is not specified.
+  - `destination_application_security_group_ids` - (Optional) A List of destination Application Security Group IDs
+  - `destination_port_range` - (Optional) Destination Port or Range. Integer or range between `0` and `65535` or `*` to match any. This is required if `destination_port_ranges` is not specified.
+  - `destination_port_ranges` - (Optional) List of destination ports or port ranges. This is required if `destination_port_range` is not specified.
+  - `direction` - (Required) The direction specifies if rule will be evaluated on incoming or outgoing traffic. Possible values are `Inbound` and `Outbound`.
+  - `name` - (Required) The name of the security rule. This needs to be unique across all Rules in the Network Security Group. Changing this forces a new resource to be created.
+  - `priority` - (Required) Specifies the priority of the rule. The value can be between 100 and 4096. The priority number must be unique for each rule in the collection. The lower the priority number, the higher the priority of the rule.
+  - `protocol` - (Required) Network protocol this rule applies to. Possible values include `Tcp`, `Udp`, `Icmp`, `Esp`, `Ah` or `*` (which matches all).
+  - `source_address_prefix` - (Optional) CIDR or source IP range or * to match any IP. Tags such as `VirtualNetwork`, `AzureLoadBalancer` and `Internet` can also be used. This is required if `source_address_prefixes` is not specified.
+  - `source_address_prefixes` - (Optional) List of source address prefixes. Tags may not be used. This is required if `source_address_prefix` is not specified.
+  - `source_application_security_group_ids` - (Optional) A List of source Application Security Group IDs
+  - `source_port_range` - (Optional) Source Port or Range. Integer or range between `0` and `65535` or `*` to match any. This is required if `source_port_ranges` is not specified.
+  - `source_port_ranges` - (Optional) List of source ports or port ranges. This is required if `source_port_range` is not specified.
+
+Type:
+
+```hcl
+map(object({
+    name                       = string
+    location                   = optional(string)
+    resource_group_resource_id = string
+    tags                       = optional(map(string))
+
+    security_rules = optional(map(object({
+      access                                     = string
+      description                                = optional(string)
+      destination_address_prefix                 = optional(string)
+      destination_address_prefixes               = optional(set(string))
+      destination_application_security_group_ids = optional(set(string))
+      destination_port_range                     = optional(string)
+      destination_port_ranges                    = optional(set(string))
+      direction                                  = string
+      name                                       = string
+      priority                                   = number
+      protocol                                   = string
+      source_address_prefix                      = optional(string)
+      source_address_prefixes                    = optional(set(string))
+      source_application_security_group_ids      = optional(set(string))
+      source_port_range                          = optional(string)
+      source_port_ranges                         = optional(set(string))
+    })))
+  }))
+```
+
+Default: `{}`
 
 ### <a name="input_resource_group_creation_enabled"></a> [resource\_group\_creation\_enabled](#input\_resource\_group\_creation\_enabled)
 
@@ -713,7 +799,7 @@ Default: `null`
 
 Description: Whether to enable the creation of a user-assigned managed identity.
 
-Requires `umi_name` and `umi_resosurce_group_name` to be non-empty.
+Requires `umi.name` and `umi.resosurce_group_name` to be non-empty.
 
 Type: `bool`
 
@@ -732,6 +818,12 @@ Description: A map of user-managed identities to create. The map key must be kno
 
 - `location`: The location of the user-assigned managed identity. [optional]
 - `tags`: The tags to apply to the user-assigned managed identity. [optional]
+
+### Resource group values [DEPRECATED]
+
+**Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired.
+
+- `resource_group_creation_enabled`: Whether to create a resource group for the user managed identity. [optional - default `true`]
 - `resource_group_tags`: The tags to apply to the user-assigned managed identity resource group, if we create it. [optional]
 - `resource_group_lock_enabled`: Whether to enable resource group lock for the user-assigned managed identity resource group. [optional]
 - `resource_group_lock_name`: The name of the resource group lock for the user-assigned managed identity resource group, if blank will be set to `lock-<resource_group_name>`. [optional]
@@ -775,13 +867,14 @@ Type:
 
 ```hcl
 map(object({
-    name                        = string
-    resource_group_name         = string
-    location                    = optional(string)
-    tags                        = optional(map(string), {})
-    resource_group_tags         = optional(map(string), {})
-    resource_group_lock_enabled = optional(bool, true)
-    resource_group_lock_name    = optional(string)
+    name                            = string
+    resource_group_name             = string
+    location                        = optional(string)
+    tags                            = optional(map(string), {})
+    resource_group_creation_enabled = optional(bool, true)
+    resource_group_tags             = optional(map(string), {})
+    resource_group_lock_enabled     = optional(bool, true)
+    resource_group_lock_name        = optional(string)
     role_assignments = optional(map(object({
       definition                = string
       relative_scope            = optional(string, "")
@@ -858,10 +951,12 @@ Description: A map of the virtual networks to create. The map key must be known 
     - `id` - The ID of the NAT Gateway which should be associated with the Subnet. Changing this forces a new resource to be created.
   - `network_security_group` - (Optional) An object with the following fields:
     - `id` - The ID of the Network Security Group which should be associated with the Subnet. Changing this forces a new association to be created.
+    - `key_reference` - The name of the var.network\_security\_group map key that should be associated with the subnet once it has been provisioned. If you are passing in an `id` value, this will not be used.
   - `private_endpoint_network_policies_enabled` - (Optional) Enable or Disable network policies for the private endpoint on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true.
   - `private_link_service_network_policies_enabled` - (Optional) Enable or Disable network policies for the private link service on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true.
   - `route_table` - (Optional) An object with the following fields which are mutually exclusive, choose either an external route table or the generated route table:
     - `id` - The ID of the Route Table which should be associated with the Subnet. Changing this forces a new association to be created.
+    - `key_reference` - The name of the var.route\_tables map key that should be associated with the subnet once it has been provisioned. If you are passing in an `id` value, this will not be used.
   - `default_outbound_access_enabled` - (Optional) Whether to allow internet access from the subnet. Defaults to `false`.
   - `service_endpoints` - (Optional) The list of Service endpoints to associate with the subnet.
   - `service_endpoint_policies` - (Optional) The list of Service Endpoint Policy objects with the resource id to associate with the subnet.
@@ -907,7 +1002,9 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 - `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
 - `mesh_peering_allow_forwarded_traffic`: Whether to allow forwarded traffic for the mesh peering. [optional - default false]
 
-### Resource group values
+### Resource group values [DEPRECATED]
+
+**Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
 
 The default is that a resource group will be created for each resource\_group\_name specified in the `var.virtual_networks` map.  
 It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.  
@@ -961,12 +1058,14 @@ map(object({
           id = string
         }))
         network_security_group = optional(object({
-          id = string
+          id            = optional(string)
+          key_reference = optional(string)
         }))
         private_endpoint_network_policies             = optional(string, "Enabled")
         private_link_service_network_policies_enabled = optional(bool, true)
         route_table = optional(object({
-          id = string
+          id            = optional(string)
+          key_reference = optional(string)
         }))
         default_outbound_access_enabled = optional(bool, false)
         service_endpoints               = optional(set(string))
@@ -1059,11 +1158,27 @@ object({
 
 Default: `{}`
 
+### <a name="input_wait_for_umi_before_umi_role_assignment_operations"></a> [wait\_for\_umi\_before\_umi\_role\_assignment\_operations](#input\_wait\_for\_umi\_before\_umi\_role\_assignment\_operations)
+
+Description: The duration to wait after creating a user managed identity before performing role assignment operations.
+
+Type:
+
+```hcl
+object({
+    create  = optional(string, "30s")
+    destroy = optional(string, "0s")
+  })
+```
+
+Default: `{}`
+
 ## Resources
 
 The following resources are used by this module:
 
 - [azapi_resource.telemetry_root](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [time_sleep.wait_for_umi_before_umi_role_assignment_operations](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) (resource)
 
 ## Outputs
 
