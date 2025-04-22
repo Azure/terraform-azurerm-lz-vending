@@ -15,6 +15,7 @@ module "networksecuritygroup" {
   security_rules = each.value.security_rules
 
   depends_on = [
-    module.resourcegroup
+    module.resourcegroup,
+    module.subscription
   ]
 }

@@ -3,6 +3,7 @@ resource "azapi_resource" "network_security_group" {
   name      = var.name
   parent_id = var.resource_group_resource_id
   location  = var.location
+  tags      = var.tags
   body = {
     properties = {
       securityRules = [
