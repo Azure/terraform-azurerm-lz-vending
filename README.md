@@ -346,7 +346,7 @@ Description: A map of the network security groups to create. The map key must be
 ### Required fields
 
 - `name`: The name of the network security group. Changing this forces a new resource to be created. [required]
-- `resource_group_name`: The name of the resource group to create the network security group in. Changing this forces a new resource to be created. [required]
+- `resource_group_resource_id`: The resource id of the resource group to create the network security group in. Moving forward, the modules within this accelerator will adopt the standard of requiring the input be a resource id rather than a resource group name. Changing this forces a new resource to be created. [required]
 
 ### Location
 
@@ -381,10 +381,10 @@ Type:
 
 ```hcl
 map(object({
-    name                = string
-    location            = optional(string)
-    resource_group_name = string
-    tags                = optional(map(string))
+    name                       = string
+    location                   = optional(string)
+    resource_group_resource_id = string
+    tags                       = optional(map(string))
 
     security_rules = optional(map(object({
       access                                     = string

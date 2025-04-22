@@ -5,14 +5,12 @@ module "networksecuritygroup" {
 
   source = "./modules/networksecuritygroup"
 
-  subscription_id = local.subscription_id
-
   for_each = { for nsg_k, nsg_v in var.network_security_groups : nsg_k => nsg_v if var.network_security_group_enabled }
 
-  name                = each.value.name
-  location            = coalesce(each.value.location, var.location)
-  resource_group_name = each.value.resource_group_name
-  tags                = each.value.tags
+  name                       = each.value.name
+  location                   = coalesce(each.value.location, var.location)
+  resource_group_resource_id = each.value.resource_group_resource_id
+  tags                       = each.value.tags
 
   security_rules = each.value.security_rules
 

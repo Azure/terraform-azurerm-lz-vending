@@ -1,9 +1,10 @@
 # This is required for most resource modules
-variable "resource_group_name" {
+variable "resource_group_resource_id" {
   type        = string
-  description = "(Required) The name of the resource group in which to create the network security group. Changing this forces a new resource to be created."
+  description = "(Required) The resource id of the resource group in which to create the network security group. Moving forward, the modules within this accelerator will adopt the standard of requiring the input be a resource id rather than a resource group name. Changing this forces a new resource to be created."
   nullable    = false
 }
+
 variable "location" {
   type        = string
   description = "(Required) Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created."
@@ -21,16 +22,6 @@ variable "name" {
     The name must be between 1 and 80 characters long and can only contain alphanumerics, underscores, periods, and hyphens.
     It must start with an alphanumeric and end with an alphanumeric or underscore.
     EOT
-  }
-}
-
-variable "subscription_id" {
-  type        = string
-  description = "The id of the target subscription. Must be a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
-
-  validation {
-    condition     = can(regex("^^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_id))
-    error_message = "Must be a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
   }
 }
 
