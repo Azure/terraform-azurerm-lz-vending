@@ -281,6 +281,5 @@ func getMockInputVariables() map[string]any {
 		"name":                       "test",
 		"location":                   "westeurope",
 		"resource_group_resource_id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-test",
-		"enable_telemetry":           false,
 	}
 }
