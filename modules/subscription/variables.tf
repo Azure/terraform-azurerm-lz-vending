@@ -46,10 +46,6 @@ DESCRIPTION
     error_message = "Value must not be null if `subscription_alias_enabled` is set to `true`."
     condition     = var.subscription_alias_enabled ? var.subscription_alias_name != null : true
   }
-  validation {
-    error_message = "Value must not be null if `subscription_update_existing` is set to `true`."
-    condition     = var.subscription_update_existing ? var.subscription_alias_name != null : true
-  }
 }
 
 variable "subscription_billing_scope" {
@@ -100,6 +96,10 @@ DESCRIPTION
   validation {
     error_message = "Value must not be null if `subscription_alias_enabled` is set to `true`."
     condition     = var.subscription_alias_enabled ? var.subscription_display_name != null : true
+  }
+  validation {
+    error_message = "Value must not be null if `subscription_update_existing` is set to `true`."
+    condition     = var.subscription_update_existing ? var.subscription_display_name != null : true
   }
 }
 
