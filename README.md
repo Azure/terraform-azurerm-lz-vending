@@ -60,8 +60,6 @@ module "lz_vending" {
   subscription_alias_name    = "my-subscription-alias"
   subscription_workload      = "Production"
 
-  network_watcher_resource_group_enabled = true
-
   # management group association variables
   subscription_management_group_association_enabled = true
   subscription_management_group_id                  = "Corp"
@@ -98,6 +96,10 @@ module "lz_vending" {
 
   resource_group_creation_enabled = true
   resource_groups = {
+    nwrg = {
+      name     = "NetworkWatcherRG"
+      location = "westeurope"
+    }
     myrg = {
       name     = "MyRg"
       location = "westeurope"
@@ -721,7 +723,6 @@ Default:
   "Microsoft.Management": [],
   "Microsoft.Maps": [],
   "Microsoft.MarketplaceOrdering": [],
-  "Microsoft.Media": [],
   "Microsoft.MixedReality": [],
   "Microsoft.Network": [],
   "Microsoft.NotificationHubs": [],
