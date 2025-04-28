@@ -1,7 +1,7 @@
 resource "azapi_resource" "network_security_group" {
   type      = "Microsoft.Network/networkSecurityGroups@2024-05-01"
   name      = var.name
-  parent_id = var.resource_group_resource_id
+  parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
   location  = var.location
   tags      = var.tags
   body = {
