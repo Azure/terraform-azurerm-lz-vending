@@ -1,7 +1,17 @@
 # This is required for most resource modules
-variable "resource_group_resource_id" {
+variable "subscription_id" {
   type        = string
-  description = "(Required) The resource id of the resource group in which to create the network security group. Moving forward, the modules within this accelerator will adopt the standard of requiring the input be a resource id rather than a resource group name. Changing this forces a new resource to be created."
+  description = "The subscription ID of the subscription to create the network security group in."
+
+  validation {
+    condition     = can(regex("^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_id))
+    error_message = "Must a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
+  }
+}
+
+variable "resource_group_name" {
+  type        = string
+  description = "The name of the resource group to create the network security group in. The resource group must exist, this module will not create it."
   nullable    = false
 }
 

@@ -21,10 +21,12 @@ func TestNetworkSecurityGroup(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
+	parentID := "/subscriptions/" + v["subscription_id"].(string) + "/resourceGroups/" + v["resource_group_name"].(string)
+
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(1).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.network_security_group").Key("name").HasValue(v["name"]).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.network_security_group").Key("location").HasValue(v["location"]).ErrorIsNil(t)
-	check.InPlan(test.PlanStruct).That("azapi_resource.network_security_group").Key("parent_id").HasValue(v["resource_group_resource_id"]).ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.network_security_group").Key("parent_id").HasValue(parentID).ErrorIsNil(t)
 }
 
 func TestNetworkSecurityGroupSecurityRulePrimary(t *testing.T) {
@@ -278,8 +280,9 @@ func TestNetworkSecurityGroupSecurityRuleAsgsOnly(t *testing.T) {
 
 func getMockInputVariables() map[string]any {
 	return map[string]any{
-		"name":                       "test",
-		"location":                   "westeurope",
-		"resource_group_resource_id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-test",
+		"name":                "test",
+		"location":            "westeurope",
+		"resource_group_name": "rg-test",
+		"subscription_id":     "00000000-0000-0000-0000-000000000000",
 	}
 }

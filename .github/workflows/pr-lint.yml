@@ -41,7 +41,9 @@ jobs:
             root
             subscription
             usermanagedideneity
+            networksecuritygroup
             virtualnetwork
+            routetable
           # Configure that a scope must always be provided.
           requireScope: false
           # Configure which scopes are disallowed in PR titles. For instance by setting
