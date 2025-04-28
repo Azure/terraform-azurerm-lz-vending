@@ -195,6 +195,8 @@ The following scopes are permitted:
 * subscription - pertaining to the subscription sub-module
 * usermanagedidentity - pertaining to the user-assigned managed identity sub-module
 * virtualnetwork - pertaining to the virtual network sub-module
+* networksecuritygroup - pertaining to the network security group sub-module
+* routetable - pertaining to the route table sub-module
 
 ### Breaking Changes
 
