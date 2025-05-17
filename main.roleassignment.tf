@@ -14,6 +14,7 @@ module "roleassignment" {
   role_assignment_scope             = "${local.subscription_resource_id}${each.value.relative_scope}"
   role_assignment_condition         = each.value.condition
   role_assignment_condition_version = each.value.condition_version
+  role_assignment_principal_type    = each.value.principal_type
 }
 
 resource "time_sleep" "wait_for_umi_before_umi_role_assignment_operations" {
