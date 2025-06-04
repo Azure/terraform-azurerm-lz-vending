@@ -1,7 +1,7 @@
 locals {
   # subscription_id is the id of the subscription into which resources will be created.
   # We pick the created sub id first, if it exists, otherwise we pick the subscription_id variable.
-  subscription_id = coalesce(local.subscription_module_output_subscription_id, var.subscription_id)
+  subscription_id = coalesce(var.subscription_id, local.subscription_module_output_subscription_id)
   # subscription_module_output_subscription_id is either the output of the subscription module,
   # or if disabled, a null.
   # Needed to avoid errors in local.subscription_id when referencing a module instance that does not exists.
