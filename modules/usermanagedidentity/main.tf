@@ -53,7 +53,7 @@ resource "azapi_resource" "umi_federated_credential_github_branch" {
   body = {
     properties = {
       audiences = ["api://AzureADTokenExchange"]
-      issuer    = v.enterprise_slug != null ? "${local.github_actions_issuer}/${each.value.enterprise_slug}" : local.github_actions_issuer
+      issuer    = each.value.enterprise_slug != null ? "${local.github_actions_issuer}/${each.value.enterprise_slug}" : local.github_actions_issuer
       subject   = "repo:${each.value.organization}/${each.value.repository}:ref:refs/heads/${each.value.value}"
     }
   }
@@ -69,7 +69,7 @@ resource "azapi_resource" "umi_federated_credential_github_tag" {
   body = {
     properties = {
       audiences = ["api://AzureADTokenExchange"]
-      issuer    = v.enterprise_slug != null ? "${local.github_actions_issuer}/${each.value.enterprise_slug}" : local.github_actions_issuer
+      issuer    = each.value.enterprise_slug != null ? "${local.github_actions_issuer}/${each.value.enterprise_slug}" : local.github_actions_issuer
       subject   = "repo:${each.value.organization}/${each.value.repository}:ref:refs/tags/${each.value.value}"
     }
   }
@@ -85,7 +85,7 @@ resource "azapi_resource" "umi_federated_credential_github_environment" {
   body = {
     properties = {
       audiences = ["api://AzureADTokenExchange"]
-      issuer    = v.enterprise_slug != null ? "${local.github_actions_issuer}/${each.value.enterprise_slug}" : local.github_actions_issuer
+      issuer    = each.value.enterprise_slug != null ? "${local.github_actions_issuer}/${each.value.enterprise_slug}" : local.github_actions_issuer
       subject   = "repo:${each.value.organization}/${each.value.repository}:environment:${each.value.value}"
     }
   }
@@ -101,7 +101,7 @@ resource "azapi_resource" "umi_federated_credential_github_pull_request" {
   body = {
     properties = {
       audiences = ["api://AzureADTokenExchange"]
-      issuer    = v.enterprise_slug != null ? "${local.github_actions_issuer}/${each.value.enterprise_slug}" : local.github_actions_issuer
+      issuer    = each.value.enterprise_slug != null ? "${local.github_actions_issuer}/${each.value.enterprise_slug}" : local.github_actions_issuer
       subject   = "repo:${each.value.organization}/${each.value.repository}:pull_request"
     }
   }

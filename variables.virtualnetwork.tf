@@ -107,6 +107,28 @@ variable "virtual_networks" {
 
     tags = optional(map(string), {})
   }))
+  # validation {
+  #   error_message = "subnet network_security_group must either be null or have an id or key_reference set."
+  #   condition = alltrue(flatten([
+  #     for _, v in var.virtual_networks : [
+  #       for _, s in v.subnets : (
+  #         s.network_security_group == null ||
+  #         (s.network_security_group.id == null != s.network_security_group.key_reference == null)
+  #       )
+  #     ]
+  #   ]))
+  # }
+  # validation {
+  #   error_message = "subnet route_table must either be null or have an id or key_reference set."
+  #   condition = alltrue(flatten([
+  #     for _, v in var.virtual_networks : [
+  #       for _, s in v.subnets : (
+  #         s.route_table == null ||
+  #         (s.route_table.id == null != s.route_table.key_reference == null)
+  #       )
+  #     ]
+  #   ]))
+  # }
   description = <<DESCRIPTION
 A map of the virtual networks to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply.
 

@@ -17,7 +17,7 @@ variable "route_tables" {
       address_prefix         = string
       next_hop_type          = string
       next_hop_in_ip_address = string
-    })))
+    })), {})
   }))
   description = <<DESCRIPTION
 A map defining route tables and their associated routes to be created:

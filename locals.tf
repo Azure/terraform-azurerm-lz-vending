@@ -55,7 +55,7 @@ locals {
     ) : "${item.umi_key}/${item.role_key}" => item.role_assignment
   }
 
-  # This virtual_networks varialbe is used internally to consume the mapped subnet properties for dependencies on resources such as 
+  # This virtual_networks varialbe is used internally to consume the mapped subnet properties for dependencies on resources such as
   # route tables today but at some point network security groups as well.
   virtual_networks = {
     for vnet_k, vnet_v in var.virtual_networks : vnet_k => {
@@ -74,10 +74,10 @@ locals {
         name                                          = subnet_v.name
         address_prefixes                              = subnet_v.address_prefixes
         nat_gateway                                   = subnet_v.nat_gateway
-        network_security_group                        = subnet_v.network_security_group != null ? { id = coalesce(subnet_v.network_security_group.id, local.virtual_network_subnet_network_security_group_available_resource_ids[subnet_v.network_security_group.key_reference]) } : null
+        network_security_group                        = subnet_v.network_security_group != null ? { id = coalesce(subnet_v.network_security_group.id, try(local.virtual_network_subnet_network_security_group_available_resource_ids[subnet_v.network_security_group.key_reference], null)) } : null
         private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
         private_link_service_network_policies_enabled = subnet_v.private_link_service_network_policies_enabled
-        route_table                                   = subnet_v.route_table != null ? { id = coalesce(subnet_v.route_table.id, local.virtual_network_subnet_route_table_available_resource_ids[subnet_v.route_table.key_reference]) } : null
+        route_table                                   = subnet_v.route_table != null ? { id = coalesce(subnet_v.route_table.id, try(local.virtual_network_subnet_route_table_available_resource_ids[subnet_v.route_table.key_reference], null)) } : null
         default_outbound_access_enabled               = subnet_v.default_outbound_access_enabled
         service_endpoints                             = subnet_v.service_endpoints
         service_endpoint_policies                     = subnet_v.service_endpoint_policies
