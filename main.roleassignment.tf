@@ -8,14 +8,15 @@ module "roleassignment" {
     module.usermanagedidentity,
     module.virtualnetwork,
   ]
-  for_each                          = { for k, v in var.role_assignments : k => v if var.role_assignment_enabled }
-  role_assignment_principal_id      = each.value.principal_id
-  role_assignment_definition        = each.value.definition
-  role_assignment_scope             = "${local.subscription_resource_id}${each.value.relative_scope}"
-  role_assignment_condition         = each.value.condition
-  role_assignment_condition_version = each.value.condition_version
-  role_assignment_principal_type    = each.value.principal_type
+  for_each                                  = { for k, v in var.role_assignments : k => v if var.role_assignment_enabled }
+  role_assignment_principal_id              = each.value.principal_id
+  role_assignment_definition                = each.value.definition
+  role_assignment_scope                     = "${local.subscription_resource_id}${each.value.relative_scope}"
+  role_assignment_condition                 = each.value.condition
+  role_assignment_condition_version         = each.value.condition_version
+  role_assignment_principal_type            = each.value.principal_type
   role_assignment_definition_lookup_enabled = each.value.definition_lookup_enabled
+  role_assignment_use_random_uuid           = each.value.use_random_uuid
 }
 
 resource "time_sleep" "wait_for_umi_before_umi_role_assignment_operations" {
@@ -48,4 +49,5 @@ module "roleassignment_umi" {
   role_assignment_condition_version         = each.value.condition_version
   role_assignment_principal_type            = each.value.principal_type
   role_assignment_definition_lookup_enabled = each.value.definition_lookup_enabled
+  role_assignment_use_random_uuid           = each.value.use_random_uuid
 }

@@ -25,6 +25,7 @@ variable "user_managed_identities" {
       condition_version         = optional(string)
       principal_type            = optional(string)
       definition_lookup_enabled = optional(bool, true)
+      use_random_uuid           = optional(bool, false)
     })), {})
     federated_credentials_github = optional(map(object({
       name            = optional(string)
