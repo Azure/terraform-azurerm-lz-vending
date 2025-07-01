@@ -15,6 +15,7 @@ module "roleassignment" {
   role_assignment_condition         = each.value.condition
   role_assignment_condition_version = each.value.condition_version
   role_assignment_principal_type    = each.value.principal_type
+  role_assignment_definition_lookup_enabled = each.value.definition_lookup_enabled
 }
 
 resource "time_sleep" "wait_for_umi_before_umi_role_assignment_operations" {
