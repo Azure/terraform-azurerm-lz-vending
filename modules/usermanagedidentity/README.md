@@ -147,17 +147,19 @@ The map value is an object with the following attributes:
 - `organization` - the name of the GitHub organization, e.g. `Azure` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
 - `repository` - the name of the GitHub respository, e.g. `terraform-azurerm-lz-vending` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
 - `entity` - one of 'environment', 'pull\_request', 'tag', or 'branch'
+- `enterprise_slug` - the name of the GitHub Enterprise, e.g. `my-enterprise`. This is optional and only valid when using an enterprise.
 - `value` - identifies the `entity` type, e.g. `main` when using entity is `branch`. Should be blank when `entity` is `pull_request`.
 
 Type:
 
 ```hcl
 map(object({
-    name         = optional(string)
-    organization = string
-    repository   = string
-    entity       = string
-    value        = optional(string)
+    name            = optional(string)
+    organization    = string
+    repository      = string
+    entity          = string
+    enterprise_slug = optional(string)
+    value           = optional(string)
   }))
 ```
 
