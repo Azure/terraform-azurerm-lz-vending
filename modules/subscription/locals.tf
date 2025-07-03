@@ -1,5 +1,5 @@
 locals {
-  # subscription_id is the id of the newly created subscription, or the id supplied by var.subscription_id.
+  # subscription_id is the id supplied by var.subscription_id, or the id of the newly created subscription.
   subscription_id = coalesce(var.subscription_id, local.subscription_id_alias)
   # subscription_id_alias is the id of the newly created subscription, if it exists.
   subscription_id_alias = try(azapi_resource.subscription[0].output.properties.subscriptionId, null)
