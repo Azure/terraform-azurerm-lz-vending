@@ -521,10 +521,10 @@ Description: A map defining route tables and their associated routes to be creat
 - `bgp_route_propagation_enabled` (optional): Boolean that controls whether routes learned by BGP are propagated to the route table. Default is `true`.
 - `tags` (optional): A map of key-value pairs for tags associated with the route table.
 - `routes` (optional): A map defining routes for the route table. Each route object has the following properties:
-  - `name` (required): The name of the route.
-  - `address_prefix` (required): The address prefix for the route.
-  - `next_hop_type` (required): The type of next hop for the route.
-  - `next_hop_in_ip_address` (required): The next hop IP address for the route.
+- `name` (required): The name of the route.
+- `address_prefix` (required): The address prefix for the route.
+- `next_hop_type` (required): The next hop type, must be one of: 'Internet', 'None', 'VirtualAppliance', 'VirtualNetworkGateway', 'VnetLocal'.
+- `next_hop_in_ip_address` (optional): The next hop IP address for the route. Required if next hop type is 'VirtualAppliance'.
 
 Type:
 
@@ -540,7 +540,7 @@ map(object({
       name                   = string
       address_prefix         = string
       next_hop_type          = string
-      next_hop_in_ip_address = string
+      next_hop_in_ip_address = optional(string)
     })), {})
   }))
 ```
