@@ -48,6 +48,7 @@ locals {
               condition_version         = role_v.condition_version
               principal_type            = role_v.principal_type
               definition_lookup_enabled = role_v.definition_lookup_enabled
+              use_random_uuid           = role_v.use_random_uuid
             }
           }
         ]
