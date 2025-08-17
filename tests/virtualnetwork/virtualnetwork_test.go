@@ -20,7 +20,6 @@ const (
 // TestVirtualNetworkCreateValid tests the creation of a plan that
 // creates two virtual networks in the specified resource groups.
 func TestVirtualNetworkCreateValid(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
@@ -59,7 +58,6 @@ func TestVirtualNetworkCreateValid(t *testing.T) {
 // TestVirtualNetworkCreateValid tests the creation of a plan that
 // creates two virtual networks in the specified resource groups with custom DNS servers.
 func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -86,7 +84,6 @@ func TestVirtualNetworkCreateValidWithCustomDns(t *testing.T) {
 // TestVirtualNetworkCreateValidWithTags tests the creation of a plan that
 // creates two virtual networks in the specified resource groups with tags on vnet and rg.
 func TestVirtualNetworkCreateValidWithTags(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -112,7 +109,6 @@ func TestVirtualNetworkCreateValidWithTags(t *testing.T) {
 // TestVirtualNetworkCreateValidWithMeshPeering tests the creation of a plan that
 // creates two virtual networks in the specified resource groups with mesh peering.
 func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -150,7 +146,6 @@ func TestVirtualNetworkCreateValidWithMeshPeering(t *testing.T) {
 // creates two virtual networks in the specified resource groups with mesh peering
 // enabled on only one of the two vnets.
 func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -180,7 +175,6 @@ func TestVirtualNetworkCreateValidInvalidMeshPeering(t *testing.T) {
 // TestVirtualNetworkCreateValidSameRg tests the creation of a plan that
 // creates two virtual networks in the same resource group.
 func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -211,7 +205,6 @@ func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
 // TestVirtualNetworkCreateValidSameRgSameLocation tests the creation of a plan that
 // creates two virtual networks in the same resource group in the same location.
 func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -242,7 +235,6 @@ func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
 // TestVirtualNetworkCreateValidWithSubnet tests the creation of a plan that
 // creates a virtual network with a subnet.
 func TestVirtualNetworkCreateValidSubnet(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -294,7 +286,6 @@ func TestVirtualNetworkCreateValidSubnet(t *testing.T) {
 
 // TestVirtualNetworkCreateSubnetZeroLengthAddressPrefixes tests the length of address_space > 0
 func TestVirtualNetworkCreateSubnetZeroLengthAddressPrefixes(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -313,7 +304,6 @@ func TestVirtualNetworkCreateSubnetZeroLengthAddressPrefixes(t *testing.T) {
 // TestVirtualNetworkCreateValidWithMultiplSubnets tests the creation of a plan that
 // creates a virtual network with a single subnet in each.
 func TestVirtualNetworkCreateValidWithMultiplSubnets(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -374,7 +364,6 @@ func TestVirtualNetworkCreateValidWithMultiplSubnets(t *testing.T) {
 // TestVirtualNetworkCreateValidWithMultiplSubnetsInSingleVnet tests the creation of a plan that
 // creates a virtual network with multiple subnets and another virtual network without subnets.
 func TestVirtualNetworkCreateValidWithMultiplSubnetsInSingleVnet(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -432,7 +421,6 @@ func TestVirtualNetworkCreateValidWithMultiplSubnetsInSingleVnet(t *testing.T) {
 // TestVirtualNetworkCreateValidWithSubnetNatGateway tests the creation of a plan that
 // creates a virtual network with a subnet and a nat gateway.
 func TestVirtualNetworkCreateValidWithSubnetNatGateway(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -499,7 +487,6 @@ func TestVirtualNetworkCreateValidWithSubnetNatGateway(t *testing.T) {
 
 // TestVirtualNetworkCreateSubnetInvalidNetworkSecurityGroup test the resource id value is correct
 func TestVirtualNetworkCreateSubnetInvalidNatGateway(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -521,7 +508,6 @@ func TestVirtualNetworkCreateSubnetInvalidNatGateway(t *testing.T) {
 // TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup tests the creation of a plan that
 // creates a virtual network with a subnet and a network security group.
 func TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -588,7 +574,6 @@ func TestVirtualNetworkCreateValidWithSubnetNetworkSecurityGroup(t *testing.T) {
 
 // TestVirtualNetworkCreateSubnetInvalidNetworkSecurityGroup test the resource id value is correct
 func TestVirtualNetworkCreateSubnetInvalidNetworkSecurityGroup(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -611,7 +596,6 @@ func TestVirtualNetworkCreateSubnetInvalidNetworkSecurityGroup(t *testing.T) {
 // creates a virtual network with a subnet and a private endpoint network policy enabled and disabled.
 func TestVirtualNetworkCreateValidWithSubnetPrivateEndpointNetworkPolicy(t *testing.T) {
 	// run bith scenarios here
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -678,7 +662,6 @@ func TestVirtualNetworkCreateValidWithSubnetPrivateEndpointNetworkPolicy(t *test
 // creates a virtual network with a subnet and a private link service network policy enabled and disabled.
 func TestVirtualNetworkCreateValidWithSubnetPrivateLinkServiceNetworkPolicy(t *testing.T) {
 	// run bith scenarios here
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -748,7 +731,6 @@ func TestVirtualNetworkCreateValidWithSubnetPrivateLinkServiceNetworkPolicy(t *t
 // TestVirtualNetworkCreateValidWithSubnetRouteTable tests the creation of a plan that
 // creates a virtual network with a subnet and a route table associated with it.
 func TestVirtualNetworkCreateValidWithSubnetRouteTable(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -817,7 +799,6 @@ func TestVirtualNetworkCreateValidWithSubnetRouteTable(t *testing.T) {
 // creates a virtual network with a subnet with default outbound access enabled and disabled.
 func TestVirtualNetworkCreateValidWithSubnetDefaultOutboundAccess(t *testing.T) {
 	// run bith scenarios here
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -883,7 +864,6 @@ func TestVirtualNetworkCreateValidWithSubnetDefaultOutboundAccess(t *testing.T) 
 // TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpoint tests the creation of a plan that
 // creates a virtual network with a subnet and a single service endpoint assigned.
 func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpoint(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -949,7 +929,6 @@ func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpoint(t *testing.T) 
 // TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpoints tests the creation of a plan that
 // creates a virtual network with a subnet and multiple service endpoint assigned.
 func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpoints(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -993,7 +972,6 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpoints(t *testing.
 // TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpointPolicy tests the creation of a plan that
 // creates a virtual network with a subnet and a single service endpoint policy assigned.
 func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpointPolicy(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1041,7 +1019,6 @@ func TestVirtualNetworkCreateValidWithSubnetSingleServiceEndpointPolicy(t *testi
 // TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies tests the creation of a plan that
 // creates a virtual network with a subnet and multiple service endpoint policies assigned.
 func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1094,7 +1071,6 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleServiceEndpointPolicies(t *t
 // TestVirtualNetworkCreateValidWithSubnetSingleDelegation tests the creation of a plan that
 // creates a virtual network with a subnet and a single delegation.
 func TestVirtualNetworkCreateValidWithSubnetSingleDelegation(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1145,7 +1121,6 @@ func TestVirtualNetworkCreateValidWithSubnetSingleDelegation(t *testing.T) {
 // TestVirtualNetworkCreateValidWithSubnetMultipleDelegations tests the creation of a plan that
 // creates a virtual network with a subnet and multiple delegations.
 func TestVirtualNetworkCreateValidWithSubnetMultipleDelegations(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1204,7 +1179,6 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleDelegations(t *testing.T) {
 // TestVirtualNetworkCreateValidWithPeering tests the creation of a plan that
 // creates a virtual network with bidirectional peering to a hub.
 func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1256,7 +1230,6 @@ func TestVirtualNetworkCreateValidWithHubPeering(t *testing.T) {
 // TestVirtualNetworkCreateValidWithPeeringCustomNames tests the creation of a plan that
 // creates a virtual network with bidirectional peering to a hub, with custom names for peers.
 func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1303,7 +1276,6 @@ func TestVirtualNetworkCreateValidWithHubPeeringCustomNames(t *testing.T) {
 // TestVirtualNetworkCreateValidWithOnlyToHubPeering tests the creation of a plan that
 // creates a virtual network with unidirectional peering to a hub, with custom names for peers.
 func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1342,7 +1314,6 @@ func TestVirtualNetworkCreateValidWithOnlyToHubPeering(t *testing.T) {
 // TestVirtualNetworkCreateValidWithOnlyFromHubPeering tests the creation of a plan that
 // creates a virtual network with unidirectional peering from a hub, with custom names for peers.
 func TestVirtualNetworkCreateValidWithOnlyFromHubPeering(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1382,7 +1353,6 @@ func TestVirtualNetworkCreateValidWithOnlyFromHubPeering(t *testing.T) {
 // tests the creation of a plan that configured the outbound peering
 // with useRemoteGateways disabled.
 func TestVirtualNetworkCreateValidWithPeeringUseCustomOptions(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	// Enable hub network peering to primary vnet in test mock input variables
@@ -1442,7 +1412,6 @@ func TestVirtualNetworkCreateValidWithPeeringUseCustomOptions(t *testing.T) {
 // TestVirtualNetworkCreateValidWithVhub tests the creation of a plan that
 // creates a virtual network with a vhub connection.
 func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1495,7 +1464,6 @@ func TestVirtualNetworkCreateValidWithVhub(t *testing.T) {
 // TestVirtualNetworkCreateValidWithVhubCustomRouting tests the creation of a plan that
 // creates a virtual network with a vhub connection with custom routing.
 func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1544,7 +1512,6 @@ func TestVirtualNetworkCreateValidWithVhubCustomRouting(t *testing.T) {
 
 // TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic tests that secure_internet_traffic == true
 func TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1585,7 +1552,6 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetTraffic(t *testing.T) {
 
 // TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic that managed vnets propagate to "noneRouteTable" with labels "none"
 func TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1647,7 +1613,6 @@ func TestVirtualNetworkCreateValidWithVhubSecurePrivateTraffic(t *testing.T) {
 // TestVirtualNetworkCreateValidWithVhubSecureInternetAndPrivateTraffic tests secure_internet_traffic == true
 // and that managed vnets propagate to "noneRouteTable" with labels "none"
 func TestVirtualNetworkCreateValidWithVhubSecureInternetAndPrivateTraffic(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1711,7 +1676,6 @@ func TestVirtualNetworkCreateValidWithVhubSecureInternetAndPrivateTraffic(t *tes
 // TestVirtualNetworkCreateValidWithVhubRoutingIntentEnabled tests that routingConfiguration is null when
 // routing intent is enabled
 func TestVirtualNetworkCreateValidWithVhubRoutingIntentEnabled(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 
@@ -1754,7 +1718,6 @@ func TestVirtualNetworkCreateValidWithVhubRoutingIntentEnabled(t *testing.T) {
 // TestVirtualNetworkCreateInvalidHubNetResId tests the regex of the
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -1769,7 +1732,6 @@ func TestVirtualNetworkCreateInvalidHubNetResId(t *testing.T) {
 // TestVirtualNetworkCreateInvalidVhubResId tests the regex of the
 // hub_network_resource_id variable.
 func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -1783,7 +1745,6 @@ func TestVirtualNetworkCreateInvalidVhubResId(t *testing.T) {
 
 // TestVirtualNetworkCreateZeroLengthAddressSpace tests the length of address_space > 0
 func TestVirtualNetworkCreateZeroLengthAddressSpace(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -1796,7 +1757,6 @@ func TestVirtualNetworkCreateZeroLengthAddressSpace(t *testing.T) {
 
 // TestVirtualNetworkCreateInvalidAddressSpace tests a valid CIDR address space is used
 func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -1811,7 +1771,6 @@ func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
 // when using vnets in multiple locaitons that share a resoruce group.
 // NOTE - this is not a recommended deployment pattern.
 func TestVirtualNetworkCreateInvalidResourceGroupCreation(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -1823,7 +1782,6 @@ func TestVirtualNetworkCreateInvalidResourceGroupCreation(t *testing.T) {
 }
 
 func TestVirtualNetworkDdosProtection(t *testing.T) {
-	t.Parallel()
 
 	// We want 6 resources here
 	resources := []string{

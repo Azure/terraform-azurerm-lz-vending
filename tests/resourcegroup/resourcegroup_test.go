@@ -15,7 +15,6 @@ const (
 
 // TestNetworkWatcherRg tests creation of a NetworkwatcherRG resource group.
 func TestNetworkWatcherRg(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)

@@ -14,7 +14,6 @@ const (
 )
 
 func TestNetworkSecurityGroup(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
@@ -30,7 +29,6 @@ func TestNetworkSecurityGroup(t *testing.T) {
 }
 
 func TestNetworkSecurityGroupSecurityRulePrimary(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["security_rules"] = map[string]map[string]any{
@@ -65,7 +63,6 @@ func TestNetworkSecurityGroupSecurityRulePrimary(t *testing.T) {
 }
 
 func TestNetworkSecurityGroupSecurityRuleSourcePrefixes(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["security_rules"] = map[string]map[string]any{
@@ -97,7 +94,6 @@ func TestNetworkSecurityGroupSecurityRuleSourcePrefixes(t *testing.T) {
 }
 
 func TestNetworkSecurityGroupSecurityRuleDestinationPrefixes(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["security_rules"] = map[string]map[string]any{
@@ -130,7 +126,6 @@ func TestNetworkSecurityGroupSecurityRuleDestinationPrefixes(t *testing.T) {
 }
 
 func TestNetworkSecurityGroupSecurityRulePrefixesOnly(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["security_rules"] = map[string]map[string]any{
@@ -165,7 +160,6 @@ func TestNetworkSecurityGroupSecurityRulePrefixesOnly(t *testing.T) {
 }
 
 func TestNetworkSecurityGroupSecurityRuleSourceAsgs(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["security_rules"] = map[string]map[string]any{
@@ -202,7 +196,6 @@ func TestNetworkSecurityGroupSecurityRuleSourceAsgs(t *testing.T) {
 }
 
 func TestNetworkSecurityGroupSecurityRuleDestinationAsgs(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["security_rules"] = map[string]map[string]any{
@@ -239,7 +232,6 @@ func TestNetworkSecurityGroupSecurityRuleDestinationAsgs(t *testing.T) {
 }
 
 func TestNetworkSecurityGroupSecurityRuleAsgsOnly(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["security_rules"] = map[string]map[string]any{

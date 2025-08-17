@@ -17,7 +17,6 @@ import (
 )
 
 func TestDeployIntegrationHubAndSpoke(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
@@ -89,7 +88,6 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 }
 
 func TestDeployIntegrationResourceGroupsRpRegUmiAndRoleAssignments(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()

@@ -19,7 +19,6 @@ const (
 // TestIntegrationHubAndSpoke tests the resource plan when creating a new subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpoke(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -63,7 +62,6 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 // with a new virtual network and vwan connection to a supplied vhub.
 // RG resource lock is disabled
 func TestIntegrationVwan(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -105,7 +103,6 @@ func TestIntegrationVwan(t *testing.T) {
 // This tests that the depends_on property of the roleassignments module is working
 // when a dependent resource is disabled through the use of count.
 func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_alias_enabled"] = true
@@ -144,7 +141,6 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 // TestIntegrationHubAndSpokeExistingSubscription tests the resource plan when supplying an existing subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -183,7 +179,6 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 // TestIntegrationHubAndSpoke tests the resource plan when creating a new subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationDisableTelemetry(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_alias_enabled"] = true
@@ -208,7 +203,6 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 }
 
 func TestIntegrationResourceGroups(t *testing.T) {
-	t.Parallel()
 
 	v := map[string]any{
 		"subscription_id":                 "00000000-0000-0000-0000-000000000000",
@@ -243,7 +237,6 @@ func TestIntegrationResourceGroups(t *testing.T) {
 }
 
 func TestIntegrationUmiRoleAssignment(t *testing.T) {
-	t.Parallel()
 
 	v := map[string]any{
 		"subscription_id":   "00000000-0000-0000-0000-000000000000",
@@ -284,7 +277,6 @@ func TestIntegrationUmiRoleAssignment(t *testing.T) {
 }
 
 func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
-	t.Parallel()
 
 	v := map[string]any{
 		"subscription_id":   "00000000-0000-0000-0000-000000000000",
@@ -354,7 +346,6 @@ func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
 // TestIntegrationVirtualNetworkRouteTable tests the resource plan when creating a new subscription,
 // with a new virtual network with route table.
 func TestIntegrationVirtualNetworkRouteTable(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]

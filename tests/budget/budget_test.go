@@ -16,7 +16,6 @@ const (
 
 // TestRoleAssignmentValidWithRoleName tests that the module will accept a role by name
 func TestBudgetScopeSubscription(t *testing.T) {
-	t.Parallel()
 
 	v := map[string]interface{}{
 		"budget_name":       "budget",

@@ -19,7 +19,6 @@ import (
 // TestDeployVirtualNetworkValid tests the deployment of virtual networks
 // with valid input variables.
 func TestDeployVirtualNetworkValid(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	v, err := getValidInputVariables()
@@ -51,7 +50,6 @@ func TestDeployVirtualNetworkValid(t *testing.T) {
 // TestDeployVirtualNetworkValidCustomDns tests the deployment of virtual networks
 // with valid input variables and custom DNS servers.
 func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	v, err := getValidInputVariables()
@@ -87,7 +85,6 @@ func TestDeployVirtualNetworkValidCustomDns(t *testing.T) {
 // TestDeployVirtualNetworkValidSubnets tests the deployment of virtual networks
 // with valid input variables and subnet configurations
 func TestDeployVirtualNetworkValidSubnets(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	v, err := getValidInputVariables()
@@ -152,7 +149,6 @@ func TestDeployVirtualNetworkValidSubnets(t *testing.T) {
 // TestDeployVirtualNetworkValidVnetPeering tests the deployment of a virtual network
 // with bidirectional peering to a hub virtual network.
 func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
@@ -195,7 +191,6 @@ func TestDeployVirtualNetworkValidVnetPeering(t *testing.T) {
 // TestDeployVirtualNetworkValidUniDirectionalVnetPeering tests the deployment of a virtual network
 // with unidirectional peering to a hub virtual network.
 func TestDeployVirtualNetworkValidUniDirectionalVnetPeering(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
@@ -238,7 +233,6 @@ func TestDeployVirtualNetworkValidUniDirectionalVnetPeering(t *testing.T) {
 // TestDeployVirtualNetworkValidVhubConnection tests the deployment of a virtual network
 // with a virtual WAN connection.
 func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
@@ -277,7 +271,6 @@ func TestDeployVirtualNetworkValidVhubConnection(t *testing.T) {
 // TestDeployVirtualNetworkValidVhubConnectionAndRoutingIntent tests the deployment of a virtual network
 // with a virtual WAN connection and routing intent.
 func TestDeployVirtualNetworkValidVhubConnectionAndRoutingIntent(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
@@ -317,7 +310,6 @@ func TestDeployVirtualNetworkValidVhubConnectionAndRoutingIntent(t *testing.T) {
 // to the subnet configuration outside the module and that subsequent runs of terraform apply
 // are idempotent. See main.tf file in the testdata directory for more details.
 func TestDeployVirtualNetworkSubnetIdempotency(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	testDir := "testdata/" + t.Name()
@@ -348,7 +340,6 @@ func TestDeployVirtualNetworkSubnetIdempotency(t *testing.T) {
 // TestDeployVirtualNetworkValidMeshPeering tests the deployment of virtual networks
 // with mesh peering enables.
 func TestDeployVirtualNetworkValidMeshPeering(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	v, err := getValidInputVariables()

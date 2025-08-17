@@ -24,7 +24,6 @@ var tenantID = os.Getenv("AZURE_TENANT_ID")
 // We also test RP registration here.
 // This test uses the azapi provider.
 func TestDeploySubscriptionAliasValid(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 
@@ -62,7 +61,6 @@ func TestDeploySubscriptionAliasValid(t *testing.T) {
 // TestDeploySubscriptionAliasManagementGroupValid tests the deployment of a subscription alias
 // with valid input variables.
 func TestDeploySubscriptionAliasManagementGroupValid(t *testing.T) {
-	t.Parallel()
 	utils.PreCheckDeployTests(t)
 
 	v, err := getValidInputVariables(billingScope)
