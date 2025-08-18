@@ -463,6 +463,7 @@ Object fields:
 - `condition_version`: (optional) The version of the condition syntax. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 - `principal_type`: (optional) The type of the principal. Can be `"User"`, `"Group"`, `"Device"`, `"ForeignGroup"`, or `"ServicePrincipal"`.
 - `definition_lookup_enabled`: (optional) Whether to look up the role definition resource id from the role definition name. If disabled, the `definition` must be a role definition resource id. Default is `true`.
+- `use_random_uuid`: (optional) Whether to use a random UUID for the role assignment name. Default is `false`. If set to `true`, the role assignment name will be a random UUID, otherwise it will be a deterministic UUID based on the scope, principal id, and role definition id.
 
 E.g.
 
@@ -496,6 +497,7 @@ map(object({
     condition_version         = optional(string)
     principal_type            = optional(string)
     definition_lookup_enabled = optional(bool, true)
+    use_random_uuid           = optional(bool, false)
   }))
 ```
 
@@ -519,10 +521,10 @@ Description: A map defining route tables and their associated routes to be creat
 - `bgp_route_propagation_enabled` (optional): Boolean that controls whether routes learned by BGP are propagated to the route table. Default is `true`.
 - `tags` (optional): A map of key-value pairs for tags associated with the route table.
 - `routes` (optional): A map defining routes for the route table. Each route object has the following properties:
-  - `name` (required): The name of the route.
-  - `address_prefix` (required): The address prefix for the route.
-  - `next_hop_type` (required): The type of next hop for the route.
-  - `next_hop_in_ip_address` (required): The next hop IP address for the route.
+- `name` (required): The name of the route.
+- `address_prefix` (required): The address prefix for the route.
+- `next_hop_type` (required): The next hop type, must be one of: 'Internet', 'None', 'VirtualAppliance', 'VirtualNetworkGateway', 'VnetLocal'.
+- `next_hop_in_ip_address` (optional): The next hop IP address for the route. Required if next hop type is 'VirtualAppliance'.
 
 Type:
 
@@ -538,8 +540,8 @@ map(object({
       name                   = string
       address_prefix         = string
       next_hop_type          = string
-      next_hop_in_ip_address = string
-    })))
+      next_hop_in_ip_address = optional(string)
+    })), {})
   }))
 ```
 
@@ -845,6 +847,7 @@ The following fields are used to configure federated identity credentials, using
   - `organization` - the name of the GitHub organization, e.g. `Azure` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
   - `repository` - the name of the GitHub respository, e.g. `terraform-azurerm-lz-vending` in `https://github.com/Azure/terraform-azurerm-lz-vending`.
   - `entity` - one of 'environment', 'pull\_request', 'tag', or 'branch'
+  - `enterprise_slug` - the name of the GitHub Enterprise, e.g. `my-enterprise`. This is optional and only valid when using an enterprise.
   - `value` - identifies the `entity` type, e.g. `main` when using entity is `branch`. Should be blank when `entity` is `pull_request`.
 
 #### Terraform Cloud
@@ -883,13 +886,15 @@ map(object({
       condition_version         = optional(string)
       principal_type            = optional(string)
       definition_lookup_enabled = optional(bool, true)
+      use_random_uuid           = optional(bool, false)
     })), {})
     federated_credentials_github = optional(map(object({
-      name         = optional(string)
-      organization = string
-      repository   = string
-      entity       = string
-      value        = optional(string)
+      name            = optional(string)
+      organization    = string
+      repository      = string
+      entity          = string
+      enterprise_slug = optional(string)
+      value           = optional(string)
     })), {})
     federated_credentials_terraform_cloud = optional(map(object({
       name         = optional(string)

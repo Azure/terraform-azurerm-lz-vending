@@ -33,6 +33,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
 
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6)
+
 ## Modules
 
 No modules.
@@ -105,11 +107,22 @@ Type: `string`
 
 Default: `null`
 
+### <a name="input_role_assignment_use_random_uuid"></a> [role\_assignment\_use\_random\_uuid](#input\_role\_assignment\_use\_random\_uuid)
+
+Description: Whether to use a random UUID for the role assignment name.
+
+> NOTE: Use this option to prevent unknown values causing role assignments to be recreated on every plan/apply. However make sure to use a new module call (UUID) if you change the properties of a role assignment.
+
+Type: `bool`
+
+Default: `false`
+
 ## Resources
 
 The following resources are used by this module:
 
 - [azapi_resource.this](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [random_uuid.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
 - [azapi_resource_list.role_definitions](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/resource_list) (data source)
 
 ## Outputs

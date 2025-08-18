@@ -8,12 +8,16 @@ data "azapi_resource_list" "role_definitions" {
   }
 }
 
+resource "random_uuid" "this" {
+  count = var.role_assignment_use_random_uuid ? 1 : 0
+}
+
 resource "azapi_resource" "this" {
   type = "Microsoft.Authorization/roleAssignments@2022-04-01"
   body = {
     properties = local.role_assignment_properties
   }
-  name      = uuidv5("url", "${var.role_assignment_scope}${var.role_assignment_principal_id}${local.role_assignment_definition_id}")
+  name      = var.role_assignment_use_random_uuid ? random_uuid.this[0].result : uuidv5("url", "${var.role_assignment_scope}${var.role_assignment_principal_id}${local.role_assignment_definition_id}")
   parent_id = var.role_assignment_scope
 
   lifecycle {

@@ -15,7 +15,6 @@ import (
 // TestDeployRoleAssignmentDefinitionName tests the deployment of a role assignment
 // by defining the role definition name
 func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	name, err := utils.RandomHex(4)
@@ -38,7 +37,6 @@ func TestDeployRoleAssignmentDefinitionName(t *testing.T) {
 // TestDeployRoleAssignmentDefinitionId tests the deployment of a role assignment
 // by defining a role definition id
 func TestDeployRoleAssignmentDefinitionId(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 	name, err := utils.RandomHex(4)

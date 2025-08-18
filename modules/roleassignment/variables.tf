@@ -79,3 +79,14 @@ DESCRIPTION
     error_message = "Must be one of User, Group, ServicePrincipal, Device, or ForeignGroup."
   }
 }
+
+variable "role_assignment_use_random_uuid" {
+  type        = bool
+  default     = false
+  description = <<DESCRIPTION
+Whether to use a random UUID for the role assignment name.
+
+> NOTE: Use this option to prevent unknown values causing role assignments to be recreated on every plan/apply. However make sure to use a new module call (UUID) if you change the properties of a role assignment.
+DESCRIPTION
+  nullable    = false
+}

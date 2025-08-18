@@ -14,7 +14,6 @@ const (
 )
 
 func TestUserManagedIdentity(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
@@ -29,7 +28,6 @@ func TestUserManagedIdentity(t *testing.T) {
 }
 
 func TestUserManagedIdentityWithGitHub(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["federated_credentials_github"] = map[string]any{
@@ -60,7 +58,6 @@ func TestUserManagedIdentityWithGitHub(t *testing.T) {
 }
 
 func TestUserManagedIdentityWithTFCloud(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["federated_credentials_terraform_cloud"] = map[string]any{
@@ -92,7 +89,6 @@ func TestUserManagedIdentityWithTFCloud(t *testing.T) {
 }
 
 func TestUserManagedIdentityWithAdvancedFederatedCredentials(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["federated_credentials_advanced"] = map[string]any{
@@ -122,7 +118,6 @@ func TestUserManagedIdentityWithAdvancedFederatedCredentials(t *testing.T) {
 }
 
 func TestUserManagedIdentityWithInvalidTFCloudValues(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["federated_credentials_terraform_cloud"] = map[string]any{
@@ -139,7 +134,6 @@ func TestUserManagedIdentityWithInvalidTFCloudValues(t *testing.T) {
 }
 
 func TestUserManagedIdentityWithInvalidGHValues(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["federated_credentials_github"] = map[string]any{

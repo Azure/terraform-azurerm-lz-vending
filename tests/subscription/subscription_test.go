@@ -19,7 +19,6 @@ const (
 // then creates a plan and compares the input variables to the planned values.
 // This test uses the azapi provider.
 func TestSubscriptionAliasCreateValid(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
@@ -52,7 +51,6 @@ func TestSubscriptionAliasCreateValid(t *testing.T) {
 // then creates a plan and compares the input variables to the planned values.
 // This test uses the azapi provider.
 func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_management_group_id"] = os.Getenv("ARM_TENANT_ID")
@@ -88,7 +86,6 @@ func TestSubscriptionAliasCreateValidWithManagementGroup(t *testing.T) {
 
 // TestSubscriptionAliasCreateInvalidBillingScope tests the validation function of the subscription_billing_scope variable.
 func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_billing_scope"] = "/PRoviders/Microsoft.Billing/billingAccounts/test-billing-account"
@@ -100,7 +97,6 @@ func TestSubscriptionAliasCreateInvalidBillingScope(t *testing.T) {
 
 // TestSubscriptionAliasCreateInvalidWorkload tests the validation function of the subscription_workload variable.
 func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_workload"] = "PRoduction"
@@ -113,7 +109,6 @@ func TestSubscriptionAliasCreateInvalidWorkload(t *testing.T) {
 // TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars tests the validation function of the
 // subscription_alias_management_group_id variable.
 func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_management_group_id"] = "invalid/chars"
@@ -126,7 +121,6 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdInvalidChars(t *testing.
 // TestSubscriptionAliasCreateInvalidManagementGroupIdLength tests the validation function of the
 // subscription_alias_management_group_id variable.
 func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_management_group_id"] = "tooooooooooooooooooooooooooloooooooooooooooooooooonnnnnnnnnnnnnnnnnnngggggggggggggggggggggg"
@@ -137,7 +131,6 @@ func TestSubscriptionAliasCreateInvalidManagementGroupIdLength(t *testing.T) {
 }
 
 func TestSubscriptionInvalidTagValue(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_tags"] = map[string]any{
@@ -149,7 +142,6 @@ func TestSubscriptionInvalidTagValue(t *testing.T) {
 }
 
 func TestSubscriptionInvalidTagName(t *testing.T) {
-	t.Parallel()
 	var tagname string
 	for i := 0; i < 513; i++ {
 		tagname += "a"

@@ -16,6 +16,7 @@ variable "role_assignments" {
     condition_version         = optional(string)
     principal_type            = optional(string)
     definition_lookup_enabled = optional(bool, true)
+    use_random_uuid           = optional(bool, false)
   }))
   description = <<DESCRIPTION
 Supply a map of objects containing the details of the role assignments to create.
@@ -29,7 +30,7 @@ Object fields:
 - `condition_version`: (optional) The version of the condition syntax. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 - `principal_type`: (optional) The type of the principal. Can be `"User"`, `"Group"`, `"Device"`, `"ForeignGroup"`, or `"ServicePrincipal"`.
 - `definition_lookup_enabled`: (optional) Whether to look up the role definition resource id from the role definition name. If disabled, the `definition` must be a role definition resource id. Default is `true`.
-
+- `use_random_uuid`: (optional) Whether to use a random UUID for the role assignment name. Default is `false`. If set to `true`, the role assignment name will be a random UUID, otherwise it will be a deterministic UUID based on the scope, principal id, and role definition id.
 
 E.g.
 

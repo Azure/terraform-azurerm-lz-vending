@@ -11,7 +11,6 @@ import (
 )
 
 func TestDeploySubscriptionDeployExistingWithRpFeatureRegistration(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 

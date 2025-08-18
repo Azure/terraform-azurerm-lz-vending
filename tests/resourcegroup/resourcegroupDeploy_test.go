@@ -17,7 +17,6 @@ import (
 // TestSubscriptionAliasCreateValid tests the validation functions with valid data,
 // then creates a plan and compares the input variables to the planned values.
 func TestDeployNetworkWatcherRg(t *testing.T) {
-	t.Parallel()
 
 	utils.PreCheckDeployTests(t)
 

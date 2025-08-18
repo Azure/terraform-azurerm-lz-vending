@@ -19,7 +19,6 @@ const (
 // TestIntegrationHubAndSpoke tests the resource plan when creating a new subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpoke(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -63,7 +62,6 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 // with a new virtual network and vwan connection to a supplied vhub.
 // RG resource lock is disabled
 func TestIntegrationVwan(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -105,7 +103,6 @@ func TestIntegrationVwan(t *testing.T) {
 // This tests that the depends_on property of the roleassignments module is working
 // when a dependent resource is disabled through the use of count.
 func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_alias_enabled"] = true
@@ -144,7 +141,6 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 // TestIntegrationHubAndSpokeExistingSubscription tests the resource plan when supplying an existing subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
@@ -183,7 +179,6 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 // TestIntegrationHubAndSpoke tests the resource plan when creating a new subscription,
 // with a new virtual network with peerings to a supplied hub network.
 func TestIntegrationDisableTelemetry(t *testing.T) {
-	t.Parallel()
 
 	v := getMockInputVariables()
 	v["subscription_alias_enabled"] = true
@@ -208,7 +203,6 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 }
 
 func TestIntegrationResourceGroups(t *testing.T) {
-	t.Parallel()
 
 	v := map[string]any{
 		"subscription_id":                 "00000000-0000-0000-0000-000000000000",
@@ -243,7 +237,6 @@ func TestIntegrationResourceGroups(t *testing.T) {
 }
 
 func TestIntegrationUmiRoleAssignment(t *testing.T) {
-	t.Parallel()
 
 	v := map[string]any{
 		"subscription_id":   "00000000-0000-0000-0000-000000000000",
@@ -284,7 +277,6 @@ func TestIntegrationUmiRoleAssignment(t *testing.T) {
 }
 
 func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
-	t.Parallel()
 
 	v := map[string]any{
 		"subscription_id":   "00000000-0000-0000-0000-000000000000",
@@ -349,6 +341,70 @@ func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
 	}
+}
+
+// TestIntegrationVirtualNetworkRouteTable tests the resource plan when creating a new subscription,
+// with a new virtual network with route table.
+func TestIntegrationVirtualNetworkRouteTable(t *testing.T) {
+
+	v := getMockInputVariables()
+	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
+	primaryvnet["resource_group_lock_enabled"] = false
+	primaryvnet["subnets"] = map[string]map[string]any{
+		"primary": {
+			"name":             "primary-subnet",
+			"address_prefixes": []string{"192.168.0.0/25"},
+			"route_table": map[string]string{
+				"key_reference": "primary",
+			},
+		},
+		"secondary": {
+			"name":             "secondary-subnet",
+			"address_prefixes": []string{"192.168.0.128/25"},
+			"route_table": map[string]string{
+				"id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/primary-rg/providers/Microsoft.Network/routeTables/primary-route-table",
+			},
+		},
+	}
+	v["subscription_alias_enabled"] = true
+	v["virtual_network_enabled"] = true
+	v["route_table_enabled"] = true
+	v["route_tables"] = map[string]any{
+		"primary": map[string]string{
+			"name":                "primary-route-table",
+			"resource_group_name": "primary-rg",
+			"location":            "westeurope",
+		},
+	}
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	require.NoError(t, err)
+	defer test.Cleanup()
+
+	resources := []string{
+		`azapi_resource.telemetry_root[0]`,
+		`module.subscription[0].azapi_resource_action.subscription_cancel[0]`,
+		`module.subscription[0].azapi_resource_action.subscription_rename[0]`,
+		`module.subscription[0].azapi_resource.subscription[0]`,
+		`module.subscription[0].azapi_update_resource.subscription_tags[0]`,
+		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
+		`module.virtualnetwork[0].azapi_resource.rg["primary-rg"]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].module.subnet["primary"].azapi_resource.subnet`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].module.subnet["secondary"].azapi_resource.subnet`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.this`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.modtm_module_source.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].modtm_telemetry.telemetry[0]`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
+		`module.routetable["primary"].azapi_resource.route_table`,
+	}
+
+	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
+	for _, v := range resources {
+		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
+	}
+
+	check.InPlan(test.PlanStruct).That(`module.virtualnetwork[0].module.virtual_networks["primary"].module.subnet["secondary"].azapi_resource.subnet`).Key("body").Query("properties.routeTable.id").HasValue("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/primary-rg/providers/Microsoft.Network/routeTables/primary-route-table").ErrorIsNil(t)
 }
 
 func getMockInputVariables() map[string]any {

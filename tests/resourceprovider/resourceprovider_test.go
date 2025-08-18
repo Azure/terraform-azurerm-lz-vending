@@ -14,7 +14,6 @@ const (
 )
 
 func TestSubscriptionRPRegistration(t *testing.T) {
-	t.Parallel()
 
 	v := make(map[string]any)
 	v["resource_provider"] = "My.Rp"
