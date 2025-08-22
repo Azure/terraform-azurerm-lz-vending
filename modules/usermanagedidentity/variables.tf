@@ -9,24 +9,17 @@ variable "name" {
   nullable    = false
 }
 
-variable "resource_group_name" {
+variable "parent_id" {
   type        = string
-  description = "The name of the resource group in which to create the user-assigned managed identity"
-  nullable    = false
+  description = "The ID of the parent resource to which this user-assigned managed identity."
 
   validation {
-    condition     = var.resource_group_name != ""
-    error_message = "Resource group name must not be empty."
+    condition     = length(var.parent_id) > 0
+    error_message = "The parent_id must not be empty."
   }
-}
-
-variable "subscription_id" {
-  type        = string
-  description = "The id of the target subscription. Must be a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
-
   validation {
-    condition     = can(regex("^^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_id))
-    error_message = "Must be a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
+    condition     = can(regex("^/subscriptions/[a-fA-F0-9-]+/resourceGroups/[a-zA-Z0-9-_.()]+$", var.parent_id))
+    error_message = "The parent_id must be a valid Azure Resource Group ID."
   }
 }
 
@@ -124,56 +117,6 @@ DESCRIPTION
     ])
     error_message = "Field 'run_phase' value must be 'plan' or 'apply'."
   }
-}
-
-variable "resource_group_creation_enabled" {
-  type        = bool
-  default     = true
-  description = <<DESCRIPTION
-Resource group values DEPRECATED
-
-The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
-
-Whether to create the supplied resource group for the user-assigned managed identity
-  DESCRIPTION
-  nullable    = false
-}
-
-variable "resource_group_lock_enabled" {
-  type        = bool
-  default     = true
-  description = <<DESCRIPTION
-Resource group values DEPRECATED
-
-The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
-
-Whether to enable resource group lock for the user-assigned managed identity resource group
-  DESCRIPTION
-  nullable    = false
-}
-
-variable "resource_group_lock_name" {
-  type        = string
-  default     = null
-  description = <<DESCRIPTION
-Resource group values DEPRECATED
-
-The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
-
-The name of the resource group lock for the user-assigned managed identity resource group, if `null` will be set to `lock-<resource_group_name>`
-  DESCRIPTION
-}
-
-variable "resource_group_tags" {
-  type        = map(string)
-  default     = {}
-  description = <<DESCRIPTION
-Resource group values DEPRECATED
-
-The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
-
-The tags to apply to the user-assigned managed identity resource group, if we create it.
-  DESCRIPTION
 }
 
 variable "tags" {

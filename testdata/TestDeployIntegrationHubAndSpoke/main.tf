@@ -40,6 +40,10 @@ module "lz_vending" {
   virtual_network_enabled = var.virtual_network_enabled
   virtual_networks        = local.virtual_networks_merged
 
+  # resource groups
+  resource_group_creation_enabled = var.resource_group_creation_enabled
+  resource_groups = var.resource_groups
+
   # role assignment
   role_assignment_enabled = var.role_assignment_enabled
   role_assignments = {

@@ -1,18 +1,16 @@
 # This is required for most resource modules
-variable "subscription_id" {
+variable "parent_id" {
   type        = string
-  description = "The subscription ID of the subscription to create the network security group in."
+  description = "The ID of the parent resource to which this user-assigned managed identity."
 
   validation {
-    condition     = can(regex("^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.subscription_id))
-    error_message = "Must a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
+    condition     = length(var.parent_id) > 0
+    error_message = "The parent_id must not be empty."
   }
-}
-
-variable "resource_group_name" {
-  type        = string
-  description = "The name of the resource group to create the network security group in. The resource group must exist, this module will not create it."
-  nullable    = false
+  validation {
+    condition     = can(regex("^/subscriptions/[a-fA-F0-9-]+/resourceGroups/[a-zA-Z0-9-_.()]+$", var.parent_id))
+    error_message = "The parent_id must be a valid Azure Resource Group ID."
+  }
 }
 
 variable "location" {

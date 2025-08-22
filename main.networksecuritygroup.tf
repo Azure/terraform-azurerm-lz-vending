@@ -9,8 +9,10 @@ module "networksecuritygroup" {
 
   name                = each.value.name
   location            = coalesce(each.value.location, var.location)
-  subscription_id     = local.subscription_id
-  resource_group_name = each.value.resource_group_name
+  parent_id           = coalesce(
+    can(module.resourcegroup[each.value.resource_group_key].resource_group_resource_id) ? module.resourcegroup[each.value.resource_group_key].resource_group_resource_id : null,
+    each.value.resource_group_name_existing != null ? "${local.subscription_resource_id}/resourceGroups/${each.value.resource_group_name_existing}" : null
+  )
   tags                = each.value.tags
 
   security_rules = each.value.security_rules

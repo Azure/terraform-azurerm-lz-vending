@@ -37,8 +37,8 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 		"module.lz_vending.module.subscription[0].azurerm_subscription.this[0]",
 		"module.lz_vending.module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
 		"module.lz_vending.module.virtualnetwork[0].azapi_resource.peering_hub_outbound[\"primary\"]",
-		fmt.Sprintf("module.lz_vending.module.virtualnetwork[0].azapi_resource.rg_lock[\"%s\"]", name),
-		fmt.Sprintf("module.lz_vending.module.virtualnetwork[0].azapi_resource.rg[\"%s\"]", name),
+		// fmt.Sprintf("module.lz_vending.module.virtualnetwork[0].azapi_resource.rg_lock[\"%s\"]", name),
+		fmt.Sprintf("module.lz_vending.module.resourcegroup[\"%s\"].azapi_resource.rg", name),
 		"module.lz_vending.module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
 	}
 
@@ -56,7 +56,8 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 		}
 		i++
 	}
-	require.Equal(t, 1, i, "expected 1 role assignment to be planned, got %d", i)
+	//there is now the data lookup for the role definitions
+	require.Equal(t, 2, i, "expected 2 role assignment to be planned, got %d", i)
 
 	// Defer the cleanup of the subscription alias to the end of the test.
 	// Should be run after the Terraform destroy.
@@ -123,11 +124,26 @@ func getValidInputVariables() (map[string]any, error) {
 		"virtual_networks": map[string]map[string]any{
 			"primary": {
 				"name":                            name,
-				"resource_group_name":             name,
+				"resource_group_key":              "rg1",
 				"location":                        "northeurope",
 				"address_space":                   []string{"10.1.0.0/24", "172.16.1.0/24"},
 				"hub_peering_enabled":             true,
 				"hub_peering_use_remote_gateways": false,
+			},
+			"secondary": {
+				"name":                            name,
+				"resource_group_name_existing":    fmt.Sprintf("rg-%s", r),
+				"location":                        "northeurope",
+				"address_space":                   []string{"10.1.0.0/24", "172.16.1.0/24"},
+				"hub_peering_enabled":             true,
+				"hub_peering_use_remote_gateways": false,
+			},
+		},
+		"resource_group_creation_enabled": true,
+		"resource_groups": map[string]map[string]any{
+			"rg1": {
+				"name":     fmt.Sprintf("rg-%s", r),
+				"location": "northeurope",
 			},
 		},
 		"role_assignment_enabled": true,

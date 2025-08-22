@@ -20,6 +20,20 @@ variable "subscription_id" {
   }
 }
 
+variable "lock_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to enable resource group lock for the resource group"
+  nullable    = false
+}
+
+variable "lock_name" {
+  type        = string
+  default     = null
+  description = "The name of the resource group lock for the resource group, if `null` will be set to `lock-<resource_group_name>`"
+
+}
+
 variable "tags" {
   type        = map(string)
   default     = {}

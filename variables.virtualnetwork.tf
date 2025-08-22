@@ -8,7 +8,8 @@ variable "virtual_networks" {
   type = map(object({
     name                = string
     address_space       = list(string)
-    resource_group_name = string
+    resource_group_key  = optional(string)
+    resource_group_name_existing = optional(string)
 
     location = optional(string)
 
@@ -88,11 +89,6 @@ variable "virtual_networks" {
     mesh_peering_enabled                 = optional(bool, false)
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
 
-    resource_group_creation_enabled = optional(bool, true)
-    resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string)
-    resource_group_tags             = optional(map(string), {})
-
     vwan_associated_routetable_resource_id   = optional(string)
     vwan_connection_enabled                  = optional(bool, false)
     vwan_connection_name                     = optional(string)
@@ -114,7 +110,10 @@ A map of the virtual networks to create. The map key must be known at the plan s
 
 - `name`: The name of the virtual network. [required]
 - `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [required]
-- `resource_group_name`: The name of the resource group to create the virtual network in. [required]
+- `resource_group_key`: The resource group key from the resource groups map to create the virtual network in. [optional]
+- `resource_group_name_existing`: The name of an existing resource group to use for the virtual network. [optional]
+
+**One of `resource_group_key` or `resource_group_name_existing` must be specified.**
 
 ### DNS servers
 
@@ -193,21 +192,6 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 - `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
 - `mesh_peering_allow_forwarded_traffic`: Whether to allow forwarded traffic for the mesh peering. [optional - default false]
 
-### Resource group values [DEPRECATED]
-
-**Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
-
-The default is that a resource group will be created for each resource_group_name specified in the `var.virtual_networks` map.
-It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.
-We recommend using resource groups aligned to the region of the virtual network,
-however if you want multiple virtual networks in more than one location to share a resource group,
-only one of the virtual networks should have `resource_group_creation_enabled` set to `true`.
-
-- `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default `true`]
-- `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default `true`]
-- `resource_group_lock_name`: The name of the resource lock. [optional - leave empty to use calculated name]
-- `resource_group_tags`: A map of tags to apply to the resource group, e.g. `{ mytag = "myvalue", mytag2 = "myvalue2" }`. [optional - default empty]
-
 ### Virtual WAN values
 
 - `vwan_associated_routetable_resource_id`: The resource ID of the route table to associate with the virtual network. [optional - leave empty to use `defaultRouteTable` on hub]
@@ -227,4 +211,11 @@ only one of the virtual networks should have `resource_group_creation_enabled` s
 DESCRIPTION
   nullable    = false
   default     = {}
+
+  validation {
+    condition = alltrue([
+      for v in var.virtual_networks : coalesce(v.resource_group_key, v.resource_group_name_existing, "") != ""
+    ])
+    error_message = "Each virtual network must specify either 'resource_group_key' or 'resource_group_name_existing'."
+  }
 }

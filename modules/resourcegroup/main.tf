@@ -6,3 +6,20 @@ resource "azapi_resource" "rg" {
   parent_id = "/subscriptions/${var.subscription_id}"
   tags      = var.tags
 }
+
+resource "azapi_resource" "rg_lock" {
+  count = var.lock_enabled ? 1 : 0
+
+  type = "Microsoft.Authorization/locks@2020-05-01"
+  body = {
+    properties = {
+      level = "CanNotDelete"
+    }
+  }
+  name      = coalesce(var.lock_name, "lock-${one(azapi_resource.rg).name}")
+  parent_id = one(azapi_resource.rg).id
+
+  depends_on = [
+    azapi_resource.rg,
+  ]
+}

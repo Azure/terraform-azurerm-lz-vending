@@ -17,6 +17,6 @@ resource "azapi_resource" "route_table" {
   }
   location  = var.location
   name      = var.name
-  parent_id = "${local.subscription_resource_id}/resourceGroups/${var.resource_group_name}"
+  parent_id = var.parent_id
   tags      = var.tags
 }

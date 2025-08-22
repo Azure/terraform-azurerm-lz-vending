@@ -24,7 +24,6 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
 	primaryvnet["hub_peering_enabled"] = true
 	primaryvnet["hub_network_resource_id"] = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/testvnet"
-	primaryvnet["resource_group_lock_enabled"] = true
 	v["subscription_alias_enabled"] = true
 	v["virtual_network_enabled"] = true
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
@@ -38,8 +37,8 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 		`module.subscription[0].azapi_resource.subscription[0]`,
 		`module.subscription[0].azapi_update_resource.subscription_tags[0]`,
 		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
-		`module.virtualnetwork[0].azapi_resource.rg_lock["primary-rg"]`,
-		`module.virtualnetwork[0].azapi_resource.rg["primary-rg"]`,
+		`module.resourcegroup["primary"].azapi_resource.rg`,
+		`module.resourcegroup["secondary"].azapi_resource.rg`,
 		`module.virtualnetwork[0].module.peering_hub_inbound["primary"].azapi_resource.this[0]`,
 		`module.virtualnetwork[0].module.peering_hub_outbound["primary"].azapi_resource.this[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
@@ -50,12 +49,20 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
 	}
 
+	// Debug: uncomment to log all planned resources and actions
+	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
+	//     if rc.Change != nil {
+	//         t.Logf("%v %s", rc.Change.Actions, addr)
+	//     } else {
+	//         t.Logf("[] %s", addr)
+	//     }
+	// }
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
 	}
 
-	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000b05").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000305").ErrorIsNil(t)
 }
 
 // TestIntegrationVwan tests the resource plan when creating a new subscription,
@@ -80,7 +87,8 @@ func TestIntegrationVwan(t *testing.T) {
 		`module.subscription[0].azapi_resource.subscription[0]`,
 		`module.subscription[0].azapi_update_resource.subscription_tags[0]`,
 		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
-		`module.virtualnetwork[0].azapi_resource.rg["primary-rg"]`,
+		`module.resourcegroup["primary"].azapi_resource.rg`,
+		`module.resourcegroup["secondary"].azapi_resource.rg`,
 		`module.virtualnetwork[0].azapi_resource.vhubconnection["primary"]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.telemetry[0]`,
@@ -90,6 +98,14 @@ func TestIntegrationVwan(t *testing.T) {
 		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
 	}
 
+	// Debug: uncomment to log all planned resources and actions
+	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
+	//     if rc.Change != nil {
+	//         t.Logf("%v %s", rc.Change.Actions, addr)
+	//     } else {
+	//         t.Logf("[] %s", addr)
+	//     }
+	// }
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
@@ -115,6 +131,7 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 			"relative_scope": "",
 		},
 	}
+	v["resource_group_creation_enabled"] = false
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
 	defer test.Cleanup()
@@ -130,6 +147,14 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
 	}
 
+	// Debug: uncomment to log all planned resources and actions
+	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
+	//     if rc.Change != nil {
+	//         t.Logf("%v %s", rc.Change.Actions, addr)
+	//     } else {
+	//         t.Logf("[] %s", addr)
+	//     }
+	// }
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
@@ -157,7 +182,8 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 
 	resources := []string{
 		`azapi_resource.telemetry_root[0]`,
-		`module.virtualnetwork[0].azapi_resource.rg["primary-rg"]`,
+		`module.resourcegroup["primary"].azapi_resource.rg`,
+		`module.resourcegroup["secondary"].azapi_resource.rg`,
 		`module.virtualnetwork[0].module.peering_hub_inbound["primary"].azapi_resource.this[0]`,
 		`module.virtualnetwork[0].module.peering_hub_outbound["primary"].azapi_resource.this[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
@@ -168,6 +194,14 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
 	}
 
+	// Debug: uncomment to log all planned resources and actions
+	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
+	//     if rc.Change != nil {
+	//         t.Logf("%v %s", rc.Change.Actions, addr)
+	//     } else {
+	//         t.Logf("[] %s", addr)
+	//     }
+	// }
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
@@ -183,6 +217,8 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 	v := getMockInputVariables()
 	v["subscription_alias_enabled"] = true
 	v["disable_telemetry"] = true
+	v["resource_group_creation_enabled"] = false
+	v["virtual_network_enabled"] = true
 
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
@@ -196,6 +232,14 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
 	}
 
+	// Debug: uncomment to log all planned resources and actions
+	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
+	//     if rc.Change != nil {
+	//         t.Logf("%v %s", rc.Change.Actions, addr)
+	//     } else {
+	//         t.Logf("[] %s", addr)
+	//     }
+	// }
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
@@ -230,6 +274,14 @@ func TestIntegrationResourceGroups(t *testing.T) {
 		`module.resourcegroup["NetworkWatcherRG"].azapi_resource.rg`,
 	}
 
+	// Debug: uncomment to log all planned resources and actions
+	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
+	//     if rc.Change != nil {
+	//         t.Logf("%v %s", rc.Change.Actions, addr)
+	//     } else {
+	//         t.Logf("[] %s", addr)
+	//     }
+	// }
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
@@ -239,14 +291,21 @@ func TestIntegrationResourceGroups(t *testing.T) {
 func TestIntegrationUmiRoleAssignment(t *testing.T) {
 
 	v := map[string]any{
-		"subscription_id":   "00000000-0000-0000-0000-000000000000",
-		"location":          "westeurope",
-		"disable_telemetry": true,
-		"umi_enabled":       true,
+		"subscription_id":                 "00000000-0000-0000-0000-000000000000",
+		"location":                        "westeurope",
+		"disable_telemetry":               true,
+		"resource_group_creation_enabled": true,
+		"resource_groups": map[string]any{
+			"primary": map[string]any{
+				"location": "westeurope",
+				"name":     "rg-umi",
+			},
+		},
+		"umi_enabled": true,
 		"user_managed_identities": map[string]any{
 			"default": map[string]any{
-				"name":                "umi",
-				"resource_group_name": "rg-umi",
+				"name":               "umi",
+				"resource_group_key": "primary",
 				"role_assignments": map[string]any{
 					"owner": map[string]any{
 						"definition":     "Owner",
@@ -263,13 +322,21 @@ func TestIntegrationUmiRoleAssignment(t *testing.T) {
 
 	resources := []string{
 		`time_sleep.wait_for_umi_before_umi_role_assignment_operations[0]`,
-		`module.usermanagedidentity["default"].azapi_resource.rg[0]`,
-		`module.usermanagedidentity["default"].azapi_resource.rg_lock[0]`,
+		`module.resourcegroup["primary"].azapi_resource.rg`,
+		// `module.usermanagedidentity["default"].azapi_resource.rg_lock[0]`,
 		`module.usermanagedidentity["default"].azapi_resource.umi`,
 		`module.roleassignment_umi["default/owner"].azapi_resource.this`,
 		`module.roleassignment_umi["default/owner"].data.azapi_resource_list.role_definitions[0]`,
 	}
 
+	// Debug: uncomment to log all planned resources and actions
+	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
+	//     if rc.Change != nil {
+	//         t.Logf("%v %s", rc.Change.Actions, addr)
+	//     } else {
+	//         t.Logf("[] %s", addr)
+	//     }
+	// }
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
@@ -279,14 +346,21 @@ func TestIntegrationUmiRoleAssignment(t *testing.T) {
 func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
 
 	v := map[string]any{
-		"subscription_id":   "00000000-0000-0000-0000-000000000000",
-		"location":          "westeurope",
-		"disable_telemetry": true,
-		"umi_enabled":       true,
+		"subscription_id":                 "00000000-0000-0000-0000-000000000000",
+		"location":                        "westeurope",
+		"disable_telemetry":               true,
+		"resource_group_creation_enabled": true,
+		"resource_groups": map[string]any{
+			"primary": map[string]any{
+				"location": "westeurope",
+				"name":     "rg-umi",
+			},
+		},
+		"umi_enabled": true,
 		"user_managed_identities": map[string]any{
 			"default": map[string]any{
-				"name":                "umi",
-				"resource_group_name": "rg-umi",
+				"name":                         "umi",
+				"resource_group_name_existing": "rg-umi",
 				"role_assignments": map[string]any{
 					"owner": map[string]any{
 						"definition":     "Owner",
@@ -299,8 +373,8 @@ func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
 				},
 			},
 			"backup": map[string]any{
-				"name":                "umi-backup",
-				"resource_group_name": "rg-umi",
+				"name":               "umi-backup",
+				"resource_group_key": "primary",
 				"role_assignments": map[string]any{
 					"owner": map[string]any{
 						"definition":     "Owner",
@@ -328,15 +402,23 @@ func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
 		`module.roleassignment_umi["default/blob"].data.azapi_resource_list.role_definitions[0]`,
 		`module.roleassignment_umi["default/owner"].azapi_resource.this`,
 		`module.roleassignment_umi["default/owner"].data.azapi_resource_list.role_definitions[0]`,
-		`module.usermanagedidentity["backup"].azapi_resource.rg_lock[0]`,
-		`module.usermanagedidentity["backup"].azapi_resource.rg[0]`,
+		// `module.usermanagedidentity["backup"].azapi_resource.rg_lock[0]`,
+		`module.resourcegroup["primary"].azapi_resource.rg`,
 		`module.usermanagedidentity["backup"].azapi_resource.umi`,
-		`module.usermanagedidentity["default"].azapi_resource.rg_lock[0]`,
-		`module.usermanagedidentity["default"].azapi_resource.rg[0]`,
+		// `module.usermanagedidentity["default"].azapi_resource.rg_lock[0]`,
+		// `module.usermanagedidentity["default"].azapi_resource.rg[0]`,
 		`module.usermanagedidentity["default"].azapi_resource.umi`,
 		`time_sleep.wait_for_umi_before_umi_role_assignment_operations[0]`,
 	}
 
+	// Debug: uncomment to log all planned resources and actions
+	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
+	//     if rc.Change != nil {
+	//         t.Logf("%v %s", rc.Change.Actions, addr)
+	//     } else {
+	//         t.Logf("[] %s", addr)
+	//     }
+	// }
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
@@ -349,7 +431,6 @@ func TestIntegrationVirtualNetworkRouteTable(t *testing.T) {
 
 	v := getMockInputVariables()
 	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
-	primaryvnet["resource_group_lock_enabled"] = false
 	primaryvnet["subnets"] = map[string]map[string]any{
 		"primary": {
 			"name":             "primary-subnet",
@@ -371,9 +452,14 @@ func TestIntegrationVirtualNetworkRouteTable(t *testing.T) {
 	v["route_table_enabled"] = true
 	v["route_tables"] = map[string]any{
 		"primary": map[string]string{
-			"name":                "primary-route-table",
-			"resource_group_name": "primary-rg",
-			"location":            "westeurope",
+			"name":               "primary-route-table",
+			"resource_group_key": "primary",
+			"location":           "westeurope",
+		},
+		"default": map[string]string{
+			"name":                         "default-route-table",
+			"resource_group_name_existing": "primary-rg",
+			"location":                     "westeurope",
 		},
 	}
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
@@ -387,7 +473,8 @@ func TestIntegrationVirtualNetworkRouteTable(t *testing.T) {
 		`module.subscription[0].azapi_resource.subscription[0]`,
 		`module.subscription[0].azapi_update_resource.subscription_tags[0]`,
 		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
-		`module.virtualnetwork[0].azapi_resource.rg["primary-rg"]`,
+		`module.resourcegroup["primary"].azapi_resource.rg`,
+		`module.resourcegroup["secondary"].azapi_resource.rg`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].module.subnet["primary"].azapi_resource.subnet`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].module.subnet["secondary"].azapi_resource.subnet`,
@@ -397,8 +484,17 @@ func TestIntegrationVirtualNetworkRouteTable(t *testing.T) {
 		`module.virtualnetwork[0].module.virtual_networks["primary"].modtm_telemetry.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
 		`module.routetable["primary"].azapi_resource.route_table`,
+		`module.routetable["default"].azapi_resource.route_table`,
 	}
 
+	// Debug: uncomment to log all planned resources and actions
+	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
+	//     if rc.Change != nil {
+	//         t.Logf("%v %s", rc.Change.Actions, addr)
+	//     } else {
+	//         t.Logf("[] %s", addr)
+	//     }
+	// }
 	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
 	for _, v := range resources {
 		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
@@ -421,14 +517,26 @@ func getMockInputVariables() map[string]any {
 			"test-tag-2": "test-value-2",
 		},
 
+		// resource_group variables
+		"resource_group_creation_enabled": true,
+		"resource_groups": map[string]map[string]any{
+			"primary": {
+				"name":     "primary-rg",
+				"location": "westeurope",
+			},
+			"secondary": {
+				"name":     "secondary-rg",
+				"location": "westeurope",
+			},
+		},
+
 		// virtualnetwork variables
 		"virtual_networks": map[string]map[string]any{
 			"primary": {
-				"name":                        "primary-vnet",
-				"address_space":               []string{"192.168.0.0/24"},
-				"location":                    "westeurope",
-				"resource_group_name":         "primary-rg",
-				"resource_group_lock_enabled": false,
+				"name":               "primary-vnet",
+				"address_space":      []string{"192.168.0.0/24"},
+				"location":           "westeurope",
+				"resource_group_key": "primary",
 			},
 		},
 	}

@@ -1,39 +1,3 @@
-# azapi_resource.rg is the resource group that the virtual network will be created in
-# the module will create as many as is required by the var.virtual_networks input variable
-resource "azapi_resource" "rg" {
-  for_each = { for i in local.resource_group_data : i.name => i }
-
-  type      = "Microsoft.Resources/resourceGroups@2021-04-01"
-  location  = each.value.location
-  name      = each.key
-  parent_id = local.subscription_resource_id
-  tags      = each.value.tags
-}
-
-# azapi_resource.rg_lock is an optional resource group lock that can be used
-# to prevent accidental deletion.
-resource "azapi_resource" "rg_lock" {
-  for_each = { for i in local.resource_group_data : i.name => i if i.lock }
-
-  type = "Microsoft.Authorization/locks@2017-04-01"
-  body = {
-    properties = {
-      level = "CanNotDelete"
-    }
-  }
-  name      = coalesce(each.value.lock_name, substr("lock-${each.key}", 0, 90))
-  parent_id = azapi_resource.rg[each.key].id
-
-  depends_on = [
-    module.virtual_networks,
-    module.peering_hub_outbound,
-    module.peering_hub_inbound,
-    module.peering_mesh,
-    azapi_resource.vhubconnection,
-    azapi_resource.vhubconnection_routing_intent,
-  ]
-}
-
 # module.virtual_networks uses the Azure Verified Module to create
 # as many virtual networks as is required by the var.virtual_networks input variable
 module "virtual_networks" {
@@ -59,8 +23,6 @@ module "virtual_networks" {
 
   tags             = each.value.tags
   enable_telemetry = var.enable_telemetry
-
-  depends_on = [azapi_resource.rg]
 }
 
 # module.peering_hub_outbound uses the peering submodule from theAzure Verified Module

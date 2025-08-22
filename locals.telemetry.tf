@@ -33,7 +33,6 @@ locals {
     local.telem_root_virtual_network_enabled +
     local.telem_root_virtual_network_peering_enabled +
     local.telem_root_virtual_network_vwan_connection_enabled +
-    local.telem_virtual_network_resource_lock_enabled +
     local.telem_root_vwan_advanced_routing_enabled +
     local.telem_root_role_assignment_enabled
   )
@@ -52,5 +51,4 @@ locals {
   telem_root_virtual_network_peering_enabled         = var.virtual_network_enabled && anytrue([for k, v in var.virtual_networks : v.hub_peering_enabled]) ? 512 : 0
   telem_root_virtual_network_vwan_connection_enabled = var.virtual_network_enabled && anytrue([for k, v in var.virtual_networks : v.vwan_connection_enabled]) ? 1024 : 0
   telem_root_vwan_advanced_routing_enabled           = var.virtual_network_enabled && anytrue([for k, v in var.virtual_networks : length(v.vwan_propagated_routetables_labels) > 0 || length(v.vwan_propagated_routetables_resource_ids) > 0 || v.vwan_associated_routetable_resource_id != null]) ? 4096 : 0
-  telem_virtual_network_resource_lock_enabled        = var.virtual_network_enabled && anytrue([for k, v in var.virtual_networks : v.resource_group_lock_enabled]) ? 2048 : 0
 }

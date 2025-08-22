@@ -58,11 +58,14 @@ locals {
 
   # This virtual_networks varialbe is used internally to consume the mapped subnet properties for dependencies on resources such as
   # route tables today but at some point network security groups as well.
-  virtual_networks = {
+  virtual_networks = var.virtual_network_enabled ? {
     for vnet_k, vnet_v in var.virtual_networks : vnet_k => {
       name                = vnet_v.name
       address_space       = vnet_v.address_space
-      resource_group_name = vnet_v.resource_group_name
+      resource_group_name = coalesce(
+        vnet_v.resource_group_name_existing,
+        can(module.resourcegroup[vnet_v.resource_group_key].resource_group_name) ? module.resourcegroup[vnet_v.resource_group_key].resource_group_name : null
+      )
       location            = vnet_v.location
       dns_servers         = vnet_v.dns_servers
 
@@ -96,11 +99,6 @@ locals {
       mesh_peering_enabled                 = vnet_v.mesh_peering_enabled
       mesh_peering_allow_forwarded_traffic = vnet_v.mesh_peering_allow_forwarded_traffic
 
-      resource_group_creation_enabled = vnet_v.resource_group_creation_enabled
-      resource_group_lock_enabled     = vnet_v.resource_group_lock_enabled
-      resource_group_lock_name        = vnet_v.resource_group_lock_name
-      resource_group_tags             = vnet_v.resource_group_tags
-
       vwan_associated_routetable_resource_id   = vnet_v.vwan_associated_routetable_resource_id
       vwan_connection_enabled                  = vnet_v.vwan_connection_enabled
       vwan_connection_name                     = vnet_v.vwan_connection_name
@@ -111,7 +109,7 @@ locals {
 
       tags = vnet_v.tags
     }
-  }
+  } : {}
 
   # virtual_network_subnet_route_table_available_resource_ids is a map of route table names and resource ids.
   # The need for this is within the LZ-Vending module their route table may be created but the user would not know
@@ -127,10 +125,6 @@ locals {
 
   virtual_network_subnet_network_security_group_available_resource_ids = { for nsg_k, nsg_v in module.networksecuritygroup : nsg_k => nsg_v.network_security_group_resource_id.network_security_group }
 
-
-  # resource_group_ids is a map of resource groups created, if the module has been enabled.
-  # This is used in the outputs.tf file to return the resource group ids.
-  virtual_network_resource_group_ids = var.virtual_network_enabled ? module.virtualnetwork[0].resource_group_resource_ids : {}
   # virtual_networks_merged is a map of virtual networks created, if the module has been enabled.
   # This is used in the outputs.tf file to return the virtual network resource ids.
   virtual_network_resource_ids = var.virtual_network_enabled ? module.virtualnetwork[0].virtual_network_resource_ids : {}
@@ -140,10 +134,15 @@ locals {
     for rt_k, rt_v in var.route_tables : rt_k => {
       name                          = rt_v.name
       location                      = rt_v.location
-      resource_group_name           = rt_v.resource_group_name
+      resource_group_name           = coalesce(
+        rt_v.resource_group_name_existing,
+        can(module.resourcegroup[rt_v.resource_group_key].resource_group_name) ? module.resourcegroup[rt_v.resource_group_key].resource_group_name : null
+      )
       bgp_route_propagation_enabled = rt_v.bgp_route_propagation_enabled
       tags                          = rt_v.tags
       routes                        = [for k, v in rt_v.routes : v]
     }
   }
+
+  
 }
