@@ -218,7 +218,7 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 	v["subscription_alias_enabled"] = true
 	v["disable_telemetry"] = true
 	v["resource_group_creation_enabled"] = false
-	v["virtual_network_enabled"] = true
+	v["virtual_network_enabled"] = false
 
 	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
 	require.NoError(t, err)
