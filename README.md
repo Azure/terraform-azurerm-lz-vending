@@ -386,11 +386,11 @@ Type:
 
 ```hcl
 map(object({
-    name                = string
-    location            = optional(string)
-    resource_group_key  = optional(string)
+    name                         = string
+    location                     = optional(string)
+    resource_group_key           = optional(string)
     resource_group_name_existing = optional(string)
-    tags                = optional(map(string))
+    tags                         = optional(map(string))
 
     security_rules = optional(map(object({
       access                                     = string
@@ -437,11 +437,11 @@ Type:
 
 ```hcl
 map(object({
-    name     = string
-    location = string
-    tags     = optional(map(string), {})
+    name         = string
+    location     = string
+    tags         = optional(map(string), {})
     lock_enabled = optional(bool, false)
-    lock_name   = optional(string, "")
+    lock_name    = optional(string, "")
   }))
 ```
 
@@ -542,8 +542,8 @@ Type:
 map(object({
     name                          = string
     location                      = string
-    resource_group_key  = optional(string)
-    resource_group_name_existing = optional(string)
+    resource_group_key            = optional(string)
+    resource_group_name_existing  = optional(string)
     bgp_route_propagation_enabled = optional(bool, true)
     tags                          = optional(map(string))
 
@@ -876,11 +876,11 @@ Type:
 
 ```hcl
 map(object({
-    name                            = string
-    resource_group_key  = optional(string)
+    name                         = string
+    resource_group_key           = optional(string)
     resource_group_name_existing = optional(string)
-    location                        = optional(string)
-    tags                            = optional(map(string), {})
+    location                     = optional(string)
+    tags                         = optional(map(string), {})
     role_assignments = optional(map(object({
       definition                = string
       relative_scope            = optional(string, "")
@@ -1034,9 +1034,9 @@ Type:
 
 ```hcl
 map(object({
-    name                = string
-    address_space       = list(string)
-    resource_group_key  = optional(string)
+    name                         = string
+    address_space                = list(string)
+    resource_group_key           = optional(string)
     resource_group_name_existing = optional(string)
 
     location = optional(string)
