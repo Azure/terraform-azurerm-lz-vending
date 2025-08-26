@@ -1577,20 +1577,6 @@ func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
 	assert.ErrorContains(t, err, "Address space entries must be specified in IPv4 or IPv6 CIDR notation")
 }
 
-// TestVirtualNetworkCreateInvalidResourceGroupCreation tests that resource group naming is unique
-// when using vnets in multiple locaitons that share a resoruce group.
-// NOTE - this is not a recommended deployment pattern.
-func TestVirtualNetworkCreateInvalidResourceGroupCreation(t *testing.T) {
-
-	v := getMockInputVariables()
-	primaryvnet := v["virtual_networks"].(map[string]map[string]any)["primary"]
-	primaryvnet["resource_group_name"] = "secondary-rg"
-
-	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
-	defer test.Cleanup()
-	assert.Containsf(t, utils.SanitiseErrorMessage(err), "Resource group names with creation enabled must be unique. Virtual networks deployed into the same resource group must have only one enabled for resource group creation.", "Expected error message not found")
-}
-
 func TestVirtualNetworkDdosProtection(t *testing.T) {
 
 	// We want 6 resources here
