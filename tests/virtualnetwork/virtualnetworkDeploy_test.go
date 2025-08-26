@@ -400,12 +400,12 @@ func TestDeployVirtualNetworkValidMeshPeering(t *testing.T) {
 	test.ApplyIdempotent().ErrorIsNil(t)
 }
 
-func SetupResourceGroups(t *testing.T, vnets map[string]map[string]any, subscriptionId string) {
+func SetupResourceGroups(t *testing.T, vnets map[string]map[string]any, subscriptionID string) {
 	for _, vnet := range vnets {
 		rgVars := map[string]any{
 			"resource_group_name": vnet["resource_group_name"],
 			"location":            vnet["location"],
-			"subscription_id":     subscriptionId,
+			"subscription_id":     subscriptionID,
 		}
 		rgModuleDir := filepath.Join("../../modules/resourcegroup")
 		rgTest, err := setuptest.Dirs(rgModuleDir, "").WithVars(rgVars).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
