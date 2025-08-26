@@ -6,9 +6,11 @@ variable "resource_group_creation_enabled" {
 
 variable "resource_groups" {
   type = map(object({
-    name     = string
-    location = string
-    tags     = optional(map(string), {})
+    name         = string
+    location     = string
+    tags         = optional(map(string), {})
+    lock_enabled = optional(bool, false)
+    lock_name    = optional(string, "")
   }))
   description = <<DESCRIPTION
 A map of the resource groups to create. The value is an object with the following attributes:

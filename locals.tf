@@ -60,14 +60,14 @@ locals {
   # route tables today but at some point network security groups as well.
   virtual_networks = var.virtual_network_enabled ? {
     for vnet_k, vnet_v in var.virtual_networks : vnet_k => {
-      name                = vnet_v.name
-      address_space       = vnet_v.address_space
+      name          = vnet_v.name
+      address_space = vnet_v.address_space
       resource_group_name = coalesce(
         vnet_v.resource_group_name_existing,
         can(module.resourcegroup[vnet_v.resource_group_key].resource_group_name) ? module.resourcegroup[vnet_v.resource_group_key].resource_group_name : null
       )
-      location            = vnet_v.location
-      dns_servers         = vnet_v.dns_servers
+      location    = vnet_v.location
+      dns_servers = vnet_v.dns_servers
 
       flow_timeout_in_minutes = vnet_v.flow_timeout_in_minutes
 
@@ -132,9 +132,9 @@ locals {
   # route_table_routes is a list of objects containing the routes that need to be converted from a map to a list to match the submodule input variable definition.
   route_tables = {
     for rt_k, rt_v in var.route_tables : rt_k => {
-      name                          = rt_v.name
-      location                      = rt_v.location
-      resource_group_name           = coalesce(
+      name     = rt_v.name
+      location = rt_v.location
+      resource_group_name = coalesce(
         rt_v.resource_group_name_existing,
         can(module.resourcegroup[rt_v.resource_group_key].resource_group_name) ? module.resourcegroup[rt_v.resource_group_key].resource_group_name : null
       )
@@ -144,5 +144,5 @@ locals {
     }
   }
 
-  
+
 }

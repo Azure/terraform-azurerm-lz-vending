@@ -11,8 +11,8 @@ module "lz_vending" {
   umi_enabled     = true
   user_managed_identities = {
     "default" = {
-      name                = "umi-${var.random_hex}"
-      resource_group_key  = "rg1"
+      name               = "umi-${var.random_hex}"
+      resource_group_key = "rg1"
       role_assignments = {
         "blob" = {
           definition     = "Storage Blob Data Contributor"
@@ -47,8 +47,8 @@ module "lz_vending_rg_existing" {
   umi_enabled     = true
   user_managed_identities = {
     "default" = {
-      name                = "umi-0${var.random_hex}"
-      resource_group_name_existing  = "rg-${var.random_hex}"
+      name                         = "umi-0${var.random_hex}"
+      resource_group_name_existing = "rg-${var.random_hex}"
       role_assignments = {
         "blob" = {
           definition     = "Storage Blob Data Contributor"
@@ -61,5 +61,5 @@ module "lz_vending_rg_existing" {
   resource_group_creation_enabled                  = false
   subscription_register_resource_providers_enabled = true
 
-  depends_on = [ module.lz_vending ]
+  depends_on = [module.lz_vending]
 }

@@ -162,8 +162,7 @@ func TestVirtualNetworkCreateValidSameRg(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 6 resources here, as the two vnets have the same rg, then 2 fewer resources than
-	// TestVirtualNetworkCreateValid (rg + rg lock)
+	// We want 2 resources here, as the two vnets have the same rg
 	resources := []string{
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
@@ -187,8 +186,7 @@ func TestVirtualNetworkCreateValidSameRgSameLocation(t *testing.T) {
 	require.NoError(t, err)
 	defer test.Cleanup()
 
-	// We want 6 resources here, as the two vnets have the same rg, then 2 fewer resources than
-	// TestVirtualNetworkCreateValid (rg + rg lock)
+	// We want 2 resources here, the two vnets have the same rg and same location
 	resources := []string{
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",

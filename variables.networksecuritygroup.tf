@@ -6,11 +6,11 @@ variable "network_security_group_enabled" {
 
 variable "network_security_groups" {
   type = map(object({
-    name                = string
-    location            = optional(string)
-    resource_group_key  = optional(string)
+    name                         = string
+    location                     = optional(string)
+    resource_group_key           = optional(string)
     resource_group_name_existing = optional(string)
-    tags                = optional(map(string))
+    tags                         = optional(map(string))
 
     security_rules = optional(map(object({
       access                                     = string

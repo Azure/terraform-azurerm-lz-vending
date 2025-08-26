@@ -69,6 +69,22 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_lock_enabled"></a> [lock\_enabled](#input\_lock\_enabled)
+
+Description: Whether to enable resource group lock for the resource group
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_lock_name"></a> [lock\_name](#input\_lock\_name)
+
+Description: The name of the resource group lock for the resource group, if `null` will be set to `lock-<resource_group_name>`
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: Map of tags to be applied to the resource group
@@ -82,10 +98,15 @@ Default: `{}`
 The following resources are used by this module:
 
 - [azapi_resource.rg](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.rg_lock](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 
 ## Outputs
 
 The following outputs are exported:
+
+### <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name)
+
+Description: The created resource group name.
 
 ### <a name="output_resource_group_resource_id"></a> [resource\_group\_resource\_id](#output\_resource\_group\_resource\_id)
 

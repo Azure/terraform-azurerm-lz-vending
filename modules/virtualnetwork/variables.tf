@@ -93,11 +93,6 @@ variable "virtual_networks" {
     mesh_peering_enabled                 = optional(bool, false)
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
 
-    resource_group_creation_enabled = optional(bool, true)
-    resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string)
-    resource_group_tags             = optional(map(string), {})
-
     vwan_associated_routetable_resource_id   = optional(string)
     vwan_connection_enabled                  = optional(bool, false)
     vwan_connection_name                     = optional(string)

@@ -42,7 +42,7 @@ module "lz_vending" {
 
   # resource groups
   resource_group_creation_enabled = var.resource_group_creation_enabled
-  resource_groups = var.resource_groups
+  resource_groups                 = var.resource_groups
 
   # role assignment
   role_assignment_enabled = var.role_assignment_enabled

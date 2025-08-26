@@ -6,9 +6,9 @@ variable "virtual_network_enabled" {
 
 variable "virtual_networks" {
   type = map(object({
-    name                = string
-    address_space       = list(string)
-    resource_group_key  = optional(string)
+    name                         = string
+    address_space                = list(string)
+    resource_group_key           = optional(string)
     resource_group_name_existing = optional(string)
 
     location = optional(string)

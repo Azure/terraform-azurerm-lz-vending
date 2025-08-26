@@ -293,11 +293,6 @@ map(object({
     mesh_peering_enabled                 = optional(bool, false)
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
 
-    resource_group_creation_enabled = optional(bool, true)
-    resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string)
-    resource_group_tags             = optional(map(string), {})
-
     vwan_associated_routetable_resource_id   = optional(string)
     vwan_connection_enabled                  = optional(bool, false)
     vwan_connection_name                     = optional(string)
@@ -341,18 +336,12 @@ Default: `""`
 
 The following resources are used by this module:
 
-- [azapi_resource.rg](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.rg_lock](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.vhubconnection](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.vhubconnection_routing_intent](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 
 ## Outputs
 
 The following outputs are exported:
-
-### <a name="output_resource_group_resource_ids"></a> [resource\_group\_resource\_ids](#output\_resource\_group\_resource\_ids)
-
-Description: The created resource group IDs, expressed as a map.
 
 ### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
 

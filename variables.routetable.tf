@@ -8,8 +8,8 @@ variable "route_tables" {
   type = map(object({
     name                          = string
     location                      = string
-    resource_group_key  = optional(string)
-    resource_group_name_existing = optional(string)
+    resource_group_key            = optional(string)
+    resource_group_name_existing  = optional(string)
     bgp_route_propagation_enabled = optional(bool, true)
     tags                          = optional(map(string))
 
