@@ -1579,12 +1579,10 @@ func TestVirtualNetworkCreateInvalidAddressSpace(t *testing.T) {
 
 func TestVirtualNetworkDdosProtection(t *testing.T) {
 
-	// We want 6 resources here
+	// We want 2 resources here
 	resources := []string{
 		"module.virtual_networks[\"primary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"primary\"].data.azurerm_client_config.this",
 		"module.virtual_networks[\"secondary\"].azapi_resource.vnet",
-		"module.virtual_networks[\"secondary\"].data.azurerm_client_config.this",
 	}
 
 	vnetresources := []string{
