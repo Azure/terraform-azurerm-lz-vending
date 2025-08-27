@@ -213,9 +213,7 @@ DESCRIPTION
   default     = {}
 
   validation {
-    condition = alltrue([
-      for v in var.virtual_networks : coalesce(v.resource_group_key, v.resource_group_name_existing, "") != ""
-    ])
+    condition     = alltrue([for v in var.virtual_networks : try(coalesce(v.resource_group_key, v.resource_group_name_existing), null) != null])
     error_message = "Each virtual network must specify either 'resource_group_key' or 'resource_group_name_existing'."
   }
 }

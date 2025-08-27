@@ -62,9 +62,12 @@ locals {
     for vnet_k, vnet_v in var.virtual_networks : vnet_k => {
       name          = vnet_v.name
       address_space = vnet_v.address_space
-      resource_group_name = coalesce(
-        vnet_v.resource_group_name_existing,
-        can(module.resourcegroup[vnet_v.resource_group_key].resource_group_name) ? module.resourcegroup[vnet_v.resource_group_key].resource_group_name : null
+      resource_group_name = try(
+        coalesce(
+          try(vnet_v.resource_group_name_existing, null),
+          try(module.resourcegroup[try(vnet_v.resource_group_key, "")].resource_group_name, null)
+        ),
+        ""
       )
       location    = vnet_v.location
       dns_servers = vnet_v.dns_servers

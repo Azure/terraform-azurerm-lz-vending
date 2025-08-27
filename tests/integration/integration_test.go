@@ -9,6 +9,7 @@ import (
 	"github.com/Azure/terraform-azurerm-lz-vending/tests/utils"
 	"github.com/Azure/terratest-terraform-fluent/check"
 	"github.com/Azure/terratest-terraform-fluent/setuptest"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -63,6 +64,32 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 	}
 
 	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000305").ErrorIsNil(t)
+}
+
+// TestIntegrationVirtualNetworkMissingResourceGroupReference ensures validation fails when
+// neither resource_group_key nor resource_group_name_existing is provided for a virtual network.
+func TestIntegrationVirtualNetworkMissingResourceGroupReference(t *testing.T) {
+
+	v := getMockInputVariables()
+	// Disable the virtual network submodule so locals and module inputs are not evaluated,
+	// ensuring variable validation triggers first.
+	v["virtual_network_enabled"] = true
+	v["resource_group_creation_enabled"] = true
+	// Provide a dummy subscription ID so provider init doesn't fail before var validation
+	v["subscription_id"] = "00000000-0000-0000-0000-000000000000"
+	v["subscription_alias_enabled"] = false
+
+	// Remove both RG reference fields from the vnet to trigger validation
+	vnets := v["virtual_networks"].(map[string]map[string]any)
+	vn := vnets["primary"]
+	delete(vn, "resource_group_key")
+	delete(vn, "resource_group_name_existing")
+	vnets["primary"] = vn
+
+	test, err := setuptest.Dirs(moduleDir, "").WithVars(v).InitPlanShowWithPrepFunc(t, utils.AzureRmAndRequiredProviders)
+	defer test.Cleanup()
+	assert.ErrorContains(t, err, "Each virtual network must specify either 'resource_group_key' or")
+	assert.ErrorContains(t, err, "'resource_group_name_existing'")
 }
 
 // TestIntegrationVwan tests the resource plan when creating a new subscription,

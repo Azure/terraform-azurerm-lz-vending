@@ -8,6 +8,11 @@ variable "resource_group_name" {
   type        = string
   description = "The name of the resource group E.g. `rg-test`"
   nullable    = false
+
+  validation {
+    condition     = trimspace(var.resource_group_name) != ""
+    error_message = "The resource_group_name must not be empty."
+  }
 }
 
 variable "subscription_id" {
