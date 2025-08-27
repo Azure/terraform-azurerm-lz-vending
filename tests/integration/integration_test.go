@@ -350,7 +350,6 @@ func TestIntegrationUmiRoleAssignment(t *testing.T) {
 	resources := []string{
 		`time_sleep.wait_for_umi_before_umi_role_assignment_operations[0]`,
 		`module.resourcegroup["primary"].azapi_resource.rg`,
-		// `module.usermanagedidentity["default"].azapi_resource.rg_lock[0]`,
 		`module.usermanagedidentity["default"].azapi_resource.umi`,
 		`module.roleassignment_umi["default/owner"].azapi_resource.this`,
 		`module.roleassignment_umi["default/owner"].data.azapi_resource_list.role_definitions[0]`,
@@ -429,11 +428,8 @@ func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
 		`module.roleassignment_umi["default/blob"].data.azapi_resource_list.role_definitions[0]`,
 		`module.roleassignment_umi["default/owner"].azapi_resource.this`,
 		`module.roleassignment_umi["default/owner"].data.azapi_resource_list.role_definitions[0]`,
-		// `module.usermanagedidentity["backup"].azapi_resource.rg_lock[0]`,
 		`module.resourcegroup["primary"].azapi_resource.rg`,
 		`module.usermanagedidentity["backup"].azapi_resource.umi`,
-		// `module.usermanagedidentity["default"].azapi_resource.rg_lock[0]`,
-		// `module.usermanagedidentity["default"].azapi_resource.rg[0]`,
 		`module.usermanagedidentity["default"].azapi_resource.umi`,
 		`time_sleep.wait_for_umi_before_umi_role_assignment_operations[0]`,
 	}

@@ -37,7 +37,6 @@ func TestDeployIntegrationHubAndSpoke(t *testing.T) {
 		"module.lz_vending.module.subscription[0].azurerm_subscription.this[0]",
 		"module.lz_vending.module.virtualnetwork[0].azapi_resource.peering_hub_inbound[\"primary\"]",
 		"module.lz_vending.module.virtualnetwork[0].azapi_resource.peering_hub_outbound[\"primary\"]",
-		// fmt.Sprintf("module.lz_vending.module.virtualnetwork[0].azapi_resource.rg_lock[\"%s\"]", name),
 		fmt.Sprintf("module.lz_vending.module.resourcegroup[\"%s\"].azapi_resource.rg", name),
 		"module.lz_vending.module.virtualnetwork[0].azapi_resource.vnet[\"primary\"]",
 	}
