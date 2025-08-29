@@ -16,8 +16,8 @@ resource "azapi_resource" "rg_lock" {
       level = "CanNotDelete"
     }
   }
-  name      = coalesce(var.lock_name, "lock-${one(azapi_resource.rg).name}")
-  parent_id = one(azapi_resource.rg).id
+  name      = coalesce(var.lock_name, "lock-${azapi_resource.rg.name}")
+  parent_id = azapi_resource.rg.id
 
   depends_on = [
     azapi_resource.rg,
