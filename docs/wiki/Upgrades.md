@@ -123,15 +123,7 @@ moved {
 
 ## Upgrading from v5.x to v6.x
 
-###  Terraform version
-
-Remain the same as previous version.
-
-### Provider Versions
-
-Remain the same as previous version.
-
-### Resource Groups
+### Resource Group Module
 
 We have removed the resource group and lock provisioning capability from the virtual network and user assigned identity submodules. Add new resource group objects to the `resource_groups` map and set the root module variable `resource_group_creation_enabled` to `true`.
 
@@ -165,19 +157,16 @@ moved {
   from = module.lz_vending.module.virtualnetwork[0].azapi_resource.rg["<resource-group-name-value>"]
   to   = module.lz_vending.module.resourcegroup["<resource-groups-map-key-name>"].azapi_resource.rg
 }
-
 # VNET LOCK
 moved {
   from = module.lz_vending.module.virtualnetwork[0].azapi_resource.rg_lock["<resource-group-lock-name-value>"]
   to   = module.lz_vending.module.resourcegroup["<resource-groups-map-key-name>"].azapi_resource.rg_lock[0]
 }
-
 # UMI
 moved {
   from = module.lz_vending.module.usermanagedidentity["<user-managed-identity-map-key-name>"].azapi_resource.rg[0]
   to   = module.lz_vending.module.resourcegroup["<resource-groups-map-key-name>"].azapi_resource.rg
 }
-
 # UMI LOCK
 moved {
   from = module.lz_vending.module.usermanagedidentity["<user-managed-identity-map-key-name>"].azapi_resource.rg_lock[0]
@@ -185,7 +174,7 @@ moved {
 }
 ```
 
-### Virtual Networks
+### Virtual Network Module
 
 For virtual networks change the `resource_group_name` attribute to `resource_group_key` and change the value to the key name that corresponds to the object in the `resource_groups` map. This is to maintain consistency throughout the submodules.
 
@@ -247,7 +236,7 @@ virtual_networks = {
 }
 ```
 
-### Route Tables
+### Route Table Module
 
 For route tables change the `resource_group_name` attribute to `resource_group_key` and change the value to the key name that corresponds to the object in the `resource_groups` map. This is to maintain consistency throughout the submodules.
 
@@ -273,7 +262,7 @@ route_tables = {
 }
 ```
 
-### Network Security Groups
+### Network Security Group Module
 
 For network security groups, change the `resource_group_name` attribute to `resource_group_key` and change the value to the key name that corresponds to the object in the `resource_groups` map. This is to maintain consistency throughout the submodules.
 
@@ -316,7 +305,7 @@ network_security_groups = {
 }
 ```
 
-### User Managed Identities
+### User Managed Identity Module
 
 For user managed identities change the `resource_group_name` attribute to `resource_group_key` and change the value to the key name that corresponds to the object in the `resource_groups` map. This is to maintain consistency throughout the submodules.
 
