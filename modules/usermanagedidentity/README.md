@@ -93,15 +93,9 @@ Description: The name of the user managed identity
 
 Type: `string`
 
-### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+### <a name="input_parent_id"></a> [parent\_id](#input\_parent\_id)
 
-Description: The name of the resource group in which to create the user-assigned managed identity
-
-Type: `string`
-
-### <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id)
-
-Description: The id of the target subscription. Must be a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase.
+Description: The ID of the parent resource to which this user-assigned managed identity.
 
 Type: `string`
 
@@ -193,54 +187,6 @@ map(object({
 
 Default: `{}`
 
-### <a name="input_resource_group_creation_enabled"></a> [resource\_group\_creation\_enabled](#input\_resource\_group\_creation\_enabled)
-
-Description: Resource group values DEPRECATED
-
-The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
-
-Whether to create the supplied resource group for the user-assigned managed identity
-
-Type: `bool`
-
-Default: `true`
-
-### <a name="input_resource_group_lock_enabled"></a> [resource\_group\_lock\_enabled](#input\_resource\_group\_lock\_enabled)
-
-Description: Resource group values DEPRECATED
-
-The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
-
-Whether to enable resource group lock for the user-assigned managed identity resource group
-
-Type: `bool`
-
-Default: `true`
-
-### <a name="input_resource_group_lock_name"></a> [resource\_group\_lock\_name](#input\_resource\_group\_lock\_name)
-
-Description: Resource group values DEPRECATED
-
-The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
-
-The name of the resource group lock for the user-assigned managed identity resource group, if `null` will be set to `lock-<resource_group_name>`
-
-Type: `string`
-
-Default: `null`
-
-### <a name="input_resource_group_tags"></a> [resource\_group\_tags](#input\_resource\_group\_tags)
-
-Description: Resource group values DEPRECATED
-
-The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
-
-The tags to apply to the user-assigned managed identity resource group, if we create it.
-
-Type: `map(string)`
-
-Default: `{}`
-
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: The tags to apply to the user-assigned managed identity
@@ -253,8 +199,6 @@ Default: `{}`
 
 The following resources are used by this module:
 
-- [azapi_resource.rg](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.rg_lock](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.umi](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.umi_federated_credential_advanced](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.umi_federated_credential_github_branch](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)

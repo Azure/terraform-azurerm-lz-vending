@@ -83,19 +83,6 @@ locals {
 }
 
 locals {
-  # resource_group_data is the unique set of resource groups to create to support the virtual network resources
-  resource_group_data = toset([
-    for k, v in var.virtual_networks : {
-      name      = v.resource_group_name
-      location  = coalesce(v.location, var.location)
-      lock      = v.resource_group_lock_enabled
-      lock_name = v.resource_group_lock_name
-      tags      = v.resource_group_tags
-    } if v.resource_group_creation_enabled
-  ])
-}
-
-locals {
   vhubconnection_body_properties = {
     for k, v in var.virtual_networks : k =>
     merge({

@@ -10,14 +10,11 @@ DESCRIPTION
 
 variable "user_managed_identities" {
   type = map(object({
-    name                            = string
-    resource_group_name             = string
-    location                        = optional(string)
-    tags                            = optional(map(string), {})
-    resource_group_creation_enabled = optional(bool, true)
-    resource_group_tags             = optional(map(string), {})
-    resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string)
+    name                         = string
+    resource_group_key           = optional(string)
+    resource_group_name_existing = optional(string)
+    location                     = optional(string)
+    tags                         = optional(map(string), {})
     role_assignments = optional(map(object({
       definition                = string
       relative_scope            = optional(string, "")
@@ -56,21 +53,15 @@ A map of user-managed identities to create. The map key must be known at the pla
 ### Required fields
 
 - `name`: The name of the user-assigned managed identity. [required]
-- `resource_group_name`: The name of the resource group to create the user-assigned managed identity in. [required]
+- `resource_group_key`: The resource group key from the resource groups map to create the user assigned identity in. [optional]
+- `resource_group_name_existing`: The name of an existing resource group to create the user assigned identity in. [optional]
+
+**One of `resource_group_key` or `resource_group_name_existing` must be specified.**
 
 ### Optional fields
 
 - `location`: The location of the user-assigned managed identity. [optional]
 - `tags`: The tags to apply to the user-assigned managed identity. [optional]
-
-### Resource group values [DEPRECATED]
-
-**Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired.
-
-- `resource_group_creation_enabled`: Whether to create a resource group for the user managed identity. [optional - default `true`]
-- `resource_group_tags`: The tags to apply to the user-assigned managed identity resource group, if we create it. [optional]
-- `resource_group_lock_enabled`: Whether to enable resource group lock for the user-assigned managed identity resource group. [optional]
-- `resource_group_lock_name`: The name of the resource group lock for the user-assigned managed identity resource group, if blank will be set to `lock-<resource_group_name>`. [optional]
 
 ### Role Based Access Control (RBAC)
 
@@ -108,4 +99,12 @@ The following fields are used to configure federated identity credentials, using
   - `issuer_url`: The URL of the token issuer, should begin with `https://`
   - `audience`: (optional) The token audience, defaults to `api://AzureADTokenExchange`.
 DESCRIPTION
+  validation {
+    condition = var.umi_enabled ? alltrue([
+      for k, v in var.user_managed_identities : (
+        (try(v.resource_group_key, null) != null) != (try(v.resource_group_name_existing, null) != null)
+      )
+    ]) : true
+    error_message = "For each user-managed identity, set exactly one of resource_group_key or resource_group_name_existing."
+  }
 }

@@ -1,43 +1,9 @@
-resource "azapi_resource" "rg" {
-  count = var.resource_group_creation_enabled ? 1 : 0
-
-  type      = "Microsoft.Resources/resourceGroups@2022-09-01"
-  location  = var.location
-  name      = var.resource_group_name
-  parent_id = "/subscriptions/${var.subscription_id}"
-  tags      = var.resource_group_tags
-}
-
-resource "azapi_resource" "rg_lock" {
-  count = var.resource_group_lock_enabled && var.resource_group_creation_enabled ? 1 : 0
-
-  type = "Microsoft.Authorization/locks@2020-05-01"
-  body = {
-    properties = {
-      level = "CanNotDelete"
-    }
-  }
-  name      = coalesce(var.resource_group_lock_name, "lock-${one(azapi_resource.rg).name}")
-  parent_id = one(azapi_resource.rg).id
-
-  depends_on = [
-    azapi_resource.rg,
-    azapi_resource.umi,
-    azapi_resource.umi_federated_credential_github_branch,
-    azapi_resource.umi_federated_credential_github_tag,
-    azapi_resource.umi_federated_credential_github_environment,
-    azapi_resource.umi_federated_credential_github_pull_request,
-    azapi_resource.umi_federated_credential_terraform_cloud,
-    azapi_resource.umi_federated_credential_advanced,
-  ]
-}
-
 resource "azapi_resource" "umi" {
   type      = "Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31"
   body      = {}
   location  = var.location
   name      = var.name
-  parent_id = var.resource_group_creation_enabled ? one(azapi_resource.rg).id : "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
+  parent_id = var.parent_id
   response_export_values = [
     "properties.principalId",
     "properties.clientId",

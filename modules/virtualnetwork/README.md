@@ -177,21 +177,6 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 - `mesh_peering_enabled`: Whether to enable mesh peering for this virtual network. Must be enabled on more than one virtual network for any peerings to be created. [optional]
 - `mesh_peering_allow_forwarded_traffic`: Whether to allow forwarded traffic for the mesh peering. [optional - default false]
 
-### Resource group values [DEPRECATED]
-
-**Note:** The creation of resource groups should be done using the resource module, in v6.0.0 these variables will be retired from the virtual network objects.
-
-The default is that a resource group will be created for each resource\_group\_name specified in the `var.virtual_networks` map.  
-It is possible to use a pre-existing resource group by setting `resource_group_creation_enabled` to `false`.  
-We recommend using resource groups aligned to the region of the virtual network,  
-however if you want multiple virtual networks in more than one location to share a resource group,  
-only one of the virtual networks should have `resource_group_creation_enabled` set to `true`.
-
-- `resource_group_creation_enabled`: Whether to create a resource group for the virtual network. [optional - default `true`]
-- `resource_group_lock_enabled`: Whether to create a `CanNotDelete` resource lock on the resource group. [optional - default `true`]
-- `resource_group_lock_name`: The name of the resource lock. [optional - leave empty to use calculated name]
-- `resource_group_tags`: A map of tags to apply to the resource group, e.g. `{ mytag = "myvalue", mytag2 = "myvalue2" }`. [optional - default empty]
-
 ### Virtual WAN values
 
 - `vwan_associated_routetable_resource_id`: The resource ID of the route table to associate with the virtual network. [optional - leave empty to use `defaultRouteTable` on hub]
@@ -293,11 +278,6 @@ map(object({
     mesh_peering_enabled                 = optional(bool, false)
     mesh_peering_allow_forwarded_traffic = optional(bool, false)
 
-    resource_group_creation_enabled = optional(bool, true)
-    resource_group_lock_enabled     = optional(bool, true)
-    resource_group_lock_name        = optional(string)
-    resource_group_tags             = optional(map(string), {})
-
     vwan_associated_routetable_resource_id   = optional(string)
     vwan_connection_enabled                  = optional(bool, false)
     vwan_connection_name                     = optional(string)
@@ -341,18 +321,12 @@ Default: `""`
 
 The following resources are used by this module:
 
-- [azapi_resource.rg](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.rg_lock](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.vhubconnection](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azapi_resource.vhubconnection_routing_intent](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 
 ## Outputs
 
 The following outputs are exported:
-
-### <a name="output_resource_group_resource_ids"></a> [resource\_group\_resource\_ids](#output\_resource\_group\_resource\_ids)
-
-Description: The created resource group IDs, expressed as a map.
 
 ### <a name="output_virtual_network_resource_ids"></a> [virtual\_network\_resource\_ids](#output\_virtual\_network\_resource\_ids)
 

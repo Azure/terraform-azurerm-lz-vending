@@ -10,6 +10,7 @@ module "virtualnetwork" {
 
   depends_on = [
     module.resourcegroup,
-    module.routetable
+    module.routetable,
+    module.networksecuritygroup
   ]
 }

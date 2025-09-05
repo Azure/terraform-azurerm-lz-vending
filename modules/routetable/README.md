@@ -71,16 +71,9 @@ Description: The name of the route table to create.
 
 Type: `string`
 
-### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+### <a name="input_parent_id"></a> [parent\_id](#input\_parent\_id)
 
-Description: The name of the resource group to create the virtual network in.  
-The resource group must exist, this module will not create it.
-
-Type: `string`
-
-### <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id)
-
-Description: The subscription ID of the subscription to create the virtual network in.
+Description: The ID of the parent resource to which this user-assigned managed identity.
 
 Type: `string`
 

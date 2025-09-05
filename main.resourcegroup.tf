@@ -6,6 +6,8 @@ module "resourcegroup" {
   location            = each.value.location
   resource_group_name = each.value.name
   tags                = each.value.tags
+  lock_enabled        = each.value.lock_enabled
+  lock_name           = each.value.lock_name
 }
 
 # v3.3.0 introduced networkwatcherrg support,

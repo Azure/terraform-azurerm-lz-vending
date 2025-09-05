@@ -29,6 +29,14 @@ variable "location" {
   type = string
 }
 
+variable "resource_group_creation_enabled" {
+  type = bool
+}
+
+variable "resource_groups" {
+  type = any
+}
+
 variable "role_assignment_enabled" {
   type = bool
 }

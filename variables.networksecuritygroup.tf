@@ -6,10 +6,11 @@ variable "network_security_group_enabled" {
 
 variable "network_security_groups" {
   type = map(object({
-    name                = string
-    location            = optional(string)
-    resource_group_name = string
-    tags                = optional(map(string))
+    name                         = string
+    location                     = optional(string)
+    resource_group_key           = optional(string)
+    resource_group_name_existing = optional(string)
+    tags                         = optional(map(string))
 
     security_rules = optional(map(object({
       access                                     = string
@@ -36,7 +37,10 @@ A map of the network security groups to create. The map key must be known at the
 ### Required fields
 
 - `name`: The name of the network security group. Changing this forces a new resource to be created. [required]
-- `resource_group_name`: The resource group name to create the network security group in. This assumes the resource group is within the subscription being used or created during the lz-vending module call. Changing this forces a new resource to be created. [required]
+- `resource_group_key`: The resource group key from the resource groups map to create the user assigned identity in. [optional]
+- `resource_group_name_existing`: The name of an existing resource group to create the user assigned identity in. [optional]
+
+**One of `resource_group_key` or `resource_group_name_existing` must be specified.**
 
 ### Location
 
@@ -70,4 +74,13 @@ A map of the network security groups to create. The map key must be known at the
 DESCRIPTION
   nullable    = false
   default     = {}
+
+  validation {
+    condition = var.network_security_group_enabled ? alltrue([
+      for k, v in var.network_security_groups : (
+        (try(v.resource_group_key, null) != null) != (try(v.resource_group_name_existing, null) != null)
+      )
+    ]) : true
+    error_message = "For each network security group, set exactly one of resource_group_key or resource_group_name_existing."
+  }
 }
