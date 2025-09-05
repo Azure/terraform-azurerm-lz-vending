@@ -149,7 +149,7 @@ resource_groups = {
 }
 ```
 
-Add Terraform moved blocks for your resource group and resource group locks as shown below. 
+Add Terraform moved blocks for your resource group and resource group locks as shown below.
 
 ```hcl
 # VNET
