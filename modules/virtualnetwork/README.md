@@ -8,6 +8,7 @@ Optionally:
 
 - Creates bi-directional peering and/or a virtual WAN connection
 - Creates peerings between the virtual networks (mesh peering)
+- **IPAM Support**: This module now supports IP Address Management (IPAM) functionality with Azure Virtual Network Manager (AVM v0.14.1+). Dynamic address space and subnet allocation is available when IPAM is enabled.
 
 ## Notes
 
@@ -189,6 +190,22 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
   - `secure_internet_traffic`: Whether to forward internet-bound traffic to the destination specified in the routing policy. [optional - default `false`]
   - `secure_private_traffic`: Whether to all internal traffic to the destination specified in the routing policy. Not compatible with `routing_intent_enabled`. [optional - default `false`]
   - `routing_intent_enabled`: Enable to use with a Virtual WAN hub with routing intent enabled. Routing intent on hub is configured outside this module. [optional - default `false`]
+
+### IPAM (IP Address Management) values
+
+The following values configure IPAM functionality for dynamic address space allocation using Azure Virtual Network Manager. **IPAM is now fully supported** with AVM v0.14.1+.
+
+- `enable_ipam`: Whether to enable IPAM allocation for this VNet. When true, address\_space can be allocated dynamically by IPAM. [optional - default `false`]
+- `ipam_network_manager_id`: The full resource ID of the Azure Virtual Network Manager (Network Manager) for IPAM. [optional - required when enable\_ipam is `true`]
+- `ipam_vnet_pool_id`: The full resource ID of the IPAM pool used to allocate the VNet address space. [optional - required when enable\_ipam is `true`]
+- `ipam_subnet_allocations`: Per-subnet IPAM allocations configuration in AVM-compatible format. [optional - use when you want IPAM to manage subnet address spaces]
+- `existing_vnet_id`: The full resource ID of an existing VNet to attach to instead of creating a new one. [optional]
+
+**IPAM Usage Notes**:
+- When `enable_ipam` is `true`, you can omit `address_space` as it will be allocated by IPAM
+- Subnet `address_prefixes` can also be omitted when using `ipam_subnet_allocations`
+- The `azapi` provider is required for IPAM functionality (already configured in this module)
+- Ensure your Azure Virtual Network Manager is properly configured with IPAM pools before use
 
 ### Tags
 

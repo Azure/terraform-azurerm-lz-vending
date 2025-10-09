@@ -7,6 +7,13 @@ DESCRIPTION
   nullable    = false
 }
 
+# IPAM Configuration Variables
+variable "azure_network_manager_id" {
+  type        = string
+  description = "The resource ID of the Azure Virtual Network Manager used for IPAM. IPAM is always enabled."
+  nullable    = false
+}
+
 variable "disable_telemetry" {
   type        = bool
   default     = false

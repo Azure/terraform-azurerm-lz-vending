@@ -1,4 +1,31 @@
 locals {
+  # IPAM pool selection mapping based on location only (no role-based labeling)
+  # IPAM is always enabled
+  ipam_pool_selection = {
+    "uksouth" = {
+      default = "${var.azure_network_manager_id}/ipamPools/pool-uksouth-10-152-0"
+      pool_01 = "${var.azure_network_manager_id}/ipamPools/pool-uksouth-10-152-0"
+      pool_02 = "${var.azure_network_manager_id}/ipamPools/pool-uksouth-10-162-0"
+      pool_03 = "${var.azure_network_manager_id}/ipamPools/pool-uksouth-10-163-0"
+      pool_04 = "${var.azure_network_manager_id}/ipamPools/pool-uksouth-10-178-0"
+    }
+    "ukwest" = {
+      default = "${var.azure_network_manager_id}/ipamPools/pool-ukwest-10-152-128"
+      pool_01 = "${var.azure_network_manager_id}/ipamPools/pool-ukwest-10-152-128"
+      pool_02 = "${var.azure_network_manager_id}/ipamPools/pool-ukwest-10-162-128"
+      pool_03 = "${var.azure_network_manager_id}/ipamPools/pool-ukwest-10-163-128"
+      pool_04 = "${var.azure_network_manager_id}/ipamPools/pool-ukwest-10-178-128"
+    }
+  }
+
+  # Default IPAM configuration values - always enabled
+  default_ipam_values = {
+    ipam_network_manager_id              = var.azure_network_manager_id
+    ipam_network_manager_resource_id     = var.azure_network_manager_id
+    ipam_allocate_vnets_from_ipam_pool   = true
+    ipam_allocate_subnets_from_ipam_pool = true
+  }
+
   # subscription_id is the id of the subscription into which resources will be created.
   # We pick the created sub id first, if it exists, otherwise we pick the subscription_id variable.
   subscription_id = coalesce(local.subscription_module_output_subscription_id, var.subscription_id)
@@ -109,6 +136,13 @@ locals {
       vwan_propagated_routetables_labels       = vnet_v.vwan_propagated_routetables_labels
       vwan_propagated_routetables_resource_ids = vnet_v.vwan_propagated_routetables_resource_ids
       vwan_security_configuration              = vnet_v.vwan_security_configuration
+
+      # IPAM-related fields - IPAM is always enabled
+      enable_ipam                 = true
+      ipam_network_manager_id     = coalesce(vnet_v.ipam_network_manager_id, var.azure_network_manager_id)
+      ipam_vnet_pool_id           = coalesce(vnet_v.ipam_vnet_pool_id, try(local.ipam_pool_selection[vnet_v.location]["default"], local.ipam_pool_selection["uksouth"]["default"]))
+      ipam_subnet_allocations     = vnet_v.ipam_subnet_allocations
+      existing_vnet_id            = vnet_v.existing_vnet_id
 
       tags = vnet_v.tags
     }

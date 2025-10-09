@@ -14,7 +14,7 @@ DESCRIPTION
 variable "virtual_networks" {
   type = map(object({
     name                = string
-    address_space       = list(string)
+    address_space       = optional(list(string), [])           # optional to support IPAM-managed VNets
     resource_group_name = string
 
     location = optional(string)
@@ -25,26 +25,27 @@ variable "virtual_networks" {
     ddos_protection_enabled = optional(bool, false)
     ddos_protection_plan_id = optional(string)
 
+    # subnets remain an optional map. When using IPAM you may choose not to provide subnets here.
     subnets = optional(map(object(
       {
         name             = string
-        address_prefixes = list(string)
+        address_prefixes = optional(list(string), [])
         nat_gateway = optional(object({
           id = string
-        }))
+        }), null)
         network_security_group = optional(object({
           id = string
-        }))
+        }), null)
         private_endpoint_network_policies             = optional(string, "Enabled")
         private_link_service_network_policies_enabled = optional(bool, true)
         route_table = optional(object({
           id = optional(string)
-        }))
+        }), null)
         default_outbound_access_enabled = optional(bool, false)
-        service_endpoints               = optional(set(string))
+        service_endpoints               = optional(set(string), [])
         service_endpoint_policies = optional(map(object({
           id = string
-        })))
+        })), {})
         delegation = optional(list(
           object(
             {
@@ -54,7 +55,7 @@ variable "virtual_networks" {
               })
             }
           )
-        ))
+        ), [])
       }
     )), {})
 
@@ -105,6 +106,16 @@ variable "virtual_networks" {
       routing_intent_enabled  = optional(bool, false)
     }), {})
 
+    # ------------------------------
+    # NEW IPAM-related optional fields
+    # ------------------------------
+    enable_ipam = optional(bool, true)        # IPAM is always enabled - address_space allocated by IPAM
+    ipam_network_manager_id = optional(string)
+    ipam_vnet_pool_id       = optional(string)
+    ipam_subnet_allocations = optional(any, null)   # AVM-shaped list/map for per-subnet allocations
+    # If you want to attach to an existing vnet rather than create a new one
+    existing_vnet_id = optional(string, null)
+
     tags = optional(map(string), {})
   }))
   description = <<DESCRIPTION
@@ -113,7 +124,7 @@ A map of the virtual networks to create. The map key must be known at the plan s
 ### Required fields
 
 - `name`: The name of the virtual network. [required]
-- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [required]
+- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [optional when using IPAM - IPAM will allocate address space]
 - `resource_group_name`: The name of the resource group to create the virtual network in. The default is that the resource group will be created by this module. [required]
 
 ### DNS servers
@@ -135,9 +146,9 @@ DNS. [optional - default empty list]
 
 #### Subnets
 
-- `subnets` - (Optional) A map of subnets to create in the virtual network. The value is an object with the following fields:
+- `subnets` - (Optional) A map of subnets to create in the virtual network. When using IPAM, you may choose not to provide subnets here. The value is an object with the following fields:
   - `name` - The name of the subnet.
-  - `address_prefixes` - The IPv4 address prefixes to use for the subnet in CIDR format.
+  - `address_prefixes` - The IPv4 address prefixes to use for the subnet in CIDR format. [optional when using IPAM]
   - `nat_gateway` - (Optional) An object with the following fields:
     - `id` - The ID of the NAT Gateway which should be associated with the Subnet. Changing this forces a new resource to be created.
   - `network_security_group` - (Optional) An object with the following fields:
@@ -203,6 +214,16 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
   - `secure_private_traffic`: Whether to all internal traffic to the destination specified in the routing policy. Not compatible with `routing_intent_enabled`. [optional - default `false`]
   - `routing_intent_enabled`: Enable to use with a Virtual WAN hub with routing intent enabled. Routing intent on hub is configured outside this module. [optional - default `false`]
 
+### IPAM (IP Address Management) values
+
+The following values configure IPAM functionality for dynamic address space allocation using Azure Virtual Network Manager. IPAM is now fully supported with AVM v0.14.1+:
+
+- `enable_ipam`: IPAM allocation is always enabled for VNets. Address space is allocated by IPAM. [optional - default `true`]
+- `ipam_network_manager_id`: The full resource ID of the Azure Virtual Network Manager (Network Manager) for IPAM. [optional - uses module default if not specified]
+- `ipam_vnet_pool_id`: The full resource ID of the IPAM pool used to allocate the VNet address space. [optional - auto-selected if not specified]
+- `ipam_subnet_allocations`: Per-subnet IPAM allocations configuration in AVM-compatible format. [optional]
+- `existing_vnet_id`: The full resource ID of an existing VNet to attach to instead of creating a new one. [optional]
+
 ### Tags
 
 - `tags`: A map of tags to apply to the virtual network. [optional - default empty]
@@ -221,13 +242,13 @@ DESCRIPTION
     ])
     error_message = "Virtual network name must consist of a-z, A-Z, 0-9, -, _, and . (period) and be between 2 and 64 characters in length."
   }
-  # validate address space is not zero length
+  # validate address space: require address_space if not using IPAM
   validation {
     condition = alltrue([
       for k, v in var.virtual_networks :
-      length(v.address_space) > 0
+      try(v.enable_ipam, true) == true || length(try(v.address_space, [])) > 0
     ])
-    error_message = "At least 1 address space must be specified."
+    error_message = "IPAM is always enabled. Address space will be allocated by IPAM pools."
   }
   # validate resource group name is not empty
   validation {
@@ -237,56 +258,56 @@ DESCRIPTION
     ])
     error_message = "The resource_group_name must not be empty for each virtual network."
   }
-  # validate address space CIDR blocks are valid
+  # validate address space CIDR blocks are valid only when provided
   validation {
     condition = alltrue(flatten([
       for k, v in var.virtual_networks :
       [
-        for cidr in v.address_space :
+        for cidr in try(v.address_space, []) :
         can(cidrhost(cidr, 0))
       ]
     ]))
     error_message = "Address space entries must be specified in IPv4 or IPv6 CIDR notation, e.g. 192.168.0.0/24, or 2001:db8::/32."
   }
-  # validate virtual network subnet names
+  # validate virtual network subnet names (only validate subnets that are present)
   validation {
     condition = alltrue(flatten([
       for k, v in var.virtual_networks :
       [
-        for subnet in v.subnets :
-        can(regex("^[\\w-_.]{2,64}$", v.name))
+        for subnet_key, subnet in try(v.subnets, {}) :
+        can(regex("^[\\w-_.]{2,64}$", subnet.name))
       ]
     ]))
     error_message = "Virtual network subnet name must consist of a-z, A-Z, 0-9, -, _, and . (period) and be between 2 and 64 characters in length."
   }
-  # validate subnet address prefixes is not zero length
+  # validate subnet address prefixes only when supplied
   validation {
     condition = alltrue(flatten([
       for k, v in var.virtual_networks :
       [
-        for subnet in v.subnets :
-        length(subnet.address_prefixes) > 0
+        for subnet_key, subnet in try(v.subnets, {}) :
+        (try(subnet.address_prefixes, null) == null) ? true : length(subnet.address_prefixes) > 0
       ]
     ]))
-    error_message = "At least 1 subnet address prefix must be specified."
+    error_message = "At least 1 subnet address prefix must be specified for subnets where address_prefixes are provided."
   }
-  # validate subnet nat gateway id is valid
+  # validate subnet nat gateway id is valid (only when provided)
   validation {
     condition = alltrue(flatten([
       for k, v in var.virtual_networks :
       [
-        for subnet in v.subnets :
+        for subnet_key, subnet in try(v.subnets, {}) :
         can(regex("^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/natGateways/[\\w-_.]{2,64}$", subnet.nat_gateway.id)) if try(subnet["nat_gateway"], null) != null
       ]
     ]))
     error_message = "Nat Gateway resource id must be valid, e.g. /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Network/natGateways/testvnatgw."
   }
-  # validate subnet network security group id is valid
+  # validate subnet network security group id is valid (only when provided)
   validation {
     condition = alltrue(flatten([
       for k, v in var.virtual_networks :
       [
-        for subnet in v.subnets :
+        for subnet_key, subnet in try(v.subnets, {}) :
         can(regex("^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}/resourceGroups/[\\w-._]{1,89}[^\\s.]/providers/Microsoft.Network/networkSecurityGroups/[\\w-_.]{2,64}$", subnet.network_security_group.id)) if try(subnet["network_security_group"], null) != null
       ]
     ]))

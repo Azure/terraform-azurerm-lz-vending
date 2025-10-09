@@ -7,7 +7,7 @@ variable "virtual_network_enabled" {
 variable "virtual_networks" {
   type = map(object({
     name                         = string
-    address_space                = list(string)
+    address_space                = optional(list(string), [])  # optional to support IPAM-managed VNets
     resource_group_key           = optional(string)
     resource_group_name_existing = optional(string)
 
@@ -22,7 +22,7 @@ variable "virtual_networks" {
     subnets = optional(map(object(
       {
         name             = string
-        address_prefixes = list(string)
+        address_prefixes = optional(list(string), [])  # optional to support IPAM
         nat_gateway = optional(object({
           id = string
         }))
@@ -101,6 +101,16 @@ variable "virtual_networks" {
       routing_intent_enabled  = optional(bool, false)
     }), {})
 
+    # ------------------------------
+    # IPAM-related optional fields
+    # ------------------------------
+    enable_ipam = optional(bool, true)        # IPAM is always enabled - address_space allocated by IPAM
+    ipam_network_manager_id = optional(string)
+    ipam_vnet_pool_id       = optional(string)
+    ipam_subnet_allocations = optional(any, null)   # AVM-shaped list/map for per-subnet allocations
+    # If you want to attach to an existing vnet rather than create a new one
+    existing_vnet_id = optional(string, null)
+
     tags = optional(map(string), {})
   }))
   description = <<DESCRIPTION
@@ -109,7 +119,7 @@ A map of the virtual networks to create. The map key must be known at the plan s
 ### Required fields
 
 - `name`: The name of the virtual network. [required]
-- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [required]
+- `address_space`: The address space of the virtual network as a list of strings in CIDR format, e.g. `["192.168.0.0/24", "10.0.0.0/24"]`. [optional when using IPAM - IPAM will allocate address space]
 - `resource_group_key`: The resource group key from the resource groups map to create the virtual network in. [optional]
 - `resource_group_name_existing`: The name of an existing resource group to use for the virtual network. [optional]
 
@@ -204,6 +214,16 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
   - `secure_internet_traffic`: Whether to forward internet-bound traffic to the destination specified in the routing policy. [optional - default `false`]
   - `secure_private_traffic`: Whether to all internal traffic to the destination specified in the routing policy. Not compatible with `routing_intent_enabled`. [optional - default `false`]
   - `routing_intent_enabled`: Enable to use with a Virtual WAN hub with routing intent enabled. Routing intent on hub is configured outside this module. [optional - default `false`]
+
+### IPAM (IP Address Management) values
+
+The following values configure IPAM functionality for dynamic address space allocation using Azure Virtual Network Manager:
+
+- `enable_ipam`: IPAM allocation is always enabled for VNets. Address space is allocated by IPAM. [optional - default `true`]
+- `ipam_network_manager_id`: The full resource ID of the Azure Virtual Network Manager (Network Manager) for IPAM. [optional - uses global azure_network_manager_id if not specified]
+- `ipam_vnet_pool_id`: The full resource ID of the IPAM pool used to allocate the VNet address space. [optional - auto-selected based on location if not specified]
+- `ipam_subnet_allocations`: Per-subnet IPAM allocations configuration in AVM-compatible format. [optional]
+- `existing_vnet_id`: The full resource ID of an existing VNet to attach to instead of creating a new one. [optional]
 
 ### Tags
 

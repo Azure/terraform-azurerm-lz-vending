@@ -19,11 +19,54 @@ This is currently split logically into the following capabilities:
   - Hub & spoke connectivity (peering to a hub network)
   - vWAN connectivity
   - Mesh peering (peering between spokes)
+  - **IPAM (IP Address Management) support** - automatic IP allocation from Azure IPAM pools
 - Role assignments
 - Resource provider (and feature) registration
 - Resource group creation
 - User assigned managed identity creation
   - Federated credential configuration for GitHub Actions, Terraform Cloud, and other providers.
+
+## IPAM Integration
+
+This module uses Azure IPAM (IP Address Management) for automated IP address allocation:
+
+- **Always Enabled**: IPAM is always active for all virtual networks
+- **Intelligent Pool Selection**: Automatically selects the appropriate IPAM pool based on location
+- **Manual Pool Override**: Explicitly specify IPAM pools when needed
+- **Pool Mapping**: Pre-configured pools for different regions
+
+### IPAM Configuration
+
+IPAM is always enabled and requires the Azure Network Manager ID:
+
+```terraform
+# Required IPAM configuration
+azure_network_manager_id = "/subscriptions/.../providers/Microsoft.Network/networkManagers/network-manager-prod"
+
+# VNet configuration with automatic pool selection
+virtual_networks = {
+  "primary" = {
+    name        = "vnet-workload-001"
+    location    = "uksouth"  # Pool auto-selected based on location
+    
+    subnets = {
+      "default" = {
+        name             = "snet-default"
+        address_prefixes = null  # Allocated from IPAM pool
+      }
+    }
+  }
+}
+```
+
+### Pool Selection Logic
+
+The module automatically selects IPAM pools based on:
+- **Location**: `uksouth` or `ukwest` 
+- **Fallback**: Defaults to UK South pool if location not matched
+- **Override**: Specify `ipam_vnet_pool_id` for explicit pool selection
+
+See `terraform.tfvars.example` for detailed configuration examples.
 
 > When creating virtual network peerings, be aware of the [limit of peerings per virtual network](https://learn.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits?toc=%2Fazure%2Fvirtual-network%2Ftoc.json#azure-resource-manager-virtual-networking-limits).
 

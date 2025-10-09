@@ -3,25 +3,54 @@
 module "virtual_networks" {
   for_each        = var.virtual_networks
   source          = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version         = "0.8.1"
+  version         = "0.14.1" # AVM version with IPAM support
   subscription_id = var.subscription_id
 
   name                    = each.value.name
-  address_space           = each.value.address_space
-  resource_group_name     = each.value.resource_group_name
-  location                = coalesce(each.value.location, var.location)
-  flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
+  address_space           = lookup(each.value, "address_space", null)
+  resource_group_name     = lookup(each.value, "resource_group_name", null)
+  location                = coalesce(lookup(each.value, "location", null), var.location)
+  flow_timeout_in_minutes = lookup(each.value, "flow_timeout_in_minutes", null)
 
-  ddos_protection_plan = each.value.ddos_protection_plan_id == null ? null : {
-    id     = each.value.ddos_protection_plan_id
+  # DDoS protection plan configuration
+  ddos_protection_plan = lookup(each.value, "ddos_protection_plan_id", null) == null ? null : {
+    id     = lookup(each.value, "ddos_protection_plan_id", null)
     enable = true
   }
-  dns_servers = length(each.value.dns_servers) == 0 ? null : {
-    dns_servers = each.value.dns_servers
-  }
-  subnets = each.value.subnets
 
-  tags             = each.value.tags
+  # DNS servers configuration
+  dns_servers = length(lookup(each.value, "dns_servers", [])) == 0 ? null : {
+    dns_servers = lookup(each.value, "dns_servers", [])
+  }
+
+  # Keep existing static subnet map (existing behaviour)
+  subnets = lookup(each.value, "subnets", null)
+
+  # -------------------------
+  # IPAM-related inputs (now supported in v0.14.1)
+  # -------------------------
+  # Toggle IPAM allocation for this VNet (false = keep using static address_space)
+  enable_ipam = lookup(each.value, "enable_ipam", false)
+
+  # Full resource id of the Azure Virtual Network Manager (Network Manager)
+  ipam_network_manager_id = lookup(each.value, "ipam_network_manager_id", null)
+
+  # Full resource id of the IPAM pool used to allocate the VNet address space
+  ipam_vnet_pool_id = lookup(each.value, "ipam_vnet_pool_id", null)
+
+  # Per-subnet IPAM allocations — pass the AVM-shaped list/map (or null)
+  ipam_subnet_allocations = lookup(each.value, "ipam_subnet_allocations", null)
+
+  # If you want to attach to an existing VNet instead of creating a new one:
+  existing_vnet_id = lookup(each.value, "existing_vnet_id", null)
+
+  # Providers: AVM IPAM requires azapi for certain resources — ensure azapi provider is configured in your repo
+  providers = {
+    azurerm = azurerm
+    azapi   = azapi
+  }
+
+  tags             = lookup(each.value, "tags", null)
   enable_telemetry = var.enable_telemetry
 }
 
