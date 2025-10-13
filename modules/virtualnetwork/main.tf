@@ -1,14 +1,12 @@
 # module.virtual_networks uses the Azure Verified Module to create
 # as many virtual networks as is required by the var.virtual_networks input variable
 module "virtual_networks" {
-  for_each        = var.virtual_networks
-  source          = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version         = "0.8.1"
-  subscription_id = var.subscription_id
-
+  for_each                = var.virtual_networks
+  source                  = "Azure/avm-res-network-virtualnetwork/azurerm"
+  version                 = "0.14.1"
+  parent_id               = "/subscriptions/${var.subscription_id}/resourceGroups/${each.value.resource_group_name}"
   name                    = each.value.name
   address_space           = each.value.address_space
-  resource_group_name     = each.value.resource_group_name
   location                = coalesce(each.value.location, var.location)
   flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
 
@@ -28,17 +26,11 @@ module "virtual_networks" {
 # module.peering_hub_outbound uses the peering submodule from theAzure Verified Module
 # to create the outboud peering from the spoke to the hub network when specified
 module "peering_hub_outbound" {
-  for_each        = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_fromhub }
-  source          = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version         = "0.8.1"
-  subscription_id = var.subscription_id
-
-  virtual_network = {
-    "resource_id" = each.value["outbound"].this_resource_id,
-  }
-  remote_virtual_network = {
-    "resource_id" = each.value["outbound"].remote_resource_id,
-  }
+  for_each                     = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_fromhub }
+  source                       = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
+  version                      = "0.14.1"
+  parent_id                    = each.value["outbound"].this_resource_id
+  remote_virtual_network_id    = each.value["outbound"].remote_resource_id
   name                         = each.value.outbound.name
   allow_forwarded_traffic      = each.value.outbound.options.allow_forwarded_traffic
   allow_gateway_transit        = each.value.outbound.options.allow_gateway_transit
@@ -52,17 +44,11 @@ module "peering_hub_outbound" {
 # module.peering_hub_inbound uses the peering submodule from theAzure Verified Module
 # to create the inbound peering from the hub network to the spoke network when specified
 module "peering_hub_inbound" {
-  for_each        = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_tohub }
-  source          = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version         = "0.8.1"
-  subscription_id = var.subscription_id
-
-  virtual_network = {
-    "resource_id" = each.value["inbound"].this_resource_id,
-  }
-  remote_virtual_network = {
-    "resource_id" = each.value["inbound"].remote_resource_id,
-  }
+  for_each                     = { for k, v in local.hub_peering_map : k => v if v.peering_direction != local.peering_direction_tohub }
+  source                       = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
+  version                      = "0.14.1"
+  parent_id                    = each.value["inbound"].this_resource_id
+  remote_virtual_network_id    = each.value["inbound"].remote_resource_id
   name                         = each.value.inbound.name
   allow_forwarded_traffic      = each.value.inbound.options.allow_forwarded_traffic
   allow_gateway_transit        = each.value.inbound.options.allow_gateway_transit
@@ -76,17 +62,11 @@ module "peering_hub_inbound" {
 # module.peering_mesh uses the peering submodule from theAzure Verified Module
 # to create the peering from the local and remote virtual networks as specified
 module "peering_mesh" {
-  for_each        = { for i in local.virtual_networks_mesh_peering_list : "${i.source_key}-${i.destination_key}" => i }
-  source          = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version         = "0.8.1"
-  subscription_id = var.subscription_id
-
-  virtual_network = {
-    "resource_id" = each.value.this_resource_id,
-  }
-  remote_virtual_network = {
-    "resource_id" = each.value.remote_resource_id,
-  }
+  for_each                     = { for i in local.virtual_networks_mesh_peering_list : "${i.source_key}-${i.destination_key}" => i }
+  source                       = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
+  version                      = "0.14.1"
+  parent_id                    = each.value.this_resource_id
+  remote_virtual_network_id    = each.value.remote_resource_id
   name                         = each.value.name
   allow_forwarded_traffic      = each.value.allow_forwarded_traffic
   allow_gateway_transit        = false
