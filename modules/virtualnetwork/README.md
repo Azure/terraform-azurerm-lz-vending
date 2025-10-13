@@ -61,25 +61,25 @@ The following Modules are called:
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
 
-Version: 0.8.1
+Version: 0.14.1
 
 ### <a name="module_peering_hub_outbound"></a> [peering\_hub\_outbound](#module\_peering\_hub\_outbound)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
 
-Version: 0.8.1
+Version: 0.14.1
 
 ### <a name="module_peering_mesh"></a> [peering\_mesh](#module\_peering\_mesh)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
 
-Version: 0.8.1
+Version: 0.14.1
 
 ### <a name="module_virtual_networks"></a> [virtual\_networks](#module\_virtual\_networks)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
-Version: 0.8.1
+Version: 0.14.1
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD024 -->
