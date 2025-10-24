@@ -5,7 +5,7 @@ output "client_id" {
 
 output "principal_id" {
   description = "The object id of the user managed identity"
-  value       = local.umi_output.properties.principalId
+  value       = azapi_resource.umi.principalId
 }
 
 output "resource_id" {
