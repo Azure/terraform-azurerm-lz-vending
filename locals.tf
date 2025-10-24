@@ -41,7 +41,7 @@ locals {
             umi_key  = umi_k
             role_key = role_k
             role_assignment = {
-              principal_id              = length(module.usermanagedidentity[umi_k].principal_id) != 0 ? module.usermanagedidentity[umi_k].principal_id : "fake"
+              principal_id              = length(module.usermanagedidentity) != 0 ? module.usermanagedidentity[umi_k].principal_id : "fake"
               definition                = role_v.definition
               scope                     = "${local.subscription_resource_id}${role_v.relative_scope}"
               condition                 = role_v.condition
