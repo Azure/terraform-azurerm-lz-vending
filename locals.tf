@@ -41,7 +41,7 @@ locals {
             umi_key  = umi_k
             role_key = role_k
             role_assignment = {
-              principal_id              = module.usermanagedidentity[umi_k].principal_id
+              principal_id              = module.usermanagedidentity[umi_key].principal_id
               definition                = role_v.definition
               scope                     = "${local.subscription_resource_id}${role_v.relative_scope}"
               condition                 = role_v.condition
