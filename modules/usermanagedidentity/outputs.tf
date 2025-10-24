@@ -17,3 +17,8 @@ output "tenant_id" {
   description = "The tenant id of the user managed identity"
   value       = local.umi_output.properties.tenantId
 }
+
+output "parent_id" {
+  description = "The parent id of user managed identity"
+  value       = azapi_resource.umi.parent_id
+}
