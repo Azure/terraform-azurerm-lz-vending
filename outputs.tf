@@ -71,3 +71,7 @@ output "virtual_network_resource_ids" {
 output "user_managed_identity_role_assignments" {
   value       = local.user_managed_identity_role_assignments
 }
+
+output "user_managed_identities" {
+  value       =  module.usermanagedidentity
+}
