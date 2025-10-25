@@ -210,7 +210,7 @@ DESCRIPTION
 
   # validate virtual_networks is no zero length
   validation {
-    condition     = var.virtual_network_enabled == false ? length(var.virtual_networks) > 0 : true
+    condition     = var.virtual_network_enabled ? length(var.virtual_networks) > 0 : true
     error_message = "The virtual_networks variable must not be empty."
   }
   # validate virtual network name
