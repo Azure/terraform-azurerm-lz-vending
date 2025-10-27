@@ -1,6 +1,6 @@
-variable "umi_enabled" {
+variable "umi_skip_validation" {
   description = <<DESCRIPTION
-Whether to enable the creation of a user-assigned managed identity.
+Whether to skip validation.
 DESCRIPTION
   type        = bool
   default     = false
@@ -22,7 +22,7 @@ variable "parent_id" {
   description = "The ID of the parent resource to which this user-assigned managed identity."
 
   validation {
-    condition     = var.umi_enabled ? length(var.parent_id) > 0 : true
+    condition     = var.umi_skip_validation ? length(var.parent_id) > 0 : true
     error_message = "The parent_id must not be empty."
   }
   validation {

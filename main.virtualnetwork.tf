@@ -7,7 +7,7 @@ module "virtualnetwork" {
   virtual_networks = local.virtual_networks
   location         = var.location
   enable_telemetry = !var.disable_telemetry
-  virtual_network_enabled = var.virtual_network_enabled
+  virtual_network_skip_validation = var.virtual_network_enabled
 
   depends_on = [
     module.resourcegroup,
