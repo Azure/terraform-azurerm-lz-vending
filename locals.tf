@@ -33,7 +33,7 @@ locals {
   # user_managed_identity_role_assignments is a list of objects containing the identity information after the user managed identities are created, if the module has been enabled.
   # since var.user_managed_identities is a map that contains the role assignments maps, we need to use a for loop to extract the values from the nested map.
   # using https://github.com/Azure/terraform-robust-module-design/blob/main/nested_maps/flatten_nested_map/main.tf as a reference.
-  user_managed_identity_role_assignments = length(module.usermanagedidentity) != 0 ? {
+  user_managed_identity_role_assignments = length(module.usermanagedidentity) != 0  && var.umi_enabled ? {
     for item in flatten(
       [
         for umi_k, umi_v in var.user_managed_identities : [
