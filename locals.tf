@@ -42,7 +42,7 @@ locals {
             role_key = role_k
             role_assignment = {
               # add fake valid value so plan can pass on first run when umi does not yet exist and output from usermanagedidentity module is empty
-              principal_id              = length(module.usermanagedidentity) != 0 ? module.usermanagedidentity[umi_k].principal_id : "00000000-0000-0000-0000-000000000000"
+              principal_id              = module.usermanagedidentity[umi_k].principal_id
               definition                = role_v.definition
               scope                     = "${local.subscription_resource_id}${role_v.relative_scope}"
               condition                 = role_v.condition
