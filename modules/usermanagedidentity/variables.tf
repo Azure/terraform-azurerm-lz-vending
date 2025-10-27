@@ -22,11 +22,11 @@ variable "parent_id" {
   description = "The ID of the parent resource to which this user-assigned managed identity."
 
   validation {
-    condition     = var.umi_skip_validation ? length(var.parent_id) > 0 : true
+    condition     = (var.umi_skip_validation || var.parent_id != null) ? length(var.parent_id) > 0 : true
     error_message = "The parent_id must not be empty."
   }
   validation {
-    condition     = can(regex("^/subscriptions/[a-fA-F0-9-]+/resourceGroups/[a-zA-Z0-9-_.()]+$", var.parent_id))
+    condition     = (var.umi_skip_validation || var.parent_id != null) ? can(regex("^/subscriptions/[a-fA-F0-9-]+/resourceGroups/[a-zA-Z0-9-_.()]+$", var.parent_id)) : true
     error_message = "The parent_id must be a valid Azure Resource Group ID."
   }
 }
