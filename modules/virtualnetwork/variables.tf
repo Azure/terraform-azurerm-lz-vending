@@ -1,3 +1,8 @@
+variable "virtual_network_enabled" {
+  description = "Enables and disables the virtual network submodule."
+  type        = bool
+  default     = false
+}
 variable "subscription_id" {
   type        = string
   description = <<DESCRIPTION
@@ -210,7 +215,7 @@ DESCRIPTION
 
   # validate virtual_networks is no zero length
   validation {
-    condition     = length(var.virtual_networks) > 0
+    condition     = var.virtual_network_enabled ? length(var.virtual_networks) > 0 : true
     error_message = "The virtual_networks variable must not be empty."
   }
   # validate virtual network name

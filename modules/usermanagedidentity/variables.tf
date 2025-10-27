@@ -1,3 +1,11 @@
+variable "umi_enabled" {
+  description = <<DESCRIPTION
+Whether to enable the creation of a user-assigned managed identity.
+DESCRIPTION
+  type        = bool
+  default     = false
+}
+
 variable "location" {
   type        = string
   description = "The location of the user-assigned managed identity"
@@ -14,7 +22,7 @@ variable "parent_id" {
   description = "The ID of the parent resource to which this user-assigned managed identity."
 
   validation {
-    condition     = length(var.parent_id) > 0
+    condition     = var.umi_enabled ? length(var.parent_id) > 0 : true
     error_message = "The parent_id must not be empty."
   }
   validation {
