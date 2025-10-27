@@ -37,7 +37,7 @@ Can be user, group or service principal.
 DESCRIPTION
 
   validation {
-    condition     = can(regex("^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.role_assignment_principal_id))
+    condition     = var.role_assignment_principal_id == null ? true : can(regex("^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", var.role_assignment_principal_id))
     error_message = "Must a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. All letters must be lowercase."
   }
 }
