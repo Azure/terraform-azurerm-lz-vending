@@ -33,8 +33,7 @@ locals {
   # user_managed_identity_role_assignments is a list of objects containing the identity information after the user managed identities are created, if the module has been enabled.
   # since var.user_managed_identities is a map that contains the role assignments maps, we need to use a for loop to extract the values from the nested map.
   # using https://github.com/Azure/terraform-robust-module-design/blob/main/nested_maps/flatten_nested_map/main.tf as a reference.
-  umi_skip_validation = var.umi_enabled == false ? true : false
-  user_managed_identity_role_assignments = {
+  user_managed_identity_role_assignments = length(module.usermanagedidentity) != 0 ? {
     for item in flatten(
       [
         for umi_k, umi_v in var.user_managed_identities : [
@@ -42,7 +41,7 @@ locals {
             umi_key  = umi_k
             role_key = role_k
             role_assignment = {
-              principal_id              = length(module.usermanagedidentity) != 0 ? module.usermanagedidentity[umi_k].principal_id : "skip"
+              principal_id              = module.usermanagedidentity[umi_k].principal_id
               definition                = role_v.definition
               scope                     = "${local.subscription_resource_id}${role_v.relative_scope}"
               condition                 = role_v.condition
@@ -55,7 +54,7 @@ locals {
         ]
       ]
     ) : "${item.umi_key}/${item.role_key}" => item.role_assignment
-  }
+  } : {}
 
   # This virtual_networks varialbe is used internally to consume the mapped subnet properties for dependencies on resources such as
   # route tables today but at some point network security groups as well.

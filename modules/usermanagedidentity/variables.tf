@@ -1,11 +1,3 @@
-variable "umi_skip_validation" {
-  description = <<DESCRIPTION
-Whether to skip validation.
-DESCRIPTION
-  type        = bool
-  default     = false
-}
-
 variable "location" {
   type        = string
   description = "The location of the user-assigned managed identity"
@@ -22,11 +14,11 @@ variable "parent_id" {
   description = "The ID of the parent resource to which this user-assigned managed identity."
 
   validation {
-    condition     = var.umi_skip_validation ? length(var.parent_id) > 0 : true
+    condition     = length(var.parent_id) > 0
     error_message = "The parent_id must not be empty."
   }
   validation {
-    condition     = var.umi_skip_validation ? can(regex("^/subscriptions/[a-fA-F0-9-]+/resourceGroups/[a-zA-Z0-9-_.()]+$", var.parent_id)) : true
+    condition     = can(regex("^/subscriptions/[a-fA-F0-9-]+/resourceGroups/[a-zA-Z0-9-_.()]+$", var.parent_id))
     error_message = "The parent_id must be a valid Azure Resource Group ID."
   }
 }
