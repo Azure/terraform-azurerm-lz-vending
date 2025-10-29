@@ -1,8 +1,3 @@
-variable "virtual_network_skip_validation" {
-  description = "Skip validation."
-  type        = bool
-  default     = false
-}
 variable "subscription_id" {
   type        = string
   description = <<DESCRIPTION
@@ -215,7 +210,7 @@ DESCRIPTION
 
   # validate virtual_networks is no zero length
   validation {
-    condition     = var.virtual_network_skip_validation ? true : length(var.virtual_networks) > 0
+    condition     = length(var.virtual_networks) > 0
     error_message = "The virtual_networks variable must not be empty."
   }
   # validate virtual network name
