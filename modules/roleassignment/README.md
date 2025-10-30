@@ -37,7 +37,13 @@ The following requirements are needed by this module:
 
 ## Modules
 
-No modules.
+The following Modules are called:
+
+### <a name="module_role_definitions"></a> [role\_definitions](#module\_role\_definitions)
+
+Source: Azure/avm-utl-roledefinitions/azure
+
+Version: 0.0.2
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD024 -->
@@ -123,7 +129,6 @@ The following resources are used by this module:
 
 - [azapi_resource.this](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [random_uuid.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
-- [azapi_resource_list.role_definitions](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/resource_list) (data source)
 
 ## Outputs
 

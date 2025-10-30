@@ -1,15 +1,12 @@
-data "azapi_resource_list" "role_definitions" {
-  count = var.role_assignment_definition_lookup_enabled ? 1 : 0
-
-  parent_id = var.role_assignment_scope
-  type      = "Microsoft.Authorization/roleDefinitions@2022-04-01"
-  response_export_values = {
-    results = "value[].{id: id, role_name: properties.roleName}"
-  }
-}
-
 resource "random_uuid" "this" {
   count = var.role_assignment_use_random_uuid ? 1 : 0
+}
+
+module "role_definitions" {
+  source                = "Azure/avm-utl-roledefinitions/azure"
+  version               = "0.0.2"
+  use_cached_data       = !var.role_assignment_definition_lookup_enabled
+  role_definition_scope = var.role_assignment_scope
 }
 
 resource "azapi_resource" "this" {

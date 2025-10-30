@@ -15,7 +15,7 @@ variable "role_assignments" {
     condition                 = optional(string)
     condition_version         = optional(string)
     principal_type            = optional(string)
-    definition_lookup_enabled = optional(bool, true)
+    definition_lookup_enabled = optional(bool, false)
     use_random_uuid           = optional(bool, false)
   }))
   description = <<DESCRIPTION
@@ -24,12 +24,12 @@ Supply a map of objects containing the details of the role assignments to create
 Object fields:
 
 - `principal_id`: The directory/object id of the principal to assign the role to.
-- `definition`: The role definition to assign. Either use the name or the role definition resource id.
+- `definition`: The role definition to assign. Either use the name or the role definition resource id. If supplying a definition ID, use a *scopeless* role definition ID (i.e. starting with `/providers/Microsoft.Authorization/roleDefinitions/`).
 - `relative_scope`: (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
 - `condition`: (optional) A condition to apply to the role assignment. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 - `condition_version`: (optional) The version of the condition syntax. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 - `principal_type`: (optional) The type of the principal. Can be `"User"`, `"Group"`, `"Device"`, `"ForeignGroup"`, or `"ServicePrincipal"`.
-- `definition_lookup_enabled`: (optional) Whether to look up the role definition resource id from the role definition name. If disabled, the `definition` must be a role definition resource id. Default is `true`.
+- `definition_lookup_enabled`: (optional) Whether to look up the role definition resource id from the the Azure API. Default is `false`, where we use a static module of role definitions.
 - `use_random_uuid`: (optional) Whether to use a random UUID for the role assignment name. Default is `false`. If set to `true`, the role assignment name will be a random UUID, otherwise it will be a deterministic UUID based on the scope, principal id, and role definition id.
 
 E.g.
@@ -55,6 +55,14 @@ role_assignments = {
 DESCRIPTION
   nullable    = false
   default     = {}
+
+  validation {
+    error_message = "If definition is a role definition ID, it must start with /providers/Microsoft.Authorization/roleDefinitions/ to be a scopeless role definition ID."
+    condition = alltrue([for ra in values(var.role_assignments) : (
+      strcontains(tolower(ra.definition), tolower("/providers/Microsoft.Authorization/roleDefinitions/")) == false ||
+      can(regex("^/providers/Microsoft\\.Authorization/roleDefinitions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", ra.definition))
+    )])
+  }
 }
 
 variable "wait_for_umi_before_umi_role_assignment_operations" {
