@@ -43,26 +43,13 @@ func TestIntegrationHubAndSpoke(t *testing.T) {
 		`module.virtualnetwork[0].module.peering_hub_inbound["primary"].azapi_resource.this[0]`,
 		`module.virtualnetwork[0].module.peering_hub_outbound["primary"].azapi_resource.this[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
-		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.telemetry[0]`,
-		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.this`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azapi_client_config.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].data.modtm_module_source.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].modtm_telemetry.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
 	}
 
-	// Debug: uncomment to log all planned resources and actions
-	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
-	//     if rc.Change != nil {
-	//         t.Logf("%v %s", rc.Change.Actions, addr)
-	//     } else {
-	//         t.Logf("[] %s", addr)
-	//     }
-	// }
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	for _, v := range resources {
-		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
-	}
-
+	check.InPlan(test.PlanStruct).PlannedResourcesAre(resources...).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000305").ErrorIsNil(t)
 }
 
@@ -118,26 +105,13 @@ func TestIntegrationVwan(t *testing.T) {
 		`module.resourcegroup["secondary"].azapi_resource.rg`,
 		`module.virtualnetwork[0].azapi_resource.vhubconnection["primary"]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
-		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.telemetry[0]`,
-		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.this`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azapi_client_config.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].data.modtm_module_source.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].modtm_telemetry.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
 	}
 
-	// Debug: uncomment to log all planned resources and actions
-	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
-	//     if rc.Change != nil {
-	//         t.Logf("%v %s", rc.Change.Actions, addr)
-	//     } else {
-	//         t.Logf("[] %s", addr)
-	//     }
-	// }
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	for _, v := range resources {
-		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
-	}
-
+	check.InPlan(test.PlanStruct).PlannedResourcesAre(resources...).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000505").ErrorIsNil(t)
 }
 
@@ -174,20 +148,7 @@ func TestIntegrationSubscriptionAndRoleAssignmentOnly(t *testing.T) {
 		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
 	}
 
-	// Debug: uncomment to log all planned resources and actions
-	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
-	//     if rc.Change != nil {
-	//         t.Logf("%v %s", rc.Change.Actions, addr)
-	//     } else {
-	//         t.Logf("[] %s", addr)
-	//     }
-	// }
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	for _, v := range resources {
-		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
-	}
-
-	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00010005").ErrorIsNil(t)
+	check.InPlan(test.PlanStruct).PlannedResourcesAre(resources...).ErrorIsNil(t)
 }
 
 // TestIntegrationHubAndSpokeExistingSubscription tests the resource plan when supplying an existing subscription,
@@ -214,26 +175,13 @@ func TestIntegrationHubAndSpokeExistingSubscription(t *testing.T) {
 		`module.virtualnetwork[0].module.peering_hub_inbound["primary"].azapi_resource.this[0]`,
 		`module.virtualnetwork[0].module.peering_hub_outbound["primary"].azapi_resource.this[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
-		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.telemetry[0]`,
-		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.this`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azapi_client_config.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].data.modtm_module_source.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].modtm_telemetry.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
 	}
 
-	// Debug: uncomment to log all planned resources and actions
-	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
-	//     if rc.Change != nil {
-	//         t.Logf("%v %s", rc.Change.Actions, addr)
-	//     } else {
-	//         t.Logf("[] %s", addr)
-	//     }
-	// }
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	for _, v := range resources {
-		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
-	}
-
+	check.InPlan(test.PlanStruct).PlannedResourcesAre(resources...).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That("azapi_resource.telemetry_root[0]").Key("name").ContainsString("00000300").ErrorIsNil(t)
 }
 
@@ -258,19 +206,7 @@ func TestIntegrationDisableTelemetry(t *testing.T) {
 		`module.subscription[0].azapi_update_resource.subscription_tags[0]`,
 		`module.subscription[0].time_sleep.wait_for_subscription_before_subscription_operations[0]`,
 	}
-
-	// Debug: uncomment to log all planned resources and actions
-	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
-	//     if rc.Change != nil {
-	//         t.Logf("%v %s", rc.Change.Actions, addr)
-	//     } else {
-	//         t.Logf("[] %s", addr)
-	//     }
-	// }
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	for _, v := range resources {
-		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
-	}
+	check.InPlan(test.PlanStruct).PlannedResourcesAre(resources...).ErrorIsNil(t)
 }
 
 func TestIntegrationResourceGroups(t *testing.T) {
@@ -301,18 +237,7 @@ func TestIntegrationResourceGroups(t *testing.T) {
 		`module.resourcegroup["NetworkWatcherRG"].azapi_resource.rg`,
 	}
 
-	// Debug: uncomment to log all planned resources and actions
-	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
-	//     if rc.Change != nil {
-	//         t.Logf("%v %s", rc.Change.Actions, addr)
-	//     } else {
-	//         t.Logf("[] %s", addr)
-	//     }
-	// }
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	for _, v := range resources {
-		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
-	}
+	check.InPlan(test.PlanStruct).PlannedResourcesAre(resources...).ErrorIsNil(t)
 }
 
 func TestIntegrationUmiRoleAssignment(t *testing.T) {
@@ -355,18 +280,7 @@ func TestIntegrationUmiRoleAssignment(t *testing.T) {
 		`module.roleassignment_umi["default/owner"].data.azapi_resource_list.role_definitions[0]`,
 	}
 
-	// Debug: uncomment to log all planned resources and actions
-	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
-	//     if rc.Change != nil {
-	//         t.Logf("%v %s", rc.Change.Actions, addr)
-	//     } else {
-	//         t.Logf("[] %s", addr)
-	//     }
-	// }
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	for _, v := range resources {
-		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
-	}
+	check.InPlan(test.PlanStruct).PlannedResourcesAre(resources...).ErrorIsNil(t)
 }
 
 func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
@@ -434,18 +348,7 @@ func TestIntegrationMultipleUmiRoleAssignments(t *testing.T) {
 		`time_sleep.wait_for_umi_before_umi_role_assignment_operations[0]`,
 	}
 
-	// Debug: uncomment to log all planned resources and actions
-	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
-	//     if rc.Change != nil {
-	//         t.Logf("%v %s", rc.Change.Actions, addr)
-	//     } else {
-	//         t.Logf("[] %s", addr)
-	//     }
-	// }
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	for _, v := range resources {
-		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
-	}
+	check.InPlan(test.PlanStruct).PlannedResourcesAre(resources...).ErrorIsNil(t)
 }
 
 // TestIntegrationVirtualNetworkRouteTable tests the resource plan when creating a new subscription,
@@ -501,8 +404,7 @@ func TestIntegrationVirtualNetworkRouteTable(t *testing.T) {
 		`module.virtualnetwork[0].module.virtual_networks["primary"].azapi_resource.vnet`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].module.subnet["primary"].azapi_resource.subnet`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].module.subnet["secondary"].azapi_resource.subnet`,
-		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.telemetry[0]`,
-		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azurerm_client_config.this`,
+		`module.virtualnetwork[0].module.virtual_networks["primary"].data.azapi_client_config.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].data.modtm_module_source.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].modtm_telemetry.telemetry[0]`,
 		`module.virtualnetwork[0].module.virtual_networks["primary"].random_uuid.telemetry[0]`,
@@ -510,19 +412,7 @@ func TestIntegrationVirtualNetworkRouteTable(t *testing.T) {
 		`module.routetable["default"].azapi_resource.route_table`,
 	}
 
-	// Debug: uncomment to log all planned resources and actions
-	// for addr, rc := range test.PlanStruct.ResourceChangesMap {
-	//     if rc.Change != nil {
-	//         t.Logf("%v %s", rc.Change.Actions, addr)
-	//     } else {
-	//         t.Logf("[] %s", addr)
-	//     }
-	// }
-	check.InPlan(test.PlanStruct).NumberOfResourcesEquals(len(resources)).ErrorIsNil(t)
-	for _, v := range resources {
-		check.InPlan(test.PlanStruct).That(v).Exists().ErrorIsNil(t)
-	}
-
+	check.InPlan(test.PlanStruct).PlannedResourcesAre(resources...).ErrorIsNil(t)
 	check.InPlan(test.PlanStruct).That(`module.virtualnetwork[0].module.virtual_networks["primary"].module.subnet["secondary"].azapi_resource.subnet`).Key("body").Query("properties.routeTable.id").HasValue("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/primary-rg/providers/Microsoft.Network/routeTables/primary-route-table").ErrorIsNil(t)
 }
 
