@@ -975,7 +975,7 @@ func TestVirtualNetworkCreateValidWithSubnetSingleDelegation(t *testing.T) {
 		"default": {
 			"name":             "snet-default",
 			"address_prefixes": []any{"192.168.0.0/26"},
-			"delegation":       expectedDelegations,
+			"delegations":      expectedDelegations,
 		},
 	}
 
@@ -1025,7 +1025,7 @@ func TestVirtualNetworkCreateValidWithSubnetMultipleDelegations(t *testing.T) {
 		"default": {
 			"name":             "snet-default",
 			"address_prefixes": []any{"192.168.0.0/26"},
-			"delegation":       expectedDelegations,
+			"delegations":      expectedDelegations,
 		},
 	}
 
