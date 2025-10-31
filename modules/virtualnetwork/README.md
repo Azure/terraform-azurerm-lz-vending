@@ -49,7 +49,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.10)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.4)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
@@ -230,7 +230,7 @@ map(object({
         service_endpoint_policies = optional(map(object({
           id = string
         })))
-        delegation = optional(list(
+        delegations = optional(list(
           object(
             {
               name = string
