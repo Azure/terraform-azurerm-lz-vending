@@ -49,7 +49,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.10)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.2)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.5)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
@@ -61,25 +61,25 @@ The following Modules are called:
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
 
-Version: 0.8.1
+Version: 0.14.1
 
 ### <a name="module_peering_hub_outbound"></a> [peering\_hub\_outbound](#module\_peering\_hub\_outbound)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
 
-Version: 0.8.1
+Version: 0.14.1
 
 ### <a name="module_peering_mesh"></a> [peering\_mesh](#module\_peering\_mesh)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/peering
 
-Version: 0.8.1
+Version: 0.14.1
 
 ### <a name="module_virtual_networks"></a> [virtual\_networks](#module\_virtual\_networks)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
-Version: 0.8.1
+Version: 0.14.1
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD024 -->
@@ -230,7 +230,7 @@ map(object({
         service_endpoint_policies = optional(map(object({
           id = string
         })))
-        delegation = optional(list(
+        delegations = optional(list(
           object(
             {
               name = string

@@ -45,7 +45,7 @@ variable "virtual_networks" {
         service_endpoint_policies = optional(map(object({
           id = string
         })))
-        delegation = optional(list(
+        delegations = optional(list(
           object(
             {
               name = string
