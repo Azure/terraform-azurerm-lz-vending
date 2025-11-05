@@ -12,8 +12,6 @@ module "virtual_networks" {
       prefix_length = var.ipam_pool_prefix_length
     }
   ] : []
-  # Only provide address_space when IPAM pools are not being used
-  # According to Azure AVM module: either address_space OR ipam_pools must be specified, but not both
   address_space           = lookup(var.ipam_pool_id_by_vnet, each.key, null) != null ? null : try(each.value.address_prefix, each.value.address_space, [])
   location                = coalesce(each.value.location, var.location)
   flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
