@@ -6,6 +6,12 @@ module "virtual_networks" {
   version                 = "0.15.0"
   parent_id               = "/subscriptions/${var.subscription_id}/resourceGroups/${each.value.resource_group_name}"
   name                    = each.value.name
+  ipam_pools = [
+    {
+      id            = data.azurerm_network_manager_ipam_pool.this.id
+      prefix_length = 26 // parameterized
+    }
+  ]
   address_space           = each.value.address_space
   location                = coalesce(each.value.location, var.location)
   flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
