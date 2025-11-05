@@ -3,7 +3,7 @@
 module "virtual_networks" {
   for_each                = var.virtual_networks
   source                  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version                 = "0.14.1"
+  version                 = "0.15.0"
   parent_id               = "/subscriptions/${var.subscription_id}/resourceGroups/${each.value.resource_group_name}"
   name                    = each.value.name
   address_space           = each.value.address_space
