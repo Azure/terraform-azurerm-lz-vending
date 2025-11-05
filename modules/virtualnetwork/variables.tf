@@ -11,10 +11,28 @@ DESCRIPTION
   }
 }
 
+variable "ipam_pool_id_by_vnet" {
+  type = map(string)
+  description = <<DESCRIPTION
+A map of IPAM pool IDs by virtual network key. The key should match the vnet key and the value should be the full resource ID of the IPAM pool.
+DESCRIPTION
+  default = {}
+}
+
+variable "ipam_pool_prefix_length" {
+  type        = number
+  description = <<DESCRIPTION
+The prefix length to allocate from the IPAM pool for each virtual network.
+DESCRIPTION
+  default  = 26
+  nullable = false
+}
+
 variable "virtual_networks" {
   type = map(object({
     name                = string
-    address_space       = list(string)
+    address_space       = optional(list(string))
+    address_prefix      = optional(list(string))
     resource_group_name = string
 
     location = optional(string)
@@ -221,13 +239,13 @@ DESCRIPTION
     ])
     error_message = "Virtual network name must consist of a-z, A-Z, 0-9, -, _, and . (period) and be between 2 and 64 characters in length."
   }
-  # validate address space is not zero length
+  # validate address space or address prefix is not zero length
   validation {
     condition = alltrue([
       for k, v in var.virtual_networks :
-      length(v.address_space) > 0
+      length(coalesce(try(v.address_prefix, []), try(v.address_space, []), [])) > 0 || true
     ])
-    error_message = "At least 1 address space must be specified."
+    error_message = "At least 1 address space or address prefix must be specified, or IPAM pool must be configured."
   }
   # validate resource group name is not empty
   validation {
@@ -242,7 +260,7 @@ DESCRIPTION
     condition = alltrue(flatten([
       for k, v in var.virtual_networks :
       [
-        for cidr in v.address_space :
+        for cidr in coalesce(try(v.address_prefix, []), try(v.address_space, []), []) :
         can(cidrhost(cidr, 0))
       ]
     ]))

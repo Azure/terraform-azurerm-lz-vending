@@ -4,10 +4,23 @@ variable "virtual_network_enabled" {
   default     = false
 }
 
+variable "ipam_pool_id_by_vnet" {
+  description = "A map of IPAM pool IDs by virtual network key. The key should match the vnet key and the value should be the full resource ID of the IPAM pool."
+  type        = map(string)
+  default     = {}
+}
+
+variable "ipam_pool_prefix_length" {
+  description = "The prefix length to allocate from the IPAM pool for each virtual network."
+  type        = number
+  default     = 26
+}
+
 variable "virtual_networks" {
   type = map(object({
     name                         = string
-    address_space                = list(string)
+    address_space                = optional(list(string))
+    address_prefix               = optional(list(string))
     resource_group_key           = optional(string)
     resource_group_name_existing = optional(string)
 

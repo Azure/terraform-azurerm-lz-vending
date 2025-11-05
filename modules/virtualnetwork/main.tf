@@ -6,13 +6,15 @@ module "virtual_networks" {
   version                 = "0.15.0"
   parent_id               = "/subscriptions/${var.subscription_id}/resourceGroups/${each.value.resource_group_name}"
   name                    = each.value.name
-  ipam_pools = [
+  ipam_pools = lookup(var.ipam_pool_id_by_vnet, each.key, null) != null ? [
     {
-      id            = data.azurerm_network_manager_ipam_pool.this.id
-      prefix_length = 26 // parameterized
+      id            = lookup(var.ipam_pool_id_by_vnet, each.key)
+      prefix_length = var.ipam_pool_prefix_length
     }
-  ]
-  address_space           = each.value.address_space
+  ] : []
+  # Only provide address_space when IPAM pools are not being used
+  # According to Azure AVM module: either address_space OR ipam_pools must be specified, but not both
+  address_space           = lookup(var.ipam_pool_id_by_vnet, each.key, null) != null ? null : try(each.value.address_prefix, each.value.address_space, [])
   location                = coalesce(each.value.location, var.location)
   flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
 
