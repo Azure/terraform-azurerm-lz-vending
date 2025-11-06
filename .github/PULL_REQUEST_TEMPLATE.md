@@ -1,24 +1,32 @@
-<!-- Thank you for submitting a Pull Request. Please fill out the template below.-->
-# Overview/summary
+## Description
 
-Replace this with a brief description of what this Pull Request fixes, changes, etc.
+<!--
+>Thank you for your contribution !
+> Please include a summary of the change and which issue is fixed.
+> Please also include the context.
+> List any dependencies that are required for this change.
 
-## This PR fixes/adds/changes/removes
+Fixes #123
+Closes #456
+-->
 
-1. fixes #000
+## Type of Change
 
-### Breaking changes
+<!-- Use the check-boxes [x] on the options that are relevant. -->
 
-1. *Replace me*
+- [ ] Non-module change (e.g. CI/CD, documentation, etc.)
+- [ ] Azure Verified Module updates:
+  - [ ] Bugfix containing backwards compatible bug fixes
+    - [ ] Someone has opened a bug report issue, and I have included "Closes #{bug_report_issue_number}" in the PR description.
+    - [ ] The bug was found by the module author, and no one has opened an issue to report it yet.
+  - [ ] Feature update backwards compatible feature updates.
+  - [ ] Breaking changes.
+  - [ ] Update to documentation
 
-## Testing evidence
+# Checklist
 
-Please provide testing evidence to show that your Pull Request works/fixes as described and documented above.
+- [ ] I'm sure there are no other open Pull Requests for the same update/change
+- [ ] My corresponding pipelines / checks run clean and green without any errors or warnings
+- [ ] I did run all  [pre-commit](https://azure.github.io/Azure-Verified-Modules/contributing/terraform/terraform-contribution-flow/#5-run-pre-commit-checks) checks
 
-## As part of this pull request I have
-
-- [ ] Checked for duplicate [Pull Requests](https://github.com/Azure/terraform-azurerm-lz-vending/pulls)
-- [ ] Associated it with relevant [issues](https://github.com/Azure/terraform-azurerm-lz-vending/issues), for tracking and closure.
-- [ ] Run and `make fmt` & `make docs` to format your code and update documentation.
-- [ ] Created unit and deployment tests and provided evidence.
-- [ ] Updated relevant and associated documentation.
+<!--  Please keep up to date with the contribution guide at https://aka.ms/avm/contribute/terraform -->

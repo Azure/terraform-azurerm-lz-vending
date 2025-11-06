@@ -58,7 +58,6 @@ DESCRIPTION
     error_message = "Next hop type must be one of: 'Internet', 'None', 'VirtualAppliance', 'VirtualNetworkGateway', 'VnetLocal'."
     condition     = alltrue([for route in var.routes : contains(["Internet", "None", "VirtualAppliance", "VirtualNetworkGateway", "VnetLocal"], route.next_hop_type)])
   }
-
   validation {
     error_message = "Next hop IP address must be provided if next hop type is 'VirtualAppliance'."
     condition     = alltrue([for route in var.routes : route.next_hop_type != "VirtualAppliance" || route.next_hop_in_ip_address != null])

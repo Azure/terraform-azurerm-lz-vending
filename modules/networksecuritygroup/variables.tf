@@ -1,18 +1,3 @@
-# This is required for most resource modules
-variable "parent_id" {
-  type        = string
-  description = "The ID of the parent resource to which this user-assigned managed identity."
-
-  validation {
-    condition     = length(var.parent_id) > 0
-    error_message = "The parent_id must not be empty."
-  }
-  validation {
-    condition     = can(regex("^/subscriptions/[a-fA-F0-9-]+/resourceGroups/[a-zA-Z0-9-_.()]+$", var.parent_id))
-    error_message = "The parent_id must be a valid Azure Resource Group ID."
-  }
-}
-
 variable "location" {
   type        = string
   description = "(Required) Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created."
@@ -30,6 +15,21 @@ variable "name" {
     The name must be between 1 and 80 characters long and can only contain alphanumerics, underscores, periods, and hyphens.
     It must start with an alphanumeric and end with an alphanumeric or underscore.
     EOT
+  }
+}
+
+# This is required for most resource modules
+variable "parent_id" {
+  type        = string
+  description = "The ID of the parent resource to which this user-assigned managed identity."
+
+  validation {
+    condition     = length(var.parent_id) > 0
+    error_message = "The parent_id must not be empty."
+  }
+  validation {
+    condition     = can(regex("^/subscriptions/[a-fA-F0-9-]+/resourceGroups/[a-zA-Z0-9-_.()]+$", var.parent_id))
+    error_message = "The parent_id must be a valid Azure Resource Group ID."
   }
 }
 
@@ -53,6 +53,7 @@ variable "security_rules" {
     source_port_range                          = optional(string)
     source_port_ranges                         = optional(set(string))
   }))
+  default     = {}
   description = <<DESCRIPTION
 These are the security rule configuration properties.
 - `access` - (Required) Specifies whether network traffic is allowed or denied. Possible values are `Allow` and `Deny`.
@@ -73,7 +74,6 @@ These are the security rule configuration properties.
 - `source_port_ranges` - (Optional) List of source ports or port ranges. This is required if `source_port_range` is not specified.
 
 DESCRIPTION
-  default     = {}
   nullable    = false
 }
 

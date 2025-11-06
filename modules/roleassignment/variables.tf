@@ -1,24 +1,3 @@
-variable "role_assignment_condition" {
-  type        = string
-  description = <<DESCRIPTION
-(Optional) The condition that limits the resources that the role can be assigned to.
-DESCRIPTION
-  default     = null
-}
-
-variable "role_assignment_condition_version" {
-  type        = string
-  description = <<DESCRIPTION
-The version of the condition. Possible values are `null`, 1.0 or 2.0. If `null` then `role_assignment_condition` will also be null.
-DESCRIPTION
-
-  validation {
-    condition     = var.role_assignment_condition_version != null ? contains(["1.0", "2.0"], var.role_assignment_condition_version) : true
-    error_message = "Must be version 1.0 or 2.0."
-  }
-  default = null
-}
-
 variable "role_assignment_definition" {
   type        = string
   description = <<DESCRIPTION
@@ -53,6 +32,27 @@ DESCRIPTION
   validation {
     condition     = can(regex("^/subscriptions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}", var.role_assignment_scope))
     error_message = "Must begin with a subscription scope, e.g. `/subscriptions/00000000-0000-0000-0000-000000000000`. All letters must be lowercase in the subscription id."
+  }
+}
+
+variable "role_assignment_condition" {
+  type        = string
+  default     = null
+  description = <<DESCRIPTION
+(Optional) The condition that limits the resources that the role can be assigned to.
+DESCRIPTION
+}
+
+variable "role_assignment_condition_version" {
+  type        = string
+  default     = null
+  description = <<DESCRIPTION
+The version of the condition. Possible values are `null`, 1.0 or 2.0. If `null` then `role_assignment_condition` will also be null.
+DESCRIPTION
+
+  validation {
+    condition     = var.role_assignment_condition_version != null ? contains(["1.0", "2.0"], var.role_assignment_condition_version) : true
+    error_message = "Must be version 1.0 or 2.0."
   }
 }
 

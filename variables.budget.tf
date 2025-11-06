@@ -1,10 +1,10 @@
 variable "budget_enabled" {
   type        = bool
+  default     = false
   description = <<DESCRIPTION
 Whether to create budgets.
 If enabled, supply the list of budgets in `var.budgets`.
 DESCRIPTION
-  default     = false
 }
 
 variable "budgets" {

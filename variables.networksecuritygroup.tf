@@ -1,7 +1,7 @@
 variable "network_security_group_enabled" {
   type        = bool
-  description = "Whether to create network security groups and security rules in the target subscription. Requires `var.network_security_groups`."
   default     = false
+  description = "Whether to create network security groups and security rules in the target subscription. Requires `var.network_security_groups`."
 }
 
 variable "network_security_groups" {
@@ -31,6 +31,7 @@ variable "network_security_groups" {
       source_port_ranges                         = optional(set(string))
     })))
   }))
+  default     = {}
   description = <<DESCRIPTION
 A map of the network security groups to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply.
 
@@ -73,7 +74,6 @@ A map of the network security groups to create. The map key must be known at the
 
 DESCRIPTION
   nullable    = false
-  default     = {}
 
   validation {
     condition = var.network_security_group_enabled ? alltrue([

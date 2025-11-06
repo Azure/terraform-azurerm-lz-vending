@@ -5,9 +5,10 @@ module "resourcegroup" {
   subscription_id     = local.subscription_id
   location            = coalesce(each.value.location, var.location)
   resource_group_name = each.value.name
-  tags                = each.value.tags
+  subscription_id     = local.subscription_id
   lock_enabled        = each.value.lock_enabled
   lock_name           = each.value.lock_name
+  tags                = each.value.tags
 }
 
 # v3.3.0 introduced networkwatcherrg support,

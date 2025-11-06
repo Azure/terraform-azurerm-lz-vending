@@ -1,7 +1,7 @@
 variable "virtual_network_enabled" {
-  description = "Enables and disables the virtual network submodule."
   type        = bool
   default     = false
+  description = "Enables and disables the virtual network submodule."
 }
 
 variable "virtual_networks" {
@@ -103,6 +103,7 @@ variable "virtual_networks" {
 
     tags = optional(map(string), {})
   }))
+  default     = {}
   description = <<DESCRIPTION
 A map of the virtual networks to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply.
 
@@ -210,7 +211,6 @@ Peerings will only be created between virtual networks with the `mesh_peering_en
 - `tags`: A map of tags to apply to the virtual network. [optional - default empty]
 DESCRIPTION
   nullable    = false
-  default     = {}
 
   validation {
     condition     = alltrue([for v in var.virtual_networks : try(coalesce(v.resource_group_key, v.resource_group_name_existing), null) != null])

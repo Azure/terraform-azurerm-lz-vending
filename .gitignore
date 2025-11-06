@@ -35,3 +35,20 @@ override.tf.json
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
 *tfplan*
+*.md.tmp
+*.mptfbackup
+.DS_Store
+.avm
+.terraformrc
+README-generated.md
+avm.tflint.hcl
+avm.tflint.merged.hcl
+avm.tflint_example.hcl
+avm.tflint_example.merged.hcl
+avm.tflint_module.hcl
+avm.tflint_module.merged.hcl
+avmmakefile
+crash.*.log
+crash.log
+examples/*/policy
+terraform.rc

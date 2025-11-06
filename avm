@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+
+set -e
+
+usage () {
+  echo "Usage: avm <make target>"
+}
+
+# We need to do this because bash doesn't like it when a script is updated in place.
+if [ -z ${AVM_SCRIPT_FORKED} ]; then
+  # If AVM_SCRIPT_FORKED is not set, we are running the script from the original repository
+  # Set AVM_SCRIPT_FORKED to true to avoid running this block again
+  export AVM_SCRIPT_FORKED=true
+
+  # Make a copy of this script in the current directory
+  # and run that copy.
+  cp "$0" .avm
+  chmod +x .avm
+  exec ./.avm "$@"
+fi
+
+# Default values for environment variables
+CONTAINER_RUNTIME=${CONTAINER_RUNTIME:-"docker"}
+CONTAINER_IMAGE=${CONTAINER_IMAGE:-"mcr.microsoft.com/azterraform:avm-latest"}
+CONTAINER_PULL_POLICY=${CONTAINER_PULL_POLICY:-"always"}
+AVM_MAKEFILE_REF=${AVM_MAKEFILE_REF:-"main"}
+AVM_PORCH_REF=${AVM_PORCH_REF:-"main"}
+
+if [ ! "$(command -v "${CONTAINER_RUNTIME}")" ] && [ -z "${AVM_IN_CONTAINER}" ]; then
+    echo "Error: ${CONTAINER_RUNTIME} is not installed. Please install ${CONTAINER_RUNTIME} first."
+    exit 1
+fi
+
+if [ -z "$1" ]; then
+    echo "Error: Please provide a make target. See https://github.com/Azure/avm-terraform-governance/blob/main/Makefile for available targets."
+    echo
+    usage
+    exit 1
+fi
+
+# Check if AZURE_CONFIG_DIR is set, if not, set it to ~/.azure
+if [ -z "${AZURE_CONFIG_DIR}" ]; then
+  AZURE_CONFIG_DIR="${HOME}/.azure"
+fi
+
+# Check if AZURE_CONFIG_DIR exists, if it does, mount it to the container
+if [ -d "${AZURE_CONFIG_DIR}" ]; then
+  AZURE_CONFIG_MOUNT="-v ${AZURE_CONFIG_DIR}:/home/runtimeuser/.azure"
+fi
+
+# If the host Docker socket exists, mount it into the container so the container can talk to the host docker daemon
+if [ -S /var/run/docker.sock ]; then
+  DOCKER_SOCK_MOUNT="-v /var/run/docker.sock:/var/run/docker.sock"
+fi
+
+# If we are in GitHub Copilot Coding Agent, we need to mount the SSL certificates from the host
+SSL_CERT_MOUNTS=""
+if [ -n "${COPILOT_AGENT_ACTION}" ]; then
+  # Mount host's CA bundle to container's expected paths
+  SSL_CERT_MOUNTS="${SSL_CERT_MOUNTS} -v /etc/ssl/certs/ca-certificates.crt:/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem:ro"
+  SSL_CERT_MOUNTS="${SSL_CERT_MOUNTS} -v /etc/ssl/certs/ca-certificates.crt:/etc/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt:ro"
+fi
+
+# New: allow overriding TUI behavior with PORCH_FORCE_TUI and PORCH_NO_TUI environment variables.
+# - If PORCH_FORCE_TUI is set, force TUI and interactive mode (even in GH Actions).
+# - If PORCH_NO_TUI is set, explicitly disable TUI.
+# - Otherwise, fallback to previous behavior: enable TUI only when not in GitHub Actions and NO_COLOR is not set.
+if [ -n "${PORCH_FORCE_TUI}" ]; then
+  TUI="--tui"
+  DOCKER_INTERACTIVE="-it"
+  export FORCE_COLOR=1
+elif [ -n "${PORCH_NO_TUI}" ]; then
+  # Explicitly disable TUI and interactive flags
+  TUI=""
+  DOCKER_INTERACTIVE=""
+else
+  # If we are not in GitHub Actions and NO_COLOR is not set, we want to use TUI and interactive mode
+  if [ -z "${GITHUB_RUN_ID}" ] && [ -z "${NO_COLOR}" ]; then
+    TUI="--tui"
+    DOCKER_INTERACTIVE="-it"
+    export FORCE_COLOR=1
+  fi
+fi
+
+# if AVM_PORCH_BASE_URL is set, we want to add it to the make command
+if [ -n "${AVM_PORCH_BASE_URL}" ]; then
+  PORCH_BASE_URL_MAKE_ADD="PORCH_BASE_URL=${AVM_PORCH_BASE_URL}"
+fi
+
+# Check if we are running in a container
+# If we are then just run make directly
+if [ -z "${AVM_IN_CONTAINER}" ]; then
+  ${CONTAINER_RUNTIME} run \
+    --pull "${CONTAINER_PULL_POLICY}" \
+    --user "$(id -u):$(id -g)" \
+    --rm \
+    ${DOCKER_INTERACTIVE} \
+    -v "$(pwd)":/src \
+    ${AZURE_CONFIG_MOUNT:-} \
+    ${DOCKER_SOCK_MOUNT:-} \
+    ${SSL_CERT_MOUNTS:-} \
+    -e ARM_CLIENT_ID \
+    -e ARM_OIDC_REQUEST_TOKEN \
+    -e ARM_OIDC_REQUEST_URL \
+    -e ARM_SUBSCRIPTION_ID \
+    -e ARM_TENANT_ID \
+    -e ARM_USE_OIDC \
+    -e FORCE_COLOR \
+    -e GITHUB_TOKEN \
+    -e NO_COLOR \
+    -e PORCH_LOG_LEVEL \
+    -e TF_IN_AUTOMATION=1 \
+    --env-file <(env | grep '^TF_VAR_') \
+    --env-file <(env | grep '^AVM_') \
+    "${CONTAINER_IMAGE}" \
+    make \
+    TUI="${TUI}" \
+    AVM_MAKEFILE_REF="${AVM_MAKEFILE_REF}" \
+    "${PORCH_BASE_URL_MAKE_ADD}" \
+    AVM_PORCH_REF="${AVM_PORCH_REF}" \
+    "$1"
+else
+  make TUI="${TUI}" AVM_MAKEFILE_REF="${AVM_MAKEFILE_REF}" ${PORCH_BASE_URL_MAKE_ADD} AVM_PORCH_REF="${AVM_PORCH_REF}" "$1"
+fi

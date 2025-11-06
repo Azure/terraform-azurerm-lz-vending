@@ -1,23 +1,5 @@
-variable "subscription_register_resource_providers_enabled" {
-  type        = bool
-  description = <<DESCRIPTION
-Whether to register resource providers for the subscription.
-Use `var.subscription_register_resource_providers_and_features` to customize registration.
-DESCRIPTION
-  default     = false
-}
-
 variable "subscription_register_resource_providers_and_features" {
-  type        = map(set(string))
-  description = <<DESCRIPTION
-The map of resource providers to register.
-The map keys are the resource provider namespace, e.g. `Microsoft.Compute`.
-The map values are a list of provider features to enable.
-Leave the value empty to not register any resource provider features.
-
-The default values are taken from [Hashicorp's AzureRM provider](https://github.com/hashicorp/terraform-provider-azurerm/blob/main/internal/resourceproviders/required.go).
-DESCRIPTION
-  nullable    = false
+  type = map(set(string))
   default = {
     "Microsoft.ApiManagement"           = [],
     "Microsoft.AppPlatform"             = [],
@@ -83,4 +65,22 @@ DESCRIPTION
     "Microsoft.StreamAnalytics"         = [],
     "Microsoft.Web"                     = [],
   }
+  description = <<DESCRIPTION
+The map of resource providers to register.
+The map keys are the resource provider namespace, e.g. `Microsoft.Compute`.
+The map values are a list of provider features to enable.
+Leave the value empty to not register any resource provider features.
+
+The default values are taken from [Hashicorp's AzureRM provider](https://github.com/hashicorp/terraform-provider-azurerm/blob/main/internal/resourceproviders/required.go).
+DESCRIPTION
+  nullable    = false
+}
+
+variable "subscription_register_resource_providers_enabled" {
+  type        = bool
+  default     = false
+  description = <<DESCRIPTION
+Whether to register resource providers for the subscription.
+Use `var.subscription_register_resource_providers_and_features` to customize registration.
+DESCRIPTION
 }

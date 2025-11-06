@@ -1,0 +1,29 @@
+---
+name: PR Check
+on:
+  pull_request:
+    types: ['opened', 'reopened', 'synchronize']
+  merge_group:
+  workflow_dispatch:
+
+jobs:
+  check:
+    permissions: {}
+    runs-on: ubuntu-latest
+    steps:
+      - name: checking for fork
+        shell: pwsh
+        run: |
+          $isFork = "${{ github.event.pull_request.head.repo.fork }}"
+          if($isFork -eq "true") {
+            echo "### WARNING: This workflow is disabled for forked repositories. Please follow the [release branch process](https://azure.github.io/Azure-Verified-Modules/contributing/terraform/terraform-contribution-flow/#5-create-a-pull-request-to-the-upstream-repository) if end to end tests are required." >> $env:GITHUB_STEP_SUMMARY
+          }
+
+  run-managed-workflow:
+    if: github.event.pull_request.head.repo.fork == false
+    uses: Azure/avm-terraform-governance/.github/workflows/managed-pr-check.yml@main
+    name: run managed workflow
+    secrets: inherit
+    permissions:
+      id-token: write
+      contents: read

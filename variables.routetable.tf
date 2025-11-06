@@ -1,7 +1,7 @@
 variable "route_table_enabled" {
   type        = bool
-  description = "Whether to create route tables and routes in the target subscription. Requires `var.route_tables`."
   default     = false
+  description = "Whether to create route tables and routes in the target subscription. Requires `var.route_tables`."
 }
 
 variable "route_tables" {
@@ -20,6 +20,7 @@ variable "route_tables" {
       next_hop_in_ip_address = optional(string)
     })), {})
   }))
+  default     = {}
   description = <<DESCRIPTION
 A map defining route tables and their associated routes to be created:
 
@@ -39,5 +40,4 @@ A map defining route tables and their associated routes to be created:
 - `next_hop_in_ip_address` (optional): The next hop IP address for the route. Required if next hop type is 'VirtualAppliance'.
 DESCRIPTION
   nullable    = false
-  default     = {}
 }

@@ -36,7 +36,6 @@ variable "lock_name" {
   type        = string
   default     = null
   description = "The name of the resource group lock for the resource group, if `null` will be set to `lock-<resource_group_name>`"
-
 }
 
 variable "tags" {

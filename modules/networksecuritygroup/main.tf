@@ -1,9 +1,8 @@
 resource "azapi_resource" "network_security_group" {
-  type      = "Microsoft.Network/networkSecurityGroups@2024-05-01"
+  location  = var.location
   name      = var.name
   parent_id = var.parent_id
-  location  = var.location
-  tags      = var.tags
+  type      = "Microsoft.Network/networkSecurityGroups@2024-05-01"
   body = {
     properties = {
       securityRules = [
@@ -30,4 +29,5 @@ resource "azapi_resource" "network_security_group" {
       ]
     }
   }
+  tags = var.tags
 }

@@ -1,4 +1,18 @@
 locals {
+  # route_table_routes is a list of objects containing the routes that need to be converted from a map to a list to match the submodule input variable definition.
+  route_tables = {
+    for rt_k, rt_v in var.route_tables : rt_k => {
+      name     = rt_v.name
+      location = rt_v.location
+      resource_group_name = coalesce(
+        rt_v.resource_group_name_existing,
+        can(module.resourcegroup[rt_v.resource_group_key].resource_group_name) ? module.resourcegroup[rt_v.resource_group_key].resource_group_name : null
+      )
+      bgp_route_propagation_enabled = rt_v.bgp_route_propagation_enabled
+      tags                          = rt_v.tags
+      routes                        = [for k, v in rt_v.routes : v]
+    }
+  }
   # subscription_id is the id of the subscription into which resources will be created.
   # We pick the created sub id first, if it exists, otherwise we pick the subscription_id variable.
   subscription_id = coalesce(local.subscription_module_output_subscription_id, var.subscription_id)
@@ -55,7 +69,11 @@ locals {
       ]
     ) : "${item.umi_key}/${item.role_key}" => item.role_assignment
   } : {}
-
+  # virtual_networks_merged is a map of virtual networks created, if the module has been enabled.
+  # This is used in the outputs.tf file to return the virtual network resource ids.
+  virtual_network_resource_ids                                         = var.virtual_network_enabled ? module.virtualnetwork[0].virtual_network_resource_ids : {}
+  virtual_network_subnet_network_security_group_available_resource_ids = { for nsg_k, nsg_v in module.networksecuritygroup : nsg_k => nsg_v.network_security_group_resource_id.network_security_group }
+  virtual_network_subnet_route_table_available_resource_ids            = { for rt_k, rt_v in module.routetable : rt_k => rt_v.route_table_resource_id.route_table }
   # This virtual_networks varialbe is used internally to consume the mapped subnet properties for dependencies on resources such as
   # route tables today but at some point network security groups as well.
   virtual_networks = var.virtual_network_enabled ? {

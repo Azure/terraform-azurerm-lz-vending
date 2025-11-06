@@ -1,11 +1,11 @@
 variable "umi_enabled" {
+  type        = bool
+  default     = false
   description = <<DESCRIPTION
 Whether to enable the creation of a user-assigned managed identity.
 
 Requires `umi.name` and `umi.resosurce_group_name` to be non-empty.
 DESCRIPTION
-  type        = bool
-  default     = false
 }
 
 variable "user_managed_identities" {
@@ -100,6 +100,7 @@ The following fields are used to configure federated identity credentials, using
   - `issuer_url`: The URL of the token issuer, should begin with `https://`
   - `audience`: (optional) The token audience, defaults to `api://AzureADTokenExchange`.
 DESCRIPTION
+
   validation {
     condition = var.umi_enabled ? alltrue([
       for k, v in var.user_managed_identities : (

@@ -1,6 +1,6 @@
 variable "subscription_alias_enabled" {
-  default     = false
   type        = bool
+  default     = false
   description = <<DESCRIPTION
 Whether to create a new subscription using the subscription alias resource.
 
@@ -39,20 +39,6 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 DESCRIPTION
 }
 
-variable "subscription_display_name" {
-  type        = string
-  default     = null
-  description = <<DESCRIPTION
-The display name of the subscription alias.
-
-The string must be comprised of a-z, A-Z, 0-9, -, _ and space.
-The maximum length is 63 characters.
-
-You may also supply an empty string if you do not want to create a new subscription alias.
-In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
-DESCRIPTION
-}
-
 variable "subscription_billing_scope" {
   type        = string
   default     = null
@@ -72,39 +58,17 @@ In this scenario, `subscription_enabled` should be set to `false` and `subscript
 DESCRIPTION
 }
 
-variable "subscription_workload" {
+variable "subscription_display_name" {
   type        = string
   default     = null
   description = <<DESCRIPTION
-The billing scope for the new subscription alias.
+The display name of the subscription alias.
 
-The workload type can be either `Production` or `DevTest` and is case sensitive.
+The string must be comprised of a-z, A-Z, 0-9, -, _ and space.
+The maximum length is 63 characters.
 
 You may also supply an empty string if you do not want to create a new subscription alias.
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
-DESCRIPTION
-}
-
-variable "subscription_management_group_id" {
-  type        = string
-  default     = null
-  description = <<DESCRIPTION
-  The destination management group ID for the new subscription.
-
-**Note:** Do not supply the display name.
-The management group ID forms part of the Azure resource ID. E.g.,
-`/providers/Microsoft.Management/managementGroups/{managementGroupId}`.
-DESCRIPTION
-}
-
-variable "subscription_management_group_association_enabled" {
-  type        = bool
-  default     = false
-  nullable    = false
-  description = <<DESCRIPTION
-Whether to create the management group association resource.
-
-If enabled, the `subscription_management_group_id` must also be supplied.
 DESCRIPTION
 }
 
@@ -133,8 +97,32 @@ In this scenario, `subscription_alias_enabled` should be set to `true` and the f
 DESCRIPTION
 }
 
+variable "subscription_management_group_association_enabled" {
+  type        = bool
+  default     = false
+  description = <<DESCRIPTION
+Whether to create the management group association resource.
+
+If enabled, the `subscription_management_group_id` must also be supplied.
+DESCRIPTION
+  nullable    = false
+}
+
+variable "subscription_management_group_id" {
+  type        = string
+  default     = null
+  description = <<DESCRIPTION
+  The destination management group ID for the new subscription.
+
+**Note:** Do not supply the display name.
+The management group ID forms part of the Azure resource ID. E.g.,
+`/providers/Microsoft.Management/managementGroups/{managementGroupId}`.
+DESCRIPTION
+}
+
 variable "subscription_tags" {
   type        = map(string)
+  default     = {}
   description = <<DESCRIPTION
 A map of tags to assign to the newly created subscription.
 Only valid when `subsciption_alias_enabled` is set to `true`.
@@ -149,7 +137,6 @@ subscription_tags = {
 ```
 DESCRIPTION
   nullable    = false
-  default     = {}
 }
 
 variable "subscription_update_existing" {
@@ -161,6 +148,19 @@ If enabled, the following must also be supplied:
 - `subscription_id`
 DESCRIPTION
   nullable    = false
+}
+
+variable "subscription_workload" {
+  type        = string
+  default     = null
+  description = <<DESCRIPTION
+The billing scope for the new subscription alias.
+
+The workload type can be either `Production` or `DevTest` and is case sensitive.
+
+You may also supply an empty string if you do not want to create a new subscription alias.
+In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
+DESCRIPTION
 }
 
 variable "wait_for_subscription_before_subscription_operations" {
