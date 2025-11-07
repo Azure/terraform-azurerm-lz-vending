@@ -238,11 +238,13 @@ Default: `false`
 
 Description: Map of budgets to create for the subscription.
 
+- `name` - (optional) The name of the budget. If not supplied, the key of the map will be used. This will be chaged in future versions to be required.
 - `amount` - The total amount of cost to track with the budget.
 - `time_grain` - The time grain for the budget. Must be one of Annually, BillingAnnual, BillingMonth, BillingQuarter, Monthly, or Quarterly.
 - `time_period_start` - The start date for the budget.
 - `time_period_end` - The end date for the budget.
-- `relative_scope` - (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
+- `relative_scope` - (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope. Use this if the resource group already exists. If the resource group is being created in this module, use `resource_group_key` instead.
+- `resource_group_key` - (optional) The key of the resource group in which to create the budget. Use this if the resource group is being created in this module. If the resource group already exists, use `relative_scope` instead.
 - `notifications` - (optional) The notifications to create for the budget.
   - `enabled` - Whether the notification is enabled.
   - `operator` - The operator for the notification. Must be one of GreaterThan or GreaterThanOrEqualTo.
@@ -288,11 +290,13 @@ Type:
 
 ```hcl
 map(object({
-    amount            = number
-    time_grain        = string
-    time_period_start = string
-    time_period_end   = string
-    relative_scope    = optional(string, "")
+    name               = optional(string)
+    amount             = number
+    time_grain         = string
+    time_period_start  = string
+    time_period_end    = string
+    relative_scope     = optional(string, "")
+    resource_group_key = optional(string)
     notifications = optional(map(object({
       enabled        = bool
       operator       = string
@@ -438,7 +442,7 @@ Type:
 ```hcl
 map(object({
     name         = string
-    location     = string
+    location     = optional(string)
     tags         = optional(map(string), {})
     lock_enabled = optional(bool, false)
     lock_name    = optional(string, "")
@@ -465,6 +469,7 @@ Object fields:
 - `principal_id`: The directory/object id of the principal to assign the role to.
 - `definition`: The role definition to assign. Either use the name or the role definition resource id. If supplying a definition ID, use a *scopeless* role definition ID (i.e. starting with `/providers/Microsoft.Authorization/roleDefinitions/`).
 - `relative_scope`: (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
+- `resource_group_scope_key`: (optional) The resource group key from the resource groups map to use as the scope for the role assignment. If supplied, this takes precedence over `relative_scope`.
 - `condition`: (optional) A condition to apply to the role assignment. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 - `condition_version`: (optional) The version of the condition syntax. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 - `principal_type`: (optional) The type of the principal. Can be `"User"`, `"Group"`, `"Device"`, `"ForeignGroup"`, or `"ServicePrincipal"`.
@@ -499,6 +504,7 @@ map(object({
     principal_id              = string,
     definition                = string,
     relative_scope            = optional(string, "")
+    resource_group_scope_key  = optional(string)
     condition                 = optional(string)
     condition_version         = optional(string)
     principal_type            = optional(string)
@@ -884,10 +890,11 @@ map(object({
     role_assignments = optional(map(object({
       definition                = string
       relative_scope            = optional(string, "")
+      resource_group_scope_key  = optional(string)
       condition                 = optional(string)
       condition_version         = optional(string)
       principal_type            = optional(string)
-      definition_lookup_enabled = optional(bool, true)
+      definition_lookup_enabled = optional(bool, false)
       use_random_uuid           = optional(bool, false)
     })), {})
     federated_credentials_github = optional(map(object({
@@ -1150,27 +1157,11 @@ object({
 
 Default: `{}`
 
-### <a name="input_wait_for_umi_before_umi_role_assignment_operations"></a> [wait\_for\_umi\_before\_umi\_role\_assignment\_operations](#input\_wait\_for\_umi\_before\_umi\_role\_assignment\_operations)
-
-Description: The duration to wait after creating a user managed identity before performing role assignment operations.
-
-Type:
-
-```hcl
-object({
-    create  = optional(string, "30s")
-    destroy = optional(string, "0s")
-  })
-```
-
-Default: `{}`
-
 ## Resources
 
 The following resources are used by this module:
 
 - [azapi_resource.telemetry_root](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
-- [time_sleep.wait_for_umi_before_umi_role_assignment_operations](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) (resource)
 
 ## Outputs
 

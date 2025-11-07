@@ -6,14 +6,4 @@ locals {
   is_definition_resource_id           = can(regex("(?i)/providers/Microsoft.Authorization/roleDefinitions", var.role_assignment_definition))
   role_definition_name_to_resource_id = lookup(module.role_definitions.role_definition_rolename_to_resource_id, var.role_assignment_definition, null)
   role_definition_id                  = local.is_definition_resource_id ? var.role_assignment_definition : local.role_definition_name_to_resource_id
-
-  role_assignment_properties = merge({
-    principalId      = var.role_assignment_principal_id
-    roleDefinitionId = local.role_definition_id
-    condition        = var.role_assignment_condition
-    conditionVersion = var.role_assignment_condition_version
-    },
-    var.role_assignment_principal_type != null ? {
-      principalType = var.role_assignment_principal_type
-  } : {})
 }

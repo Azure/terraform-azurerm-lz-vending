@@ -16,9 +16,4 @@ module "networksecuritygroup" {
   tags = each.value.tags
 
   security_rules = each.value.security_rules
-
-  depends_on = [
-    module.resourcegroup,
-    module.subscription
-  ]
 }

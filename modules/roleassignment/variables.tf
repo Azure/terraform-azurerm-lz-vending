@@ -90,3 +90,17 @@ Whether to use a random UUID for the role assignment name.
 DESCRIPTION
   nullable    = false
 }
+
+variable "enable_telemetry" {
+  type     = bool
+  default  = true
+  nullable = false
+}
+
+variable "retry" {
+  type = object({
+    error_message_regex = list(string)
+    interval_seconds    = optional(number, 30)
+  })
+  default = null
+}

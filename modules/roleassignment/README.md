@@ -43,7 +43,7 @@ The following Modules are called:
 
 Source: Azure/avm-utl-roledefinitions/azure
 
-Version: 0.0.2
+Version: 0.1.0
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD024 -->
@@ -78,6 +78,29 @@ Type: `string`
 ## Optional Inputs
 
 The following input variables are optional (have default values):
+
+### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
+
+Description: n/a
+
+Type: `bool`
+
+Default: `true`
+
+### <a name="input_retry"></a> [retry](#input\_retry)
+
+Description: n/a
+
+Type:
+
+```hcl
+object({
+    error_message_regex = list(string)
+    interval_seconds    = optional(number, 30)
+  })
+```
+
+Default: `null`
 
 ### <a name="input_role_assignment_condition"></a> [role\_assignment\_condition](#input\_role\_assignment\_condition)
 

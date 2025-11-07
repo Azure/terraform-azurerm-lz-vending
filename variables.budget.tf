@@ -9,11 +9,13 @@ DESCRIPTION
 
 variable "budgets" {
   type = map(object({
-    amount            = number
-    time_grain        = string
-    time_period_start = string
-    time_period_end   = string
-    relative_scope    = optional(string, "")
+    name               = optional(string)
+    amount             = number
+    time_grain         = string
+    time_period_start  = string
+    time_period_end    = string
+    relative_scope     = optional(string, "")
+    resource_group_key = optional(string)
     notifications = optional(map(object({
       enabled        = bool
       operator       = string
@@ -29,11 +31,13 @@ variable "budgets" {
   description = <<DESCRIPTION
 Map of budgets to create for the subscription.
 
+- `name` - (optional) The name of the budget. If not supplied, the key of the map will be used. This will be chaged in future versions to be required.
 - `amount` - The total amount of cost to track with the budget.
 - `time_grain` - The time grain for the budget. Must be one of Annually, BillingAnnual, BillingMonth, BillingQuarter, Monthly, or Quarterly.
 - `time_period_start` - The start date for the budget.
 - `time_period_end` - The end date for the budget.
-- `relative_scope` - (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
+- `relative_scope` - (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope. Use this if the resource group already exists. If the resource group is being created in this module, use `resource_group_key` instead.
+- `resource_group_key` - (optional) The key of the resource group in which to create the budget. Use this if the resource group is being created in this module. If the resource group already exists, use `relative_scope` instead.
 - `notifications` - (optional) The notifications to create for the budget.
   - `enabled` - Whether the notification is enabled.
   - `operator` - The operator for the notification. Must be one of GreaterThan or GreaterThanOrEqualTo.

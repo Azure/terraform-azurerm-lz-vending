@@ -12,6 +12,7 @@ variable "role_assignments" {
     principal_id              = string,
     definition                = string,
     relative_scope            = optional(string, "")
+    resource_group_scope_key  = optional(string)
     condition                 = optional(string)
     condition_version         = optional(string)
     principal_type            = optional(string)
@@ -26,6 +27,7 @@ Object fields:
 - `principal_id`: The directory/object id of the principal to assign the role to.
 - `definition`: The role definition to assign. Either use the name or the role definition resource id. If supplying a definition ID, use a *scopeless* role definition ID (i.e. starting with `/providers/Microsoft.Authorization/roleDefinitions/`).
 - `relative_scope`: (optional) Scope relative to the created subscription. Omit, or leave blank for subscription scope.
+- `resource_group_scope_key`: (optional) The resource group key from the resource groups map to use as the scope for the role assignment. If supplied, this takes precedence over `relative_scope`.
 - `condition`: (optional) A condition to apply to the role assignment. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 - `condition_version`: (optional) The version of the condition syntax. See [Conditions Custom Security Attributes](https://learn.microsoft.com/azure/role-based-access-control/conditions-custom-security-attributes) for more details.
 - `principal_type`: (optional) The type of the principal. Can be `"User"`, `"Group"`, `"Device"`, `"ForeignGroup"`, or `"ServicePrincipal"`.
@@ -59,19 +61,8 @@ DESCRIPTION
   validation {
     error_message = "If definition is a role definition ID, it must start with /providers/Microsoft.Authorization/roleDefinitions/ to be a scopeless role definition ID."
     condition = alltrue([for ra in values(var.role_assignments) : (
-      strcontains(tolower(ra.definition), tolower("/providers/Microsoft.Authorization/roleDefinitions/")) == false ||
+      strcontains(lower(ra.definition), lower("/providers/Microsoft.Authorization/roleDefinitions/")) == false ||
       can(regex("^/providers/Microsoft\\.Authorization/roleDefinitions/[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$", ra.definition))
     )])
   }
-}
-
-variable "wait_for_umi_before_umi_role_assignment_operations" {
-  type = object({
-    create  = optional(string, "30s")
-    destroy = optional(string, "0s")
-  })
-  default     = {}
-  description = <<DESCRIPTION
-The duration to wait after creating a user managed identity before performing role assignment operations.
-DESCRIPTION
 }

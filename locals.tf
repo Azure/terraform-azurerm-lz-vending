@@ -42,8 +42,8 @@ locals {
             role_key = role_k
             role_assignment = {
               principal_id              = module.usermanagedidentity[umi_k].principal_id
-              definition                = strcintains(tolower(role_v.definition), tolower("/providers/microsoft.authorization/roledefinitions/")) ? "${local.subscription_resource_id}/${role_v.definition}" : role_v.definition
-              scope                     = "${local.subscription_resource_id}${role_v.relative_scope}"
+              definition                = strcontains(lower(role_v.definition), lower("/providers/microsoft.authorization/roledefinitions/")) ? "${local.subscription_resource_id}${role_v.definition}" : role_v.definition
+              scope                     = role_v.resource_group_scope_key != null ? module.resourcegroup[role_v.resource_group_scope_key].resource_group_resource_id : "${local.subscription_resource_id}${role_v.relative_scope}"
               condition                 = role_v.condition
               condition_version         = role_v.condition_version
               principal_type            = role_v.principal_type
@@ -148,6 +148,6 @@ locals {
   }
 
   role_assignments_definitions = {
-    for k, v in var.role_assignments : k => strcontains(tolower(v.definition), tolower("/providers/microsoft.authorization/roledefinitions/")) ? "${local.subscription_resource_id}/${v.definition}" : v.definition
+    for k, v in var.role_assignments : k => strcontains(lower(v.definition), lower("/providers/microsoft.authorization/roledefinitions/")) ? "${local.subscription_resource_id}${v.definition}" : v.definition
   }
 }
