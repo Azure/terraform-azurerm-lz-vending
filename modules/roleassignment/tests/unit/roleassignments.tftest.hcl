@@ -1,16 +1,22 @@
 mock_provider "azapi" {
   override_data {
-    target = data.azapi_resource_list.role_definitions
+    target = module.role_definitions.data.azapi_resource_list.role_definitions
     values = {
       output = {
-        results = [
+        value = [
           {
             "id" : "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635",
-            "role_name" : "Owner"
+            "name" : "8e3af657-a8ff-443c-a75c-2fe8c4bcb635",
+            "properties" : {
+              "roleName" : "Owner"
+            }
           },
           {
             "id" : "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/acdd72a7-3385-48ef-bd42-f606fba81ae7",
-            "role_name" : "Reader"
+            "name" : "acdd72a7-3385-48ef-bd42-f606fba81ae7",
+            "properties" : {
+              "roleName" : "Reader"
+            }
           },
         ]
       }
@@ -19,9 +25,10 @@ mock_provider "azapi" {
 }
 
 variables {
-  role_assignment_principal_id = "00000000-0000-0000-0000-000000000000"
-  role_assignment_scope        = "/subscriptions/00000000-0000-0000-0000-000000000000"
-  role_assignment_definition   = "Owner"
+  role_assignment_principal_id              = "00000000-0000-0000-0000-000000000000"
+  role_assignment_scope                     = "/subscriptions/00000000-0000-0000-0000-000000000000"
+  role_assignment_definition                = "Owner"
+  role_assignment_definition_lookup_enabled = true
 }
 
 run "simple_role_name_valid" {
