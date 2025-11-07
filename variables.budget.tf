@@ -9,7 +9,7 @@ DESCRIPTION
 
 variable "budgets" {
   type = map(object({
-    name               = optional(string)
+    name               = string
     amount             = number
     time_grain         = string
     time_period_start  = string
@@ -31,7 +31,7 @@ variable "budgets" {
   description = <<DESCRIPTION
 Map of budgets to create for the subscription.
 
-- `name` - (optional) The name of the budget. If not supplied, the key of the map will be used. This will be chaged in future versions to be required.
+- `name` - The name of the budget.
 - `amount` - The total amount of cost to track with the budget.
 - `time_grain` - The time grain for the budget. Must be one of Annually, BillingAnnual, BillingMonth, BillingQuarter, Monthly, or Quarterly.
 - `time_period_start` - The start date for the budget.
