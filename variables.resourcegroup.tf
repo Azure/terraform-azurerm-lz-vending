@@ -7,7 +7,7 @@ variable "resource_group_creation_enabled" {
 variable "resource_groups" {
   type = map(object({
     name         = string
-    location     = string
+    location     = optional(string)
     tags         = optional(map(string), {})
     lock_enabled = optional(bool, false)
     lock_name    = optional(string, "")

@@ -69,7 +69,7 @@ locals {
         ),
         ""
       )
-      location    = vnet_v.location
+      location    = coalesce(vnet_v.location, var.location)
       dns_servers = vnet_v.dns_servers
 
       flow_timeout_in_minutes = vnet_v.flow_timeout_in_minutes
@@ -88,7 +88,7 @@ locals {
         default_outbound_access_enabled               = subnet_v.default_outbound_access_enabled
         service_endpoints                             = subnet_v.service_endpoints
         service_endpoint_policies                     = subnet_v.service_endpoint_policies
-        delegations                                   = subnet_v.delegations
+        delegation                                    = subnet_v.delegations
         }
       }
       hub_network_resource_id     = vnet_v.hub_network_resource_id
