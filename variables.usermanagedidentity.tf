@@ -9,6 +9,7 @@ DESCRIPTION
 }
 
 variable "user_managed_identities" {
+<<<<<<< HEAD
   type = map(object({
     name                         = string
     resource_group_key           = optional(string)
@@ -23,6 +24,47 @@ variable "user_managed_identities" {
       condition_version         = optional(string)
       principal_type            = optional(string)
       definition_lookup_enabled = optional(bool, false)
+      use_random_uuid           = optional(bool, false)
+    })), {})
+    federated_credentials_github = optional(map(object({
+      name            = optional(string)
+      organization    = string
+      repository      = string
+      entity          = string
+      enterprise_slug = optional(string)
+      value           = optional(string)
+    })), {})
+    federated_credentials_terraform_cloud = optional(map(object({
+      name         = optional(string)
+      organization = string
+      project      = string
+      workspace    = string
+      run_phase    = string
+    })), {})
+    federated_credentials_advanced = optional(map(object({
+      name               = string
+      subject_identifier = string
+      issuer_url         = string
+      audiences          = optional(set(string), ["api://AzureADTokenExchange"])
+    })), {})
+  }))
+  default     = {}
+  description = <<DESCRIPTION
+A map of user-managed identities to create. The map key must be known at the plan stage, e.g. must not be calculated and known only after apply. The value is a map of attributes.
+=======
+  type = map(object({
+    name                         = string
+    resource_group_key           = optional(string)
+    resource_group_name_existing = optional(string)
+    location                     = optional(string)
+    tags                         = optional(map(string), {})
+    role_assignments = optional(map(object({
+      definition                = string
+      relative_scope            = optional(string, "")
+      condition                 = optional(string)
+      condition_version         = optional(string)
+      principal_type            = optional(string)
+      definition_lookup_enabled = optional(bool, true)
       use_random_uuid           = optional(bool, false)
     })), {})
     federated_credentials_github = optional(map(object({
@@ -100,6 +142,7 @@ The following fields are used to configure federated identity credentials, using
   - `issuer_url`: The URL of the token issuer, should begin with `https://`
   - `audience`: (optional) The token audience, defaults to `api://AzureADTokenExchange`.
 DESCRIPTION
+>>>>>>> e2d7552 (fix line endings)
 
   validation {
     condition = var.umi_enabled ? alltrue([
