@@ -1,5 +1,4 @@
 # Tests for the budget module
-# Converts the test from tests/budget/budget_test.go
 
 run "budget_scope_subscription" {
   command = plan

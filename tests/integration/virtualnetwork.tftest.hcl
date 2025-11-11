@@ -1,5 +1,6 @@
 # Virtual Network Module Basic Tests
 # Tests basic VNet creation without deploying
+
 variables {
   location        = "uksouth"
   subscription_id = "00000000-0000-0000-0000-000000000000"

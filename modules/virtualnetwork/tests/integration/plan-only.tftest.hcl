@@ -1,12 +1,16 @@
 # Virtual Network Module Basic Tests
 # Tests basic VNet creation without deploying
 
+variables {
+  location        = "uksouth"
+  subscription_id = "00000000-0000-0000-0000-000000000000"
+  enable_telemetry = false
+}
+
 run "valid_two_vnets" {
   command = plan
 
   variables {
-    subscription_id  = "00000000-0000-0000-0000-000000000000"
-    enable_telemetry = false
     virtual_networks = {
       primary = {
         name                = "primary-vnet"
@@ -24,7 +28,7 @@ run "valid_two_vnets" {
   }
 
   assert {
-    condition     = length(keys(module.virtualnetwork.virtual_network_resource_ids)) == 2
+    condition     = length(keys(module.virtual_networks)) == 2
     error_message = "Expected 2 virtual networks to be created"
   }
 }
@@ -33,8 +37,6 @@ run "vnets_with_custom_dns" {
   command = plan
 
   variables {
-    subscription_id  = "00000000-0000-0000-0000-000000000000"
-    enable_telemetry = false
     virtual_networks = {
       primary = {
         name                = "primary-vnet"
@@ -54,7 +56,7 @@ run "vnets_with_custom_dns" {
   }
 
   assert {
-    condition     = length(keys(module.virtualnetwork.virtual_network_resource_ids)) == 2
+    condition     = length(keys(module.virtual_networks)) == 2
     error_message = "Expected 2 virtual networks"
   }
 }
@@ -63,8 +65,6 @@ run "vnets_with_tags" {
   command = plan
 
   variables {
-    subscription_id  = "00000000-0000-0000-0000-000000000000"
-    enable_telemetry = false
     virtual_networks = {
       primary = {
         name                = "primary-vnet"
@@ -86,7 +86,7 @@ run "vnets_with_tags" {
   }
 
   assert {
-    condition     = length(keys(module.virtualnetwork.virtual_network_resource_ids)) == 2
+    condition     = length(keys(module.virtual_networks)) == 2
     error_message = "Expected 2 virtual networks with tags"
   }
 }
@@ -95,8 +95,6 @@ run "vnets_with_subnets" {
   command = plan
 
   variables {
-    subscription_id  = "00000000-0000-0000-0000-000000000000"
-    enable_telemetry = false
     virtual_networks = {
       primary = {
         name                = "primary-vnet"
@@ -130,7 +128,7 @@ run "vnets_with_subnets" {
   }
 
   assert {
-    condition     = length(keys(module.virtualnetwork.virtual_network_resource_ids)) == 2
+    condition     = length(keys(module.virtual_networks)) == 2
     error_message = "Expected 2 virtual networks with subnets"
   }
 }
@@ -139,8 +137,6 @@ run "vnet_with_mesh_peering" {
   command = plan
 
   variables {
-    subscription_id  = "00000000-0000-0000-0000-000000000000"
-    enable_telemetry = false
     virtual_networks = {
       primary = {
         name                  = "primary-vnet"
@@ -161,7 +157,7 @@ run "vnet_with_mesh_peering" {
   }
 
   assert {
-    condition     = length(keys(module.virtualnetwork.virtual_network_resource_ids)) == 2
+    condition     = length(keys(module.virtual_networks)) == 2
     error_message = "Expected 2 virtual networks with mesh peering"
   }
 }
@@ -170,8 +166,6 @@ run "vnet_with_hub_peering" {
   command = plan
 
   variables {
-    subscription_id  = "00000000-0000-0000-0000-000000000000"
-    enable_telemetry = false
     virtual_networks = {
       primary = {
         name                      = "primary-vnet"
@@ -191,7 +185,7 @@ run "vnet_with_hub_peering" {
   }
 
   assert {
-    condition     = length(keys(module.virtualnetwork.virtual_network_resource_ids)) == 2
+    condition     = length(keys(module.virtual_networks)) == 2
     error_message = "Expected 2 virtual networks, one with hub peering"
   }
 }
@@ -200,8 +194,6 @@ run "vnet_with_ddos_protection" {
   command = plan
 
   variables {
-    subscription_id  = "00000000-0000-0000-0000-000000000000"
-    enable_telemetry = false
     virtual_networks = {
       primary = {
         name                      = "primary-vnet"
@@ -221,7 +213,7 @@ run "vnet_with_ddos_protection" {
   }
 
   assert {
-    condition     = length(keys(module.virtualnetwork.virtual_network_resource_ids)) == 2
+    condition     = length(keys(module.virtual_networks)) == 2
     error_message = "Expected 2 virtual networks, one with DDoS protection"
   }
 }

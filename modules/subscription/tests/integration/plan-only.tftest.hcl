@@ -1,7 +1,5 @@
 # Tests for the subscription module
 # These tests cover subscription alias creation and validation scenarios
-# Note: These are plan-only tests. The module also has unit tests with mock providers
-# at modules/subscription/tests/unit/subscription.tftest.hcl
 
 run "valid_subscription_alias_create" {
   command = plan

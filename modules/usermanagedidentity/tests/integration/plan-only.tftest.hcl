@@ -1,5 +1,4 @@
-# Tests for the usermanagedidentity module
-# Converts the tests from tests/usermanagedidentity/usermanagedidentity_test.go
+# Tests for the user managed identity module
 
 # Test 1: Basic user managed identity
 run "basic_user_managed_identity" {

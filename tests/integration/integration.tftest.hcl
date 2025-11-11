@@ -40,12 +40,12 @@ run "integration_hub_and_spoke" {
   }
 
   assert {
-    condition     = module.lz_vending.subscription_resource_id != null
+    condition     = module.subscription[0].subscription_resource_id != null
     error_message = "Subscription should be created"
   }
 
   assert {
-    condition     = length(keys(module.lz_vending.virtual_network_resource_ids)) >= 1
+    condition     = length(keys(module.virtualnetwork[0].virtual_network_resource_ids)) >= 1
     error_message = "At least one virtual network should be planned"
   }
 }
@@ -88,12 +88,12 @@ run "integration_vwan" {
   }
 
   assert {
-    condition     = module.lz_vending.subscription_resource_id != null
+    condition     = module.subscription[0].subscription_resource_id != null
     error_message = "Subscription should be created"
   }
 
   assert {
-    condition     = length(keys(module.lz_vending.virtual_network_resource_ids)) >= 1
+    condition     = length(keys(module.virtualnetwork[0].virtual_network_resource_ids)) >= 1
     error_message = "At least one virtual network should be planned"
   }
 }
@@ -121,7 +121,7 @@ run "integration_subscription_and_roleassignment_only" {
   }
 
   assert {
-    condition     = module.lz_vending.subscription_resource_id != null
+    condition     = module.subscription[0].subscription_resource_id != null
     error_message = "Subscription should be created"
   }
 }
@@ -158,7 +158,7 @@ run "integration_existing_subscription_hub_and_spoke" {
   }
 
   assert {
-    condition     = length(keys(module.lz_vending.virtual_network_resource_ids)) >= 1
+    condition     = length(keys(module.virtualnetwork[0].virtual_network_resource_ids)) >= 1
     error_message = "At least one virtual network should be planned"
   }
 }
@@ -254,12 +254,12 @@ run "integration_vnet_with_route_table" {
   }
 
   assert {
-    condition     = module.lz_vending.subscription_resource_id != null
+    condition     = module.subscription[0].subscription_resource_id != null
     error_message = "Subscription should be created"
   }
 
   assert {
-    condition     = length(keys(module.lz_vending.virtual_network_resource_ids)) >= 1
+    condition     = length(keys(module.virtualnetwork[0].virtual_network_resource_ids)) >= 1
     error_message = "At least one virtual network should be planned"
   }
 }
