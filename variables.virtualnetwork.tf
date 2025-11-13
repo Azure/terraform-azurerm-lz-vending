@@ -35,7 +35,11 @@ variable "virtual_networks" {
     subnets = optional(map(object(
       {
         name             = string
-        address_prefixes = list(string)
+        address_prefixes = optional(list(string))
+        ipam_pools = optional(list(object({
+          pool_id       = string
+          prefix_length = number
+        })))
         nat_gateway = optional(object({
           id = string
         }))
@@ -148,7 +152,11 @@ A map of the virtual networks to create. The map key must be known at the plan s
 
 - `subnets` - (Optional) A map of subnets to create in the virtual network. The value is an object with the following fields:
   - `name` - The name of the subnet.
-  - `address_prefixes` - The IPv4 address prefixes to use for the subnet in CIDR format.
+  - `address_prefixes` - (Optional) The IPv4 address prefixes to use for the subnet in CIDR format. One of `address_prefixes` or `ipam_pools` must be specified.
+  - `ipam_pools` - (Optional) IPAM pools to allocate subnet address space from. When specified, the subnet will request address space from these pools. Each pool configuration supports:
+    - `pool_id` - The resource ID of the IPAM pool to allocate from.
+    - `prefix_length` - The CIDR prefix length for this subnet (e.g., 24 for /24, 28 for /28).
+    Note: Only one IPAM pool allocation per subnet is supported. When using IPAM pools, do not specify `address_prefixes`.
   - `nat_gateway` - (Optional) An object with the following fields:
     - `id` - The ID of the NAT Gateway which should be associated with the Subnet. Changing this forces a new resource to be created.
   - `network_security_group` - (Optional) An object with the following fields:
@@ -228,5 +236,31 @@ DESCRIPTION
   validation {
     condition     = alltrue([for v in var.virtual_networks : try(coalesce(v.resource_group_key, v.resource_group_name_existing), null) != null])
     error_message = "Each virtual network must specify either 'resource_group_key' or 'resource_group_name_existing'."
+  }
+
+  validation {
+    condition = alltrue(flatten([
+      for vnet_key, vnet in var.virtual_networks : [
+        for subnet_key, subnet in vnet.subnets : (
+          # Each subnet must have either address_prefixes or ipam_pools
+          (subnet.address_prefixes != null && length(subnet.address_prefixes) > 0) || subnet.ipam_pools != null
+        )
+      ]
+    ]))
+    error_message = "Each subnet must specify either 'address_prefixes' or 'ipam_pools'."
+  }
+
+  validation {
+    condition = alltrue(flatten([
+      for vnet_key, vnet in var.virtual_networks : [
+        for subnet_key, subnet in vnet.subnets : (
+          # For IPAM subnets, only ipam_pools should be specified (not static addresses)
+          subnet.ipam_pools != null ? (
+            subnet.address_prefixes == null || length(subnet.address_prefixes) == 0
+          ) : true
+        )
+      ]
+    ]))
+    error_message = "IPAM subnets should only specify 'ipam_pools'. Non-IPAM subnets must specify 'address_prefixes'."
   }
 }
