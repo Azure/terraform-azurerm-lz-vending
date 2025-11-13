@@ -277,16 +277,16 @@ DESCRIPTION
     ]))
     error_message = "Virtual network subnet name must consist of a-z, A-Z, 0-9, -, _, and . (period) and be between 2 and 64 characters in length."
   }
-  # validate subnet address prefixes is not zero length
+  # validate subnet address prefixes is not zero length (when provided)
   validation {
     condition = alltrue(flatten([
       for k, v in var.virtual_networks :
       [
         for subnet in v.subnets :
-        length(subnet.address_prefixes) > 0
+        subnet.address_prefixes == null ? true : length(subnet.address_prefixes) > 0
       ]
     ]))
-    error_message = "At least 1 subnet address prefix must be specified."
+    error_message = "At least 1 subnet address prefix must be specified when not using IPAM."
   }
   # validate subnet nat gateway id is valid
   validation {
