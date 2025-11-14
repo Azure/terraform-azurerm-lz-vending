@@ -80,7 +80,7 @@ locals {
       subnets = { for subnet_k, subnet_v in vnet_v.subnets : subnet_k => {
         name                                          = subnet_v.name
         address_prefixes                              = subnet_v.address_prefixes
-        ipam_pools                                    = try(subnet_v.ipam_pools, null)
+        ipam_pools                                    = subnet_v.ipam_pools
         nat_gateway                                   = subnet_v.nat_gateway
         network_security_group                        = subnet_v.network_security_group != null ? { id = coalesce(subnet_v.network_security_group.id, try(local.virtual_network_subnet_network_security_group_available_resource_ids[subnet_v.network_security_group.key_reference], null)) } : null
         private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
