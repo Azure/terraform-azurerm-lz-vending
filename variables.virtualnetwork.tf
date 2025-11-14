@@ -243,7 +243,7 @@ DESCRIPTION
       for vnet_key, vnet in var.virtual_networks : [
         for subnet_key, subnet in vnet.subnets : (
           # Each subnet must have either address_prefixes or ipam_pools
-          (subnet.address_prefixes != null && length(subnet.address_prefixes) > 0) || subnet.ipam_pools != null
+          length(coalesce(subnet.address_prefixes, [])) > 0 || subnet.ipam_pools != null
         )
       ]
     ]))
@@ -256,7 +256,7 @@ DESCRIPTION
         for subnet_key, subnet in vnet.subnets : (
           # For IPAM subnets, only ipam_pools should be specified (not static addresses)
           subnet.ipam_pools != null ? (
-            subnet.address_prefixes == null || length(subnet.address_prefixes) == 0
+            length(coalesce(subnet.address_prefixes, [])) == 0
           ) : true
         )
       ]
