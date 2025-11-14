@@ -79,8 +79,6 @@ locals {
 
       subnets = { for subnet_k, subnet_v in vnet_v.subnets : subnet_k => {
         name                                          = subnet_v.name
-        address_prefixes                              = subnet_v.address_prefixes
-        ipam_pools                                    = subnet_v.ipam_pools
         nat_gateway                                   = subnet_v.nat_gateway
         network_security_group                        = subnet_v.network_security_group != null ? { id = coalesce(subnet_v.network_security_group.id, try(local.virtual_network_subnet_network_security_group_available_resource_ids[subnet_v.network_security_group.key_reference], null)) } : null
         private_endpoint_network_policies             = subnet_v.private_endpoint_network_policies
@@ -90,8 +88,9 @@ locals {
         service_endpoints                             = subnet_v.service_endpoints
         service_endpoint_policies                     = subnet_v.service_endpoint_policies
         delegations                                   = subnet_v.delegations
-        }
-      }
+        address_prefixes                              = subnet_v.ipam_pools == null ? subnet_v.address_prefixes : null
+        ipam_pools                                    = subnet_v.ipam_pools
+      }}
       hub_network_resource_id     = vnet_v.hub_network_resource_id
       hub_peering_enabled         = vnet_v.hub_peering_enabled
       hub_peering_direction       = vnet_v.hub_peering_direction
