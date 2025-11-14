@@ -92,7 +92,11 @@ locals {
             delegations                                   = subnet_v.delegations
           },
           subnet_v.ipam_pools != null ? { ipam_pools = subnet_v.ipam_pools } : {},
-          subnet_v.ipam_pools == null && subnet_v.address_prefixes != null ? { address_prefixes = subnet_v.address_prefixes } : {}
+          (
+            subnet_v.ipam_pools == null &&
+            subnet_v.address_prefixes != null &&
+            length(subnet_v.address_prefixes) > 0
+          ) ? { address_prefixes = subnet_v.address_prefixes } : {}
         )
       }
       hub_network_resource_id     = vnet_v.hub_network_resource_id
