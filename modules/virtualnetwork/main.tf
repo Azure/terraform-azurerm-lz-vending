@@ -12,8 +12,8 @@ module "virtual_networks" {
       prefix_length = var.ipam_pool_prefix_length
     }
   ] : []
-  address_space           = lookup(var.ipam_pool_id_by_vnet, each.key, null) != null ? null : try(each.value.address_prefix, each.value.address_space, [])
-  location                = coalesce(each.value.location, var.location)
+  address_space = lookup(var.ipam_pool_id_by_vnet, each.key, null) != null ? null : each.value.address_space
+  location      = coalesce(each.value.location, var.location)
   flow_timeout_in_minutes = each.value.flow_timeout_in_minutes
 
   ddos_protection_plan = each.value.ddos_protection_plan_id == null ? null : {

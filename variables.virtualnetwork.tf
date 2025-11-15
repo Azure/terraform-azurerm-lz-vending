@@ -20,7 +20,6 @@ variable "virtual_networks" {
   type = map(object({
     name                         = string
     address_space                = optional(list(string))
-    address_prefix               = optional(list(string))
     resource_group_key           = optional(string)
     resource_group_name_existing = optional(string)
 
