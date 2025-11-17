@@ -3,7 +3,7 @@ module "resourcegroup" {
   source              = "./modules/resourcegroup"
   for_each            = var.resource_group_creation_enabled ? var.resource_groups : {}
   subscription_id     = local.subscription_id
-  location            = each.value.location
+  location            = coalesce(each.value.location, var.location)
   resource_group_name = each.value.name
   tags                = each.value.tags
   lock_enabled        = each.value.lock_enabled

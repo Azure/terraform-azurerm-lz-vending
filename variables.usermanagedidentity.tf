@@ -18,10 +18,11 @@ variable "user_managed_identities" {
     role_assignments = optional(map(object({
       definition                = string
       relative_scope            = optional(string, "")
+      resource_group_scope_key  = optional(string)
       condition                 = optional(string)
       condition_version         = optional(string)
       principal_type            = optional(string)
-      definition_lookup_enabled = optional(bool, true)
+      definition_lookup_enabled = optional(bool, false)
       use_random_uuid           = optional(bool, false)
     })), {})
     federated_credentials_github = optional(map(object({

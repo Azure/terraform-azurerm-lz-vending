@@ -7,10 +7,4 @@ module "virtualnetwork" {
   virtual_networks = local.virtual_networks
   location         = var.location
   enable_telemetry = !var.disable_telemetry
-
-  depends_on = [
-    module.resourcegroup,
-    module.routetable,
-    module.networksecuritygroup
-  ]
 }
