@@ -1,9 +1,10 @@
 <!-- BEGIN_TF_DOCS -->
 # Terraform landing zone vending module for Azure
 
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/Azure/terraform-azurerm-lz-vending.svg)](http://isitmaintained.com/project/Azure/terraform-azurerm-lz-vending "Average time to resolve an issue")
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/Azure/terraform-azurerm-lz-vending.svg)](http://isitmaintained.com/project/Azure/terraform-azurerm-lz-vending "Percentage of issues still open")
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Azure/terraform-azurerm-lz-vending/badge)](https://scorecard.dev/viewer/?uri=github.com/Azure/terraform-azurerm-lz-vending)
+> [!IMPORTANT]
+> THIS MODULE IS NOW ARCHIVED
+> Migration is seamless to v0.1.0 of the AVM module
+> PLEASE SEE <https://github.com/Azure/terraform-azure-avm-ptn-sub-vending/releases/tag/v0.1.0>
 
 ## Overview
 
