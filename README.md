@@ -4,7 +4,7 @@
 > [!IMPORTANT]
 > THIS MODULE IS NOW ARCHIVED
 > Migration is seamless to v0.1.0 of the AVM module
-> PLEASE SEE <https://github.com/Azure/terraform-azure-avm-ptn-sub-vending/releases/tag/v0.1.0>
+> PLEASE SEE <[https://github.com/Azure/terraform-azure-avm-ptn-sub-vending/releases/tags/v0.1.0](https://github.com/Azure/terraform-azure-avm-ptn-alz-sub-vending/releases/tag/v0.1.0)>
 
 ## Overview
 
