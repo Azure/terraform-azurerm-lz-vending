@@ -599,7 +599,7 @@ The string must be comprised of a-z, A-Z, 0-9, - and \_.
 The maximum length is 63 characters.
 
 You may also supply an empty string if you do not want to create a new subscription alias.  
-In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
+In this scenario, `subscription_enabled` should be set to `false`, and `subscription_id` must be supplied.
 
 Type: `string`
 
@@ -609,7 +609,7 @@ Default: `null`
 
 Description: The billing scope for the new subscription alias.
 
-A valid billing scope starts with `/providers/Microsoft.Billing/billingAccounts/` and is case sensitive.
+A valid billing scope starts with `/providers/Microsoft.Billing/billingAccounts/` and is case-sensitive.
 
 E.g.
 
@@ -618,7 +618,7 @@ E.g.
 - For Legacy EA - `/providers/Microsoft.Billing/billingAccounts/{billingAccountName}/enrollmentAccounts/{enrollmentAccountName}`
 
 You may also supply an empty string if you do not want to create a new subscription alias.  
-In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
+In this scenario, `subscription_enabled` should be set to `false`, and `subscription_id` must be supplied.
 
 Type: `string`
 
@@ -628,10 +628,10 @@ Default: `null`
 
 Description: The display name of the subscription alias.
 
-The string must be comprised of a-z, A-Z, 0-9, -, \_ and space.  
+The string must comprise a-z, A-Z, 0-9, -, \_, and space.  
 The maximum length is 63 characters.
 
-You may also supply an empty string if you do not want to create a new subscription alias.  
+You can also go ahead and supply an empty string if you don't want to create a new subscription alias.  
 In this scenario, `subscription_enabled` should be set to `false` and `subscription_id` must be supplied.
 
 Type: `string`
